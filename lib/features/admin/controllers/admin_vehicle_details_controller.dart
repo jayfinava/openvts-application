@@ -82,6 +82,7 @@ class AdminVehicleDetailsController
       final updated =
           await _service.updateVehicle(id: state.vehicleId, request: request);
       state = state.copyWith(vehicle: updated, isUpdatingVehicle: false);
+      unawaited(_loadReferenceDataOnce());
     } catch (error) {
       state = state.copyWith(
           isUpdatingVehicle: false, sectionErrorMessage: _errorMessage(error));
@@ -132,8 +133,16 @@ class AdminVehicleDetailsController
         _service.getUnlinkedUsers(state.vehicleId),
       ]);
       _loadedTabs.add(AdminVehicleDetailsTab.users);
+      final linkedUsers = results[0];
+
+      var updatedVehicle = state.vehicle;
+      if (updatedVehicle?.primaryUser == null && linkedUsers.length == 1) {
+        updatedVehicle = updatedVehicle?.copyWith(primaryUser: linkedUsers.first);
+      }
+
       state = state.copyWith(
-        linkedUsers: results[0],
+        vehicle: updatedVehicle,
+        linkedUsers: linkedUsers,
         availableUsers: results[1],
         isLoadingUsers: false,
       );

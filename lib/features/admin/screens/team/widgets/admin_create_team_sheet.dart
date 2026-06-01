@@ -118,7 +118,7 @@ class _AdminCreateTeamSheetState extends ConsumerState<AdminCreateTeamSheet> {
                 LayoutBuilder(
                   builder: (context, constraints) {
                     final availableWidth = constraints.maxWidth;
-                    final isCompact = availableWidth < 340;
+                    final isTablet = availableWidth >= 600;
 
                     final prefixDropdown = DropdownButtonFormField<String>(
                       key: ValueKey<String?>(
@@ -168,7 +168,7 @@ class _AdminCreateTeamSheetState extends ConsumerState<AdminCreateTeamSheet> {
                       ),
                     );
 
-                    if (isCompact) {
+                    if (!isTablet) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -180,8 +180,8 @@ class _AdminCreateTeamSheetState extends ConsumerState<AdminCreateTeamSheet> {
                     }
 
                     final prefixWidth =
-                        (availableWidth * 0.35).clamp(120.0, 150.0);
-                    final gapWidth = OpenVtsSpacing.sm;
+                        (availableWidth * 0.30).clamp(110.0, 140.0);
+                    final gapWidth = OpenVtsSpacing.md;
 
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.start,

@@ -199,7 +199,7 @@ class _DriverCreateSheetState extends ConsumerState<_DriverCreateSheet> {
                 LayoutBuilder(
                   builder: (context, constraints) {
                     final availableWidth = constraints.maxWidth;
-                    final isCompact = availableWidth < 340;
+                    final isTablet = availableWidth >= 600;
 
                     final prefixDropdown = AdminUserDropdownField(
                       label: 'Mobile Prefix',
@@ -223,7 +223,7 @@ class _DriverCreateSheetState extends ConsumerState<_DriverCreateSheet> {
                           Validators.required(value, fieldName: 'Mobile'),
                     );
 
-                    if (isCompact) {
+                    if (!isTablet) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -235,8 +235,8 @@ class _DriverCreateSheetState extends ConsumerState<_DriverCreateSheet> {
                     }
 
                     final prefixWidth =
-                        (availableWidth * 0.35).clamp(120.0, 150.0);
-                    final gapWidth = OpenVtsSpacing.sm;
+                        (availableWidth * 0.30).clamp(110.0, 140.0);
+                    final gapWidth = OpenVtsSpacing.md;
 
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.start,

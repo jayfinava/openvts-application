@@ -4,7 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/providers/core_providers.dart';
 import '../../../../core/router/route_paths.dart';
+import '../../../../core/theme/open_vts_colors.dart';
+import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
+import '../../../../core/theme/open_vts_typography.dart';
 import '../../../../shared/helpers/toast_helper.dart';
 import '../../../../shared/widgets/open_vts_bottom_sheet.dart';
 import '../../../../shared/widgets/open_vts_card.dart';
@@ -13,7 +16,6 @@ import '../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../shared/widgets/open_vts_page_scaffold.dart';
-import '../../../../shared/widgets/open_vts_status_chip.dart';
 import '../../controllers/admin_providers.dart';
 import '../../models/admin_vehicle_model.dart';
 import '../../models/admin_vehicle_state.dart';
@@ -27,7 +29,7 @@ import 'widgets/admin_vehicle_logs_tab.dart';
 import 'widgets/admin_vehicle_sensors_tab.dart';
 import 'widgets/admin_vehicle_users_tab.dart';
 
-class AdminVehicleDetailsScreen extends ConsumerWidget {
+class AdminVehicleDetailsScreen extends ConsumerStatefulWidget {
   const AdminVehicleDetailsScreen({
     super.key,
     required this.vehicleId,
@@ -38,68 +40,88 @@ class AdminVehicleDetailsScreen extends ConsumerWidget {
   final AdminVehicleListItem? initialVehicle;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final provider = adminVehicleDetailsControllerProvider(vehicleId);
+  ConsumerState<AdminVehicleDetailsScreen> createState() =>
+      _AdminVehicleDetailsScreenState();
+}
+
+class _AdminVehicleDetailsScreenState
+    extends ConsumerState<AdminVehicleDetailsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final controller =
+          ref.read(adminVehicleDetailsControllerProvider(widget.vehicleId).notifier);
+      controller.loadInitial();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = adminVehicleDetailsControllerProvider(widget.vehicleId);
     final state = ref.watch(provider);
     final controller = ref.read(provider.notifier);
     final apiBaseUrl = ref.watch(apiBaseUrlProvider);
     final vehicle = state.vehicle;
 
+    final displayVehicle = vehicle?.primaryUser == null &&
+            widget.initialVehicle?.primaryUser != null
+        ? vehicle?.copyWith(primaryUser: widget.initialVehicle!.primaryUser)
+        : vehicle;
+
+    final title = displayVehicle?.name.isNotEmpty == true
+        ? displayVehicle!.name
+        : (widget.initialVehicle?.name.isNotEmpty == true
+            ? widget.initialVehicle!.name
+            : 'Vehicle Details');
+
     return OpenVtsPageScaffold(
-      title: vehicle?.name.isNotEmpty == true
-          ? vehicle!.name
-          : (initialVehicle?.name.isNotEmpty == true
-              ? initialVehicle!.name
-              : 'Vehicle Details'),
+      title: title,
       headerMode: OpenVtsPageHeaderMode.closeable,
-      leading: IconButton(
-        tooltip: 'Back',
-        onPressed: () {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            context.go(RoutePaths.adminVehicles);
-          }
-        },
-        icon: const Icon(Icons.arrow_back_rounded, size: 20),
+      onClose: _close,
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        OpenVtsSpacing.sm,
+        OpenVtsSpacing.sm,
+        OpenVtsSpacing.sm,
+        OpenVtsSpacing.xs,
       ),
       actions: [
-        IconButton(
-          tooltip: 'Refresh',
-          onPressed: state.isLoadingVehicle ? null : controller.loadVehicle,
-          icon: state.isLoadingVehicle
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Icon(Icons.refresh_rounded),
+        Padding(
+          padding: const EdgeInsets.only(right: OpenVtsSpacing.xxs),
+          child: Center(
+            child: _StatusChip(isActive: displayVehicle?.isActive ?? vehicle?.isActive ?? true),
+          ),
         ),
-        PopupMenuButton<_Action>(
-          onSelected: (action) => _onAction(context, ref, action),
-          itemBuilder: (_) => const [
-            PopupMenuItem(value: _Action.edit, child: Text('Edit')),
-            PopupMenuItem(
-                value: _Action.toggleStatus,
-                child: Text('Activate/Deactivate')),
-            PopupMenuItem(value: _Action.delete, child: Text('Delete')),
-          ],
+        _HeaderMenu(
+          isBusy: state.isUpdatingStatus ||
+              state.isDeletingVehicle ||
+              state.isUpdatingVehicle,
+          onRefresh: () => controller.refreshCurrentTab(),
+          onEdit: () => _onAction(context, ref, _Action.edit),
+          onToggleStatus: () =>
+              _onAction(context, ref, _Action.toggleStatus),
+          onDelete: () => _onAction(context, ref, _Action.delete),
         ),
+        const SizedBox(width: OpenVtsSpacing.xs),
       ],
       body: RefreshIndicator(
         onRefresh: controller.refreshCurrentTab,
         child: ListView(
-          padding: const EdgeInsets.only(bottom: OpenVtsSpacing.lg),
+          padding: EdgeInsets.zero,
+          physics: const AlwaysScrollableScrollPhysics(),
           children: [
-            if (state.errorMessage != null && vehicle == null)
+            if (state.errorMessage != null)
               OpenVtsErrorView(
                 message: state.errorMessage!,
                 onRetry: controller.loadInitial,
               )
             else if (state.isLoadingVehicle && vehicle == null)
               const SizedBox(height: 240, child: OpenVtsLoader())
-            else if (vehicle != null) ...[
-              _SummaryCard(vehicle: vehicle),
+            else if (displayVehicle != null) ...[
+              _SummaryCard(
+                vehicle: displayVehicle,
+                isSyncing: state.isLoadingVehicle,
+              ),
               const SizedBox(height: OpenVtsSpacing.sm),
               _TabChips(
                 selected: state.selectedTab,
@@ -113,6 +135,7 @@ class AdminVehicleDetailsScreen extends ConsumerWidget {
                 ),
               _TabBody(
                 state: state,
+                displayVehicle: displayVehicle,
                 onEdit: () => _onAction(context, ref, _Action.edit),
                 onToggleStatus: () =>
                     _onAction(context, ref, _Action.toggleStatus),
@@ -162,6 +185,7 @@ class AdminVehicleDetailsScreen extends ConsumerWidget {
                 onUpdateConfig: controller.updateConfig,
                 apiBaseUrl: apiBaseUrl,
               ),
+              const SizedBox(height: OpenVtsSpacing.lg),
             ] else
               const OpenVtsEmptyState(
                 title: 'Vehicle unavailable',
@@ -171,6 +195,14 @@ class AdminVehicleDetailsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _close() {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    context.go(RoutePaths.adminVehicles);
   }
 
   Future<void> _onAction(
@@ -186,7 +218,7 @@ class AdminVehicleDetailsScreen extends ConsumerWidget {
   }
 
   Future<void> _openEditSheet(BuildContext context, WidgetRef ref) async {
-    final provider = adminVehicleDetailsControllerProvider(vehicleId);
+    final provider = adminVehicleDetailsControllerProvider(widget.vehicleId);
     final state = ref.read(provider);
     final vehicle = state.vehicle;
     if (vehicle == null) return;
@@ -225,7 +257,7 @@ class AdminVehicleDetailsScreen extends ConsumerWidget {
   }
 
   Future<void> _toggleStatus(BuildContext context, WidgetRef ref) async {
-    final provider = adminVehicleDetailsControllerProvider(vehicleId);
+    final provider = adminVehicleDetailsControllerProvider(widget.vehicleId);
     final state = ref.read(provider);
     final vehicle = state.vehicle;
     if (vehicle == null) return;
@@ -255,6 +287,7 @@ class AdminVehicleDetailsScreen extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: TextButton.styleFrom(foregroundColor: OpenVtsColors.error),
             child: const Text('Delete'),
           ),
         ],
@@ -263,7 +296,7 @@ class AdminVehicleDetailsScreen extends ConsumerWidget {
 
     if (confirmed != true) return;
 
-    final detailsProvider = adminVehicleDetailsControllerProvider(vehicleId);
+    final detailsProvider = adminVehicleDetailsControllerProvider(widget.vehicleId);
     await ref.read(detailsProvider.notifier).deleteVehicle();
     final next = ref.read(detailsProvider);
     if (!context.mounted) return;
@@ -283,55 +316,400 @@ class AdminVehicleDetailsScreen extends ConsumerWidget {
   }
 }
 
+enum _HeaderMenuAction {
+  refresh,
+  edit,
+  toggleStatus,
+  delete,
+}
+
+class _HeaderMenu extends StatelessWidget {
+  const _HeaderMenu({
+    required this.isBusy,
+    required this.onRefresh,
+    required this.onEdit,
+    required this.onToggleStatus,
+    required this.onDelete,
+  });
+
+  final bool isBusy;
+  final VoidCallback onRefresh;
+  final VoidCallback onEdit;
+  final VoidCallback onToggleStatus;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<_HeaderMenuAction>(
+      tooltip: 'Vehicle actions',
+      enabled: !isBusy,
+      icon: const Icon(
+        Icons.more_vert_rounded,
+        size: 20,
+        color: OpenVtsColors.textSecondary,
+      ),
+      onSelected: (action) {
+        switch (action) {
+          case _HeaderMenuAction.refresh:
+            onRefresh();
+          case _HeaderMenuAction.edit:
+            onEdit();
+          case _HeaderMenuAction.toggleStatus:
+            onToggleStatus();
+          case _HeaderMenuAction.delete:
+            onDelete();
+        }
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: _HeaderMenuAction.refresh,
+          height: 40,
+          child: _MenuRow(icon: Icons.refresh_rounded, label: 'Refresh'),
+        ),
+        const PopupMenuItem(
+          value: _HeaderMenuAction.edit,
+          height: 40,
+          child: _MenuRow(icon: Icons.edit_outlined, label: 'Edit'),
+        ),
+        const PopupMenuItem(
+          value: _HeaderMenuAction.toggleStatus,
+          height: 40,
+          child: _MenuRow(
+            icon: Icons.toggle_off_outlined,
+            label: 'Toggle Status',
+          ),
+        ),
+        const PopupMenuDivider(height: 8),
+        const PopupMenuItem(
+          value: _HeaderMenuAction.delete,
+          height: 40,
+          child: _MenuRow(
+            icon: Icons.delete_outline_rounded,
+            label: 'Delete',
+            isDestructive: true,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MenuRow extends StatelessWidget {
+  const _MenuRow({
+    required this.icon,
+    required this.label,
+    this.isDestructive = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool isDestructive;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDestructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: color),
+        const SizedBox(width: OpenVtsSpacing.xs),
+        Text(
+          label,
+          style: OpenVtsTypography.label.copyWith(color: color),
+        ),
+      ],
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({required this.isActive});
+
+  final bool isActive;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isActive ? OpenVtsColors.brandInk : OpenVtsColors.textTertiary;
+    return _MicroChip(
+      label: isActive ? 'Active' : 'Inactive',
+      icon: isActive ? Icons.check_circle_outline_rounded : Icons.pause_circle_outline_rounded,
+      color: color,
+    );
+  }
+}
+
+class _MicroChip extends StatelessWidget {
+  const _MicroChip({
+    required this.label,
+    required this.icon,
+    required this.color,
+  });
+
+  final String label;
+  final IconData icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+        border: Border.all(color: color.withValues(alpha: 0.22)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 11, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: OpenVtsTypography.meta.copyWith(
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({required this.vehicle});
+  const _SummaryCard({
+    required this.vehicle,
+    required this.isSyncing,
+  });
 
   final AdminVehicleDetails vehicle;
+  final bool isSyncing;
 
   @override
   Widget build(BuildContext context) {
     return OpenVtsCard(
+      padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.directions_car_filled_rounded, size: 28),
-              const SizedBox(width: OpenVtsSpacing.xs),
+              Container(
+                height: 44,
+                width: 44,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: OpenVtsColors.surface,
+                ),
+                child: const Icon(
+                  Icons.directions_car_filled_rounded,
+                  size: 24,
+                  color: OpenVtsColors.textPrimary,
+                ),
+              ),
+              const SizedBox(width: OpenVtsSpacing.sm),
               Expanded(
-                child: Text(
-                  vehicle.name.isEmpty ? 'Untitled Vehicle' : vehicle.name,
-                  style: Theme.of(context).textTheme.titleMedium,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      vehicle.name.isEmpty ? 'Untitled Vehicle' : vehicle.name,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: OpenVtsColors.textPrimary,
+                        height: 1.2,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (vehicle.plateNumber.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        vehicle.plateNumber,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: OpenVtsColors.textSecondary,
+                          height: 1.2,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
                 ),
               ),
-              OpenVtsStatusChip(
-                label: vehicle.isActive ? 'Active' : 'Inactive',
-                type: vehicle.isActive
-                    ? OpenVtsStatusType.success
-                    : OpenVtsStatusType.warning,
+              const SizedBox(width: OpenVtsSpacing.sm),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  _StatusChip(isActive: vehicle.isActive),
+                  if (vehicle.isLicenseBlocked) ...[
+                    const SizedBox(height: 4),
+                    const _MicroChip(
+                      label: 'License Blocked',
+                      icon: Icons.lock_outline_rounded,
+                      color: OpenVtsColors.error,
+                    ),
+                  ],
+                ],
               ),
-              if (vehicle.isLicenseBlocked) ...[
-                const SizedBox(width: OpenVtsSpacing.xs),
-                const OpenVtsStatusChip(
-                  label: 'License Blocked',
-                  type: OpenVtsStatusType.error,
-                ),
-              ],
             ],
           ),
-          const SizedBox(height: OpenVtsSpacing.xs),
-          Text('Plate: ${_safe(vehicle.plateNumber)}'),
-          Text('VIN: ${_safe(vehicle.vin)}'),
-          Text('IMEI: ${_safe(vehicle.imei)}'),
-          Text('SIM: ${_safe(vehicle.simNumber)}'),
-          Text('Vehicle Type: ${_safe(vehicle.vehicleType?.name ?? '')}'),
-          Text('Primary User: ${_safe(vehicle.primaryUser?.name ?? '')}'),
+          if (vehicle.imei.isNotEmpty || vehicle.simNumber.isNotEmpty) ...[
+            const SizedBox(height: OpenVtsSpacing.sm),
+            if (vehicle.imei.isNotEmpty)
+              _CompactInfoLine(icon: Icons.device_hub_outlined, value: vehicle.imei),
+            if (vehicle.imei.isNotEmpty && vehicle.simNumber.isNotEmpty)
+              const SizedBox(height: 4),
+            if (vehicle.simNumber.isNotEmpty)
+              _CompactInfoLine(icon: Icons.sim_card_outlined, value: vehicle.simNumber),
+          ],
+          const SizedBox(height: OpenVtsSpacing.md),
+          const Divider(height: 1, color: OpenVtsColors.border),
+          const SizedBox(height: OpenVtsSpacing.md),
+          Row(
+            children: [
+              Expanded(
+                child: _MetricTile(
+                  icon: Icons.badge_outlined,
+                  label: 'Type',
+                  value: _displayValue(vehicle.vehicleType?.name ?? ''),
+                ),
+              ),
+              const SizedBox(width: OpenVtsSpacing.sm),
+              if (isSyncing)
+                const Expanded(
+                  child: Center(
+                    child: SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                )
+              else
+                Expanded(
+                  child: _MetricTile(
+                    icon: Icons.person_outline_rounded,
+                    label: 'Primary User',
+                    value: vehicle.primaryUser?.displayName.isNotEmpty == true
+                        ? vehicle.primaryUser!.displayName
+                        : '-',
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  String _safe(String value) => value.trim().isEmpty ? '-' : value;
+  String _displayValue(String value) {
+    final normalized = value.trim();
+    if (normalized.isEmpty || normalized == '-') {
+      return '-';
+    }
+    return normalized;
+  }
+}
+
+class _CompactInfoLine extends StatelessWidget {
+  const _CompactInfoLine({required this.icon, required this.value});
+
+  final IconData icon;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xxs),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
+          const SizedBox(width: OpenVtsSpacing.xs),
+          Expanded(
+            child: Text(
+              _displayValue(value),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: OpenVtsTypography.meta.copyWith(
+                color: OpenVtsColors.textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _displayValue(String value) {
+    final normalized = value.trim();
+    if (normalized.isEmpty || normalized == '-') {
+      return '-';
+    }
+    return normalized;
+  }
+}
+
+class _MetricTile extends StatelessWidget {
+  const _MetricTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: OpenVtsSpacing.sm,
+        vertical: OpenVtsSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: OpenVtsColors.background,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+        border: Border.all(color: OpenVtsColors.border.withValues(alpha: 0.7)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
+          const SizedBox(width: OpenVtsSpacing.xs),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: OpenVtsColors.textSecondary,
+                      ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _TabChips extends StatelessWidget {
@@ -373,6 +751,7 @@ class _TabChips extends StatelessWidget {
 class _TabBody extends StatelessWidget {
   const _TabBody({
     required this.state,
+    required this.displayVehicle,
     required this.onEdit,
     required this.onToggleStatus,
     required this.onDelete,
@@ -403,6 +782,7 @@ class _TabBody extends StatelessWidget {
   });
 
   final AdminVehicleDetailsState state;
+  final AdminVehicleDetails? displayVehicle;
   final VoidCallback onEdit;
   final VoidCallback onToggleStatus;
   final VoidCallback onDelete;
@@ -453,7 +833,7 @@ class _TabBody extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (state.selectedTab) {
       case AdminVehicleDetailsTab.details:
-        final vehicle = state.vehicle;
+        final vehicle = displayVehicle ?? state.vehicle;
         if (vehicle == null) {
           return const OpenVtsEmptyState(
             title: 'No details',

@@ -336,12 +336,13 @@ class MobilePushService {
     }
 
     final response = await _apiClient.post<dynamic>(
-      ApiEndpoints.user.testFcmMe,
+      ApiEndpoints.auth.pushTest,
       data: <String, dynamic>{
         'platform': platform.apiValue,
         'title': 'OpenVTS Mobile Test',
         'body': 'Mobile push notifications are working.',
       },
+      options: _mobilePushApiOptions(),
       parser: (json) => json,
     );
 

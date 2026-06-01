@@ -40,20 +40,14 @@ class AdminVehicleListItem {
   final AdminVehicleUserMini? primaryUser;
 
   String get vehicleTypeName => vehicleType?.name ?? '';
-  String get primaryUserName => primaryUser?.name ?? '';
+  String get primaryUserName => primaryUser?.displayName ?? '';
 
   factory AdminVehicleListItem.fromJson(dynamic json) {
     final source = _extractMapPayload(json);
     final deviceMap = _firstMap(source, const ['device', 'tracker', 'unit']);
     final typeMap =
         _firstMap(source, const ['vehicleType', 'vehicle_type', 'vehicletype']);
-    final primaryUserMap = _firstMap(source, const [
-      'primaryUser',
-      'primary_user',
-      'userPrimary',
-      'user_primary',
-      'owner'
-    ]);
+    final primaryUserMap = _resolvePrimaryUserMap(source);
 
     final id = _firstString(source, const ['id', '_id', 'vehicleId']) ?? '';
     final plateNumber = _firstString(source,
@@ -92,7 +86,20 @@ class AdminVehicleListItem {
               source, const ['licenseBlockReason', 'license_block_reason']) ??
           '',
       createdAt: _firstDate(source, const ['createdAt', 'created_at']),
-      updatedAt: _firstDate(source, const ['updatedAt', 'updated_at']),
+      updatedAt: _firstDate(source, const [
+        'updatedAt',
+        'updated_at',
+        'updated',
+        'modifiedAt',
+        'modified_at',
+        'lastUpdated',
+        'last_updated',
+        'updatedOn',
+        'updated_on',
+        'timestamp',
+        'updatedDate',
+        'updated_date',
+      ]),
       imei: imei,
       simNumber: simNumber,
       vehicleType:
@@ -152,18 +159,52 @@ class AdminVehicleDetails {
   final Map<String, dynamic> vehicleMeta;
   final AdminVehiclePlanMini? plan;
 
+  AdminVehicleDetails copyWith({
+    String? id,
+    String? name,
+    String? vin,
+    String? plateNumber,
+    bool? isActive,
+    bool? isLicenseBlocked,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? imei,
+    String? simNumber,
+    AdminVehicleTypeMini? vehicleType,
+    String? vehicleTypeId,
+    AdminVehicleDeviceMini? device,
+    AdminVehicleUserMini? primaryUser,
+    String? gmtOffset,
+    Map<String, dynamic>? vehicleMeta,
+    AdminVehiclePlanMini? plan,
+  }) {
+    return AdminVehicleDetails(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      vin: vin ?? this.vin,
+      plateNumber: plateNumber ?? this.plateNumber,
+      isActive: isActive ?? this.isActive,
+      isLicenseBlocked: isLicenseBlocked ?? this.isLicenseBlocked,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      imei: imei ?? this.imei,
+      simNumber: simNumber ?? this.simNumber,
+      vehicleType: vehicleType ?? this.vehicleType,
+      vehicleTypeId: vehicleTypeId ?? this.vehicleTypeId,
+      device: device ?? this.device,
+      primaryUser: primaryUser ?? this.primaryUser,
+      gmtOffset: gmtOffset ?? this.gmtOffset,
+      vehicleMeta: vehicleMeta ?? this.vehicleMeta,
+      plan: plan ?? this.plan,
+    );
+  }
+
   factory AdminVehicleDetails.fromJson(dynamic json, {String? fallbackId}) {
     final source = _extractMapPayload(json);
     final deviceMap = _firstMap(source, const ['device', 'tracker', 'unit']);
     final typeMap =
         _firstMap(source, const ['vehicleType', 'vehicle_type', 'vehicletype']);
-    final primaryUserMap = _firstMap(source, const [
-      'primaryUser',
-      'primary_user',
-      'userPrimary',
-      'user_primary',
-      'owner'
-    ]);
+    final primaryUserMap = _resolvePrimaryUserMap(source);
     final planMap =
         _firstMap(source, const ['plan', 'pricingPlan', 'pricing_plan']);
 
@@ -184,7 +225,20 @@ class AdminVehicleDetails {
           ]) ??
           false,
       createdAt: _firstDate(source, const ['createdAt', 'created_at']),
-      updatedAt: _firstDate(source, const ['updatedAt', 'updated_at']),
+      updatedAt: _firstDate(source, const [
+        'updatedAt',
+        'updated_at',
+        'updated',
+        'modifiedAt',
+        'modified_at',
+        'lastUpdated',
+        'last_updated',
+        'updatedOn',
+        'updated_on',
+        'timestamp',
+        'updatedDate',
+        'updated_date',
+      ]),
       imei: _firstString(source, const ['imei']) ??
           _firstString(
               deviceMap ?? const <String, dynamic>{}, const ['imei']) ??
@@ -317,6 +371,9 @@ class AdminVehicleUserMini {
     required this.mobilePrefix,
     required this.mobileNumber,
     required this.mobileDisplay,
+    this.isPrimary = false,
+    this.isActive = true,
+    this.assignedAt,
   });
 
   final String uid;
@@ -327,9 +384,20 @@ class AdminVehicleUserMini {
   final String mobilePrefix;
   final String mobileNumber;
   final String mobileDisplay;
+  final bool isPrimary;
+  final bool isActive;
+  final DateTime? assignedAt;
+
+  String get displayName {
+    for (final value in [name, username, email, mobileDisplay, id, uid]) {
+      final trimmed = value.trim();
+      if (trimmed.isNotEmpty) return trimmed;
+    }
+    return '';
+  }
 
   factory AdminVehicleUserMini.fromJson(dynamic json) {
-    final source = _extractMapPayload(json);
+    final source = _unwrapUserRelationMap(_extractMapPayload(json));
     final uid = _firstString(source, const [
           'uid',
           'userId',
@@ -407,6 +475,29 @@ class AdminVehicleUserMini {
           [prefix.trim(), number.trim()]
               .where((part) => part.isNotEmpty)
               .join(' '),
+      isPrimary: _firstBool(source, const [
+            'isPrimary',
+            'is_primary',
+            'primary',
+            'isOwner',
+            'is_owner',
+          ]) ??
+          false,
+      isActive: _firstBool(source, const [
+            'isActive',
+            'is_active',
+            'status',
+            'active',
+          ]) ??
+          true,
+      assignedAt: _firstDate(source, const [
+        'assignedAt',
+        'assigned_at',
+        'linkedAt',
+        'linked_at',
+        'createdAt',
+        'created_at',
+      ]),
     );
   }
 
@@ -1018,4 +1109,124 @@ DateTime? _firstDate(Map<String, dynamic> source, List<String> keys) {
     ).toLocal();
   }
   return DateTime.tryParse(value.toString().trim())?.toLocal();
+}
+
+Map<String, dynamic>? _resolvePrimaryUserMap(Map<String, dynamic> source) {
+  final direct = _firstMap(source, const [
+    'primaryUser',
+    'primary_user',
+    'userPrimary',
+    'user_primary',
+    'owner',
+    'user',
+    'User',
+    'assignedUser',
+    'assigned_user',
+    'userDetails',
+    'user_details',
+  ]);
+  if (direct != null && direct.isNotEmpty) {
+    return _unwrapUserRelationMap(direct);
+  }
+
+  final primaryUserId = _firstString(source, const [
+    'primaryUserId',
+    'primary_user_id',
+    'primaryUserid',
+    'primary_userid',
+    'userId',
+    'user_id',
+  ]);
+
+  final relationLists = <List<dynamic>>[
+    ...[
+      'users',
+      'Users',
+      'linkedUsers',
+      'linked_users',
+      'userslist',
+      'usersList',
+      'vehicleUsers',
+      'vehicle_users',
+      'assignedUsers',
+      'assigned_users',
+      'userVehicles',
+      'user_vehicles',
+    ].map((key) => source[key]).whereType<List>(),
+  ];
+
+  for (final list in relationLists) {
+    for (final item in list) {
+      final relation = _asMap(item);
+      if (relation.isEmpty) continue;
+
+      final isPrimary = _firstBool(relation, const [
+        'isPrimary',
+        'is_primary',
+        'primary',
+        'isOwner',
+        'is_owner',
+      ]) ?? false;
+
+      final relationUserId = _firstString(relation, const [
+        'id',
+        '_id',
+        'uid',
+        'userId',
+        'user_id',
+        'primaryUserId',
+        'primary_user_id',
+      ]);
+
+      final nestedUser = _unwrapUserRelationMap(relation);
+
+      if (isPrimary) return nestedUser;
+      if (primaryUserId != null &&
+          primaryUserId.isNotEmpty &&
+          relationUserId == primaryUserId) {
+        return nestedUser;
+      }
+
+      final nestedUserId = _firstString(nestedUser, const [
+        'id',
+        '_id',
+        'uid',
+        'userId',
+        'user_id',
+      ]);
+
+      if (primaryUserId != null &&
+          primaryUserId.isNotEmpty &&
+          nestedUserId == primaryUserId) {
+        return nestedUser;
+      }
+    }
+
+    if (list.length == 1) {
+      final onlyUser = _unwrapUserRelationMap(_asMap(list.first));
+      if (onlyUser.isNotEmpty) return onlyUser;
+    }
+  }
+
+  return null;
+}
+
+Map<String, dynamic> _unwrapUserRelationMap(Map<String, dynamic> source) {
+  for (final key in const [
+    'user',
+    'User',
+    'primaryUser',
+    'primary_user',
+    'userPrimary',
+    'user_primary',
+    'assignedUser',
+    'assigned_user',
+    'userDetails',
+    'user_details',
+    'owner',
+  ]) {
+    final nested = _asMap(source[key]);
+    if (nested.isNotEmpty) return nested;
+  }
+  return source;
 }

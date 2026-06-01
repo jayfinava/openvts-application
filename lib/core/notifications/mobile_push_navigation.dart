@@ -33,6 +33,7 @@ class MobilePushNavigation {
       return;
     }
 
+    await _markNotificationReadIfPossible(message, authState.activeRole!);
     await _navigateForMessage(message, authState.activeRole!);
   }
 
@@ -74,6 +75,43 @@ class MobilePushNavigation {
         _ref.invalidate(userNotificationUnreadBadgeProvider);
       case null:
         return;
+    }
+  }
+
+  Future<void> _markNotificationReadIfPossible(
+    MobilePushMessage message,
+    UserRole activeRole,
+  ) async {
+    final notificationIdStr = message.notificationId;
+    if (notificationIdStr == null || notificationIdStr.isEmpty) {
+      return;
+    }
+
+    final notificationId = int.tryParse(notificationIdStr.trim());
+    if (notificationId == null || notificationId <= 0) {
+      return;
+    }
+
+    try {
+      switch (activeRole) {
+        case UserRole.superadmin:
+          await _ref
+              .read(superadminNotificationServiceProvider)
+              .markAsRead(notificationId);
+        case UserRole.admin:
+          await _ref
+              .read(adminNotificationServiceProvider)
+              .markAsRead(notificationId);
+        case UserRole.user:
+          await _ref
+              .read(userNotificationServiceProvider)
+              .markAsRead(notificationId);
+      }
+
+      // Refresh notification center and badge after marking as read
+      refreshActiveNotificationCenter();
+    } catch (_) {
+      // Non-blocking: do not interrupt navigation on mark-read failure
     }
   }
 
@@ -146,6 +184,11 @@ class MobilePushNavigation {
   }
 
   String _resolveTargetRoute(MobilePushMessage message, UserRole activeRole) {
+    // MANUAL_NOTIFY always routes to the active role's notification center
+    if (message.type == 'MANUAL_NOTIFY') {
+      return _notificationCenterRouteForRole(activeRole);
+    }
+
     final explicitRoute = _normalizeRoute(message.route);
     if (explicitRoute != null && _isSafeKnownRoute(explicitRoute, activeRole)) {
       return explicitRoute;
