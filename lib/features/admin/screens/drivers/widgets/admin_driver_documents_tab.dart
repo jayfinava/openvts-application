@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../core/config/app_config.dart';
 import '../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
@@ -172,23 +173,39 @@ class _DocCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final f = const DateTimeFormatter();
     return OpenVtsCard(
-      padding: const EdgeInsets.all(OpenVtsSpacing.sm),
+      padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Text(
-                  doc.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: OpenVtsTypography.label.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      doc.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: OpenVtsTypography.label.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      doc.docTypeName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: OpenVtsTypography.meta.copyWith(
+                        color: OpenVtsColors.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               PopupMenuButton<_DocAction>(
+                tooltip: 'Document actions',
                 onSelected: (value) {
                   switch (value) {
                     case _DocAction.view:
@@ -202,35 +219,147 @@ class _DocCard extends StatelessWidget {
                       break;
                   }
                 },
-                itemBuilder: (context) => const [
-                  PopupMenuItem(
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
                     value: _DocAction.view,
-                    child: Text('View/Download'),
+                    child: _MenuRow(
+                        icon: Icons.download_rounded, label: 'View/Download'),
                   ),
-                  PopupMenuItem(value: _DocAction.edit, child: Text('Edit')),
-                  PopupMenuItem(
+                  const PopupMenuItem(
+                    value: _DocAction.edit,
+                    child: _MenuRow(icon: Icons.edit_outlined, label: 'Edit'),
+                  ),
+                  const PopupMenuDivider(height: 8),
+                  const PopupMenuItem(
                     value: _DocAction.delete,
-                    child: Text('Delete'),
+                    child: _MenuRow(
+                      icon: Icons.delete_outline_rounded,
+                      label: 'Delete',
+                      isDestructive: true,
+                    ),
                   ),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: OpenVtsSpacing.xxs),
-          Text('Type: ${doc.docTypeName}', style: OpenVtsTypography.meta),
-          Text('Status: ${doc.status}', style: OpenVtsTypography.meta),
-          Text('File: ${doc.fileName}', style: OpenVtsTypography.meta),
-          Text(
-            'Uploaded: ${doc.createdAt == null ? '-' : f.formatDate(doc.createdAt!)}',
-            style: OpenVtsTypography.meta,
+          const SizedBox(height: OpenVtsSpacing.sm),
+          Wrap(
+            spacing: OpenVtsSpacing.xs,
+            runSpacing: OpenVtsSpacing.xs,
+            children: [
+              _MetaPill(
+                icon: Icons.info_outline_rounded,
+                label: doc.status,
+                color: _statusColor(doc.status),
+              ),
+              _MetaPill(
+                icon: Icons.insert_drive_file_outlined,
+                label: doc.fileName,
+                color: OpenVtsColors.textSecondary,
+              ),
+              if (doc.createdAt != null)
+                _MetaPill(
+                  icon: Icons.calendar_today_rounded,
+                  label: f.formatDate(doc.createdAt!),
+                  color: OpenVtsColors.textSecondary,
+                ),
+              if (doc.expiryAt != null)
+                _MetaPill(
+                  icon: Icons.event_busy_rounded,
+                  label: f.formatDate(doc.expiryAt!),
+                  color: OpenVtsColors.warning,
+                ),
+              _MetaPill(
+                icon: doc.isVisible
+                    ? Icons.visibility_rounded
+                    : Icons.visibility_off_rounded,
+                label: doc.isVisible ? 'Visible' : 'Hidden',
+                color: OpenVtsColors.textSecondary,
+              ),
+            ],
           ),
+        ],
+      ),
+    );
+  }
+
+  Color _statusColor(String status) {
+    final lower = status.toLowerCase();
+    if (lower.contains('approve') || lower.contains('valid')) {
+      return OpenVtsColors.success;
+    }
+    if (lower.contains('reject') || lower.contains('fail')) {
+      return OpenVtsColors.error;
+    }
+    if (lower.contains('pend') || lower.contains('review')) {
+      return OpenVtsColors.warning;
+    }
+    return OpenVtsColors.textSecondary;
+  }
+}
+
+class _MenuRow extends StatelessWidget {
+  const _MenuRow({
+    required this.icon,
+    required this.label,
+    this.isDestructive = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool isDestructive;
+
+  @override
+  Widget build(BuildContext context) {
+    final color =
+        isDestructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: color),
+        const SizedBox(width: OpenVtsSpacing.xs),
+        Text(
+          label,
+          style: OpenVtsTypography.label.copyWith(color: color),
+        ),
+      ],
+    );
+  }
+}
+
+class _MetaPill extends StatelessWidget {
+  const _MetaPill({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+        border: Border.all(color: color.withValues(alpha: 0.22)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
           Text(
-            'Expiry: ${doc.expiryAt == null ? '-' : f.formatDate(doc.expiryAt!)}',
-            style: OpenVtsTypography.meta,
-          ),
-          Text(
-            'Visibility: ${doc.isVisible ? 'Visible' : 'Hidden'}',
-            style: OpenVtsTypography.meta,
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: OpenVtsTypography.meta.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 10,
+            ),
           ),
         ],
       ),

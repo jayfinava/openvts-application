@@ -270,7 +270,9 @@ class _TeamBody extends StatelessWidget {
                         );
                       }
 
-                      return AdminTeamCard(team: visible[index]);
+                      return AdminTeamCard(
+                        team: visible[index],
+                      );
                     },
                   ),
           ),

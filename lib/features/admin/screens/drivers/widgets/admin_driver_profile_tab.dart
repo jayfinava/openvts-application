@@ -4,12 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
+import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
+import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../controllers/admin_driver_details_controller.dart';
 import '../../../models/admin_driver_details_model.dart';
 import '../../../models/admin_driver_details_state.dart';
+import 'admin_driver_edit_sheet.dart';
+import 'admin_driver_password_sheet.dart';
 
 class AdminDriverProfileTab extends ConsumerWidget {
   const AdminDriverProfileTab({
@@ -35,6 +39,8 @@ class AdminDriverProfileTab extends ConsumerWidget {
       );
     }
 
+    final isBusy = state.isSavingProfile || state.isUpdatingPassword;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -59,18 +65,72 @@ class AdminDriverProfileTab extends ConsumerWidget {
           },
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
-        _LocationCard(driver: driver),
-        const SizedBox(height: OpenVtsSpacing.sm),
-        _TimelineCard(driver: driver),
         if (driver.attributes.isNotEmpty) ...[
-          const SizedBox(height: OpenVtsSpacing.sm),
           _AdditionalAttributesCard(attributes: driver.attributes),
+          const SizedBox(height: OpenVtsSpacing.sm),
         ],
+        const SizedBox(height: OpenVtsSpacing.xs),
+        _DriverProfileBottomActions(
+          isBusy: isBusy,
+          onEditProfile: () => _openEditProfile(context),
+          onChangePassword: () => _openChangePassword(context),
+        ),
         const SizedBox(height: OpenVtsSpacing.lg),
       ],
     );
   }
+
+  Future<void> _openEditProfile(BuildContext context) {
+    return showDriverEditSheet(context: context, provider: provider);
+  }
+
+  Future<void> _openChangePassword(BuildContext context) {
+    return showDriverPasswordSheet(context: context, provider: provider);
+  }
 }
+
+// =============================================================================
+// Bottom action buttons
+// =============================================================================
+
+class _DriverProfileBottomActions extends StatelessWidget {
+  const _DriverProfileBottomActions({
+    required this.isBusy,
+    required this.onEditProfile,
+    required this.onChangePassword,
+  });
+
+  final bool isBusy;
+  final VoidCallback onEditProfile;
+  final VoidCallback onChangePassword;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: OpenVtsButton(
+            label: 'Edit Profile',
+            variant: OpenVtsButtonVariant.secondary,
+            onPressed: isBusy ? null : onEditProfile,
+          ),
+        ),
+        const SizedBox(width: OpenVtsSpacing.sm),
+        Expanded(
+          child: OpenVtsButton(
+            label: 'Change Password',
+            variant: OpenVtsButtonVariant.secondary,
+            onPressed: isBusy ? null : onChangePassword,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// =============================================================================
+// Shared display components
+// =============================================================================
 
 class _SectionCard extends StatelessWidget {
   const _SectionCard(
@@ -143,24 +203,21 @@ class _InfoRow extends StatelessWidget {
             const SizedBox(width: 8),
           ],
           SizedBox(
-            width: 96,
+            width: 108,
             child: Text(
               label,
-              style: const TextStyle(
-                fontSize: 11,
+              style: OpenVtsTypography.meta.copyWith(
                 color: OpenVtsColors.textTertiary,
-                height: 1.3,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value.trim().isEmpty ? '—' : value,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+              style: OpenVtsTypography.label.copyWith(
                 color: valueColor ?? OpenVtsColors.textPrimary,
-                height: 1.3,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -170,29 +227,41 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-class _StatusBadge extends StatelessWidget {
-  const _StatusBadge({required this.isActive});
-  final bool isActive;
+class _DriverAvatar extends StatelessWidget {
+  const _DriverAvatar({required this.name});
+
+  final String name;
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? OpenVtsColors.success : OpenVtsColors.textTertiary;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: color.withValues(alpha: 0.25)),
+        color: OpenVtsColors.brandInk,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       ),
+      alignment: Alignment.center,
       child: Text(
-        isActive ? 'Active' : 'Inactive',
-        style: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w600,
-          color: color,
+        _initials(name),
+        style: OpenVtsTypography.label.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
+  }
+
+  static String _initials(String value) {
+    final parts =
+        value.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return 'OV';
+    if (parts.length == 1) {
+      return parts.first
+          .substring(0, parts.first.length.clamp(1, 2))
+          .toUpperCase();
+    }
+    return (parts.first[0] + parts.last[0]).toUpperCase();
   }
 }
 
@@ -209,83 +278,13 @@ class _IdentityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _SectionCard(
-      title: 'IDENTITY',
-      trailing: _StatusBadge(isActive: driver.isActive),
-      children: [
-        _InfoRow(
-            label: 'Name',
-            value: driver.name,
-            icon: Icons.person_outline_rounded),
-        _InfoRow(
-            label: 'Username',
-            value: driver.username,
-            icon: Icons.alternate_email_rounded),
-        _InfoRow(
-            label: 'Email',
-            value: driver.email,
-            icon: Icons.mail_outline_rounded),
-        _InfoRow(
-            label: 'Phone', value: driver.phone, icon: Icons.phone_outlined),
-        const _InfoRow(
-          label: 'Role',
-          value: 'Driver',
-          icon: Icons.badge_outlined,
-        ),
-        _InfoRow(
-          label: 'Verified',
-          value: driver.isVerified ? 'Verified' : 'Unverified',
-          icon: Icons.verified_outlined,
-          valueColor: driver.isVerified
-              ? OpenVtsColors.success
-              : OpenVtsColors.textSecondary,
-        ),
-        const SizedBox(height: 6),
-        Row(
-          children: [
-            Icon(
-              driver.isActive
-                  ? Icons.toggle_on_rounded
-                  : Icons.toggle_off_outlined,
-              size: 16,
-              color: driver.isActive
-                  ? OpenVtsColors.success
-                  : OpenVtsColors.textTertiary,
-            ),
-            const SizedBox(width: 8),
-            const Text(
-              'Account status',
-              style: TextStyle(
-                fontSize: 11,
-                color: OpenVtsColors.textTertiary,
-              ),
-            ),
-            const Spacer(),
-            if (isUpdatingStatus)
-              const SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            else
-              Switch.adaptive(
-                value: driver.isActive,
-                onChanged: (_) => onToggleStatus(),
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _LocationCard extends StatelessWidget {
-  const _LocationCard({required this.driver});
-
-  final AdminDriverDetails driver;
-
-  @override
-  Widget build(BuildContext context) {
+    final formatter = const DateTimeFormatter();
+    final created = driver.createdAt != null
+        ? formatter.formatDate(driver.createdAt!)
+        : '—';
+    final updated = driver.updatedAt != null
+        ? formatter.formatDate(driver.updatedAt!)
+        : '—';
     final address = driver.address;
     final fullAddress = address.fullAddress.trim();
     final composedLine = [
@@ -297,19 +296,66 @@ class _LocationCard extends StatelessWidget {
     ].where((v) => v.trim().isNotEmpty && v.trim() != '-').join(', ');
 
     return _SectionCard(
-      title: 'LOCATION',
+      title: 'IDENTITY',
       children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),
+          child: Row(
+            children: [
+              _DriverAvatar(name: driver.name),
+              const SizedBox(width: OpenVtsSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      driver.name,
+                      style: OpenVtsTypography.label.copyWith(
+                        color: OpenVtsColors.textPrimary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '@${driver.username}',
+                      style: OpenVtsTypography.meta.copyWith(
+                        color: OpenVtsColors.textSecondary,
+                        fontSize: 11,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: OpenVtsSpacing.xs),
+              if (isUpdatingStatus)
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              else
+                SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: Switch.adaptive(
+                    value: driver.isActive,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    onChanged: (_) => onToggleStatus(),
+                  ),
+                ),
+            ],
+          ),
+        ),
         _InfoRow(
           label: 'Address',
           value: address.addressLine,
-          icon: Icons.home_work_outlined,
+          icon: Icons.home_outlined,
         ),
-        _InfoRow(
-            label: 'City',
-            value: address.cityId,
-            icon: Icons.location_city_outlined),
-        _InfoRow(
-            label: 'State', value: address.stateCode, icon: Icons.map_outlined),
         _InfoRow(
           label: 'Country',
           value: address.countryCode.isNotEmpty
@@ -318,9 +364,20 @@ class _LocationCard extends StatelessWidget {
           icon: Icons.public_outlined,
         ),
         _InfoRow(
-            label: 'Pincode',
-            value: address.pincode,
-            icon: Icons.pin_drop_outlined),
+          label: 'State',
+          value: address.stateCode,
+          icon: Icons.map_outlined,
+        ),
+        _InfoRow(
+          label: 'City',
+          value: address.cityId,
+          icon: Icons.location_city_outlined,
+        ),
+        _InfoRow(
+          label: 'Pincode',
+          value: address.pincode,
+          icon: Icons.local_post_office_outlined,
+        ),
         if (fullAddress.isNotEmpty &&
             fullAddress != '-' &&
             fullAddress != composedLine)
@@ -329,35 +386,77 @@ class _LocationCard extends StatelessWidget {
             value: fullAddress,
             icon: Icons.place_outlined,
           ),
-      ],
-    );
-  }
-}
-
-class _TimelineCard extends StatelessWidget {
-  const _TimelineCard({required this.driver});
-
-  final AdminDriverDetails driver;
-
-  @override
-  Widget build(BuildContext context) {
-    final formatter = const DateTimeFormatter();
-    return _SectionCard(
-      title: 'TIMELINE',
-      children: [
-        _InfoRow(
-          label: 'Created',
-          value: driver.createdAt == null
-              ? '—'
-              : formatter.formatDateTime(driver.createdAt!),
-          icon: Icons.event_available_outlined,
-        ),
-        _InfoRow(
-          label: 'Updated',
-          value: driver.updatedAt == null
-              ? '—'
-              : formatter.formatDateTime(driver.updatedAt!),
-          icon: Icons.update_outlined,
+        Padding(
+          padding: const EdgeInsets.only(top: OpenVtsSpacing.xs),
+          child: Row(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.event_outlined,
+                      size: 14,
+                      color: OpenVtsColors.textTertiary,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Created: ',
+                      style: OpenVtsTypography.meta.copyWith(
+                        color: OpenVtsColors.textTertiary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Flexible(
+                      child: Text(
+                        created,
+                        style: OpenVtsTypography.label.copyWith(
+                          color: OpenVtsColors.textSecondary,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: OpenVtsSpacing.xs),
+              Expanded(
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.update_outlined,
+                      size: 14,
+                      color: OpenVtsColors.textTertiary,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Updated: ',
+                      style: OpenVtsTypography.meta.copyWith(
+                        color: OpenVtsColors.textTertiary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Flexible(
+                      child: Text(
+                        updated,
+                        style: OpenVtsTypography.label.copyWith(
+                          color: OpenVtsColors.textSecondary,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

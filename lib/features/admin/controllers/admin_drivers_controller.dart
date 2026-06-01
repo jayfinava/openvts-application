@@ -94,6 +94,37 @@ class AdminDriversController extends StateNotifier<AdminDriversState> {
     return _service.getUsersForDriverPrimarySelection();
   }
 
+  Future<void> updateDriverStatus(String driverId, bool isActive) async {
+    final driverIndex = state.drivers.indexWhere((d) => d.id == driverId);
+    if (driverIndex == -1) return;
+
+    final previousDriver = state.drivers[driverIndex];
+    final updatingIds = {...state.updatingDriverIds, driverId};
+    state = state.copyWith(updatingDriverIds: updatingIds);
+
+    try {
+      await _service.updateDriverStatus(id: driverId, isActive: isActive);
+      if (!mounted) return;
+
+      final updatedDriver = previousDriver.copyWith(isActive: isActive);
+      final updatedDrivers = <AdminDriverListItem>[...state.drivers];
+      updatedDrivers[driverIndex] = updatedDriver;
+
+      state = _withFilteredDrivers(
+        state.copyWith(
+          drivers: updatedDrivers,
+          updatingDriverIds: updatingIds..remove(driverId),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      state = state.copyWith(
+        updatingDriverIds: updatingIds..remove(driverId),
+      );
+      rethrow;
+    }
+  }
+
   Future<void> deleteDriver(String driverId) async {
     await _service.deleteDriver(driverId);
     if (!mounted) return;

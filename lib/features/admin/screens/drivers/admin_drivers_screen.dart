@@ -249,7 +249,7 @@ class AdminDriversScreen extends ConsumerWidget {
   }
 }
 
-class _DriversBody extends StatelessWidget {
+class _DriversBody extends ConsumerWidget {
   const _DriversBody({
     required this.state,
     required this.controller,
@@ -267,7 +267,7 @@ class _DriversBody extends StatelessWidget {
   final void Function(AdminDriverListItem) onOpenDetails;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final filteredCount = state.filteredCount;
     final visible = state.visibleDrivers;
 
@@ -275,8 +275,7 @@ class _DriversBody extends StatelessWidget {
       children: [
         OpenVtsListPageHeaderCard(
           icon: Icons.badge_outlined,
-          countLabel:
-              '$filteredCount Driver${filteredCount == 1 ? '' : 's'}',
+          countLabel: '$filteredCount Driver${filteredCount == 1 ? '' : 's'}',
           createLabel: 'Add Driver',
           onCreate: onCreate,
           isCreateLoading: state.isCreating,
@@ -334,9 +333,22 @@ class _DriversBody extends StatelessWidget {
                       }
 
                       final driver = visible[index];
+                      final isUpdatingStatus =
+                          state.updatingDriverIds.contains(driver.id);
                       return AdminDriverCard(
                         driver: driver,
                         onTap: () => onOpenDetails(driver),
+                        isUpdatingStatus: isUpdatingStatus,
+                        onStatusChanged: isUpdatingStatus
+                            ? null
+                            : (nextValue) {
+                                _onDriverStatusChanged(
+                                  context,
+                                  driver.id,
+                                  nextValue,
+                                  ref,
+                                );
+                              },
                       );
                     },
                   ),
@@ -344,6 +356,29 @@ class _DriversBody extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _onDriverStatusChanged(
+    BuildContext context,
+    String driverId,
+    bool nextValue,
+    WidgetRef ref,
+  ) async {
+    try {
+      await controller.updateDriverStatus(driverId, nextValue);
+    } catch (_) {
+      if (context.mounted) {
+        final errorMsg =
+            ref.read(adminDriversControllerProvider).errorMessage ??
+                'Unable to update driver status.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMsg),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 }
 
