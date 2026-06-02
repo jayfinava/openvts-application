@@ -46,13 +46,6 @@ class AdminVehicleEventLogCard extends StatelessWidget {
                           ? OpenVtsStatusType.warning
                           : OpenVtsStatusType.info,
                 ),
-                const SizedBox(width: OpenVtsSpacing.xxs),
-                OpenVtsStatusChip(
-                  label: item.isRead ? 'Read' : 'Unread',
-                  type: item.isRead
-                      ? OpenVtsStatusType.success
-                      : OpenVtsStatusType.neutral,
-                ),
               ],
             ),
             const SizedBox(height: OpenVtsSpacing.xs),

@@ -49,6 +49,8 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
       );
     }
 
+    final filteredLogs = _applyVehicleReadFilter(state.vehicleLogs, state.vehicleReadFilter);
+
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
@@ -184,13 +186,13 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
           },
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
-        if (state.vehicleLogs.isEmpty)
+        if (filteredLogs.isEmpty)
           OpenVtsEmptyState(
             title: _emptyStateTitle(state.vehicleReadFilter),
             message: 'Try changing filters or search query.',
           )
         else ...[
-          for (final item in state.vehicleLogs) ...[
+          for (final item in filteredLogs) ...[
             AdminVehicleEventLogCard(
               item: item,
               onTap: () => OpenVtsBottomSheet.show<void>(
@@ -203,7 +205,7 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
                     AdminVehicleEventDetailSheet(id: item.id, fallback: item),
               ),
             ),
-            if (item != state.vehicleLogs.last)
+            if (item != filteredLogs.last)
               const SizedBox(height: OpenVtsSpacing.sm),
           ],
           if ((state.vehicleNextCursorId ?? '').isNotEmpty) ...[
@@ -235,6 +237,24 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
         return 'No read vehicle logs found';
       case AdminReadFilter.unread:
         return 'No unread vehicle logs found';
+    }
+  }
+
+  bool _isVehicleLogRead(AdminVehicleEventLogItem item) {
+    return item.isRead;
+  }
+
+  List<AdminVehicleEventLogItem> _applyVehicleReadFilter(
+    List<AdminVehicleEventLogItem> items,
+    AdminReadFilter filter,
+  ) {
+    switch (filter) {
+      case AdminReadFilter.all:
+        return items;
+      case AdminReadFilter.read:
+        return items.where((item) => _isVehicleLogRead(item)).toList();
+      case AdminReadFilter.unread:
+        return items.where((item) => !_isVehicleLogRead(item)).toList();
     }
   }
 }
