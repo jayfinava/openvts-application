@@ -180,23 +180,51 @@ class AdminTransactionsController
 
   _DateRange _resolveRange() {
     final now = DateTime.now();
-    if (state.rangePreset == AdminTransactionsRangePreset.thisMonth) {
-      return const _DateRange(null, null);
-    }
 
-    if (state.rangePreset == AdminTransactionsRangePreset.last30) {
-      final to = DateTime(now.year, now.month, now.day, 23, 59, 59);
-      final from = to.subtract(const Duration(days: 29));
-      return _DateRange(from, to);
-    }
+    switch (state.rangePreset) {
+      case AdminTransactionsRangePreset.today:
+        final start = DateTime(now.year, now.month, now.day, 0, 0, 0);
+        final end = DateTime(now.year, now.month, now.day, 23, 59, 59);
+        return _DateRange(start, end);
 
-    if (state.rangePreset == AdminTransactionsRangePreset.thisYear) {
-      final from = DateTime(now.year, 1, 1);
-      final to = DateTime(now.year, 12, 31, 23, 59, 59);
-      return _DateRange(from, to);
-    }
+      case AdminTransactionsRangePreset.yesterday:
+        final yesterday = now.subtract(const Duration(days: 1));
+        final start =
+            DateTime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0);
+        final end =
+            DateTime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59);
+        return _DateRange(start, end);
 
-    return _DateRange(state.customFrom, state.customTo);
+      case AdminTransactionsRangePreset.last12Hours:
+        final start = now.subtract(const Duration(hours: 12));
+        return _DateRange(start, now);
+
+      case AdminTransactionsRangePreset.last24Hours:
+        final start = now.subtract(const Duration(hours: 24));
+        return _DateRange(start, now);
+
+      case AdminTransactionsRangePreset.last7Days:
+        final start =
+            DateTime(now.year, now.month, now.day - 6, 0, 0, 0);
+        final end = DateTime(now.year, now.month, now.day, 23, 59, 59);
+        return _DateRange(start, end);
+
+      case AdminTransactionsRangePreset.last30Days:
+        final baseDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+        final start = baseDay.subtract(const Duration(days: 29));
+        return _DateRange(start, baseDay);
+
+      case AdminTransactionsRangePreset.thisMonth:
+        return const _DateRange(null, null);
+
+      case AdminTransactionsRangePreset.thisYear:
+        final from = DateTime(now.year, 1, 1);
+        final to = DateTime(now.year, 12, 31, 23, 59, 59);
+        return _DateRange(from, to);
+
+      case AdminTransactionsRangePreset.custom:
+        return _DateRange(state.customFrom, state.customTo);
+    }
   }
 
   String _fallbackKey(AdminTransaction item) {

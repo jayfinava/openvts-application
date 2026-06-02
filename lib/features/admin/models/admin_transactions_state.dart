@@ -1,6 +1,16 @@
 import 'admin_transactions_model.dart';
 
-enum AdminTransactionsRangePreset { thisMonth, last30, thisYear, custom }
+enum AdminTransactionsRangePreset {
+  today,
+  yesterday,
+  last12Hours,
+  last24Hours,
+  last7Days,
+  last30Days,
+  thisMonth,
+  thisYear,
+  custom,
+}
 
 class AdminTransactionsState {
   const AdminTransactionsState({

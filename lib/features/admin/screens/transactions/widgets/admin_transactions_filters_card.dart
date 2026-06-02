@@ -79,127 +79,7 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.md),
-          _section(
-            title: 'Status',
-            child: Wrap(
-              spacing: OpenVtsSpacing.xs,
-              runSpacing: OpenVtsSpacing.xs,
-              children: [
-                _chip(
-                  'All',
-                  state.selectedStatus == null,
-                  () => onStatusChanged(null),
-                ),
-                _chip(
-                  'Success',
-                  state.selectedStatus == AdminTransactionStatus.success,
-                  () => onStatusChanged(AdminTransactionStatus.success),
-                ),
-                _chip(
-                  'Pending',
-                  state.selectedStatus == AdminTransactionStatus.pending,
-                  () => onStatusChanged(AdminTransactionStatus.pending),
-                ),
-                _chip(
-                  'Failed',
-                  state.selectedStatus == AdminTransactionStatus.failed,
-                  () => onStatusChanged(AdminTransactionStatus.failed),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: OpenVtsSpacing.sm),
-          _section(
-            title: 'Payment Mode',
-            child: Wrap(
-              spacing: OpenVtsSpacing.xs,
-              runSpacing: OpenVtsSpacing.xs,
-              children: [
-                _chip(
-                  'All',
-                  state.selectedMode == null,
-                  () => onModeChanged(null),
-                ),
-                ...AdminPaymentMode.values.map(
-                  (mode) => _chip(
-                    mode.label,
-                    state.selectedMode == mode,
-                    () => onModeChanged(mode),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: OpenVtsSpacing.sm),
-          _section(
-            title: 'Payment Type',
-            child: Wrap(
-              spacing: OpenVtsSpacing.xs,
-              runSpacing: OpenVtsSpacing.xs,
-              children: [
-                _chip(
-                  'All',
-                  state.selectedType == null,
-                  () => onTypeChanged(null),
-                ),
-                _chip(
-                  'Credit',
-                  state.selectedType == AdminPaymentType.credit,
-                  () => onTypeChanged(AdminPaymentType.credit),
-                ),
-                _chip(
-                  'Debit',
-                  state.selectedType == AdminPaymentType.debit,
-                  () => onTypeChanged(AdminPaymentType.debit),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: OpenVtsSpacing.sm),
-          _section(
-            title: 'Date Range',
-            child: Wrap(
-              spacing: OpenVtsSpacing.xs,
-              runSpacing: OpenVtsSpacing.xs,
-              children: [
-                _chip(
-                  'This Month',
-                  state.rangePreset == AdminTransactionsRangePreset.thisMonth,
-                  () => onRangePresetChanged(
-                    AdminTransactionsRangePreset.thisMonth,
-                  ),
-                ),
-                _chip(
-                  'Last 30 Days',
-                  state.rangePreset == AdminTransactionsRangePreset.last30,
-                  () => onRangePresetChanged(AdminTransactionsRangePreset.last30),
-                ),
-                _chip(
-                  'This Year',
-                  state.rangePreset == AdminTransactionsRangePreset.thisYear,
-                  () => onRangePresetChanged(AdminTransactionsRangePreset.thisYear),
-                ),
-                _chip(
-                  'Custom',
-                  state.rangePreset == AdminTransactionsRangePreset.custom,
-                  () => onRangePresetChanged(AdminTransactionsRangePreset.custom),
-                ),
-              ],
-            ),
-          ),
-          if (state.rangePreset == AdminTransactionsRangePreset.custom) ...[
-            const SizedBox(height: OpenVtsSpacing.sm),
-            OpenVtsDateTimeRangeField(
-              label: 'Custom Range',
-              title: 'Choose Date Range',
-              value: OpenVtsDateTimeRange(
-                  start: state.customFrom, end: state.customTo),
-              firstDate: DateTime(2020),
-              lastDate: DateTime.now(),
-              onChanged: (range) =>
-                  onCustomRangeChanged(range.start, range.end),
-            ),
-          ],
+          _buildFilterFields(),
           const SizedBox(height: OpenVtsSpacing.md),
           Row(
             children: [
@@ -239,70 +119,230 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
     );
   }
 
-  Widget _section({
-    required String title,
-    required Widget child,
+  Widget _buildFilterFields() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 600;
+
+        if (isWide) {
+          return Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: _buildStatusDropdown()),
+                  const SizedBox(width: OpenVtsSpacing.sm),
+                  Expanded(child: _buildPaymentModeDropdown()),
+                ],
+              ),
+              const SizedBox(height: OpenVtsSpacing.sm),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: _buildPaymentTypeDropdown()),
+                  const SizedBox(width: OpenVtsSpacing.sm),
+                  Expanded(child: _buildDateRangeDropdown()),
+                ],
+              ),
+              if (state.rangePreset == AdminTransactionsRangePreset.custom) ...[
+                const SizedBox(height: OpenVtsSpacing.sm),
+                _buildCustomDateRangeField(),
+              ],
+            ],
+          );
+        } else {
+          return Column(
+            children: [
+              _buildStatusDropdown(),
+              const SizedBox(height: OpenVtsSpacing.sm),
+              _buildPaymentModeDropdown(),
+              const SizedBox(height: OpenVtsSpacing.sm),
+              _buildPaymentTypeDropdown(),
+              const SizedBox(height: OpenVtsSpacing.sm),
+              _buildDateRangeDropdown(),
+              if (state.rangePreset == AdminTransactionsRangePreset.custom) ...[
+                const SizedBox(height: OpenVtsSpacing.sm),
+                _buildCustomDateRangeField(),
+              ],
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildStatusDropdown() {
+    const options = [
+      _DropdownOption<AdminTransactionStatus?>(value: null, label: 'All'),
+      _DropdownOption(
+        value: AdminTransactionStatus.success,
+        label: 'Success',
+      ),
+      _DropdownOption(
+        value: AdminTransactionStatus.pending,
+        label: 'Pending',
+      ),
+      _DropdownOption(
+        value: AdminTransactionStatus.failed,
+        label: 'Failed',
+      ),
+    ];
+
+    return _buildDropdownField<AdminTransactionStatus?>(
+      label: 'Status',
+      value: state.selectedStatus,
+      options: options,
+      onChanged: onStatusChanged,
+    );
+  }
+
+  Widget _buildPaymentModeDropdown() {
+    final options = <_DropdownOption<AdminPaymentMode?>>[
+      const _DropdownOption<AdminPaymentMode?>(value: null, label: 'All'),
+      ...AdminPaymentMode.values.map((mode) => _DropdownOption(
+            value: mode,
+            label: mode.label,
+          )),
+    ];
+
+    return _buildDropdownField<AdminPaymentMode?>(
+      label: 'Payment Mode',
+      value: state.selectedMode,
+      options: options,
+      onChanged: onModeChanged,
+    );
+  }
+
+  Widget _buildPaymentTypeDropdown() {
+    const options = [
+      _DropdownOption<AdminPaymentType?>(value: null, label: 'All'),
+      _DropdownOption(value: AdminPaymentType.credit, label: 'Credit'),
+      _DropdownOption(value: AdminPaymentType.debit, label: 'Debit'),
+    ];
+
+    return _buildDropdownField<AdminPaymentType?>(
+      label: 'Payment Type',
+      value: state.selectedType,
+      options: options,
+      onChanged: onTypeChanged,
+    );
+  }
+
+  Widget _buildDateRangeDropdown() {
+    const options = [
+      _DropdownOption(
+        value: AdminTransactionsRangePreset.today,
+        label: 'Today',
+      ),
+      _DropdownOption(
+        value: AdminTransactionsRangePreset.yesterday,
+        label: 'Yesterday',
+      ),
+      _DropdownOption(
+        value: AdminTransactionsRangePreset.last12Hours,
+        label: 'Last 12 Hours',
+      ),
+      _DropdownOption(
+        value: AdminTransactionsRangePreset.last24Hours,
+        label: 'Last 24 Hours',
+      ),
+      _DropdownOption(
+        value: AdminTransactionsRangePreset.last7Days,
+        label: 'Last 7 Days',
+      ),
+      _DropdownOption(
+        value: AdminTransactionsRangePreset.last30Days,
+        label: 'Last 30 Days',
+      ),
+      _DropdownOption(
+        value: AdminTransactionsRangePreset.thisMonth,
+        label: 'This Month',
+      ),
+      _DropdownOption(
+        value: AdminTransactionsRangePreset.thisYear,
+        label: 'This Year',
+      ),
+      _DropdownOption(
+        value: AdminTransactionsRangePreset.custom,
+        label: 'Custom Range',
+      ),
+    ];
+
+    return _buildDropdownField<AdminTransactionsRangePreset>(
+      label: 'Date Range',
+      value: state.rangePreset,
+      options: options,
+      onChanged: (value) {
+        if (value != null) {
+          onRangePresetChanged(value);
+        }
+      },
+    );
+  }
+
+  Widget _buildCustomDateRangeField() {
+    return OpenVtsDateTimeRangeField(
+      label: 'Custom Range',
+      title: 'Choose Date Range',
+      value: OpenVtsDateTimeRange(
+        start: state.customFrom,
+        end: state.customTo,
+      ),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      onChanged: (range) => onCustomRangeChanged(range.start, range.end),
+    );
+  }
+
+  Widget _buildDropdownField<T>({
+    required String label,
+    required T value,
+    required List<_DropdownOption<T>> options,
+    required ValueChanged<T?> onChanged,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          title,
+          label,
           style: OpenVtsTypography.label.copyWith(
             color: OpenVtsColors.textPrimary,
           ),
         ),
         const SizedBox(height: OpenVtsSpacing.xs),
-        child,
+        DropdownButtonFormField<T>(
+          initialValue: value,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 13,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+              borderSide: const BorderSide(color: OpenVtsColors.border),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+              borderSide: const BorderSide(color: OpenVtsColors.border),
+            ),
+          ),
+          items: options
+              .map((opt) => DropdownMenuItem<T>(
+                    value: opt.value,
+                    child: Text(opt.label),
+                  ))
+              .toList(growable: false),
+          onChanged: onChanged,
+          isExpanded: true,
+        ),
       ],
     );
   }
+}
 
-  Widget _chip(String label, bool selected, VoidCallback onTap) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        onTap: onTap,
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 46, minWidth: 88),
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(
-            horizontal: OpenVtsSpacing.md,
-            vertical: OpenVtsSpacing.xs,
-          ),
-          decoration: BoxDecoration(
-            color:
-                selected ? OpenVtsColors.brandInk : OpenVtsColors.surfaceElevated,
-            borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-            border: Border.all(
-              color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (selected) ...[
-                const Icon(
-                  Icons.check_circle_outline_rounded,
-                  size: 14,
-                  color: OpenVtsColors.white,
-                ),
-                const SizedBox(width: OpenVtsSpacing.xxs),
-              ],
-              Text(
-                label,
-                style: OpenVtsTypography.meta.copyWith(
-                  color: selected
-                      ? OpenVtsColors.white
-                      : OpenVtsColors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+class _DropdownOption<T> {
+  const _DropdownOption({required this.value, required this.label});
+
+  final T value;
+  final String label;
 }

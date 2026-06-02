@@ -7,8 +7,11 @@ import '../../../../../shared/widgets/open_vts_bottom_sheet.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../controllers/admin_driver_details_controller.dart';
+import '../../../controllers/admin_providers.dart';
 import '../../../models/admin_driver_details_model.dart';
 import '../../../models/admin_driver_details_state.dart';
+import '../../../models/admin_users_model.dart';
+import '../../users/widgets/admin_user_form_fields.dart';
 
 Future<void> showDriverEditSheet({
   required BuildContext context,
@@ -40,14 +43,23 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _name;
   late final TextEditingController _email;
-  late final TextEditingController _mobilePrefix;
   late final TextEditingController _mobile;
   late final TextEditingController _username;
   late final TextEditingController _address;
-  late final TextEditingController _countryCode;
-  late final TextEditingController _stateCode;
-  late final TextEditingController _city;
   late final TextEditingController _pincode;
+
+  String? _mobilePrefix;
+  String? _countryCode;
+  String? _stateCode;
+  String? _cityValue;
+  bool _loadingReferences = true;
+  bool _loadingStates = false;
+  bool _loadingCities = false;
+
+  var _mobilePrefixes = const <AdminUserMobilePrefixOption>[];
+  var _countries = const <AdminUserCountryOption>[];
+  var _states = const <AdminUserStateOption>[];
+  var _cities = const <AdminUserCityOption>[];
   final List<_AttrRow> _attrs = <_AttrRow>[];
 
   @override
@@ -58,7 +70,6 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
     _email = TextEditingController(
       text: driver?.email == '-' ? '' : (driver?.email ?? ''),
     );
-    _mobilePrefix = TextEditingController(text: driver?.mobilePrefix ?? '');
     _mobile = TextEditingController(text: driver?.mobile ?? '');
     _username = TextEditingController(text: driver?.username ?? '');
     _address = TextEditingController(
@@ -66,23 +77,19 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
           ? ''
           : (driver?.address.addressLine ?? ''),
     );
-    _countryCode = TextEditingController(
-      text: driver?.address.countryCode == '-'
-          ? ''
-          : (driver?.address.countryCode ?? ''),
-    );
-    _stateCode = TextEditingController(
-      text: driver?.address.stateCode == '-'
-          ? ''
-          : (driver?.address.stateCode ?? ''),
-    );
-    _city = TextEditingController(
-      text: driver?.address.cityId == '-' ? '' : (driver?.address.cityId ?? ''),
-    );
     _pincode = TextEditingController(
       text:
           driver?.address.pincode == '-' ? '' : (driver?.address.pincode ?? ''),
     );
+
+    _mobilePrefix = driver?.mobilePrefix == '-' ? null : driver?.mobilePrefix;
+    _countryCode = driver?.address.countryCode == '-'
+        ? null
+        : driver?.address.countryCode;
+    _stateCode =
+        driver?.address.stateCode == '-' ? null : driver?.address.stateCode;
+    _cityValue = driver?.address.cityId == '-' ? null : driver?.address.cityId;
+
     final attrs = driver?.attributes ?? const <String, dynamic>{};
     if (attrs.isEmpty) {
       _attrs.add(_AttrRow());
@@ -93,24 +100,74 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
         );
       }
     }
+
+    _loadReferenceData();
   }
 
   @override
   void dispose() {
     _name.dispose();
     _email.dispose();
-    _mobilePrefix.dispose();
     _mobile.dispose();
     _username.dispose();
     _address.dispose();
-    _countryCode.dispose();
-    _stateCode.dispose();
-    _city.dispose();
     _pincode.dispose();
     for (final row in _attrs) {
       row.dispose();
     }
     super.dispose();
+  }
+
+  List<AdminUserDropdownOption> get _mobilePrefixOptions {
+    return _mobilePrefixes
+        .map((item) =>
+            AdminUserDropdownOption(value: item.value, label: item.label))
+        .toList(growable: false);
+  }
+
+  List<AdminUserDropdownOption> get _countryOptions {
+    final options = _countries
+        .map((item) =>
+            AdminUserDropdownOption(value: item.value, label: item.label))
+        .toList(growable: true);
+    if (_countryCode != null && !options.any((o) => o.value == _countryCode)) {
+      options.insert(
+        0,
+        AdminUserDropdownOption(
+            value: _countryCode!, label: '$_countryCode (current)'),
+      );
+    }
+    return options;
+  }
+
+  List<AdminUserDropdownOption> get _stateOptions {
+    final options = _states
+        .map((item) =>
+            AdminUserDropdownOption(value: item.value, label: item.label))
+        .toList(growable: true);
+    if (_stateCode != null && !options.any((o) => o.value == _stateCode)) {
+      options.insert(
+        0,
+        AdminUserDropdownOption(
+            value: _stateCode!, label: '$_stateCode (current)'),
+      );
+    }
+    return options;
+  }
+
+  List<AdminUserDropdownOption> get _cityOptions {
+    final options = _cities
+        .map((item) =>
+            AdminUserDropdownOption(value: item.value, label: item.label))
+        .toList(growable: true);
+    if (_cityValue != null && !options.any((o) => o.value == _cityValue)) {
+      options.insert(
+        0,
+        AdminUserDropdownOption(
+            value: _cityValue!, label: '$_cityValue (current)'),
+      );
+    }
+    return options;
   }
 
   @override
@@ -144,13 +201,20 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
               },
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
-            OpenVtsTextField(
+            AdminUserDropdownField(
               label: 'Mobile Prefix',
-              controller: _mobilePrefix,
-              validator: (v) => _mobile.text.trim().isNotEmpty &&
-                      (v == null || v.trim().isEmpty)
+              value: _mobilePrefix,
+              options: _mobilePrefixOptions,
+              hintText: '+91',
+              prefixIcon: Icons.phone_android_rounded,
+              isLoading: _loadingReferences,
+              validator: (value) => _mobile.text.trim().isNotEmpty &&
+                      (value == null || value.trim().isEmpty)
                   ? 'Mobile prefix is required'
                   : null,
+              onChanged: (value) {
+                setState(() => _mobilePrefix = value);
+              },
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
             OpenVtsTextField(
@@ -171,11 +235,43 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
             const SizedBox(height: OpenVtsSpacing.sm),
             OpenVtsTextField(label: 'Address', controller: _address),
             const SizedBox(height: OpenVtsSpacing.sm),
-            OpenVtsTextField(label: 'Country Code', controller: _countryCode),
+            AdminUserDropdownField(
+              label: 'Country',
+              value: _countryCode,
+              options: _countryOptions,
+              hintText: 'Select country',
+              prefixIcon: Icons.public_rounded,
+              isLoading: _loadingReferences,
+              validator: requiredDropdown,
+              onChanged: _onCountryChanged,
+            ),
             const SizedBox(height: OpenVtsSpacing.sm),
-            OpenVtsTextField(label: 'State Code', controller: _stateCode),
+            AdminUserDropdownField(
+              label: 'State',
+              value: _stateCode,
+              options: _stateOptions,
+              hintText: _countryCode == null
+                  ? 'Select country first'
+                  : 'Select state',
+              prefixIcon: Icons.map_outlined,
+              isLoading: _loadingStates,
+              validator: requiredDropdown,
+              onChanged: _countryCode == null ? null : _onStateChanged,
+            ),
             const SizedBox(height: OpenVtsSpacing.sm),
-            OpenVtsTextField(label: 'City', controller: _city),
+            AdminUserDropdownField(
+              label: 'City',
+              value: _cityValue,
+              options: _cityOptions,
+              hintText:
+                  _stateCode == null ? 'Select state first' : 'Select city',
+              prefixIcon: Icons.location_city_rounded,
+              isLoading: _loadingCities,
+              validator: requiredDropdown,
+              onChanged: _stateCode == null
+                  ? null
+                  : (value) => setState(() => _cityValue = value),
+            ),
             const SizedBox(height: OpenVtsSpacing.sm),
             OpenVtsTextField(label: 'Pincode', controller: _pincode),
             const SizedBox(height: OpenVtsSpacing.sm),
@@ -232,6 +328,116 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
     );
   }
 
+  Future<void> _loadReferenceData() async {
+    try {
+      final controller = ref.read(adminUsersControllerProvider.notifier);
+      final countriesFuture = controller.getCountries();
+      final prefixesFuture = controller.getMobilePrefixes();
+      final countries = await countriesFuture;
+      final prefixes = await prefixesFuture;
+
+      if (!mounted) return;
+
+      setState(() {
+        _countries = countries;
+        _mobilePrefixes = prefixes;
+        _loadingReferences = false;
+      });
+
+      await _loadStates(_countryCode, clearSelection: false);
+      await _loadCities(_countryCode, _stateCode, clearSelection: false);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _loadingReferences = false);
+      if (mounted) {
+        ToastHelper.showError('Unable to load form options.', context: context);
+      }
+    }
+  }
+
+  Future<void> _onCountryChanged(String? value) async {
+    if (value == _countryCode) return;
+    setState(() {
+      _countryCode = value;
+      _stateCode = null;
+      _cityValue = null;
+      _states = const <AdminUserStateOption>[];
+      _cities = const <AdminUserCityOption>[];
+    });
+    await _loadStates(value, clearSelection: true);
+  }
+
+  Future<void> _onStateChanged(String? value) async {
+    if (value == _stateCode) return;
+    setState(() {
+      _stateCode = value;
+      _cityValue = null;
+      _cities = const <AdminUserCityOption>[];
+    });
+    await _loadCities(_countryCode, value, clearSelection: true);
+  }
+
+  Future<void> _loadStates(
+    String? countryCode, {
+    required bool clearSelection,
+  }) async {
+    final requestedCountry = countryCode?.trim().toUpperCase();
+    if (requestedCountry == null || requestedCountry.isEmpty) return;
+
+    setState(() => _loadingStates = true);
+    try {
+      final states = await ref
+          .read(adminUsersControllerProvider.notifier)
+          .getStates(requestedCountry);
+      if (!mounted || _countryCode?.toUpperCase() != requestedCountry) return;
+      setState(() {
+        _states = states;
+        if (clearSelection) _stateCode = null;
+        _loadingStates = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _loadingStates = false);
+      ToastHelper.showError('Unable to load states.', context: context);
+    }
+  }
+
+  Future<void> _loadCities(
+    String? countryCode,
+    String? stateCode, {
+    required bool clearSelection,
+  }) async {
+    final requestedCountry = countryCode?.trim().toUpperCase();
+    final requestedState = stateCode?.trim().toUpperCase();
+    if (requestedCountry == null ||
+        requestedCountry.isEmpty ||
+        requestedState == null ||
+        requestedState.isEmpty) {
+      return;
+    }
+
+    setState(() => _loadingCities = true);
+    try {
+      final cities = await ref
+          .read(adminUsersControllerProvider.notifier)
+          .getCities(requestedCountry, requestedState);
+      if (!mounted ||
+          _countryCode?.toUpperCase() != requestedCountry ||
+          _stateCode?.toUpperCase() != requestedState) {
+        return;
+      }
+      setState(() {
+        _cities = cities;
+        if (clearSelection) _cityValue = null;
+        _loadingCities = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _loadingCities = false);
+      ToastHelper.showError('Unable to load cities.', context: context);
+    }
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -253,13 +459,13 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
 
     final request = AdminDriverUpdateRequest(
       name: _name.text,
-      mobilePrefix: _mobilePrefix.text,
+      mobilePrefix: _mobilePrefix ?? '',
       mobile: _mobile.text,
       email: _email.text,
       username: _username.text,
-      countryCode: _countryCode.text,
-      stateCode: _stateCode.text,
-      city: _city.text,
+      countryCode: _countryCode ?? '',
+      stateCode: _stateCode ?? '',
+      city: _cityValue ?? '',
       address: _address.text,
       pincode: _pincode.text,
       attributes: attributes,

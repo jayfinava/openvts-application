@@ -64,7 +64,7 @@ class _AdminTransactionsScreenState
                   _HeaderCard(
                     loaded: state.transactions.length,
                     total: state.total,
-                    onRefresh: controller.refresh,
+                    onPurchaseCredits: _showPurchaseCreditsDialog,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   OpenVtsSearchField(
@@ -182,56 +182,91 @@ class _AdminTransactionsScreenState
       builder: (_) => AdminTransactionDetailsSheet(transaction: transaction),
     );
   }
+
+  Future<void> _showPurchaseCreditsDialog() {
+    return showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Purchase Credits'),
+        content: const Text(
+          'Purchase credits flow is not available yet.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _HeaderCard extends StatelessWidget {
   const _HeaderCard({
     required this.loaded,
     required this.total,
-    required this.onRefresh,
+    this.onPurchaseCredits,
   });
 
   final int loaded;
   final int total;
-  final VoidCallback onRefresh;
+  final VoidCallback? onPurchaseCredits;
 
   @override
   Widget build(BuildContext context) {
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Transactions',
-                  style: OpenVtsTypography.titleSmall.copyWith(
-                    color: OpenVtsColors.textPrimary,
-                  ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Transactions',
+                      style: OpenVtsTypography.titleSmall.copyWith(
+                        color: OpenVtsColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: OpenVtsSpacing.xxs),
+                    Text(
+                      'Admin payments made to platform account.',
+                      style: OpenVtsTypography.meta.copyWith(
+                        color: OpenVtsColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: OpenVtsSpacing.xxs),
+                    Text(
+                      '$loaded of $total transactions',
+                      style: OpenVtsTypography.meta.copyWith(
+                        color: OpenVtsColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: OpenVtsSpacing.xxs),
-                Text(
-                  'Admin payments made to platform account.',
-                  style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: OpenVtsSpacing.xxs),
-                Text(
-                  '$loaded of $total transactions',
-                  style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
-                    fontWeight: FontWeight.w600,
+              ),
+              if (onPurchaseCredits != null) ...[
+                const SizedBox(width: OpenVtsSpacing.sm),
+                FilledButton.icon(
+                  onPressed: onPurchaseCredits,
+                  icon: const Icon(Icons.add_circle_outline_rounded, size: 16),
+                  label: const Text('Purchase Credits'),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: OpenVtsSpacing.sm,
+                      vertical: OpenVtsSpacing.xs,
+                    ),
+                    backgroundColor: OpenVtsColors.brandInk,
                   ),
                 ),
               ],
-            ),
-          ),
-          IconButton(
-            onPressed: onRefresh,
-            icon: const Icon(Icons.refresh_rounded, size: 18),
+            ],
           ),
         ],
       ),

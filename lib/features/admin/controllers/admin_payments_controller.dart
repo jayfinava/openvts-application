@@ -107,7 +107,7 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
       selectedStatus: null,
       selectedMode: null,
       searchQuery: '',
-      rangePreset: AdminPaymentsRangePreset.thisMonth,
+      rangePreset: AdminPaymentsRangePreset.last30Days,
       customFrom: null,
       customTo: null,
     );
@@ -194,12 +194,8 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
         limit: state.limit,
         userId: state.selectedUserId,
         status: state.selectedStatus,
-        from: state.rangePreset == AdminPaymentsRangePreset.custom
-            ? range.from
-            : null,
-        to: state.rangePreset == AdminPaymentsRangePreset.custom
-            ? range.to
-            : null,
+        from: range.from,
+        to: range.to,
         refreshKey: state.refreshKey.toString(),
       );
 
@@ -240,7 +236,7 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
       merged[key] = item;
     }
 
-    final values = merged.values.toList(growable: false)
+    final values = merged.values.toList(growable: true)
       ..sort((a, b) => (b.createdAt?.millisecondsSinceEpoch ?? 0)
           .compareTo(a.createdAt?.millisecondsSinceEpoch ?? 0));
     return values;
@@ -267,30 +263,58 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
             item.vehicle['plateNumber']?.toString() ?? '',
           ].any((v) => v.toLowerCase().contains(q));
       return modeOk && searchOk;
-    }).toList(growable: false);
+    }).toList(growable: true);
   }
 
   _DateRange _resolveRange() {
     final now = DateTime.now();
-    if (state.rangePreset == AdminPaymentsRangePreset.thisMonth) {
-      final from = DateTime(now.year, now.month, 1);
-      final to = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
-      return _DateRange(from, to);
-    }
 
-    if (state.rangePreset == AdminPaymentsRangePreset.last30) {
-      final to = DateTime(now.year, now.month, now.day, 23, 59, 59);
-      final from = to.subtract(const Duration(days: 29));
-      return _DateRange(from, to);
-    }
+    switch (state.rangePreset) {
+      case AdminPaymentsRangePreset.today:
+        final start = DateTime(now.year, now.month, now.day, 0, 0, 0);
+        final end = DateTime(now.year, now.month, now.day, 23, 59, 59);
+        return _DateRange(start, end);
 
-    if (state.rangePreset == AdminPaymentsRangePreset.thisYear) {
-      final from = DateTime(now.year, 1, 1);
-      final to = DateTime(now.year, 12, 31, 23, 59, 59);
-      return _DateRange(from, to);
-    }
+      case AdminPaymentsRangePreset.yesterday:
+        final yesterday = now.subtract(const Duration(days: 1));
+        final start =
+            DateTime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0);
+        final end =
+            DateTime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59);
+        return _DateRange(start, end);
 
-    return _DateRange(state.customFrom, state.customTo);
+      case AdminPaymentsRangePreset.last12Hours:
+        final start = now.subtract(const Duration(hours: 12));
+        return _DateRange(start, now);
+
+      case AdminPaymentsRangePreset.last24Hours:
+        final start = now.subtract(const Duration(hours: 24));
+        return _DateRange(start, now);
+
+      case AdminPaymentsRangePreset.last7Days:
+        final start =
+            DateTime(now.year, now.month, now.day - 6, 0, 0, 0);
+        final end = DateTime(now.year, now.month, now.day, 23, 59, 59);
+        return _DateRange(start, end);
+
+      case AdminPaymentsRangePreset.last30Days:
+        final baseDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+        final start = baseDay.subtract(const Duration(days: 29));
+        return _DateRange(start, baseDay);
+
+      case AdminPaymentsRangePreset.thisMonth:
+        final from = DateTime(now.year, now.month, 1);
+        final to = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+        return _DateRange(from, to);
+
+      case AdminPaymentsRangePreset.thisYear:
+        final from = DateTime(now.year, 1, 1);
+        final to = DateTime(now.year, 12, 31, 23, 59, 59);
+        return _DateRange(from, to);
+
+      case AdminPaymentsRangePreset.custom:
+        return _DateRange(state.customFrom, state.customTo);
+    }
   }
 
   String _toErrorMessage(Object error) {
@@ -302,7 +326,7 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
       }
       return error.message?.trim().isNotEmpty == true
           ? error.message!.trim()
-          : 'Unable to process request.';
+          : 'Unable to load payments.';
     }
 
     final raw = error.toString().trim();

@@ -1,6 +1,16 @@
 import '../models/admin_users_model.dart';
 
-enum AdminPaymentsRangePreset { thisMonth, last30, thisYear, custom }
+enum AdminPaymentsRangePreset {
+  today,
+  yesterday,
+  last12Hours,
+  last24Hours,
+  last7Days,
+  last30Days,
+  thisMonth,
+  thisYear,
+  custom,
+}
 
 enum AdminPaymentStatus { success, pending, failed }
 

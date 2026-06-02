@@ -60,6 +60,14 @@ extension AdminPaymentModeX on AdminPaymentMode {
 }
 
 extension AdminPaymentTypeX on AdminPaymentType {
+  String get apiValue {
+    return switch (this) {
+      AdminPaymentType.credit => 'CREDIT',
+      AdminPaymentType.debit => 'DEBIT',
+      AdminPaymentType.unknown => 'UNKNOWN',
+    };
+  }
+
   String get label {
     return switch (this) {
       AdminPaymentType.credit => 'Credit',

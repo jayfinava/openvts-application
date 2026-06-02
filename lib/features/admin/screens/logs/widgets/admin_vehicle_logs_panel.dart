@@ -119,19 +119,19 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
           children: [
             _chip('All', state.vehicleSeverity.isEmpty, () {
               controller.setVehicleFilters(severity: '');
-              controller.loadVehicleLogs();
+              unawaited(controller.loadVehicleLogs());
             }),
             _chip('INFO', state.vehicleSeverity == 'INFO', () {
               controller.setVehicleFilters(severity: 'INFO');
-              controller.loadVehicleLogs();
+              unawaited(controller.loadVehicleLogs());
             }),
             _chip('WARNING', state.vehicleSeverity == 'WARNING', () {
               controller.setVehicleFilters(severity: 'WARNING');
-              controller.loadVehicleLogs();
+              unawaited(controller.loadVehicleLogs());
             }),
             _chip('CRITICAL', state.vehicleSeverity == 'CRITICAL', () {
               controller.setVehicleFilters(severity: 'CRITICAL');
-              controller.loadVehicleLogs();
+              unawaited(controller.loadVehicleLogs());
             }),
           ],
         ),
@@ -143,16 +143,16 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
             _chip('All Read States',
                 state.vehicleReadFilter == AdminReadFilter.all, () {
               controller.setVehicleFilters(readFilter: AdminReadFilter.all);
-              controller.loadVehicleLogs();
+              unawaited(controller.loadVehicleLogs());
             }),
             _chip('Read', state.vehicleReadFilter == AdminReadFilter.read, () {
               controller.setVehicleFilters(readFilter: AdminReadFilter.read);
-              controller.loadVehicleLogs();
+              unawaited(controller.loadVehicleLogs());
             }),
             _chip('Unread', state.vehicleReadFilter == AdminReadFilter.unread,
                 () {
               controller.setVehicleFilters(readFilter: AdminReadFilter.unread);
-              controller.loadVehicleLogs();
+              unawaited(controller.loadVehicleLogs());
             }),
           ],
         ),
@@ -185,8 +185,8 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
         if (state.vehicleLogs.isEmpty)
-          const OpenVtsEmptyState(
-            title: 'No vehicle logs found',
+          OpenVtsEmptyState(
+            title: _emptyStateTitle(state.vehicleReadFilter),
             message: 'Try changing filters or search query.',
           )
         else ...[
@@ -225,5 +225,16 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
 
   Widget _chip(String label, bool selected, VoidCallback onTap) {
     return AdminFilterChip(label: label, selected: selected, onTap: onTap);
+  }
+
+  String _emptyStateTitle(AdminReadFilter readFilter) {
+    switch (readFilter) {
+      case AdminReadFilter.all:
+        return 'No vehicle logs found';
+      case AdminReadFilter.read:
+        return 'No read vehicle logs found';
+      case AdminReadFilter.unread:
+        return 'No unread vehicle logs found';
+    }
   }
 }
