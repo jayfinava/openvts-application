@@ -141,13 +141,13 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
         userId: state.vehicleUserId,
         source: state.vehicleSource,
         severity: state.vehicleSeverity,
-        isRead: _readFilterValue(state.vehicleReadFilter),
         q: state.vehicleSearch,
         dedupe: state.vehicleDedupe,
       );
+      final filtered = _applyReadFilter(page.items, state.vehicleReadFilter);
       state = state.copyWith(
         isLoadingVehicle: false,
-        vehicleLogs: page.items,
+        vehicleLogs: filtered,
         vehicleNextCursorId: page.nextCursorId,
       );
     } catch (e) {
@@ -177,15 +177,15 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
         userId: state.vehicleUserId,
         source: state.vehicleSource,
         severity: state.vehicleSeverity,
-        isRead: _readFilterValue(state.vehicleReadFilter),
         q: state.vehicleSearch,
         dedupe: state.vehicleDedupe,
       );
+      final filtered = _applyReadFilter(page.items, state.vehicleReadFilter);
       state = state.copyWith(
         isLoadingMoreVehicle: false,
         vehicleLogs: <AdminVehicleEventLogItem>[
           ...state.vehicleLogs,
-          ...page.items
+          ...filtered
         ],
         vehicleNextCursorId: page.nextCursorId,
       );
@@ -319,6 +319,7 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
     String? imeiSearch,
     DateTime? from,
     DateTime? to,
+    AdminReadFilter? readFilter,
     bool clearFrom = false,
     bool clearTo = false,
   }) {
@@ -328,13 +329,33 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
       telemetryImeiSearch: imeiSearch ?? state.telemetryImeiSearch,
       telemetryFrom: clearFrom ? null : from ?? state.telemetryFrom,
       telemetryTo: clearTo ? null : to ?? state.telemetryTo,
+      telemetryReadFilter: readFilter ?? state.telemetryReadFilter,
       telemetryLogs: const <AdminTelemetryLogItem>[],
       telemetryNextCursor: null,
     );
   }
 
-  Future<AdminVehicleEventDetail> getVehicleEventDetail(String id) {
-    return _service.getVehicleEventDetail(id);
+  Future<AdminVehicleEventDetail> getVehicleEventDetail(String id) async {
+    final detail = await _service.getVehicleEventDetail(id);
+
+    if (!detail.isRead) {
+      try {
+        await _service.markVehicleEventAsRead(id);
+
+        final updatedLogs = state.vehicleLogs.map((item) {
+          if (item.id == id) {
+            return item.copyWith(isRead: true);
+          }
+          return item;
+        }).toList();
+
+        state = state.copyWith(vehicleLogs: updatedLogs);
+      } catch (e) {
+        // Silently ignore mark-as-read failures to avoid blocking the UI
+      }
+    }
+
+    return detail;
   }
 
   Future<AdminTelemetryDetail> getTelemetryDetail(String id) {
@@ -346,14 +367,17 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
     return dt.toUtc().toIso8601String();
   }
 
-  bool? _readFilterValue(AdminReadFilter f) {
-    switch (f) {
+  List<AdminVehicleEventLogItem> _applyReadFilter(
+    List<AdminVehicleEventLogItem> items,
+    AdminReadFilter filter,
+  ) {
+    switch (filter) {
       case AdminReadFilter.all:
-        return null;
+        return [...items];
       case AdminReadFilter.read:
-        return true;
+        return items.where((item) => item.isReadNormalized).toList();
       case AdminReadFilter.unread:
-        return false;
+        return items.where((item) => !item.isReadNormalized).toList();
     }
   }
 
@@ -369,6 +393,6 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
       final m = e.message?.trim();
       if (m != null && m.isNotEmpty) return m;
     }
-    return e.toString().replaceFirst('Exception: ', '').trim();
+    return 'Unable to load vehicle logs.';
   }
 }

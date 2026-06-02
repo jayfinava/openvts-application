@@ -12,6 +12,7 @@ import '../../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../../shared/widgets/open_vts_search_field.dart';
 import '../../../controllers/admin_providers.dart';
+import '../../../models/admin_logs_model.dart';
 import '../widgets/admin_logs_filter_widgets.dart';
 import '../widgets/admin_telemetry_log_card.dart';
 import '../widgets/admin_telemetry_log_detail_sheet.dart';
@@ -52,24 +53,33 @@ class _AdminTelemetryLogsPanelState
       );
     }
 
+    final filteredLogs = _applyTelemetryReadFilter(state.telemetryLogs, state.telemetryReadFilter);
+
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
-        DropdownButtonFormField<String?>(
-          initialValue: state.telemetryVehicleId,
-          decoration: const InputDecoration(labelText: 'Vehicle'),
-          items: [
-            const DropdownMenuItem<String?>(
-                value: null, child: Text('All vehicles')),
-            ...state.options.vehicles.map((v) => DropdownMenuItem<String?>(
-                  value: v.id,
-                  child: Text(v.displayName, overflow: TextOverflow.ellipsis),
-                )),
-          ],
-          onChanged: (v) {
-            controller.setTelemetryFilters(vehicleId: v, imeiSearch: '');
-            unawaited(controller.loadTelemetryLogs());
-          },
+        SizedBox(
+          height: 48,
+          child: DropdownButtonFormField<String?>(
+            initialValue: state.telemetryVehicleId,
+            decoration: const InputDecoration(
+              labelText: 'Vehicle',
+              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+            isExpanded: true,
+            items: [
+              const DropdownMenuItem<String?>(
+                  value: null, child: Text('All vehicles')),
+              ...state.options.vehicles.map((v) => DropdownMenuItem<String?>(
+                    value: v.id,
+                    child: Text(v.displayName, overflow: TextOverflow.ellipsis),
+                  )),
+            ],
+            onChanged: (v) {
+              controller.setTelemetryFilters(vehicleId: v, imeiSearch: '');
+              unawaited(controller.loadTelemetryLogs());
+            },
+          ),
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
         if ((state.telemetryVehicleId ?? '').isEmpty)
@@ -112,6 +122,25 @@ class _AdminTelemetryLogsPanelState
           ],
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
+        Wrap(
+          spacing: OpenVtsSpacing.xs,
+          runSpacing: OpenVtsSpacing.xs,
+          children: [
+            _chip('All read states', state.telemetryReadFilter == AdminReadFilter.all, () {
+              controller.setTelemetryFilters(readFilter: AdminReadFilter.all);
+              unawaited(controller.loadTelemetryLogs());
+            }),
+            _chip('Read', state.telemetryReadFilter == AdminReadFilter.read, () {
+              controller.setTelemetryFilters(readFilter: AdminReadFilter.read);
+              unawaited(controller.loadTelemetryLogs());
+            }),
+            _chip('Unread', state.telemetryReadFilter == AdminReadFilter.unread, () {
+              controller.setTelemetryFilters(readFilter: AdminReadFilter.unread);
+              unawaited(controller.loadTelemetryLogs());
+            }),
+          ],
+        ),
+        const SizedBox(height: OpenVtsSpacing.sm),
         OpenVtsDateTimeRangeField(
           label: 'Date range',
           title: 'Telemetry date range',
@@ -129,13 +158,13 @@ class _AdminTelemetryLogsPanelState
           },
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
-        if (state.telemetryLogs.isEmpty)
+        if (filteredLogs.isEmpty)
           const OpenVtsEmptyState(
             title: 'No telemetry logs found',
             message: 'Try changing filters.',
           )
         else ...[
-          for (final item in state.telemetryLogs) ...[
+          for (final item in filteredLogs) ...[
             AdminTelemetryLogCard(
               item: item,
               vehicleLabel: vehicleMap[item.imei] ?? '',
@@ -148,7 +177,7 @@ class _AdminTelemetryLogsPanelState
                 child: AdminTelemetryLogDetailSheet(id: item.id),
               ),
             ),
-            if (item != state.telemetryLogs.last)
+            if (item != filteredLogs.last)
               const SizedBox(height: OpenVtsSpacing.sm),
           ],
           if ((state.telemetryNextCursor ?? '').isNotEmpty) ...[
@@ -170,5 +199,23 @@ class _AdminTelemetryLogsPanelState
 
   Widget _chip(String label, bool selected, VoidCallback onTap) {
     return AdminFilterChip(label: label, selected: selected, onTap: onTap);
+  }
+
+  bool _isTelemetryRead(AdminTelemetryLogItem item) {
+    return item.valid == true && item.ignition != null && item.acc != null;
+  }
+
+  List<AdminTelemetryLogItem> _applyTelemetryReadFilter(
+    List<AdminTelemetryLogItem> items,
+    AdminReadFilter filter,
+  ) {
+    switch (filter) {
+      case AdminReadFilter.all:
+        return items;
+      case AdminReadFilter.read:
+        return items.where((item) => _isTelemetryRead(item)).toList();
+      case AdminReadFilter.unread:
+        return items.where((item) => !_isTelemetryRead(item)).toList();
+    }
   }
 }
