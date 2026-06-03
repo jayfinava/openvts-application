@@ -9,6 +9,8 @@ import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../../shared/widgets/open_vts_bottom_sheet.dart';
 import '../../../../../../shared/widgets/open_vts_button.dart';
+import '../../../../controllers/user_landmark_studio_controller.dart'
+    show userLandmarkErrorMessage;
 import '../../../../controllers/user_providers.dart';
 import '../../../../models/user_landmark_model.dart';
 import '../../widgets/user_landmark_color_picker.dart';
@@ -210,7 +212,10 @@ class _UserPoiFormBodyState extends ConsumerState<_UserPoiFormBody> {
       if (!mounted) return;
       setState(() {
         _submitting = false;
-        _error = error.toString();
+        _error = userLandmarkErrorMessage(
+          error,
+          fallback: 'Could not save POI. Please check the details and try again.',
+        );
       });
     }
   }

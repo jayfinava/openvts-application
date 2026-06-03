@@ -55,7 +55,7 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
         OpenVtsSearchField(
-          hintText: 'Search vehicle event logs...',
+          hintText: 'Search vehicle events...',
           onChanged: (v) {
             controller.setVehicleFilters(search: v);
             _debounce?.cancel();
@@ -232,11 +232,11 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
   String _emptyStateTitle(AdminReadFilter readFilter) {
     switch (readFilter) {
       case AdminReadFilter.all:
-        return 'No vehicle logs found';
+        return 'No vehicle events found';
       case AdminReadFilter.read:
-        return 'No read vehicle logs found';
+        return 'No read vehicle events found';
       case AdminReadFilter.unread:
-        return 'No unread vehicle logs found';
+        return 'No unread vehicle events found';
     }
   }
 

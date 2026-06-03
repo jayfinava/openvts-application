@@ -377,7 +377,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
         'Signed in as $name.',
         context: context,
       );
-      context.go(RoutePaths.userDashboard);
+      context.go(RoutePaths.userHome);
     } catch (_) {
       if (!mounted) {
         return;

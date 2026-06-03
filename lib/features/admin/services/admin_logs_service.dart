@@ -58,7 +58,6 @@ class AdminLogsService {
     String? userId,
     String? source,
     String? severity,
-    bool? isRead,
     String? q,
     bool dedupe = true,
   }) async {
@@ -74,7 +73,6 @@ class AdminLogsService {
         if (_nz(userId)) 'userId': userId,
         if (_nz(source)) 'source': source,
         if (_nz(severity)) 'severity': severity,
-        if (isRead != null) 'isRead': isRead,
         if (_nz(q)) 'q': q,
       },
       options: _readOptions,
@@ -90,6 +88,13 @@ class AdminLogsService {
       parser: (json) => json,
     );
     return AdminVehicleEventDetail.fromJson(response.data);
+  }
+
+  Future<void> markVehicleEventAsRead(String id) async {
+    await _apiClient.put<dynamic>(
+      ApiEndpoints.admin.logsEventRead(id),
+      parser: (json) => json,
+    );
   }
 
   Future<AdminTelemetryLogPage> getTelemetryLogs({

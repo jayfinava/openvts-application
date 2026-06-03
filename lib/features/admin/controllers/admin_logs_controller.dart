@@ -393,6 +393,6 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
       final m = e.message?.trim();
       if (m != null && m.isNotEmpty) return m;
     }
-    return 'Unable to load vehicle logs.';
+    return 'Unable to load vehicle events.';
   }
 }

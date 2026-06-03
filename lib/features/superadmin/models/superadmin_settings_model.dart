@@ -148,6 +148,7 @@ class SuperadminAddressSettings {
     this.stateCode,
     this.cityName,
     this.cityId,
+    this.cityCode,
     this.pincode,
     this.fullAddress,
   });
@@ -158,20 +159,74 @@ class SuperadminAddressSettings {
   final String? stateCode;
   final String? cityName;
   final int? cityId;
+  final String? cityCode;
   final String? pincode;
   final String? fullAddress;
 
+  String? get cityValue => cityCode ?? cityId?.toString();
+
+  String? get cityDisplayName {
+    final candidates = [
+      cityName,
+      if (cityName == null && (cityCode != null || cityId != null))
+        cityCode ?? cityId?.toString(),
+    ];
+    for (final candidate in candidates) {
+      if (candidate != null && candidate.trim().isNotEmpty) {
+        return candidate.trim();
+      }
+    }
+    return null;
+  }
+
   factory SuperadminAddressSettings.fromJson(dynamic json) {
     final source = _asMap(json);
+
+    String? cityName;
+    String? cityCode;
+    int? cityId;
+
+    final priorityNames = const ['cityName', 'city_name'];
+    for (final key in priorityNames) {
+      if (source.containsKey(key)) {
+        final val = _firstString(source, [key]);
+        if (val != null && val.isNotEmpty && val.toLowerCase() != 'city') {
+          cityName = val;
+          break;
+        }
+      }
+    }
+
+    if (cityName == null && source.containsKey('city')) {
+      final val = _firstString(source, const ['city']);
+      if (val != null && val.isNotEmpty && val.toLowerCase() != 'city') {
+        cityName = val;
+      }
+    }
+
+    final priorityCodes = const ['cityCode', 'city_code', 'code'];
+    for (final key in priorityCodes) {
+      if (source.containsKey(key)) {
+        final val = _firstString(source, [key]);
+        if (val != null && val.isNotEmpty) {
+          cityCode = val;
+          break;
+        }
+      }
+    }
+
+    cityId = _firstInt(source, const ['cityId', 'city_id']);
+
     return SuperadminAddressSettings(
       id: _firstInt(source, const ['id', 'addressId']),
-      addressLine: _firstString(source, const ['addressLine', 'address', 'line']),
-      countryCode: _firstString(source, const ['countryCode', 'country']),
-      stateCode: _firstString(source, const ['stateCode', 'state']),
-      cityName: _firstString(source, const ['cityName', 'city']),
-      cityId: _firstInt(source, const ['cityId']),
-      pincode: _firstString(source, const ['pincode', 'pinCode', 'zip', 'zipCode']),
-      fullAddress: _firstString(source, const ['fullAddress', 'formatted']),
+      addressLine: _firstString(source, const ['addressLine', 'address_line', 'address', 'line']),
+      countryCode: _firstString(source, const ['countryCode', 'country_code', 'country']),
+      stateCode: _firstString(source, const ['stateCode', 'state_code', 'state']),
+      cityName: cityName,
+      cityId: cityId,
+      cityCode: cityCode,
+      pincode: _firstString(source, const ['pincode', 'pinCode', 'pin_code', 'zip', 'zipCode']),
+      fullAddress: _firstString(source, const ['fullAddress', 'full_address', 'formatted']),
     );
   }
 
@@ -182,6 +237,7 @@ class SuperadminAddressSettings {
     String? stateCode,
     String? cityName,
     int? cityId,
+    String? cityCode,
     String? pincode,
     String? fullAddress,
   }) {
@@ -192,6 +248,7 @@ class SuperadminAddressSettings {
       stateCode: stateCode ?? this.stateCode,
       cityName: cityName ?? this.cityName,
       cityId: cityId ?? this.cityId,
+      cityCode: cityCode ?? this.cityCode,
       pincode: pincode ?? this.pincode,
       fullAddress: fullAddress ?? this.fullAddress,
     );
@@ -356,6 +413,7 @@ class SuperadminProfileSettings {
     this.mobileVerifiedAt,
     this.company,
     this.address,
+    this.cityName,
   });
 
   final int? uid;
@@ -374,6 +432,7 @@ class SuperadminProfileSettings {
   final DateTime? mobileVerifiedAt;
   final SuperadminCompanySettings? company;
   final SuperadminAddressSettings? address;
+  final String? cityName;
 
   factory SuperadminProfileSettings.fromJson(dynamic json) {
     final source = _unwrap(json);
@@ -393,7 +452,25 @@ class SuperadminProfileSettings {
       }
     }
 
-    final addressMap = _firstMap(source, const ['address', 'profileAddress']);
+    var addressMap = _firstMap(source, const ['address', 'profileAddress']);
+
+    // If address object not found, build it from root-level address fields
+    if (addressMap == null || addressMap.isEmpty) {
+      final rootLevelAddressFields = <String, dynamic>{};
+
+      // Look for address fields at root level and copy them
+      for (final key in ['addressLine', 'address', 'line', 'countryCode', 'country',
+                         'stateCode', 'state', 'cityName', 'city', 'cityId', 'pincode',
+                         'pinCode', 'zip', 'zipCode', 'fullAddress', 'formatted']) {
+        if (source.containsKey(key)) {
+          rootLevelAddressFields[key] = source[key];
+        }
+      }
+
+      if (rootLevelAddressFields.isNotEmpty) {
+        addressMap = rootLevelAddressFields;
+      }
+    }
 
     return SuperadminProfileSettings(
       uid: _firstInt(source, const ['uid', 'id', 'userId']),
@@ -424,6 +501,12 @@ class SuperadminProfileSettings {
       address: addressMap != null
           ? SuperadminAddressSettings.fromJson(addressMap)
           : null,
+      cityName: _firstString(source, const [
+            'cityName',
+            'city_name',
+            'cityname',
+            'city',
+          ]),
     );
   }
 
@@ -444,6 +527,7 @@ class SuperadminProfileSettings {
     DateTime? mobileVerifiedAt,
     SuperadminCompanySettings? company,
     SuperadminAddressSettings? address,
+    String? cityName,
   }) {
     return SuperadminProfileSettings(
       uid: uid ?? this.uid,
@@ -462,6 +546,7 @@ class SuperadminProfileSettings {
       mobileVerifiedAt: mobileVerifiedAt ?? this.mobileVerifiedAt,
       company: company ?? this.company,
       address: address ?? this.address,
+      cityName: cityName ?? this.cityName,
     );
   }
 }

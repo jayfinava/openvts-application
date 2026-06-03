@@ -768,7 +768,6 @@ class _DropdownField extends StatelessWidget {
         .map(
           (option) => DropdownMenuItem<String>(
             value: option.value,
-            enabled: !option.isFallback,
             child: Text(
               option.label,
               overflow: TextOverflow.ellipsis,

@@ -291,6 +291,8 @@ class _AdminEndpoints {
   String get logsEvents => '/admin/logs/events';
   String logsEventById(String id) =>
       '/admin/logs/events/${Uri.encodeComponent(id)}';
+  String logsEventRead(String id) =>
+      '/admin/logs/events/${Uri.encodeComponent(id)}/read';
   String get logsTelemetry => '/admin/logs/telemetry';
   String logsTelemetryById(String id) =>
       '/admin/logs/telemetry/${Uri.encodeComponent(id)}';

@@ -127,30 +127,18 @@ class _ProfileSettingsSectionState
           onVerifyWhatsApp: () => _openOtpSheet(_OtpChannel.whatsapp),
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
-        _ActionCard(
-          icon: Icons.edit_outlined,
-          title: 'Edit Profile',
-          subtitle: 'Update personal details and address.',
-          onTap: _openEditProfileSheet,
-        ),
-        const SizedBox(height: OpenVtsSpacing.xs),
-        _ActionCard(
-          icon: Icons.lock_outline_rounded,
-          title: 'Change Password',
-          subtitle: 'Rotate your account password.',
-          onTap: _openChangePasswordSheet,
-        ),
-        if (profile.company != null) ...[
-          const SizedBox(height: OpenVtsSpacing.xs),
-          _ActionCard(
-            icon: Icons.business_outlined,
-            title: 'Company Details',
-            subtitle: profile.company?.name?.trim().isNotEmpty == true
-                ? profile.company!.name!
-                : 'Edit company information.',
-            onTap: _openEditCompanySheet,
+        _AddressCard(profile: profile),
+        const SizedBox(height: OpenVtsSpacing.sm),
+        if (profile.company != null)
+          _CompanyCard(
+            company: profile.company,
+            onEditCompany: _openEditCompanySheet,
           ),
-        ],
+        if (profile.company != null) const SizedBox(height: OpenVtsSpacing.sm),
+        _ActionsCard(
+          onEditProfile: _openEditProfileSheet,
+          onChangePassword: _openChangePasswordSheet,
+        ),
         const SizedBox(height: OpenVtsSpacing.sm),
         _EmailSubscriptionCard(
           subscribed: state.emailSubscribed,
@@ -385,97 +373,151 @@ class _ProfileHeaderCard extends ConsumerWidget {
     ].where((s) => s.isNotEmpty).join(' ');
 
     return OpenVtsCard(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      padding: const EdgeInsets.all(OpenVtsSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _AvatarWithEdit(
-            url: url,
-            name: name.isNotEmpty ? name : 'S',
-            isUploading: isUploading,
-            onTap: onPickPhoto,
-          ),
-          const SizedBox(width: OpenVtsSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name.isNotEmpty ? name : 'Superadmin',
-                  style: const TextStyle(
-                    fontFamily: OpenVtsTypography.primaryFontFamily,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: OpenVtsColors.textPrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (username.isNotEmpty) ...[
-                  const SizedBox(height: 1),
-                  Text(
-                    '@$username',
-                    style: const TextStyle(
-                      fontFamily: OpenVtsTypography.primaryFontFamily,
-                      fontSize: 11.5,
-                      color: OpenVtsColors.textSecondary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-                if (email.isNotEmpty) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    email,
-                    style: const TextStyle(
-                      fontFamily: OpenVtsTypography.primaryFontFamily,
-                      fontSize: 11.5,
-                      color: OpenVtsColors.textSecondary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-                if (mobile.isNotEmpty) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    mobile,
-                    style: const TextStyle(
-                      fontFamily: OpenVtsTypography.primaryFontFamily,
-                      fontSize: 11.5,
-                      color: OpenVtsColors.textSecondary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-                if (profile.credits != null) ...[
-                  const SizedBox(height: OpenVtsSpacing.xs),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: OpenVtsColors.surface,
-                      borderRadius:
-                          BorderRadius.circular(OpenVtsRadius.pill),
-                      border: Border.all(color: OpenVtsColors.border),
-                    ),
-                    child: Text(
-                      '${profile.credits!.toStringAsFixed(0)} credits',
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _AvatarWithEdit(
+                url: url,
+                name: name.isNotEmpty ? name : 'S',
+                isUploading: isUploading,
+                onTap: onPickPhoto,
+              ),
+              const SizedBox(width: OpenVtsSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name.isNotEmpty ? name : 'Superadmin',
                       style: const TextStyle(
                         fontFamily: OpenVtsTypography.primaryFontFamily,
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
                         color: OpenVtsColors.textPrimary,
+                        height: 1.2,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (username.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        '@$username',
+                        style: const TextStyle(
+                          fontFamily: OpenVtsTypography.primaryFontFamily,
+                          fontSize: 12,
+                          color: OpenVtsColors.textSecondary,
+                          height: 1.2,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (email.isNotEmpty || mobile.isNotEmpty) ...[
+            const SizedBox(height: OpenVtsSpacing.sm),
+            if (email.isNotEmpty)
+              Row(
+                children: [
+                  const Icon(Icons.mail_outline_rounded, size: 14, color: OpenVtsColors.textTertiary),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      email,
+                      style: const TextStyle(
+                        fontFamily: OpenVtsTypography.primaryFontFamily,
+                        fontSize: 12,
+                        color: OpenVtsColors.textSecondary,
+                        height: 1.2,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
-              ],
+              ),
+            if (email.isNotEmpty && mobile.isNotEmpty) const SizedBox(height: 4),
+            if (mobile.isNotEmpty)
+              Row(
+                children: [
+                  const Icon(Icons.phone_outlined, size: 14, color: OpenVtsColors.textTertiary),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      mobile,
+                      style: const TextStyle(
+                        fontFamily: OpenVtsTypography.primaryFontFamily,
+                        fontSize: 12,
+                        color: OpenVtsColors.textSecondary,
+                        height: 1.2,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+          ],
+          if (profile.credits != null) ...[
+            const SizedBox(height: OpenVtsSpacing.md),
+            const Divider(height: 1, color: OpenVtsColors.border),
+            const SizedBox(height: OpenVtsSpacing.md),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: OpenVtsSpacing.sm,
+                vertical: OpenVtsSpacing.sm,
+              ),
+              decoration: BoxDecoration(
+                color: OpenVtsColors.surface,
+                borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+                border: Border.all(color: OpenVtsColors.border),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.credit_card_outlined, size: 16, color: OpenVtsColors.textSecondary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Credits',
+                          style: TextStyle(
+                            fontFamily: OpenVtsTypography.primaryFontFamily,
+                            fontSize: 11,
+                            color: OpenVtsColors.textTertiary,
+                            height: 1.1,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          profile.credits!.toStringAsFixed(0),
+                          style: const TextStyle(
+                            fontFamily: OpenVtsTypography.primaryFontFamily,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: OpenVtsColors.textPrimary,
+                            height: 1.1,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -748,77 +790,278 @@ class _VerificationRow extends StatelessWidget {
 }
 
 // =====================================================================
-// Action card
+// Address card
 // =====================================================================
 
-class _ActionCard extends StatelessWidget {
-  const _ActionCard({
-    required this.icon,
+class _AddressCard extends StatelessWidget {
+  const _AddressCard({required this.profile});
+  final SuperadminProfileSettings profile;
+
+  @override
+  Widget build(BuildContext context) {
+    final address = profile.address;
+    final addressLine = address?.addressLine ?? '';
+    final countryCode = address?.countryCode ?? '';
+    final stateCode = address?.stateCode ?? '';
+    final city = address?.cityDisplayName ?? profile.cityName ?? '';
+    final pincode = address?.pincode ?? '';
+
+    final hasAddress = addressLine.trim().isNotEmpty ||
+        countryCode.trim().isNotEmpty ||
+        stateCode.trim().isNotEmpty ||
+        city.trim().isNotEmpty ||
+        pincode.trim().isNotEmpty;
+
+    if (!hasAddress) return const SizedBox.shrink();
+
+    return _SectionCard(
+      title: 'ADDRESS',
+      children: [
+        if (addressLine.trim().isNotEmpty)
+          _InfoRow(
+            label: 'Address',
+            value: addressLine,
+            icon: Icons.home_outlined,
+          ),
+        if (countryCode.trim().isNotEmpty)
+          _InfoRow(
+            label: 'Country',
+            value: countryCode,
+            icon: Icons.public_outlined,
+          ),
+        if (stateCode.trim().isNotEmpty)
+          _InfoRow(
+            label: 'State',
+            value: stateCode,
+            icon: Icons.map_outlined,
+          ),
+        _InfoRow(
+          label: 'City',
+          value: city.trim().isNotEmpty ? city : '—',
+          icon: Icons.location_city_outlined,
+        ),
+        if (pincode.trim().isNotEmpty)
+          _InfoRow(
+            label: 'Pincode',
+            value: pincode,
+            icon: Icons.local_post_office_outlined,
+          ),
+      ],
+    );
+  }
+}
+
+// =====================================================================
+// Section card
+// =====================================================================
+
+class _SectionCard extends StatelessWidget {
+  const _SectionCard({
     required this.title,
-    required this.subtitle,
-    required this.onTap,
+    required this.children,
+    this.trailing,
   });
 
-  final IconData icon;
   final String title;
-  final String subtitle;
-  final VoidCallback onTap;
+  final List<Widget> children;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
     return OpenVtsCard(
-      padding: const EdgeInsets.symmetric(
-        horizontal: OpenVtsSpacing.md,
-        vertical: OpenVtsSpacing.sm,
+      padding: const EdgeInsets.fromLTRB(
+        OpenVtsSpacing.md,
+        OpenVtsSpacing.sm,
+        OpenVtsSpacing.md,
+        OpenVtsSpacing.md,
       ),
-      onTap: onTap,
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              color: OpenVtsColors.surface,
-              border: Border.all(color: OpenVtsColors.border),
-              borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-            ),
-            child: Icon(icon, size: 16, color: OpenVtsColors.textPrimary),
-          ),
-          const SizedBox(width: OpenVtsSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          if (trailing != null)
+            Row(
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontFamily: OpenVtsTypography.primaryFontFamily,
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w600,
-                    color: OpenVtsColors.textPrimary,
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: OpenVtsColors.textTertiary,
+                      letterSpacing: 0.4,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 1),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontFamily: OpenVtsTypography.primaryFontFamily,
-                    fontSize: 11.5,
-                    color: OpenVtsColors.textSecondary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                trailing!,
               ],
+            )
+          else
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: OpenVtsColors.textTertiary,
+                letterSpacing: 0.4,
+              ),
+            ),
+          const SizedBox(height: OpenVtsSpacing.xs),
+          const Divider(height: 1, color: OpenVtsColors.border),
+          const SizedBox(height: OpenVtsSpacing.xs),
+          ...children,
+        ],
+      ),
+    );
+  }
+}
+
+// =====================================================================
+// Info row
+// =====================================================================
+
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 100,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: OpenVtsColors.textTertiary,
+              ),
             ),
           ),
-          const Icon(
-            Icons.chevron_right_rounded,
-            size: 18,
-            color: OpenVtsColors.textTertiary,
+          const SizedBox(width: OpenVtsSpacing.xs),
+          Expanded(
+            child: Text(
+              value.trim().isEmpty ? '—' : value.trim(),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: OpenVtsColors.textPrimary,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
+    );
+  }
+}
+
+// =====================================================================
+// Company card
+// =====================================================================
+
+class _CompanyCard extends StatelessWidget {
+  const _CompanyCard({
+    required this.company,
+    required this.onEditCompany,
+  });
+
+  final SuperadminCompanySettings? company;
+  final VoidCallback onEditCompany;
+
+  @override
+  Widget build(BuildContext context) {
+    final companyName = company?.name?.trim() ?? '';
+    final website = company?.websiteUrl ?? '';
+    final domain = company?.customDomain ?? '';
+
+    return _SectionCard(
+      title: 'COMPANY',
+      trailing: SizedBox(
+        width: 32,
+        height: 32,
+        child: IconButton(
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+          icon: const Icon(
+            Icons.edit_outlined,
+            size: 16,
+            color: OpenVtsColors.textSecondary,
+          ),
+          tooltip: 'Edit company',
+          onPressed: onEditCompany,
+        ),
+      ),
+      children: [
+        if (companyName.isNotEmpty)
+          _InfoRow(
+            label: 'Company',
+            value: companyName,
+            icon: Icons.business_outlined,
+          ),
+        if (website.isNotEmpty)
+          _InfoRow(
+            label: 'Website',
+            value: website,
+            icon: Icons.language_outlined,
+          ),
+        if (domain.isNotEmpty)
+          _InfoRow(
+            label: 'Domain',
+            value: domain,
+            icon: Icons.dns_outlined,
+          ),
+      ],
+    );
+  }
+}
+
+// =====================================================================
+// Actions card
+// =====================================================================
+
+class _ActionsCard extends StatelessWidget {
+  const _ActionsCard({
+    required this.onEditProfile,
+    required this.onChangePassword,
+  });
+
+  final VoidCallback onEditProfile;
+  final VoidCallback onChangePassword;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: OpenVtsButton(
+            label: 'Edit Profile',
+            variant: OpenVtsButtonVariant.secondary,
+            onPressed: onEditProfile,
+          ),
+        ),
+        const SizedBox(width: OpenVtsSpacing.sm),
+        Expanded(
+          child: OpenVtsButton(
+            label: 'Change Password',
+            variant: OpenVtsButtonVariant.secondary,
+            onPressed: onChangePassword,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -1118,6 +1361,9 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
   bool _loadingStates = false;
   bool _loadingCities = false;
   bool _submitting = false;
+  bool _isInitializingProfileLocation = true;
+
+  String? _initialCityName;
 
   @override
   void initState() {
@@ -1137,8 +1383,10 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         : null;
     _stateCode =
         a?.stateCode?.trim().isNotEmpty == true ? a!.stateCode : null;
-    _cityName =
-        a?.cityName?.trim().isNotEmpty == true ? a!.cityName : null;
+
+    _initialCityName = a?.cityName?.trim().isNotEmpty == true ? a!.cityName : null;
+    _cityName = _initialCityName;
+
     unawaited(_loadCatalogs());
   }
 
@@ -1211,9 +1459,41 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         _cities = cities;
         _loadingCities = false;
       });
+
+      // Try to match initial city name if available
+      SuperadminCityOption? matchedOption;
+
+      if (_initialCityName != null && _initialCityName!.isNotEmpty) {
+        try {
+          matchedOption = _cities.firstWhere(
+            (c) => c.name.toLowerCase() == _initialCityName!.toLowerCase(),
+          );
+        } catch (_) {
+          matchedOption = null;
+        }
+      }
+
+      if (!mounted) return;
+      if (matchedOption != null) {
+        setState(() {
+          _cityName = matchedOption!.name;
+        });
+      } else if (_initialCityName != null && _initialCityName!.isNotEmpty) {
+        // Keep initial city name even if not in list
+        setState(() {
+          _cityName = _initialCityName;
+        });
+      }
+
+      // Mark initialization as complete
+      if (!mounted) return;
+      setState(() => _isInitializingProfileLocation = false);
     } catch (_) {
       if (!mounted) return;
-      setState(() => _loadingCities = false);
+      setState(() {
+        _loadingCities = false;
+        _isInitializingProfileLocation = false;
+      });
     }
   }
 
@@ -1354,7 +1634,9 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                       setState(() {
                         _countryCode = v;
                         _stateCode = null;
-                        _cityName = null;
+                        if (!_isInitializingProfileLocation) {
+                          _cityName = null;
+                        }
                         _states = [];
                         _cities = [];
                       });
@@ -1378,7 +1660,9 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     onChanged: (v) {
                       setState(() {
                         _stateCode = v;
-                        _cityName = null;
+                        if (!_isInitializingProfileLocation) {
+                          _cityName = null;
+                        }
                         _cities = [];
                       });
                       if (v != null && _countryCode != null) {
@@ -1390,7 +1674,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                   _DropdownField<String>(
                     label: 'City',
                     value: _cityName,
-                    enabled: !_loadingCities && _cities.isNotEmpty,
+                    enabled: !_loadingCities && (_cities.isNotEmpty || _cityName != null),
                     busy: _loadingCities,
                     items: _cities
                         .map(
@@ -1400,7 +1684,12 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                           ),
                         )
                         .toList(),
-                    onChanged: (v) => setState(() => _cityName = v),
+                    onChanged: (v) {
+                      setState(() {
+                        _cityName = v;
+                        _isInitializingProfileLocation = false;
+                      });
+                    },
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   OpenVtsTextField(

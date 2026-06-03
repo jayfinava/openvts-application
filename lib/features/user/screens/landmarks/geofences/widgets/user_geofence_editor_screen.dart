@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart' show Dio, BaseOptions;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +10,7 @@ import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../../shared/widgets/open_vts_button.dart';
+import '../../../../../../shared/widgets/open_vts_map_layer_selector.dart';
 import '../../../../controllers/user_landmark_geometry_editor_controller.dart';
 import '../../../../controllers/user_providers.dart';
 import '../../../../models/user_landmark_model.dart';
@@ -50,7 +52,12 @@ class _UserGeofenceEditorScreenState
     extends ConsumerState<UserGeofenceEditorScreen> {
   late final UserLandmarkGeometryEditorArgs _args;
   late final MapController _mapController;
+  late final TextEditingController _searchCtrl;
+  late final Dio _nominatimDio;
   bool _hydrated = false;
+  String _selectedLayerId = 'google-road';
+  List<_NominatimSearchResult> _searchResults = [];
+  bool _searchLoading = false;
 
   @override
   void initState() {
@@ -62,6 +69,16 @@ class _UserGeofenceEditorScreenState
       initialZoom: 14,
     );
     _mapController = MapController();
+    _searchCtrl = TextEditingController();
+    _nominatimDio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 6),
+        receiveTimeout: const Duration(seconds: 8),
+        headers: {
+          'User-Agent': 'OpenVTS-Mobile/1.0 (geofence-search)',
+        },
+      ),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       ref
@@ -73,6 +90,12 @@ class _UserGeofenceEditorScreenState
           );
       _hydrated = true;
     });
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
   }
 
   void _handleMapTap(LatLng point) {
@@ -96,6 +119,83 @@ class _UserGeofenceEditorScreenState
     Navigator.of(context).pop(
       UserGeofenceEditorResult(geodata: geo, toleranceM: state.toleranceM),
     );
+  }
+
+  Future<void> _searchPlace() async {
+    final query = _searchCtrl.text.trim();
+    if (query.length < 3) {
+      setState(() => _searchResults = []);
+      return;
+    }
+
+    setState(() => _searchLoading = true);
+    try {
+      final response = await _nominatimDio.get<List<dynamic>>(
+        'https://nominatim.openstreetmap.org/search',
+        queryParameters: {
+          'q': query,
+          'format': 'json',
+          'limit': 5,
+          'addressdetails': 0,
+        },
+      );
+
+      if (!mounted) return;
+
+      final results = <_NominatimSearchResult>[];
+      if (response.data is List) {
+        for (final item in response.data!) {
+          if (item is Map<String, dynamic>) {
+            final lat = double.tryParse(item['lat'].toString());
+            final lon = double.tryParse(item['lon'].toString());
+            if (lat != null && lon != null) {
+              results.add(_NominatimSearchResult(
+                label: item['display_name'] ?? '',
+                lat: lat,
+                lon: lon,
+              ));
+            }
+          }
+        }
+      }
+
+      setState(() {
+        _searchResults = results;
+        _searchLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _searchResults = [];
+        _searchLoading = false;
+      });
+    }
+  }
+
+  void _selectSearchResult(_NominatimSearchResult result) {
+    final point = LatLng(result.lat, result.lon);
+    try {
+      _mapController.move(point, _mapController.camera.zoom);
+    } catch (_) {}
+
+    final controller = ref.read(
+      userLandmarkGeometryEditorControllerProvider(_args).notifier,
+    );
+    final state =
+        ref.read(userLandmarkGeometryEditorControllerProvider(_args));
+
+    if (state.editorMode == UserGeofenceEditorMode.circle &&
+        state.circleCenter == null) {
+      controller.tapMap(UserGeoPoint(lat: point.latitude, lon: point.longitude));
+    }
+
+    _searchCtrl.clear();
+    setState(() => _searchResults = []);
+  }
+
+  MapLayerOption _getSelectedLayer() {
+    final layer = mapLayerOptionById(_selectedLayerId);
+    return layer ?? primaryMapLayerOptions.first;
   }
 
   @override
@@ -139,20 +239,57 @@ class _UserGeofenceEditorScreenState
                       children: _layersFor(state),
                     ),
                   ),
+                  // Top row: shape selector (left/center) and layer button (right)
                   Positioned(
                     top: OpenVtsSpacing.sm,
                     left: 0,
                     right: 0,
                     child: Center(
-                      child: _ModeToggleBar(
-                        mode: state.editorMode,
-                        onSelect: controller.setMode,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                left: OpenVtsSpacing.md,
+                              ),
+                              child: _ModeToggleBar(
+                                mode: state.editorMode,
+                                onSelect: controller.setMode,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              right: OpenVtsSpacing.sm,
+                            ),
+                            child: OpenVtsMapLayerSelectorButton(
+                              selectedLayerId: _selectedLayerId,
+                              onLayerSelected: (layer) {
+                                setState(() => _selectedLayerId = layer.id);
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
+                  // Search bar: below shape selector row
+                  Positioned(
+                    top: OpenVtsSpacing.sm + 56,
+                    left: OpenVtsSpacing.sm,
+                    right: OpenVtsSpacing.sm,
+                    child: _SearchBar(
+                      controller: _searchCtrl,
+                      isLoading: _searchLoading,
+                      results: _searchResults,
+                      onSearch: _searchPlace,
+                      onSelectResult: _selectSearchResult,
+                    ),
+                  ),
+                  // Measurement chip: below search bar
                   if (state.measurementSummary != null)
                     Positioned(
-                      top: OpenVtsSpacing.xxl + OpenVtsSpacing.sm,
+                      top: OpenVtsSpacing.sm + 112,
                       left: 0,
                       right: 0,
                       child: Center(
@@ -161,9 +298,10 @@ class _UserGeofenceEditorScreenState
                         ),
                       ),
                     ),
+                  // Editor map controls (zoom, undo, redo, etc.)
                   Positioned(
                     right: OpenVtsSpacing.sm,
-                    top: OpenVtsSpacing.xxl + OpenVtsSpacing.lg,
+                    top: OpenVtsSpacing.sm + 160,
                     child: _EditorMapControls(
                       onZoomIn: () => _mapController.move(
                         _mapController.camera.center,
@@ -199,10 +337,12 @@ class _UserGeofenceEditorScreenState
   }
 
   List<Widget> _layersFor(UserLandmarkGeometryEditorState state) {
+    final selectedLayer = _getSelectedLayer();
     final layers = <Widget>[
       TileLayer(
-        urlTemplate: 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
-        subdomains: const ['mt0', 'mt1', 'mt2', 'mt3'],
+        key: ValueKey<String>(_selectedLayerId),
+        urlTemplate: selectedLayer.url,
+        subdomains: selectedLayer.subdomains,
         userAgentPackageName: 'com.openvts.mobile',
       ),
     ];
@@ -1024,3 +1164,133 @@ class _NudgeBtn extends StatelessWidget {
     );
   }
 }
+
+class _NominatimSearchResult {
+  const _NominatimSearchResult({
+    required this.label,
+    required this.lat,
+    required this.lon,
+  });
+
+  final String label;
+  final double lat;
+  final double lon;
+}
+
+class _SearchBar extends StatelessWidget {
+  const _SearchBar({
+    required this.controller,
+    required this.isLoading,
+    required this.results,
+    required this.onSearch,
+    required this.onSelectResult,
+  });
+
+  final TextEditingController controller;
+  final bool isLoading;
+  final List<_NominatimSearchResult> results;
+  final VoidCallback onSearch;
+  final Function(_NominatimSearchResult) onSelectResult;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: OpenVtsColors.surfaceElevated,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+        border: Border.all(color: OpenVtsColors.border),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: TextField(
+              controller: controller,
+              onChanged: (_) => onSearch(),
+              style: OpenVtsTypography.body,
+              decoration: InputDecoration(
+                isDense: true,
+                hintText: 'Search place...',
+                hintStyle: OpenVtsTypography.body.copyWith(
+                  color: OpenVtsColors.textTertiary,
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  size: 18,
+                  color: OpenVtsColors.textSecondary,
+                ),
+                suffixIcon: isLoading
+                    ? Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              OpenVtsColors.brandInk.withValues(alpha: 0.6),
+                            ),
+                          ),
+                        ),
+                      )
+                    : controller.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.close, size: 18),
+                            onPressed: () {
+                              controller.clear();
+                              onSearch();
+                            },
+                          )
+                        : null,
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              ),
+            ),
+          ),
+          if (results.isNotEmpty)
+            Container(
+              constraints: const BoxConstraints(maxHeight: 200),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: OpenVtsColors.border),
+                ),
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: results.length,
+                itemBuilder: (context, index) {
+                  final result = results[index];
+                  return InkWell(
+                    onTap: () => onSelectResult(result),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      child: Text(
+                        result.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: OpenVtsTypography.body.copyWith(
+                          color: OpenVtsColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+

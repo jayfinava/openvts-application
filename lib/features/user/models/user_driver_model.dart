@@ -962,12 +962,12 @@ class UpdateUserDriverRequest {
     _putIfNotNull(payload, 'username', _optionalString(username));
     _putIfNotNull(payload, 'password', _optionalString(password));
     _putIfNotNull(payload, 'countryCode', _optionalString(countryCode));
-    _putIfNotNull(payload, 'StateCode', _optionalString(stateCode));
+    _putIfNotNull(payload, 'stateCode', _optionalString(stateCode));
     _putIfNotNull(payload, 'city', _optionalString(city));
     _putIfNotNull(payload, 'address', _optionalString(address));
     _putIfNotNull(payload, 'pincode', _optionalString(pincode));
     if (isActive != null) {
-      payload['isactive'] = isActive! ? 'true' : 'false';
+      payload['isActive'] = isActive;
     }
     if (attributes != null) {
       payload['attributes'] = Map<String, dynamic>.from(attributes!);

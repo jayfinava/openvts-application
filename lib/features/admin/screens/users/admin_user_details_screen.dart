@@ -247,7 +247,7 @@ class _AdminUserDetailsScreenState extends ConsumerState<AdminUserDetailsScreen>
         'Signed in as ${user.displayName}.',
         context: context,
       );
-      context.go(RoutePaths.userDashboard);
+      context.go(RoutePaths.userHome);
     } catch (_) {
       if (!mounted) {
         return;

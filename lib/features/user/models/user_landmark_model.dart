@@ -825,8 +825,6 @@ class CreateUserPoiRequest {
       if (category != null && category!.trim().isNotEmpty)
         'category': category!.trim(),
       if (color != null && color!.trim().isNotEmpty) 'color': color!.trim(),
-      if (iconSlug != null && iconSlug!.trim().isNotEmpty)
-        'icon': iconSlug!.trim(),
       if (toleranceMeters != null) 'toleranceMeters': toleranceMeters,
       'isActive': isActive,
       'coordinates': <String, double>{
@@ -864,7 +862,6 @@ class UpdateUserPoiRequest {
     if (description != null) payload['description'] = description!.trim();
     if (category != null) payload['category'] = category!.trim();
     if (color != null) payload['color'] = color!.trim();
-    if (iconSlug != null) payload['icon'] = iconSlug!.trim();
     if (toleranceMeters != null) payload['toleranceMeters'] = toleranceMeters;
     if (isActive != null) payload['isActive'] = isActive;
     if (coordinates != null) {

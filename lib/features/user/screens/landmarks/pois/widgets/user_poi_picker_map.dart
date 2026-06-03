@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:dio/dio.dart' show Dio, BaseOptions;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -11,11 +12,9 @@ import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../../shared/widgets/open_vts_button.dart';
+import '../../../../../../shared/widgets/open_vts_map_layer_selector.dart';
 import '../../../../models/user_landmark_model.dart';
 
-const String _kPoiTileUrl =
-    'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
-const List<String> _kPoiTileSubdomains = <String>['mt0', 'mt1', 'mt2', 'mt3'];
 const LatLng _kPoiFallbackCenter = LatLng(20.5937, 78.9629);
 
 /// Result returned from [UserPoiPickerMap].
@@ -53,8 +52,13 @@ class _UserPoiPickerMapState extends State<UserPoiPickerMap> {
   late final TextEditingController _latCtrl;
   late final TextEditingController _lonCtrl;
   late final TextEditingController _tolCtrl;
+  late final TextEditingController _searchCtrl;
 
   static const double _nudgeMeters = 10;
+  String _selectedLayerId = 'google-road';
+  List<_NominatimResult> _searchResults = [];
+  bool _searchLoading = false;
+  late final Dio _nominatimDio;
 
   @override
   void initState() {
@@ -71,6 +75,16 @@ class _UserPoiPickerMapState extends State<UserPoiPickerMap> {
     _tolCtrl = TextEditingController(
       text: _tolerance > 0 ? _tolerance.toStringAsFixed(0) : '',
     );
+    _searchCtrl = TextEditingController();
+    _nominatimDio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 6),
+        receiveTimeout: const Duration(seconds: 8),
+        headers: {
+          'User-Agent': 'OpenVTS-Mobile/1.0 (poi-search)',
+        },
+      ),
+    );
   }
 
   @override
@@ -78,6 +92,7 @@ class _UserPoiPickerMapState extends State<UserPoiPickerMap> {
     _latCtrl.dispose();
     _lonCtrl.dispose();
     _tolCtrl.dispose();
+    _searchCtrl.dispose();
     super.dispose();
   }
 
@@ -142,6 +157,69 @@ class _UserPoiPickerMapState extends State<UserPoiPickerMap> {
     );
   }
 
+  Future<void> _searchPlace() async {
+    final query = _searchCtrl.text.trim();
+    if (query.length < 3) {
+      setState(() => _searchResults = []);
+      return;
+    }
+
+    setState(() => _searchLoading = true);
+    try {
+      final response = await _nominatimDio.get<List<dynamic>>(
+        'https://nominatim.openstreetmap.org/search',
+        queryParameters: {
+          'q': query,
+          'format': 'json',
+          'limit': 5,
+          'addressdetails': 0,
+        },
+      );
+
+      if (!mounted) return;
+
+      final results = <_NominatimResult>[];
+      if (response.data is List) {
+        for (final item in response.data!) {
+          if (item is Map<String, dynamic>) {
+            final lat = double.tryParse(item['lat'].toString());
+            final lon = double.tryParse(item['lon'].toString());
+            if (lat != null && lon != null) {
+              results.add(_NominatimResult(
+                label: item['display_name'] ?? '',
+                lat: lat,
+                lon: lon,
+              ));
+            }
+          }
+        }
+      }
+
+      setState(() {
+        _searchResults = results;
+        _searchLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _searchResults = [];
+        _searchLoading = false;
+      });
+    }
+  }
+
+  void _selectSearchResult(_NominatimResult result) {
+    final point = LatLng(result.lat, result.lon);
+    _setPoint(point, recenter: true);
+    _searchCtrl.clear();
+    setState(() => _searchResults = []);
+  }
+
+  MapLayerOption _getSelectedLayer() {
+    final layer = mapLayerOptionById(_selectedLayerId);
+    return layer ?? primaryMapLayerOptions.first;
+  }
+
   @override
   Widget build(BuildContext context) {
     final center = _point ?? widget.initialPoint ?? _kPoiFallbackCenter;
@@ -187,51 +265,80 @@ class _UserPoiPickerMapState extends State<UserPoiPickerMap> {
           Expanded(
             child: ColoredBox(
               color: const Color(0xFFE8EEF5),
-              child: FlutterMap(
-                mapController: _map,
-                options: MapOptions(
-                  initialCenter: center,
-                  initialZoom: widget.initialPoint == null ? 4.5 : 15,
-                  minZoom: 2,
-                  maxZoom: 19,
-                  interactionOptions: const InteractionOptions(
-                    flags: InteractiveFlag.all,
-                  ),
-                  onTap: (_, latlng) => _setPoint(latlng),
-                ),
+              child: Stack(
                 children: [
-                  TileLayer(
-                    urlTemplate: _kPoiTileUrl,
-                    subdomains: _kPoiTileSubdomains,
-                    userAgentPackageName: 'com.openvts.mobile',
+                  FlutterMap(
+                    mapController: _map,
+                    options: MapOptions(
+                      initialCenter: center,
+                      initialZoom: widget.initialPoint == null ? 4.5 : 15,
+                      minZoom: 2,
+                      maxZoom: 19,
+                      interactionOptions: const InteractionOptions(
+                        flags: InteractiveFlag.all,
+                      ),
+                      onTap: (_, latlng) => _setPoint(latlng),
+                    ),
+                    children: [
+                      TileLayer(
+                        key: ValueKey<String>(_selectedLayerId),
+                        urlTemplate: _getSelectedLayer().url,
+                        subdomains: _getSelectedLayer().subdomains,
+                        userAgentPackageName: 'com.openvts.mobile',
+                      ),
+                      if (_point != null && _tolerance > 0)
+                        CircleLayer(
+                          circles: [
+                            CircleMarker(
+                              point: _point!,
+                              useRadiusInMeter: true,
+                              radius: _tolerance,
+                              color: OpenVtsColors.brandInk.withValues(alpha: 0.10),
+                              borderStrokeWidth: 1.2,
+                              borderColor: OpenVtsColors.brandInk.withValues(
+                                alpha: 0.6,
+                              ),
+                            ),
+                          ],
+                        ),
+                      if (_point != null)
+                        MarkerLayer(
+                          markers: [
+                            Marker(
+                              point: _point!,
+                              width: 22,
+                              height: 22,
+                              alignment: Alignment.center,
+                              child: const _PickerPin(),
+                            ),
+                          ],
+                        ),
+                    ],
                   ),
-                  if (_point != null && _tolerance > 0)
-                    CircleLayer(
-                      circles: [
-                        CircleMarker(
-                          point: _point!,
-                          useRadiusInMeter: true,
-                          radius: _tolerance,
-                          color: OpenVtsColors.brandInk.withValues(alpha: 0.10),
-                          borderStrokeWidth: 1.2,
-                          borderColor: OpenVtsColors.brandInk.withValues(
-                            alpha: 0.6,
-                          ),
-                        ),
-                      ],
+                  // Layer button at top-right
+                  Positioned(
+                    top: OpenVtsSpacing.sm,
+                    right: OpenVtsSpacing.sm,
+                    child: OpenVtsMapLayerSelectorButton(
+                      selectedLayerId: _selectedLayerId,
+                      onLayerSelected: (layer) {
+                        setState(() => _selectedLayerId = layer.id);
+                      },
                     ),
-                  if (_point != null)
-                    MarkerLayer(
-                      markers: [
-                        Marker(
-                          point: _point!,
-                          width: 22,
-                          height: 22,
-                          alignment: Alignment.center,
-                          child: const _PickerPin(),
-                        ),
-                      ],
+                  ),
+                  // Search bar below layer button area
+                  Positioned(
+                    top: OpenVtsSpacing.sm + 56,
+                    left: OpenVtsSpacing.sm,
+                    right: OpenVtsSpacing.sm,
+                    child: _SearchBar(
+                      controller: _searchCtrl,
+                      isLoading: _searchLoading,
+                      results: _searchResults,
+                      onSearch: _searchPlace,
+                      onSelectResult: _selectSearchResult,
                     ),
+                  ),
                 ],
               ),
             ),
@@ -556,3 +663,133 @@ class _IconBtn extends StatelessWidget {
     );
   }
 }
+
+class _NominatimResult {
+  const _NominatimResult({
+    required this.label,
+    required this.lat,
+    required this.lon,
+  });
+
+  final String label;
+  final double lat;
+  final double lon;
+}
+
+class _SearchBar extends StatelessWidget {
+  const _SearchBar({
+    required this.controller,
+    required this.isLoading,
+    required this.results,
+    required this.onSearch,
+    required this.onSelectResult,
+  });
+
+  final TextEditingController controller;
+  final bool isLoading;
+  final List<_NominatimResult> results;
+  final VoidCallback onSearch;
+  final Function(_NominatimResult) onSelectResult;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: OpenVtsColors.surfaceElevated,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+        border: Border.all(color: OpenVtsColors.border),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: TextField(
+              controller: controller,
+              onChanged: (_) => onSearch(),
+              style: OpenVtsTypography.body,
+              decoration: InputDecoration(
+                isDense: true,
+                hintText: 'Search place...',
+                hintStyle: OpenVtsTypography.body.copyWith(
+                  color: OpenVtsColors.textTertiary,
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  size: 18,
+                  color: OpenVtsColors.textSecondary,
+                ),
+                suffixIcon: isLoading
+                    ? Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              OpenVtsColors.brandInk.withValues(alpha: 0.6),
+                            ),
+                          ),
+                        ),
+                      )
+                    : controller.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.close, size: 18),
+                            onPressed: () {
+                              controller.clear();
+                              onSearch();
+                            },
+                          )
+                        : null,
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              ),
+            ),
+          ),
+          if (results.isNotEmpty)
+            Container(
+              constraints: const BoxConstraints(maxHeight: 200),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: OpenVtsColors.border),
+                ),
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: results.length,
+                itemBuilder: (context, index) {
+                  final result = results[index];
+                  return InkWell(
+                    onTap: () => onSelectResult(result),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      child: Text(
+                        result.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: OpenVtsTypography.body.copyWith(
+                          color: OpenVtsColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
