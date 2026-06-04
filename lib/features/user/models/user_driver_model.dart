@@ -804,6 +804,11 @@ class UserDriverStateOption {
                     'iso2',
                     'state',
                     'value',
+                    'id',
+                    'provinceCode',
+                    'province_code',
+                    'regionCode',
+                    'region_code',
                   ]) ??
                   '')
               .toUpperCase();
@@ -812,6 +817,10 @@ class UserDriverStateOption {
                 'stateName',
                 'state_name',
                 'label',
+                'provinceName',
+                'province_name',
+                'regionName',
+                'region_name',
               ]) ??
               value;
 
@@ -855,6 +864,7 @@ class UserDriverCityOption {
                 'cityId',
                 'city_id',
                 'id',
+                'title',
               ]) ??
               '';
           final label = _firstString(itemMap, const [
@@ -863,6 +873,7 @@ class UserDriverCityOption {
                 'city_name',
                 'city',
                 'label',
+                'title',
               ]) ??
               value;
 
@@ -962,13 +973,10 @@ class UpdateUserDriverRequest {
     _putIfNotNull(payload, 'username', _optionalString(username));
     _putIfNotNull(payload, 'password', _optionalString(password));
     _putIfNotNull(payload, 'countryCode', _optionalString(countryCode));
-    _putIfNotNull(payload, 'stateCode', _optionalString(stateCode));
+    _putIfNotNull(payload, 'StateCode', _optionalString(stateCode));
     _putIfNotNull(payload, 'city', _optionalString(city));
     _putIfNotNull(payload, 'address', _optionalString(address));
     _putIfNotNull(payload, 'pincode', _optionalString(pincode));
-    if (isActive != null) {
-      payload['isActive'] = isActive;
-    }
     if (attributes != null) {
       payload['attributes'] = Map<String, dynamic>.from(attributes!);
     }
@@ -1225,6 +1233,8 @@ List<dynamic> _extractOptionList(dynamic json) {
     json,
     preferredKeys: const [
       'data',
+      'results',
+      'response',
       'items',
       'records',
       'list',
@@ -1234,6 +1244,8 @@ List<dynamic> _extractOptionList(dynamic json) {
       'mobilePrefixes',
       'states',
       'cities',
+      'provinces',
+      'regions',
     ],
   );
 }
