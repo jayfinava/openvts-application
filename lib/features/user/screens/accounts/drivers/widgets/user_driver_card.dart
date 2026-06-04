@@ -7,6 +7,7 @@ import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../../core/utils/date_time_formatter.dart';
+import '../../../../../../shared/helpers/phone_helper.dart';
 import '../../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../../shared/widgets/open_vts_status_chip.dart';
 import '../../../../models/user_driver_model.dart';
@@ -202,13 +203,11 @@ String _usernameLabel(UserDriver driver) {
 }
 
 String _phoneLabel(UserDriver driver) {
-  final prefix = driver.mobilePrefix.trim();
-  final mobile = driver.mobile.trim();
-  final value = [prefix, mobile]
-      .where((part) => part.isNotEmpty && part != '-')
-      .join(' ')
-      .trim();
-  return value.isEmpty ? '-' : value;
+  final normalized = normalizePhoneParts(
+    dialCode: driver.mobilePrefix,
+    mobile: driver.mobile,
+  );
+  return normalized.displayNumber;
 }
 
 String _assignmentLabel(UserDriver driver) {

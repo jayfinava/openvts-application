@@ -14,7 +14,6 @@ Future<void> main() async {
     SharedPreferences.getInstance,
   );
   await bootstrap(() async {
-    //hello world
     runApp(
       ProviderScope(
         overrides: [
