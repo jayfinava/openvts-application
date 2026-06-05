@@ -298,14 +298,15 @@ class _ActionGroupChips extends StatelessWidget {
   }
 }
 
-class _LogCard extends StatelessWidget {
+class _LogCard extends ConsumerWidget {
   const _LogCard({required this.log, required this.onTap});
 
   final AdminUserActivityLog log;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     final entity = _entityLabel(log.entity, log.entityId);
     final platform = _platformLine(log);
     return OpenVtsCard(
@@ -351,7 +352,7 @@ class _LogCard extends StatelessWidget {
                     ),
                     const SizedBox(width: OpenVtsSpacing.xs),
                     Text(
-                      _relativeTime(log.createdAt),
+                      _relativeTime(log.createdAt, formatter: formatter),
                       style: OpenVtsTypography.meta.copyWith(
                         color: OpenVtsColors.textTertiary,
                         fontSize: 10,
@@ -814,7 +815,7 @@ String _shortText(String value, int maxLength) {
   return '${normalized.substring(0, maxLength - 3)}...';
 }
 
-String _relativeTime(DateTime? value) {
+String _relativeTime(DateTime? value, {AppDateFormatter? formatter}) {
   if (value == null) {
     return '-';
   }
@@ -831,6 +832,10 @@ String _relativeTime(DateTime? value) {
   }
   if (diff.inDays >= 0 && diff.inDays < 7) {
     return '${diff.inDays}d ago';
+  }
+
+  if (formatter != null) {
+    return formatter.formatDate(value.toLocal());
   }
   return DateFormat('dd MMM yyyy').format(value.toLocal());
 }

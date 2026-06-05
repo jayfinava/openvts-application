@@ -8,6 +8,7 @@ import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
+import '../../../../core/utils/date_time_formatter.dart';
 import '../../../../shared/widgets/open_vts_bottom_sheet.dart';
 import '../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../shared/widgets/open_vts_loader.dart';
@@ -21,6 +22,7 @@ class AdminCalendarScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     final focusedDate = ref.watch(adminCalendarFocusedDateProvider);
     final selectedDate = ref.watch(adminCalendarSelectedDateProvider);
     final eventsAsync = ref.watch(adminCalendarEventsProvider);
@@ -148,7 +150,7 @@ class AdminCalendarScreen extends ConsumerWidget {
                                       .read(adminCalendarFocusedDateProvider
                                           .notifier)
                                       .state = focusedDay;
-                                  _showDayDetailsSheet(context, selectedDay);
+                                  _showDayDetailsSheet(context, selectedDay, formatter);
                                 },
                                 onPageChanged: (focusedDay) {
                                   ref
@@ -225,10 +227,14 @@ class AdminCalendarScreen extends ConsumerWidget {
     );
   }
 
-  void _showDayDetailsSheet(BuildContext context, DateTime date) {
+  void _showDayDetailsSheet(
+    BuildContext context,
+    DateTime date,
+    AppDateFormatter formatter,
+  ) {
     OpenVtsBottomSheet.show(
       context: context,
-      title: DateFormat('dd MMM yyyy').format(date),
+      title: formatter.formatDate(date),
       child: AdminCalendarDayBottomSheet(date: date),
     );
   }
@@ -462,7 +468,7 @@ class _HeaderLogoTile extends StatelessWidget {
   }
 }
 
-class _CalendarToolbar extends StatelessWidget {
+class _CalendarToolbar extends ConsumerWidget {
   const _CalendarToolbar({
     required this.displayedDate,
     required this.focusedDate,
@@ -482,7 +488,9 @@ class _CalendarToolbar extends StatelessWidget {
   final void Function(String value, bool selected) onToggleFilter;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -490,7 +498,7 @@ class _CalendarToolbar extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                DateFormat('dd MMM yyyy').format(displayedDate),
+                formatter.formatDate(displayedDate),
                 style: OpenVtsTypography.titleMedium.copyWith(
                   color: OpenVtsColors.textPrimary,
                   fontWeight: FontWeight.w700,

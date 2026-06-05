@@ -65,19 +65,30 @@ class AppDateFormatter {
   const AppDateFormatter({
     required this.datePattern,
     required this.use24Hour,
+    this.timezone = '',
   });
 
   final String datePattern;
   final bool use24Hour;
+  final String timezone;
 
   String get _intlDatePattern => _toIntlPattern(datePattern);
 
   String get _timePattern => use24Hour ? 'HH:mm' : 'hh:mm a';
 
+  /// Convert UTC DateTime to target timezone if specified
+  DateTime _applyTimezone(DateTime value) {
+    if (timezone.isEmpty) return value;
+    final duration = _parseTimezoneOffset(timezone);
+    if (duration == null) return value;
+    return value.add(duration);
+  }
+
   String formatDateTime(DateTime? value) {
     if (value == null) return '';
     try {
-      return DateFormat('$_intlDatePattern, $_timePattern').format(value);
+      final adjusted = _applyTimezone(value);
+      return DateFormat('$_intlDatePattern, $_timePattern').format(adjusted);
     } catch (_) {
       return _fallbackDateTime(value);
     }
@@ -86,7 +97,8 @@ class AppDateFormatter {
   String formatDate(DateTime? value) {
     if (value == null) return '';
     try {
-      return DateFormat(_intlDatePattern).format(value);
+      final adjusted = _applyTimezone(value);
+      return DateFormat(_intlDatePattern).format(adjusted);
     } catch (_) {
       return _fallbackDate(value);
     }
@@ -95,12 +107,14 @@ class AppDateFormatter {
   String formatTime(DateTime? value) {
     if (value == null) return '';
     try {
-      return DateFormat(_timePattern).format(value);
+      final adjusted = _applyTimezone(value);
+      return DateFormat(_timePattern).format(adjusted);
     } catch (_) {
       return _fallbackTime(value);
     }
   }
 
+  /// Format relative time (e.g., "2h ago") falling back to date for older timestamps.
   String formatRelativeOrDate(DateTime? value) {
     if (value == null) return '';
     final now = DateTime.now();
@@ -111,6 +125,7 @@ class AppDateFormatter {
     }
     if (diff.inHours < 24 && diff.inHours >= 0) return '${diff.inHours}h ago';
     if (diff.inDays < 7 && diff.inDays >= 0) return '${diff.inDays}d ago';
+    if (diff.inDays == 1) return 'yesterday';
     return formatDate(value);
   }
 
@@ -124,6 +139,22 @@ class AppDateFormatter {
 
   static String _fallbackTime(DateTime value) {
     return DateFormat('hh:mm a').format(value);
+  }
+
+  /// Parse timezone offset like "+05:30", "-08:00" to Duration
+  static Duration? _parseTimezoneOffset(String offset) {
+    if (offset.trim().isEmpty) return null;
+    final normalized = offset.trim();
+    try {
+      final sign = normalized.startsWith('-') ? -1 : 1;
+      final parts = normalized.replaceAll(RegExp(r'[+-]'), '').split(':');
+      if (parts.length != 2) return null;
+      final hours = int.parse(parts[0]);
+      final minutes = int.parse(parts[1]);
+      return Duration(hours: sign * hours, minutes: sign * minutes);
+    } catch (_) {
+      return null;
+    }
   }
 }
 
@@ -152,5 +183,6 @@ final appDateFormatterProvider = Provider<AppDateFormatter>((ref) {
   return AppDateFormatter(
     datePattern: prefs.dateFormat,
     use24Hour: prefs.use24Hour,
+    timezone: prefs.timezone,
   );
 });

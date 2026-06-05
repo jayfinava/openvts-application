@@ -6,6 +6,7 @@ import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 
 typedef AdminDashboardListItemBuilder = Widget Function(
@@ -398,7 +399,9 @@ String adminDashboardFormatNumber(num value) {
   return NumberFormat.decimalPattern('en_IN').format(value);
 }
 
-String adminDashboardRelativeDate(DateTime? value) {
+/// Format relative time with fallback to formatted date.
+/// The [formatter] should come from ref.watch(appDateFormatterProvider) in ConsumerWidgets.
+String adminDashboardRelativeDate(DateTime? value, {AppDateFormatter? formatter}) {
   if (value == null) {
     return '-';
   }
@@ -421,6 +424,12 @@ String adminDashboardRelativeDate(DateTime? value) {
   if (difference.inDays < 7) {
     return '${difference.inDays}d ago';
   }
+
+  // Use provided formatter if available, otherwise use DateTimeFormatter fallback
+  if (formatter != null) {
+    return formatter.formatDate(localValue);
+  }
+  // Fallback for non-Riverpod contexts (shouldn't happen with proper refactoring)
   return DateFormat('dd MMM yyyy').format(localValue);
 }
 

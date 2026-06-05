@@ -113,7 +113,11 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
     final ok = await _controller.updateLocalization(request);
     if (!mounted) return;
     if (ok) {
-      // Apply preferences immediately with saved request values (confirmed by successful API save)
+      ToastHelper.showSuccess('Localization saved');
+
+      // Apply preferences immediately with saved request values (confirmed by successful API save).
+      // This updates appLocalizationPreferencesProvider, which cascades to appDateFormatterProvider,
+      // triggering UI rebuilds across all date/time displays.
       await ref.read(appLocalizationPreferencesProvider.notifier).applyFromSuperadminSettings(
             language: request.language,
             dateFormat: request.dateFormat,
@@ -124,20 +128,23 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
             units: request.units.apiValue,
           );
       if (!mounted) return;
-      ToastHelper.showSuccess('Localization saved');
 
-      // Load fresh localization data from backend AFTER applying preferences.
-      // The controller state (set by updateLocalization) preserves the request values,
-      // so form fields remain as user submitted even if backend response differs.
-      // This prevents visual reset while allowing UI to display confirmed state.
-      await _controller.loadLocalization();
-      if (!mounted) return;
-
-      // Rehydrate form from controller state, which contains the confirmed request values
-      // (not fresh backend data that might be stale or have different field names)
+      // Rehydrate form from request (what we just saved), ensuring it reflects saved values.
+      // Do NOT reload from backend because response may differ or have parsing issues.
       if (mounted) {
-        setState(() => _hydrated = false);
-        _hydrate(ref.read(superadminSettingsControllerProvider).localization);
+        setState(() {
+          _hydrated = true;
+          _language = request.language;
+          _direction = request.layoutDirection;
+          _dateFormat = request.dateFormat;
+          _use24Hour = request.use24Hour;
+          _theme = request.theme;
+          _timezone = request.timezoneOffset;
+          _units = request.units;
+          _latCtrl.text = request.defaultLat == 0 ? '' : request.defaultLat.toString();
+          _lonCtrl.text = request.defaultLon == 0 ? '' : request.defaultLon.toString();
+          _zoomCtrl.text = request.mapZoom.toString();
+        });
       }
     } else {
       ToastHelper.showError(
