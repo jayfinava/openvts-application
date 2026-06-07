@@ -594,7 +594,7 @@ class _RecordPaymentSheetState extends ConsumerState<_RecordPaymentSheet> {
                   width: 44,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: OpenVtsColors.border,
+                    color: theme.colorScheme.outlineVariant,
                     borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
                   ),
                 ),
