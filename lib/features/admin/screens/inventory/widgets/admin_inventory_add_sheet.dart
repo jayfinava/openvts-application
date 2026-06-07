@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
@@ -112,10 +113,7 @@ class _AdminInventoryAddSheetState
                         validator: (v) {
                           if (_mode == AdminInventoryAddMode.device)
                             return null;
-                          final value = (v ?? '').trim();
-                          return value.isEmpty
-                              ? 'SIM number is required'
-                              : null;
+                          return Validators.simNumber(v);
                         },
                       ),
                       const SizedBox(height: OpenVtsSpacing.sm),

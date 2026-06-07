@@ -62,8 +62,7 @@ class AdminInventorySimCardWidget extends StatelessWidget {
           ),
           const SizedBox(height: OpenVtsSpacing.md),
           AdminInventoryCardFooter(
-            createdValue:
-                AdminInventoryCardFooter.formatCreatedAt(simCard.createdAt),
+            createdAt: simCard.createdAt,
             statusLabel: formatInventoryStatusLabel(simCard.statusLabel),
           ),
         ],

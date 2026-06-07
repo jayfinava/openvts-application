@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
@@ -8,9 +9,7 @@ import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_status_chip.dart';
 import '../../../models/user_transactions_model.dart';
 
-const DateTimeFormatter _dateTimeFormatter = DateTimeFormatter();
-
-class UserTransactionCard extends StatelessWidget {
+class UserTransactionCard extends ConsumerWidget {
   const UserTransactionCard({
     required this.transaction,
     required this.counterpartyName,
@@ -23,7 +22,8 @@ class UserTransactionCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dateTimeFormatter = ref.watch(appDateFormatterProvider);
     final referenceProviderLine = _referenceProviderLine(transaction);
     final vehiclePlanLine = _vehiclePlanLine(transaction);
 
@@ -103,7 +103,7 @@ class UserTransactionCard extends StatelessWidget {
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  _metaLine(transaction, vehiclePlanLine),
+                  _metaLine(transaction, vehiclePlanLine, dateTimeFormatter),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
@@ -160,8 +160,8 @@ class UserTransactionCard extends StatelessWidget {
     return _titleCaseWords(rawValue);
   }
 
-  String _metaLine(UserTransaction item, String? vehiclePlanLine) {
-    final parts = <String>[_dateLabel(item)];
+  String _metaLine(UserTransaction item, String? vehiclePlanLine, dynamic formatter) {
+    final parts = <String>[_dateLabel(item, formatter)];
     if (vehiclePlanLine != null) {
       parts.add(vehiclePlanLine);
     }
@@ -193,9 +193,9 @@ class UserTransactionCard extends StatelessWidget {
     return null;
   }
 
-  String _dateLabel(UserTransaction item) {
+  String _dateLabel(UserTransaction item, dynamic formatter) {
     if (item.createdAt != null) {
-      return _dateTimeFormatter.formatDateTime(item.createdAt!.toLocal());
+      return formatter.formatDateTime(item.createdAt!.toLocal());
     }
 
     final fallback = item.createdAtRaw.trim();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/open_vts_spacing.dart';
+import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../models/admin_vehicle_model.dart';
 
@@ -71,18 +72,19 @@ class _AdminVehicleEditSheetState extends State<AdminVehicleEditSheet> {
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Name'),
-                validator: (value) =>
-                    (value ?? '').trim().isEmpty ? 'Name is required' : null,
+                validator: Validators.vehicleName,
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               TextFormField(
                 controller: _plateController,
-                decoration: const InputDecoration(labelText: 'Plate Number'),
+                decoration: const InputDecoration(labelText: 'Plate Number (optional)'),
+                validator: Validators.plateNumberOptional,
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               TextFormField(
                 controller: _vinController,
-                decoration: const InputDecoration(labelText: 'VIN'),
+                decoration: const InputDecoration(labelText: 'VIN (optional)'),
+                validator: Validators.vinOptional,
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               DropdownButtonFormField<String>(

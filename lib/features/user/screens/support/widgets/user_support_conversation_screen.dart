@@ -23,8 +23,6 @@ import 'package:open_vts/shared/widgets/open_vts_error_view.dart';
 import 'package:open_vts/shared/widgets/open_vts_loader.dart';
 import 'package:open_vts/shared/widgets/open_vts_page_scaffold.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
 class UserSupportConversationScreen extends StatelessWidget {
   const UserSupportConversationScreen({required this.ticketId, super.key});
 
@@ -286,7 +284,7 @@ class _UserSupportConversationPaneState
   }
 }
 
-class _ConversationHeader extends StatelessWidget {
+class _ConversationHeader extends ConsumerWidget {
   const _ConversationHeader({
     required this.ticket,
     required this.onBack,
@@ -300,7 +298,8 @@ class _ConversationHeader extends StatelessWidget {
   final bool isRefreshing;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(
@@ -392,17 +391,17 @@ class _ConversationHeader extends StatelessWidget {
               if (ticket.createdAt != null)
                 _MetaChip(
                   label:
-                      'Created ${_dateFormatter.formatDate(ticket.createdAt!)}',
+                      'Created ${dateFormatter.formatDate(ticket.createdAt!)}',
                 ),
               if (ticket.updatedAt != null)
                 _MetaChip(
                   label:
-                      'Updated ${_dateFormatter.formatDate(ticket.updatedAt!)}',
+                      'Updated ${dateFormatter.formatDate(ticket.updatedAt!)}',
                 ),
               if (ticket.closedAt != null)
                 _MetaChip(
                   label:
-                      'Closed ${_dateFormatter.formatDate(ticket.closedAt!)}',
+                      'Closed ${dateFormatter.formatDate(ticket.closedAt!)}',
                 ),
             ],
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../core/theme/open_vts_colors.dart';
@@ -9,9 +10,7 @@ import '../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../models/user_settings_model.dart';
 
-const DateTimeFormatter _dateTimeFormatter = DateTimeFormatter();
-
-class UserLocalizationPreviewCard extends StatelessWidget {
+class UserLocalizationPreviewCard extends ConsumerWidget {
   const UserLocalizationPreviewCard({
     required this.settings,
     required this.languageLabel,
@@ -22,10 +21,11 @@ class UserLocalizationPreviewCard extends StatelessWidget {
   final String languageLabel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dateTimeFormatter = ref.watch(appDateFormatterProvider);
     final now = DateTime.now();
-    final dateText = _formatDate(now, settings.dateFormat);
-    final timeText = _formatTime(now, settings.use24Hour);
+    final dateText = _formatDate(now, settings.dateFormat, dateTimeFormatter);
+    final timeText = _formatTime(now, settings.use24Hour, dateTimeFormatter);
 
     final directionText =
         settings.layoutDirection == UserLayoutDirection.rtl ? 'RTL' : 'LTR';
@@ -75,22 +75,22 @@ class UserLocalizationPreviewCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime now, String dateFormat) {
+  String _formatDate(DateTime now, String dateFormat, dynamic formatter) {
     final normalized = dateFormat.trim();
     if (normalized.isEmpty) {
-      return _dateTimeFormatter.formatDate(now);
+      return formatter.formatDate(now);
     }
 
     try {
       return DateFormat(_toIntlPattern(normalized)).format(now);
     } catch (_) {
-      return _dateTimeFormatter.formatDate(now);
+      return formatter.formatDate(now);
     }
   }
 
-  String _formatTime(DateTime now, bool use24Hour) {
+  String _formatTime(DateTime now, bool use24Hour, dynamic formatter) {
     if (!use24Hour) {
-      return _dateTimeFormatter.formatTime(now);
+      return formatter.formatTime(now);
     }
 
     try {

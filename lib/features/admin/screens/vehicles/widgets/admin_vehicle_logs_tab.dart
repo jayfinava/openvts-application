@@ -16,8 +16,6 @@ import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../models/admin_vehicle_model.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
 class AdminVehicleLogsTab extends ConsumerStatefulWidget {
   const AdminVehicleLogsTab({
     super.key,
@@ -51,6 +49,7 @@ class _AdminVehicleLogsTabState extends ConsumerState<AdminVehicleLogsTab> {
   @override
   Widget build(BuildContext context) {
     _unitFormatter = ref.watch(unitFormatterProvider);
+    ref.watch(appDateFormatterProvider);
     if (widget.imei.trim().isEmpty) {
       return const OpenVtsEmptyState(
         title: 'IMEI missing',
@@ -194,12 +193,11 @@ class _AdminVehicleLogsTabState extends ConsumerState<AdminVehicleLogsTab> {
 
   String _fmtDateTime(DateTime? value) {
     if (value == null) return '-';
-    final local = value.toLocal();
-    return '${_fmtDate(local)} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+    return value.toIso8601String();
   }
 }
 
-class _LogCard extends StatelessWidget {
+class _LogCard extends ConsumerWidget {
   const _LogCard({
     required this.log,
     required this.unitFormatter,
@@ -211,9 +209,10 @@ class _LogCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final displayTime = log.displayTime;
     final speedLabel = '${_num(log.speedKph)} ${unitFormatter.speedLabel}';
+    final formatter = ref.watch(appDateFormatterProvider);
 
     return OpenVtsCard(
       onTap: onTap,
@@ -262,7 +261,7 @@ class _LogCard extends StatelessWidget {
                   label: 'Time',
                   value: displayTime == null
                       ? '-'
-                      : _dateFormatter.formatDateTime(displayTime),
+                      : formatter.formatDateTime(displayTime),
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),

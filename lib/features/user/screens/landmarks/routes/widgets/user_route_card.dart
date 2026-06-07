@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
@@ -14,7 +15,7 @@ import '../../../../models/user_landmark_model.dart';
 /// Compact route list card. Renders name, status chip, color dot,
 /// point/distance/tolerance meta, updated date and edit/delete actions.
 /// Tapping the card body invokes [onSelect] which fits the route on the map.
-class UserRouteCard extends StatelessWidget {
+class UserRouteCard extends ConsumerWidget {
   const UserRouteCard({
     super.key,
     required this.route,
@@ -32,10 +33,9 @@ class UserRouteCard extends StatelessWidget {
   final VoidCallback onDelete;
   final bool isDeleting;
 
-  static const DateTimeFormatter _formatter = DateTimeFormatter();
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     final color = _parseHex(route.color);
     final inactive = !route.isActive;
 
@@ -127,7 +127,7 @@ class UserRouteCard extends StatelessWidget {
                       if (route.updatedAt != null) ...[
                         const SizedBox(width: OpenVtsSpacing.sm),
                         Text(
-                          _formatter.formatDate(route.updatedAt!),
+                          formatter.formatDate(route.updatedAt!),
                           style: OpenVtsTypography.meta.copyWith(
                             color: OpenVtsColors.textTertiary,
                           ),

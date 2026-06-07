@@ -14,8 +14,6 @@ import '../../../models/user_vehicle_model.dart';
 import '../../../models/user_vehicle_state.dart';
 import 'user_vehicle_edit_sheet.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
 class UserVehicleDetailsTabView extends ConsumerWidget {
   const UserVehicleDetailsTabView({required this.provider, super.key});
 
@@ -27,6 +25,7 @@ class UserVehicleDetailsTabView extends ConsumerWidget {
     final state = ref.watch(provider);
     final controller = ref.read(provider.notifier);
     final vehicle = state.vehicle;
+    final formatter = ref.watch(appDateFormatterProvider);
 
     if (vehicle == null) {
       return _SectionStateCard(
@@ -60,7 +59,7 @@ class UserVehicleDetailsTabView extends ConsumerWidget {
               value: _display(vehicle.vehicleType?.name),
             ),
             _InfoRow(label: 'GMT Offset', value: _display(vehicle.gmtOffset)),
-            _InfoRow(label: 'Created At', value: _dateText(vehicle.createdAt)),
+            _InfoRow(label: 'Created At', value: _dateText(vehicle.createdAt, formatter)),
           ],
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
@@ -392,9 +391,9 @@ String _numberText(num? value) {
   return value.toString();
 }
 
-String _dateText(DateTime? value) {
+String _dateText(DateTime? value, AppDateFormatter formatter) {
   if (value == null) return '-';
-  return _dateFormatter.formatDate(value.toLocal());
+  return formatter.formatDate(value);
 }
 
 String _titleCase(String value) {

@@ -1950,7 +1950,7 @@ class _VehicleBottomDrawerState extends ConsumerState<_VehicleBottomDrawer>
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        _buildVehicleDrawerSubtitle(liveVehicle),
+                        _buildVehicleDrawerSubtitle(liveVehicle, ref.watch(appDateFormatterProvider)),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -2537,6 +2537,7 @@ class _VehicleLogListRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final unitFormatter = ref.watch(unitFormatterProvider);
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final ignition = log.ignition ?? log.acc;
     return Material(
       color: const Color(0xFFF7F7F8),
@@ -2555,7 +2556,7 @@ class _VehicleLogListRow extends ConsumerWidget {
                     Row(
                       children: [
                         Text(
-                          _formatVehicleLogTime(log.displayTime),
+                          _formatVehicleLogTime(log.displayTime, dateFormatter),
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w900,
@@ -2741,6 +2742,7 @@ class _VehicleLogDetailGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final unitFormatter = ref.watch(unitFormatterProvider);
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final rows = <({String label, String value})>[
       (
         label: 'Source',
@@ -2749,8 +2751,8 @@ class _VehicleLogDetailGrid extends ConsumerWidget {
             : 'Database'
       ),
       (label: 'IMEI', value: log.imei.isEmpty ? '--' : log.imei),
-      (label: 'Server time', value: _formatVehicleLogDateTime(log.serverTime)),
-      (label: 'Device time', value: _formatVehicleLogDateTime(log.deviceTime)),
+      (label: 'Server time', value: _formatVehicleLogDateTime(log.serverTime, dateFormatter)),
+      (label: 'Device time', value: _formatVehicleLogDateTime(log.deviceTime, dateFormatter)),
       (
         label: 'Packet type',
         value: log.packetType.isEmpty ? '--' : log.packetType
@@ -2797,7 +2799,7 @@ class _VehicleLogDetailGrid extends ConsumerWidget {
         label: 'Total engine hours',
         value: _formatVehicleEngineHoursValue(log.totalEngineHours)
       ),
-      (label: 'Created', value: _formatVehicleLogDateTime(log.createdAt)),
+      (label: 'Created', value: _formatVehicleLogDateTime(log.createdAt, dateFormatter)),
     ];
 
     return DecoratedBox(
@@ -3367,7 +3369,7 @@ class _VehicleEventsTabState extends ConsumerState<_VehicleEventsTab> {
   }
 }
 
-class _VehicleEventListRow extends StatelessWidget {
+class _VehicleEventListRow extends ConsumerWidget {
   const _VehicleEventListRow({
     required this.event,
     required this.onTap,
@@ -3377,7 +3379,8 @@ class _VehicleEventListRow extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     final visuals = _resolveAlertVisuals(event);
     final title = _vehicleEventTitle(event);
     final severity = _vehicleEventSeverity(event);
@@ -3423,7 +3426,7 @@ class _VehicleEventListRow extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          _formatVehicleEventTime(event.createdAt),
+                          _formatVehicleEventTime(event.createdAt, formatter),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -3584,13 +3587,14 @@ class _VehicleEventDetailsDialog extends StatelessWidget {
   }
 }
 
-class _VehicleEventDetailGrid extends StatelessWidget {
+class _VehicleEventDetailGrid extends ConsumerWidget {
   const _VehicleEventDetailGrid({required this.event});
 
   final AppNotification event;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final rows = <({String label, String value})>[
       (label: 'Title', value: event.title.trim()),
       (label: 'Category', value: event.category?.trim() ?? '--'),
@@ -3598,7 +3602,7 @@ class _VehicleEventDetailGrid extends StatelessWidget {
       (label: 'Message', value: event.message.trim()),
       (label: 'IMEI', value: event.vehicleImei?.trim() ?? '--'),
       (label: 'Context', value: event.contextLabel?.trim() ?? '--'),
-      (label: 'Created', value: _formatVehicleEventDateTime(event.createdAt)),
+      (label: 'Created', value: _formatVehicleEventDateTime(event.createdAt, dateFormatter)),
       (label: 'Read', value: event.isRead ? 'Yes' : 'No'),
       (label: 'ID', value: event.id > 0 ? event.id.toString() : '--'),
       (
@@ -3874,7 +3878,7 @@ class _VehicleSensorsTabState extends ConsumerState<_VehicleSensorsTab> {
               else if (telemetryTime != null)
                 Flexible(
                   child: Text(
-                    _formatVehicleSensorUpdatedAt(telemetryTime),
+                    _formatVehicleSensorUpdatedAt(telemetryTime, ref.watch(appDateFormatterProvider)),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.end,
@@ -3912,13 +3916,14 @@ class _VehicleSensorsTabState extends ConsumerState<_VehicleSensorsTab> {
   }
 }
 
-class _VehicleSensorCard extends StatelessWidget {
+class _VehicleSensorCard extends ConsumerWidget {
   const _VehicleSensorCard({required this.sensor});
 
   final SuperadminVehicleSensor sensor;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     final source = sensor.sourceExpression;
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -4016,7 +4021,7 @@ class _VehicleSensorCard extends StatelessWidget {
               if (sensor.lastUpdated != null) ...[
                 if (source != null) const SizedBox(height: 3),
                 Text(
-                  _formatVehicleSensorUpdatedAt(sensor.lastUpdated!),
+                  _formatVehicleSensorUpdatedAt(sensor.lastUpdated!, formatter),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -5461,7 +5466,7 @@ class _VehicleCommandPollStrip extends StatelessWidget {
   }
 }
 
-class _VehicleCommandHistoryRow extends StatelessWidget {
+class _VehicleCommandHistoryRow extends ConsumerWidget {
   const _VehicleCommandHistoryRow({
     required this.entry,
     required this.onTap,
@@ -5471,7 +5476,8 @@ class _VehicleCommandHistoryRow extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     return Material(
       color: const Color(0xFFF7F7F8),
       borderRadius: BorderRadius.circular(12),
@@ -5493,7 +5499,7 @@ class _VehicleCommandHistoryRow extends StatelessWidget {
                         const SizedBox(width: 6),
                         Flexible(
                           child: Text(
-                            _formatVehicleLogTime(entry.displayTime),
+                            _formatVehicleLogTime(entry.displayTime, formatter),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -5697,13 +5703,14 @@ class _VehicleCommandDetailsDialog extends StatelessWidget {
   }
 }
 
-class _VehicleCommandDetailGrid extends StatelessWidget {
+class _VehicleCommandDetailGrid extends ConsumerWidget {
   const _VehicleCommandDetailGrid({required this.entry});
 
   final SuperadminVehicleCommandEntry entry;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final rows = <({String label, String value})>[
       (label: 'Status', value: _vehicleCommandStatusLabel(entry.status)),
       (label: 'IMEI', value: entry.imei.trim().isEmpty ? '--' : entry.imei),
@@ -5735,13 +5742,13 @@ class _VehicleCommandDetailGrid extends StatelessWidget {
         value: _formatVehicleLogBool(entry.connectedAtSend,
             trueLabel: 'Yes', falseLabel: 'No')
       ),
-      (label: 'Requested', value: _formatVehicleLogDateTime(entry.requestedAt)),
-      (label: 'Queued', value: _formatVehicleLogDateTime(entry.queuedAt)),
-      (label: 'Sent', value: _formatVehicleLogDateTime(entry.sentAt)),
-      (label: 'Responded', value: _formatVehicleLogDateTime(entry.respondedAt)),
-      (label: 'Failed', value: _formatVehicleLogDateTime(entry.failedAt)),
-      (label: 'Timed out', value: _formatVehicleLogDateTime(entry.timeoutAt)),
-      (label: 'Created', value: _formatVehicleLogDateTime(entry.createdAt)),
+      (label: 'Requested', value: _formatVehicleLogDateTime(entry.requestedAt, dateFormatter)),
+      (label: 'Queued', value: _formatVehicleLogDateTime(entry.queuedAt, dateFormatter)),
+      (label: 'Sent', value: _formatVehicleLogDateTime(entry.sentAt, dateFormatter)),
+      (label: 'Responded', value: _formatVehicleLogDateTime(entry.respondedAt, dateFormatter)),
+      (label: 'Failed', value: _formatVehicleLogDateTime(entry.failedAt, dateFormatter)),
+      (label: 'Timed out', value: _formatVehicleLogDateTime(entry.timeoutAt, dateFormatter)),
+      (label: 'Created', value: _formatVehicleLogDateTime(entry.createdAt, dateFormatter)),
     ];
 
     return DecoratedBox(
@@ -6941,7 +6948,7 @@ class _VehicleLocationLine extends StatelessWidget {
   }
 }
 
-class _VehiclesTab extends StatelessWidget {
+class _VehiclesTab extends ConsumerWidget {
   const _VehiclesTab({
     required this.vehicles,
     required this.onVehicleSelected,
@@ -6955,7 +6962,7 @@ class _VehiclesTab extends StatelessWidget {
   final ScrollController scrollController;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (vehicles.isEmpty) {
       return _DrawerScrollFill(
         scrollController: scrollController,
@@ -7053,14 +7060,15 @@ class _VehiclesTab extends StatelessWidget {
   }
 }
 
-class _VehicleListTile extends StatelessWidget {
+class _VehicleListTile extends ConsumerWidget {
   const _VehicleListTile({required this.vehicle, this.onTap});
 
   final VehicleSummary vehicle;
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     final isRunning = _isRunningVehicle(vehicle);
     final statusColor = _vehicleRunningIndicatorColor(isRunning);
     final isInteractive = onTap != null;
@@ -7099,7 +7107,7 @@ class _VehicleListTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      _formatVehicleListSubtitle(vehicle),
+                      _formatVehicleListSubtitle(vehicle, formatter),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -7403,7 +7411,7 @@ class _HistoryQueryHeader extends StatelessWidget {
   }
 }
 
-class _HistoryQueryHeaderText extends StatelessWidget {
+class _HistoryQueryHeaderText extends ConsumerWidget {
   const _HistoryQueryHeaderText({
     required this.state,
     required this.hasSelectableVehicles,
@@ -7413,14 +7421,15 @@ class _HistoryQueryHeaderText extends StatelessWidget {
   final bool hasSelectableVehicles;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     final request = state.request;
     final title = request?.vehicleLabel ?? 'Vehicle History';
     final subtitle = !hasSelectableVehicles
         ? 'Waiting for live telemetry vehicles with IMEI.'
         : request == null
             ? 'Choose a vehicle, stop threshold, and date time range.'
-            : _formatHistoryRequestSummary(request);
+            : _formatHistoryRequestSummary(request, formatter);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -7917,17 +7926,18 @@ class _HistoryTimelineCard extends StatelessWidget {
   }
 }
 
-class _HistoryPointTimelineDetails extends StatelessWidget {
+class _HistoryPointTimelineDetails extends ConsumerWidget {
   const _HistoryPointTimelineDetails({required this.entry});
 
   final _HistoryTimelineEntry entry;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _HistoryTimeLine(text: _formatHistoryPointTimestamp(entry.timestamp)),
+        _HistoryTimeLine(text: _formatHistoryPointTimestamp(entry.timestamp, formatter)),
         const SizedBox(height: 5),
         _HistoryMutedLine(text: _formatHistoryAddress(entry.point?.address)),
       ],
@@ -7935,13 +7945,14 @@ class _HistoryPointTimelineDetails extends StatelessWidget {
   }
 }
 
-class _HistoryStopTimelineDetails extends StatelessWidget {
+class _HistoryStopTimelineDetails extends ConsumerWidget {
   const _HistoryStopTimelineDetails({required this.segment});
 
   final SuperadminVehicleHistorySegment? segment;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -7949,6 +7960,7 @@ class _HistoryStopTimelineDetails extends StatelessWidget {
           text: _formatHistoryTimeRange(
             segment?.startTime,
             segment?.endTime,
+            formatter,
           ),
         ),
         const SizedBox(height: 5),
@@ -7962,13 +7974,14 @@ class _HistoryStopTimelineDetails extends StatelessWidget {
   }
 }
 
-class _HistoryRunningTimelineDetails extends StatelessWidget {
+class _HistoryRunningTimelineDetails extends ConsumerWidget {
   const _HistoryRunningTimelineDetails({required this.entry});
 
   final _HistoryTimelineEntry entry;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     final duration = _historyEntryDuration(entry);
 
     return Column(
@@ -7978,6 +7991,7 @@ class _HistoryRunningTimelineDetails extends StatelessWidget {
           text: _formatHistoryTimeRange(
             _historyEntryStartTime(entry),
             _historyEntryEndTime(entry),
+            formatter,
           ),
         ),
         const SizedBox(height: 8),
@@ -8429,9 +8443,9 @@ List<VehicleSummary> _historySelectableVehicles(List<VehicleSummary> vehicles) {
     ..sort(_compareVehicleListOrder);
 }
 
-String _formatHistoryRequestSummary(SuperadminVehicleHistoryRequest request) {
-  final start = _mapFmt.formatDateTime(request.from.toLocal());
-  final end = _mapFmt.formatDateTime(request.to.toLocal());
+String _formatHistoryRequestSummary(SuperadminVehicleHistoryRequest request, AppDateFormatter formatter) {
+  final start = formatter.formatDateTime(request.from.toLocal());
+  final end = formatter.formatDateTime(request.to.toLocal());
   return '$start - $end • Stops >= ${request.stopMinutes} min';
 }
 
@@ -9290,22 +9304,22 @@ String _replaySpeedLabel(double speed) {
   return '${speed.toInt()}x';
 }
 
-String _formatHistoryPointTimestamp(DateTime? timestamp) {
+String _formatHistoryPointTimestamp(DateTime? timestamp, AppDateFormatter formatter) {
   if (timestamp == null) {
     return '--';
   }
 
   final local = timestamp.toLocal();
-  return '${_mapFmt.formatTime(local)} · ${_mapFmt.formatDate(local)}';
+  return '${formatter.formatTime(local)} · ${formatter.formatDate(local)}';
 }
 
-String _formatHistoryTimeRange(DateTime? start, DateTime? end) {
+String _formatHistoryTimeRange(DateTime? start, DateTime? end, AppDateFormatter formatter) {
   final startText = start == null
       ? '--'
-      : _mapFmt.formatTime(start.toLocal());
+      : formatter.formatTime(start.toLocal());
   final endText = end == null
       ? '--'
-      : _mapFmt.formatTime(end.toLocal());
+      : formatter.formatTime(end.toLocal());
   return '$startText → $endText';
 }
 
@@ -9400,7 +9414,7 @@ String _formatHistoryNumber(double value, int fractionDigits) {
   return value.toStringAsFixed(fractionDigits);
 }
 
-class _AlertsTab extends StatelessWidget {
+class _AlertsTab extends ConsumerWidget {
   const _AlertsTab({
     required this.alerts,
     required this.isLoading,
@@ -9412,7 +9426,8 @@ class _AlertsTab extends StatelessWidget {
   final ScrollController scrollController;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     if (isLoading && alerts.isEmpty) {
       return _DrawerScrollFill(
         scrollController: scrollController,
@@ -9451,7 +9466,7 @@ class _AlertsTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final alert = visibleAlerts[index];
         final visuals = _resolveAlertVisuals(alert);
-        final metaText = _buildAlertMeta(alert);
+        final metaText = _buildAlertMeta(alert, formatter);
 
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -9535,12 +9550,12 @@ class _AlertsTab extends StatelessWidget {
   }
 }
 
-String _buildAlertMeta(AppNotification alert) {
+String _buildAlertMeta(AppNotification alert, AppDateFormatter formatter) {
   final parts = <String>[
     if (alert.contextLabel != null && alert.contextLabel!.trim().isNotEmpty)
       alert.contextLabel!.trim(),
     if (alert.createdAt != null)
-      _mapFmt.formatDateTime(alert.createdAt!.toLocal()),
+      formatter.formatDateTime(alert.createdAt!.toLocal()),
   ];
 
   if (parts.isNotEmpty) {
@@ -10333,7 +10348,6 @@ enum _LayerPreviewStyle {
 const List<String> _googleTileSubdomains = ['mt0', 'mt1', 'mt2', 'mt3'];
 const List<String> _osmTileSubdomains = ['a', 'b', 'c'];
 const List<String> _cartoTileSubdomains = ['a', 'b', 'c', 'd'];
-const List<String> _stamenTileSubdomains = ['a', 'b', 'c', 'd'];
 
 const List<_MapLayerOption> _primaryMapLayerOptions = [
   _MapLayerOption(
@@ -10418,16 +10432,16 @@ const List<_MapLayerOption> _detailMapLayerOptions = [
     id: 'stamen-toner',
     name: 'Stamen Toner',
     shortLabel: 'Toner',
-    url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png',
-    subdomains: _stamenTileSubdomains,
+    url: 'https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}.png',
+    subdomains: <String>[],
     previewStyle: _LayerPreviewStyle.toner,
   ),
   _MapLayerOption(
     id: 'stamen-watercolor',
     name: 'Stamen Watercolor',
     shortLabel: 'Watercolor',
-    url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png',
-    subdomains: _stamenTileSubdomains,
+    url: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
+    subdomains: <String>[],
     previewStyle: _LayerPreviewStyle.watercolor,
   ),
 ];
@@ -10883,9 +10897,9 @@ String _vehicleCommandConnectionHint(VehicleSummary vehicle) {
   return status.isEmpty ? 'Status unknown' : status;
 }
 
-String _formatVehicleListSubtitle(VehicleSummary vehicle) {
+String _formatVehicleListSubtitle(VehicleSummary vehicle, AppDateFormatter formatter) {
   if (vehicle.updatedAt != null) {
-    return _mapFmt.formatDateTime(vehicle.updatedAt!.toLocal());
+    return formatter.formatDateTime(vehicle.updatedAt!.toLocal());
   }
 
   if (vehicle.plateNumber.isNotEmpty) {
@@ -10895,12 +10909,12 @@ String _formatVehicleListSubtitle(VehicleSummary vehicle) {
   return 'No update time';
 }
 
-String _buildVehicleDrawerSubtitle(VehicleSummary vehicle) {
+String _buildVehicleDrawerSubtitle(VehicleSummary vehicle, AppDateFormatter formatter) {
   final plateNumber = vehicle.plateNumber.trim();
   final updatedAt = vehicle.updatedAt;
 
   if (plateNumber.isNotEmpty && updatedAt != null) {
-    return '$plateNumber • ${_mapFmt.formatDateTime(updatedAt.toLocal())}';
+    return '$plateNumber • ${formatter.formatDateTime(updatedAt.toLocal())}';
   }
 
   if (plateNumber.isNotEmpty) {
@@ -10908,7 +10922,7 @@ String _buildVehicleDrawerSubtitle(VehicleSummary vehicle) {
   }
 
   if (updatedAt != null) {
-    return _mapFmt.formatDateTime(updatedAt.toLocal());
+    return formatter.formatDateTime(updatedAt.toLocal());
   }
 
   return 'Vehicle overview';
@@ -11128,20 +11142,20 @@ String _vehicleEventSeverity(AppNotification event) {
   return severity.toUpperCase();
 }
 
-String _formatVehicleEventTime(DateTime? value) {
+String _formatVehicleEventTime(DateTime? value, AppDateFormatter formatter) {
   if (value == null) {
     return '--:--';
   }
 
-  return _mapFmt.formatTime(value.toLocal());
+  return formatter.formatTime(value.toLocal());
 }
 
-String _formatVehicleEventDateTime(DateTime? value) {
+String _formatVehicleEventDateTime(DateTime? value, AppDateFormatter formatter) {
   if (value == null) {
     return '--';
   }
 
-  return _mapFmt.formatDateTime(value.toLocal());
+  return formatter.formatDateTime(value.toLocal());
 }
 
 Map<String, Object?> _vehicleSensorTelemetryValues(VehicleSummary vehicle) {
@@ -11423,24 +11437,24 @@ DateTime? _vehicleSensorTelemetryUpdatedAt(VehicleSummary vehicle) {
   return vehicle.updatedAt ?? vehicle.lastSeenAt;
 }
 
-String _formatVehicleSensorUpdatedAt(DateTime value) {
-  return _mapFmt.formatDateTime(value.toLocal());
+String _formatVehicleSensorUpdatedAt(DateTime value, AppDateFormatter formatter) {
+  return formatter.formatDateTime(value.toLocal());
 }
 
-String _formatVehicleLogTime(DateTime? value) {
+String _formatVehicleLogTime(DateTime? value, AppDateFormatter formatter) {
   if (value == null) {
     return '--:--:--';
   }
 
-  return _mapFmt.formatTime(value.toLocal());
+  return formatter.formatTime(value.toLocal());
 }
 
-String _formatVehicleLogDateTime(DateTime? value) {
+String _formatVehicleLogDateTime(DateTime? value, AppDateFormatter formatter) {
   if (value == null) {
     return '--';
   }
 
-  return _mapFmt.formatDateTime(value.toLocal());
+  return formatter.formatDateTime(value.toLocal());
 }
 
 String _formatVehicleLogSpeed(double? value, {required UnitFormatter unitFormatter}) {

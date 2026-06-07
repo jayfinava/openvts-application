@@ -13,8 +13,6 @@ import '../../../../controllers/user_driver_details_controller.dart';
 import '../../../../models/user_driver_model.dart';
 import '../../../../models/user_drivers_state.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
 class UserDriverLogsTab extends ConsumerWidget {
   const UserDriverLogsTab({required this.provider, super.key});
 
@@ -23,6 +21,7 @@ class UserDriverLogsTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final state = ref.watch(provider);
     final controller = ref.read(provider.notifier);
     final isInitialLoading = state.isLoadingLogs && state.logs.isEmpty;
@@ -64,13 +63,14 @@ class UserDriverLogsTab extends ConsumerWidget {
   }
 }
 
-class _LogCard extends StatelessWidget {
+class _LogCard extends ConsumerWidget {
   const _LogCard({required this.log});
 
   final UserDriverLog log;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final title = _activityLabel(log.activity);
     final vehicle = _vehicleLabel(log.vehicle);
     final actor = log.actorName.trim().isEmpty ? '-' : log.actorName.trim();
@@ -131,7 +131,7 @@ class _LogCard extends StatelessWidget {
                     ),
                     _MetaPill(
                       icon: Icons.schedule_rounded,
-                      label: _dateTimeText(log.createdAt),
+                      label: _dateTimeText(log.createdAt, dateFormatter),
                     ),
                   ],
                 ),
@@ -353,9 +353,9 @@ String _vehicleLabel(UserDriverVehicleMini? vehicle) {
   return merged;
 }
 
-String _dateTimeText(DateTime? value) {
+String _dateTimeText(DateTime? value, dynamic formatter) {
   if (value == null) {
     return '-';
   }
-  return _dateFormatter.formatDateTime(value.toLocal());
+  return formatter.formatDateTime(value.toLocal());
 }

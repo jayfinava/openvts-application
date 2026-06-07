@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:open_vts/core/theme/open_vts_colors.dart';
 import 'package:open_vts/core/theme/open_vts_radius.dart';
 import 'package:open_vts/core/theme/open_vts_spacing.dart';
@@ -7,9 +8,7 @@ import 'package:open_vts/core/utils/date_time_formatter.dart';
 import 'package:open_vts/features/user/models/user_support_model.dart';
 import 'package:open_vts/features/user/screens/support/widgets/user_support_attachment_widgets.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
-class UserSupportMessageBubble extends StatelessWidget {
+class UserSupportMessageBubble extends ConsumerWidget {
   const UserSupportMessageBubble({
     required this.message,
     required this.isCurrentUser,
@@ -22,7 +21,8 @@ class UserSupportMessageBubble extends StatelessWidget {
   final String baseUrl;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     if (_isSystemMessage) {
       return _SystemMessageBubble(message: message, baseUrl: baseUrl);
     }
@@ -69,7 +69,7 @@ class UserSupportMessageBubble extends StatelessWidget {
                   if (message.createdAt != null) ...[
                     const SizedBox(width: OpenVtsSpacing.xs),
                     Text(
-                      _dateFormatter.formatDateTime(message.createdAt!),
+                      dateFormatter.formatDateTime(message.createdAt!),
                       style: OpenVtsTypography.meta.copyWith(
                         color: OpenVtsColors.textTertiary,
                       ),
@@ -123,14 +123,15 @@ class UserSupportMessageBubble extends StatelessWidget {
   }
 }
 
-class _SystemMessageBubble extends StatelessWidget {
+class _SystemMessageBubble extends ConsumerWidget {
   const _SystemMessageBubble({required this.message, required this.baseUrl});
 
   final UserSupportTicketMessage message;
   final String baseUrl;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final text = message.message.trim();
     final timestamp = message.createdAt;
 
@@ -162,7 +163,7 @@ class _SystemMessageBubble extends StatelessWidget {
             if (timestamp != null) ...[
               const SizedBox(height: OpenVtsSpacing.xxs),
               Text(
-                _dateFormatter.formatDateTime(timestamp),
+                dateFormatter.formatDateTime(timestamp),
                 textAlign: TextAlign.center,
                 style: OpenVtsTypography.meta.copyWith(
                   color: OpenVtsColors.textTertiary,

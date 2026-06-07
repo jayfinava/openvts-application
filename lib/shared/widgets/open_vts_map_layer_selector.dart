@@ -39,7 +39,6 @@ enum MapLayerPreviewStyle {
 const List<String> _googleTileSubdomains = ['mt0', 'mt1', 'mt2', 'mt3'];
 const List<String> _osmTileSubdomains = ['a', 'b', 'c'];
 const List<String> _cartoTileSubdomains = ['a', 'b', 'c', 'd'];
-const List<String> _stamenTileSubdomains = ['a', 'b', 'c', 'd'];
 
 const List<MapLayerOption> primaryMapLayerOptions = [
   MapLayerOption(
@@ -124,16 +123,16 @@ const List<MapLayerOption> detailMapLayerOptions = [
     id: 'stamen-toner',
     name: 'Stamen Toner',
     shortLabel: 'Toner',
-    url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png',
-    subdomains: _stamenTileSubdomains,
+    url: 'https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}.png',
+    subdomains: <String>[],
     previewStyle: MapLayerPreviewStyle.toner,
   ),
   MapLayerOption(
     id: 'stamen-watercolor',
     name: 'Stamen Watercolor',
     shortLabel: 'Watercolor',
-    url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png',
-    subdomains: _stamenTileSubdomains,
+    url: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
+    subdomains: <String>[],
     previewStyle: MapLayerPreviewStyle.watercolor,
   ),
 ];

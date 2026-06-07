@@ -186,7 +186,7 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
             OpenVtsTextField(
               label: 'Name',
               controller: _name,
-              validator: (v) => Validators.driverName(v),
+              validator: Validators.driverName,
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
             OpenVtsTextField(
@@ -221,19 +221,19 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
               label: 'Mobile',
               controller: _mobile,
               keyboardType: TextInputType.phone,
-              validator: (v) => Validators.mobileNumber(v),
+              validator: Validators.mobileNumber,
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
             OpenVtsTextField(
               label: 'Username',
               controller: _username,
-              validator: (v) => Validators.driverUsername(v),
+              validator: Validators.driverUsername,
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
             OpenVtsTextField(
               label: 'Address',
               controller: _address,
-              validator: (v) => Validators.driverAddressOptional(v),
+              validator: Validators.driverAddressOptional,
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
             AdminUserDropdownField(
@@ -277,7 +277,7 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
             OpenVtsTextField(
               label: 'Pincode',
               controller: _pincode,
-              validator: (v) => Validators.driverPincodeOptional(v),
+              validator: Validators.driverPincodeOptional,
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
             const Text('Attributes'),

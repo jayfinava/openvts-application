@@ -6,6 +6,7 @@ import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_bottom_sheet.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
@@ -146,16 +147,8 @@ class _DriverDocumentSheetState extends ConsumerState<_DriverDocumentSheet> {
                     hintText: 'Document title',
                     prefixIcon: Icons.title_rounded,
                     textInputAction: TextInputAction.next,
-                    validator: (value) {
-                      final normalized = value?.trim() ?? '';
-                      if (normalized.isEmpty) {
-                        return 'Title is required.';
-                      }
-                      if (normalized.length > 120) {
-                        return 'Title is too long.';
-                      }
-                      return null;
-                    },
+                    validator: Validators.documentTitle,
+                    maxLength: Validators.maxNameLength,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   _FilePickerField(

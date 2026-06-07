@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/router/route_paths.dart';
@@ -13,15 +14,14 @@ import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_status_chip.dart';
 import '../../../models/user_vehicle_model.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
-class UserVehicleCard extends StatelessWidget {
+class UserVehicleCard extends ConsumerWidget {
   const UserVehicleCard({required this.vehicle, super.key});
 
   final UserVehicleListItem vehicle;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     return OpenVtsCard(
       onTap: () => context.push(
         RoutePaths.userVehicleDetailsPath(vehicle.id),
@@ -109,8 +109,7 @@ class UserVehicleCard extends StatelessWidget {
               if (vehicle.createdAt != null)
                 _MetaPill(
                   icon: Icons.calendar_today_outlined,
-                  label:
-                      _dateFormatter.formatDate(vehicle.createdAt!.toLocal()),
+                  label: formatter.formatDate(vehicle.createdAt!),
                 ),
               if (vehicle.isLicenseBlocked)
                 const _StatusPill(

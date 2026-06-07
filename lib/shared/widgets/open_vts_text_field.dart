@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/theme/open_vts_colors.dart';
 import '../../core/theme/open_vts_spacing.dart';
@@ -17,6 +18,7 @@ class OpenVtsTextField extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.onFieldSubmitted,
+    this.inputFormatters,
     this.maxLines = 1,
     this.maxLength,
     super.key,
@@ -33,6 +35,7 @@ class OpenVtsTextField extends StatelessWidget {
   final IconData? prefixIcon;
   final Widget? suffixIcon;
   final ValueChanged<String>? onFieldSubmitted;
+  final List<TextInputFormatter>? inputFormatters;
   final int maxLines;
   final int? maxLength;
 
@@ -52,6 +55,7 @@ class OpenVtsTextField extends StatelessWidget {
           maxLength: maxLength,
           textInputAction: textInputAction,
           autofillHints: autofillHints,
+          inputFormatters: inputFormatters,
           onFieldSubmitted: onFieldSubmitted,
           decoration: InputDecoration(
             hintText: hintText,

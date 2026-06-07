@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
@@ -12,7 +13,7 @@ import '../user_poi_constants.dart';
 
 /// Compact POI list card. Renders name, category, status, color dot, icon,
 /// tolerance (when set), coordinates, updated date, and edit/delete actions.
-class UserPoiCard extends StatelessWidget {
+class UserPoiCard extends ConsumerWidget {
   const UserPoiCard({
     super.key,
     required this.poi,
@@ -30,10 +31,9 @@ class UserPoiCard extends StatelessWidget {
   final VoidCallback onDelete;
   final bool isDeleting;
 
-  static const DateTimeFormatter _formatter = DateTimeFormatter();
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     final color = _parseHex(poi.color);
     final inactive = !poi.isActive;
 
@@ -145,7 +145,7 @@ class UserPoiCard extends StatelessWidget {
                       if (poi.updatedAt != null) ...[
                         const SizedBox(width: OpenVtsSpacing.sm),
                         Text(
-                          _formatter.formatDate(poi.updatedAt!),
+                          formatter.formatDate(poi.updatedAt!),
                           style: OpenVtsTypography.meta.copyWith(
                             color: OpenVtsColors.textTertiary,
                           ),

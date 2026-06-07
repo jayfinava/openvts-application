@@ -18,8 +18,6 @@ import '../../../../models/user_driver_model.dart';
 import '../../../../models/user_drivers_state.dart';
 import 'user_driver_document_sheet.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
 class UserDriverDocumentsTab extends ConsumerWidget {
   const UserDriverDocumentsTab({required this.provider, super.key});
 
@@ -28,6 +26,7 @@ class UserDriverDocumentsTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final state = ref.watch(provider);
     final controller = ref.read(provider.notifier);
     final baseUrl = ref.watch(apiBaseUrlProvider);
@@ -252,7 +251,7 @@ class _SummaryCard extends StatelessWidget {
   }
 }
 
-class _DocumentCard extends StatelessWidget {
+class _DocumentCard extends ConsumerWidget {
   const _DocumentCard({
     required this.document,
     required this.isBusy,
@@ -268,7 +267,8 @@ class _DocumentCard extends StatelessWidget {
   final VoidCallback? onDelete;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final extension = _fileExtension(document);
 
     return OpenVtsCard(
@@ -375,7 +375,7 @@ class _DocumentCard extends StatelessWidget {
                 icon: Icons.event_outlined,
                 label: document.expiryAt == null
                     ? 'No expiry'
-                    : 'Expiry ${_dateText(document.expiryAt)}',
+                    : 'Expiry ${_dateText(document.expiryAt, dateFormatter)}',
               ),
               _MetaPill(
                 icon: document.isVisible
@@ -399,7 +399,7 @@ class _DocumentCard extends StatelessWidget {
               ),
               _MetaPill(
                 icon: Icons.calendar_today_outlined,
-                label: 'Added ${_dateText(document.createdAt)}',
+                label: 'Added ${_dateText(document.createdAt, dateFormatter)}',
               ),
               for (final tag in document.tags.take(4))
                 _MetaPill(icon: Icons.label_outline_rounded, label: tag),
@@ -727,9 +727,9 @@ String _extensionFromName(String value) {
   return normalized.substring(dot + 1);
 }
 
-String _dateText(DateTime? value) {
+String _dateText(DateTime? value, dynamic formatter) {
   if (value == null) return '-';
-  return _dateFormatter.formatDate(value.toLocal());
+  return formatter.formatDate(value.toLocal());
 }
 
 String _display(String value) {

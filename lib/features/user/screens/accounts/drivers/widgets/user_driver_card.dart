@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../../core/router/route_paths.dart';
@@ -12,9 +13,7 @@ import '../../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../../shared/widgets/open_vts_status_chip.dart';
 import '../../../../models/user_driver_model.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
-class UserDriverCard extends StatelessWidget {
+class UserDriverCard extends ConsumerWidget {
   const UserDriverCard({
     required this.driver,
     super.key,
@@ -23,7 +22,8 @@ class UserDriverCard extends StatelessWidget {
   final UserDriver driver;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final hasDriverId = driver.id.trim().isNotEmpty;
 
     return OpenVtsCard(
@@ -130,7 +130,7 @@ class UserDriverCard extends StatelessWidget {
               ),
               _MetaPill(
                 icon: Icons.calendar_today_outlined,
-                label: _createdLabel(driver),
+                label: _createdLabel(driver, dateFormatter),
               ),
             ],
           ),
@@ -225,10 +225,10 @@ String _assignmentLabel(UserDriver driver) {
   return combined.isEmpty ? 'Assigned' : combined;
 }
 
-String _createdLabel(UserDriver driver) {
+String _createdLabel(UserDriver driver, dynamic formatter) {
   final createdAt = driver.createdAt;
   if (createdAt == null) {
     return 'Created date unavailable';
   }
-  return _dateFormatter.formatDate(createdAt.toLocal());
+  return formatter.formatDate(createdAt.toLocal());
 }

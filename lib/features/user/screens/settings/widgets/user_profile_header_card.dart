@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
@@ -11,9 +12,7 @@ import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_status_chip.dart';
 import '../../../models/user_settings_model.dart';
 
-const DateTimeFormatter _profileHeaderDateFormatter = DateTimeFormatter();
-
-class UserProfileHeaderCard extends StatelessWidget {
+class UserProfileHeaderCard extends ConsumerWidget {
   const UserProfileHeaderCard({
     required this.profile,
     required this.profileImageUrl,
@@ -32,7 +31,8 @@ class UserProfileHeaderCard extends StatelessWidget {
   final VoidCallback? onEditProfile;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileHeaderDateFormatter = ref.watch(appDateFormatterProvider);
     final name = _orDash(profile.name);
     final username = _normalize(profile.username);
     final email = _normalize(profile.email);
@@ -139,14 +139,14 @@ class UserProfileHeaderCard extends StatelessWidget {
             children: [
               if (profile.createdAt != null)
                 Text(
-                  'Joined ${_profileHeaderDateFormatter.formatDate(profile.createdAt!.toLocal())}',
+                  'Joined ${profileHeaderDateFormatter.formatDate(profile.createdAt!.toLocal())}',
                   style: OpenVtsTypography.meta.copyWith(
                     color: OpenVtsColors.textTertiary,
                   ),
                 ),
               if (profile.updatedAt != null)
                 Text(
-                  'Updated ${_profileHeaderDateFormatter.formatDateTime(profile.updatedAt!.toLocal())}',
+                  'Updated ${profileHeaderDateFormatter.formatDateTime(profile.updatedAt!.toLocal())}',
                   style: OpenVtsTypography.meta.copyWith(
                     color: OpenVtsColors.textTertiary,
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
@@ -9,9 +10,7 @@ import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_status_chip.dart';
 import '../../../models/user_settings_model.dart';
 
-const DateTimeFormatter _settingsDateFormatter = DateTimeFormatter();
-
-class UserSettingsHeader extends StatelessWidget {
+class UserSettingsHeader extends ConsumerWidget {
   const UserSettingsHeader({
     required this.selectedTab,
     required this.isCurrentTabDirty,
@@ -26,7 +25,8 @@ class UserSettingsHeader extends StatelessWidget {
   final DateTime? lastUpdatedAt;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settingsDateFormatter = ref.watch(appDateFormatterProvider);
     final tabLabel =
         selectedTab == UserSettingsTab.profile ? 'Profile' : 'Localization';
 
@@ -109,7 +109,7 @@ class UserSettingsHeader extends StatelessWidget {
           if (lastUpdatedAt != null) ...[
             const SizedBox(height: OpenVtsSpacing.xs),
             Text(
-              'Profile updated ${_settingsDateFormatter.formatDateTime(lastUpdatedAt!.toLocal())}',
+              'Profile updated ${settingsDateFormatter.formatDateTime(lastUpdatedAt!.toLocal())}',
               style: OpenVtsTypography.meta.copyWith(
                 color: OpenVtsColors.textTertiary,
               ),

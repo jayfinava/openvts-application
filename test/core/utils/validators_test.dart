@@ -169,14 +169,14 @@ void main() {
         expect(result, isNull);
       });
 
-      test('returns error for pincode more than 20 digits', () {
-        final longPincode = '1' * 21;
+      test('returns error for pincode more than 12 digits', () {
+        final longPincode = '1' * 13;
         final result = Validators.pincodeOptional(longPincode);
-        expect(result, contains('20 characters or fewer'));
+        expect(result, contains('12 characters or fewer'));
       });
 
-      test('returns null for valid pincode with 20 digits', () {
-        final validPincode = '1' * 20;
+      test('returns null for valid pincode with 12 digits', () {
+        final validPincode = '1' * 12;
         final result = Validators.pincodeOptional(validPincode);
         expect(result, isNull);
       });
@@ -359,6 +359,142 @@ void main() {
       test('returns error for non-alphanumeric VIN', () {
         final result = Validators.vinOptional('ABC-123');
         expect(result, contains('letters and numbers'));
+      });
+    });
+
+    group('driverName', () {
+      test('returns error for empty name', () {
+        final result = Validators.driverName('');
+        expect(result, contains('required'));
+      });
+
+      test('returns error for name with 1 character', () {
+        final result = Validators.driverName('A');
+        expect(result, contains('at least'));
+      });
+
+      test('returns null for valid name with 2 characters', () {
+        final result = Validators.driverName('Ab');
+        expect(result, isNull);
+      });
+
+      test('returns error for name more than 120 characters', () {
+        final longName = 'A' * 121;
+        final result = Validators.driverName(longName);
+        expect(result, contains('120 characters or fewer'));
+      });
+
+      test('returns null for valid name with 120 characters', () {
+        final validName = 'A' * 120;
+        final result = Validators.driverName(validName);
+        expect(result, isNull);
+      });
+    });
+
+    group('driverUsername', () {
+      test('returns error for empty username', () {
+        final result = Validators.driverUsername('');
+        expect(result, contains('required'));
+      });
+
+      test('returns error for username with 1 character', () {
+        final result = Validators.driverUsername('A');
+        expect(result, contains('at least'));
+      });
+
+      test('returns error for username with 2 characters', () {
+        final result = Validators.driverUsername('Ab');
+        expect(result, contains('at least'));
+      });
+
+      test('returns null for valid username with 3 characters', () {
+        final result = Validators.driverUsername('Abc');
+        expect(result, isNull);
+      });
+
+      test('returns error for username more than 50 characters', () {
+        final longUsername = 'A' * 51;
+        final result = Validators.driverUsername(longUsername);
+        expect(result, contains('50 characters or fewer'));
+      });
+
+      test('returns null for valid username with 50 characters', () {
+        final validUsername = 'A' * 50;
+        final result = Validators.driverUsername(validUsername);
+        expect(result, isNull);
+      });
+    });
+
+    group('driverAddressOptional', () {
+      test('returns null for empty address', () {
+        final result = Validators.driverAddressOptional('');
+        expect(result, isNull);
+      });
+
+      test('returns error for address with 1 character', () {
+        final result = Validators.driverAddressOptional('A');
+        expect(result, contains('at least'));
+      });
+
+      test('returns error for address with 2 characters', () {
+        final result = Validators.driverAddressOptional('Ab');
+        expect(result, contains('at least'));
+      });
+
+      test('returns null for valid address with 3 characters', () {
+        final result = Validators.driverAddressOptional('Abc');
+        expect(result, isNull);
+      });
+
+      test('returns error for address more than 200 characters', () {
+        final longAddress = 'A' * 201;
+        final result = Validators.driverAddressOptional(longAddress);
+        expect(result, contains('200 characters or fewer'));
+      });
+
+      test('returns null for valid address with 200 characters', () {
+        final validAddress = 'A' * 200;
+        final result = Validators.driverAddressOptional(validAddress);
+        expect(result, isNull);
+      });
+    });
+
+    group('driverPincodeOptional', () {
+      test('returns null for empty pincode', () {
+        final result = Validators.driverPincodeOptional('');
+        expect(result, isNull);
+      });
+
+      test('returns error for pincode with 1 digit', () {
+        final result = Validators.driverPincodeOptional('1');
+        expect(result, contains('at least'));
+      });
+
+      test('returns error for pincode with 3 digits', () {
+        final result = Validators.driverPincodeOptional('123');
+        expect(result, contains('at least'));
+      });
+
+      test('returns null for valid pincode with 4 digits', () {
+        final result = Validators.driverPincodeOptional('1234');
+        expect(result, isNull);
+      });
+
+      test('returns error for pincode more than 12 digits', () {
+        final longPincode = '1' * 13;
+        final result = Validators.driverPincodeOptional(longPincode);
+        expect(result, contains('12 characters or fewer'));
+      });
+
+      test('returns null for valid pincode with 12 digits', () {
+        final validPincode = '1' * 12;
+        final result = Validators.driverPincodeOptional(validPincode);
+        expect(result, isNull);
+      });
+
+      test('returns error for non-numeric pincode', () {
+        final result = Validators.driverPincodeOptional('1234a');
+        expect(result, contains('numeric'));
       });
     });
   });

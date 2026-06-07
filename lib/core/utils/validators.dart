@@ -19,7 +19,7 @@ class Validators {
   static const int minAddressLength = 3;
   static const int maxAddressLength = 200;
   static const int minPincodeLength = 4;
-  static const int maxPincodeLength = 20;
+  static const int maxPincodeLength = 12;
   static const int minVehicleNameLength = 2;
   static const int maxVehicleNameLength = 120;
   static const int minPlateNumberLength = 2;
@@ -27,6 +27,8 @@ class Validators {
   static const int minVinLength = 2;
   static const int maxVinLength = 64;
   static const int standardVinLength = 17;
+  static const int minSimNumberLength = 5;
+  static const int maxSimNumberLength = 25;
 
   // ---------------------------------------------------------------------------
   // Generic
@@ -50,6 +52,59 @@ class Validators {
   }
 
   // ---------------------------------------------------------------------------
+  // Driver validators (shared across admin and user)
+  // ---------------------------------------------------------------------------
+
+  static String? driverName(String? value) {
+    final s = value?.trim() ?? '';
+    if (s.isEmpty) return 'Name is required';
+    if (s.length < 2) {
+      return 'Name must be at least 2 characters';
+    }
+    if (s.length > maxNameLength) {
+      return 'Name must be $maxNameLength characters or fewer';
+    }
+    return null;
+  }
+
+  static String? driverUsername(String? value) {
+    final s = value?.trim() ?? '';
+    if (s.isEmpty) return 'Username is required';
+    if (s.length < 3) {
+      return 'Username must be at least 3 characters';
+    }
+    if (s.length > maxUsernameLength) {
+      return 'Username must be $maxUsernameLength characters or fewer';
+    }
+    return null;
+  }
+
+  static String? driverAddressOptional(String? value) {
+    final s = value?.trim() ?? '';
+    if (s.isEmpty) return null;
+    if (s.length < 3) {
+      return 'Address must be at least 3 characters';
+    }
+    if (s.length > maxAddressLength) {
+      return 'Address must be $maxAddressLength characters or fewer';
+    }
+    return null;
+  }
+
+  static String? driverPincodeOptional(String? value) {
+    final s = value?.trim() ?? '';
+    if (s.isEmpty) return null;
+    if (s.length < 4) {
+      return 'Pincode must be at least 4 digits';
+    }
+    if (s.length > maxPincodeLength) {
+      return 'Pincode must be $maxPincodeLength characters or fewer';
+    }
+    if (!_numericRegex.hasMatch(s)) return 'Pincode must be numeric';
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------
   // Admin form validators
   // ---------------------------------------------------------------------------
 
@@ -61,6 +116,18 @@ class Validators {
     }
     if (s.length > maxNameLength) {
       return 'Full name must be $maxNameLength characters or fewer';
+    }
+    return null;
+  }
+
+  static String? adminNameOptional(String? value) {
+    final s = value?.trim() ?? '';
+    if (s.isEmpty) return null;
+    if (s.length < minNameLength) {
+      return 'Name must be at least $minNameLength characters';
+    }
+    if (s.length > maxNameLength) {
+      return 'Name must be $maxNameLength characters or fewer';
     }
     return null;
   }
@@ -154,9 +221,37 @@ class Validators {
     return null;
   }
 
+  static String? mobileNumberOptional(String? value) {
+    final s = value?.trim() ?? '';
+    if (s.isEmpty) return null;
+    if (s.length < minMobileNumberLength) {
+      return 'Mobile number must be at least $minMobileNumberLength digits';
+    }
+    if (s.length > maxMobileNumberLength) {
+      return 'Mobile number must be $maxMobileNumberLength digits or fewer';
+    }
+    if (!_numericRegex.hasMatch(s)) {
+      return 'Mobile number must be numeric';
+    }
+    return null;
+  }
+
   static String? pincodeOptional(String? value) {
     final s = value?.trim() ?? '';
     if (s.isEmpty) return null;
+    if (s.length < minPincodeLength) {
+      return 'Pincode must be at least $minPincodeLength digits';
+    }
+    if (s.length > maxPincodeLength) {
+      return 'Pincode must be $maxPincodeLength characters or fewer';
+    }
+    if (!_numericRegex.hasMatch(s)) return 'Pincode must be numeric';
+    return null;
+  }
+
+  static String? pincodeRequired(String? value) {
+    final s = value?.trim() ?? '';
+    if (s.isEmpty) return 'Pincode is required';
     if (s.length < minPincodeLength) {
       return 'Pincode must be at least $minPincodeLength digits';
     }
@@ -265,6 +360,39 @@ class Validators {
       return 'VIN must contain only letters and numbers';
     }
 
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------
+  // SIM/Inventory validators
+  // ---------------------------------------------------------------------------
+
+  static String? simNumber(String? value) {
+    final s = value?.trim() ?? '';
+    if (s.isEmpty) return 'SIM number is required';
+    if (s.length < minSimNumberLength) {
+      return 'SIM number must be at least $minSimNumberLength digits';
+    }
+    if (s.length > maxSimNumberLength) {
+      return 'SIM number must be $maxSimNumberLength digits or fewer';
+    }
+    if (!_numericRegex.hasMatch(s)) return 'SIM number must be numeric';
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Document validators
+  // ---------------------------------------------------------------------------
+
+  static String? documentTitle(String? value) {
+    final s = value?.trim() ?? '';
+    if (s.isEmpty) return 'Title is required';
+    if (s.length < minNameLength) {
+      return 'Title must be at least $minNameLength characters';
+    }
+    if (s.length > maxNameLength) {
+      return 'Title must be $maxNameLength characters or fewer';
+    }
     return null;
   }
 }

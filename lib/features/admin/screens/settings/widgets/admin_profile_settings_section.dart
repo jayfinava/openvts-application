@@ -16,6 +16,7 @@ import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../../shared/widgets/open_vts_role_home.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
+import '../../../../../core/utils/validators.dart';
 import '../../../../auth/controllers/auth_controller.dart';
 import '../../../controllers/admin_providers.dart';
 import '../../../controllers/admin_settings_controller.dart';
@@ -2145,8 +2146,7 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
                   OpenVtsTextField(
                     label: 'Company name',
                     controller: _name,
-                    validator: (v) =>
-                        (v ?? '').trim().isEmpty ? 'Name is required' : null,
+                    validator: Validators.companyName,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   OpenVtsTextField(

@@ -102,8 +102,7 @@ class _AdminCreateTeamSheetState extends ConsumerState<AdminCreateTeamSheet> {
                   controller: _nameController,
                   textInputAction: TextInputAction.next,
                   prefixIcon: Icons.person_outline_rounded,
-                  validator: (value) =>
-                      Validators.required(value, fieldName: 'Full name'),
+                  validator: Validators.adminName,
                 ),
                 const SizedBox(height: OpenVtsSpacing.sm),
                 OpenVtsTextField(
@@ -162,10 +161,7 @@ class _AdminCreateTeamSheetState extends ConsumerState<AdminCreateTeamSheet> {
                       keyboardType: TextInputType.phone,
                       textInputAction: TextInputAction.next,
                       prefixIcon: Icons.phone_rounded,
-                      validator: (value) => Validators.required(
-                        value,
-                        fieldName: 'Mobile number',
-                      ),
+                      validator: Validators.mobileNumber,
                     );
 
                     if (!isTablet) {
@@ -202,8 +198,7 @@ class _AdminCreateTeamSheetState extends ConsumerState<AdminCreateTeamSheet> {
                   controller: _usernameController,
                   textInputAction: TextInputAction.next,
                   prefixIcon: Icons.alternate_email_rounded,
-                  validator: (value) =>
-                      Validators.required(value, fieldName: 'Username'),
+                  validator: Validators.adminUsername,
                 ),
                 if (!widget.isEditMode) ...[
                   const SizedBox(height: OpenVtsSpacing.sm),

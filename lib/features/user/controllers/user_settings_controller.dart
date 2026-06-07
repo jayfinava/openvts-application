@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_exception.dart';
+import '../../../core/utils/validators.dart';
 import '../models/user_settings_model.dart';
 import '../models/user_settings_state.dart';
 import '../services/user_settings_service.dart';
@@ -918,6 +919,20 @@ class UserSettingsController extends StateNotifier<UserSettingsState> {
 
     if ((address?.cityName?.trim() ?? '').isEmpty) {
       return 'City is required.';
+    }
+
+    // Validate pincode if provided
+    final pincode = (address?.pincode?.trim() ?? '').trim();
+    if (pincode.isNotEmpty) {
+      if (pincode.length < Validators.minPincodeLength) {
+        return 'Pincode must be at least ${Validators.minPincodeLength} digits.';
+      }
+      if (pincode.length > Validators.maxPincodeLength) {
+        return 'Pincode must be ${Validators.maxPincodeLength} digits or fewer.';
+      }
+      if (!RegExp(r'^\d+$').hasMatch(pincode)) {
+        return 'Pincode must be numeric.';
+      }
     }
 
     return null;

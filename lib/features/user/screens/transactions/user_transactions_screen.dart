@@ -23,13 +23,12 @@ import 'widgets/user_transaction_details_sheet.dart';
 import 'widgets/user_transactions_filter_card.dart';
 import 'widgets/user_transactions_summary_strip.dart';
 
-const DateTimeFormatter _transactionsFormatter = DateTimeFormatter();
-
 class UserTransactionsScreen extends ConsumerWidget {
   const UserTransactionsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final transactionsFormatter = ref.watch(appDateFormatterProvider);
     final state = ref.watch(userTransactionsControllerProvider);
     final controller = ref.read(userTransactionsControllerProvider.notifier);
     final currentUserId = ref.watch(
@@ -76,7 +75,7 @@ class UserTransactionsScreen extends ConsumerWidget {
                     _TransactionsHeaderCard(
                       loadedCount: filteredTransactions.length,
                       totalCount: state.total,
-                      rangeLabel: _rangeLabel(state),
+                      rangeLabel: _rangeLabel(state, transactionsFormatter),
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     UserTransactionsSummaryStrip(
@@ -330,7 +329,7 @@ class _InlineErrorBanner extends StatelessWidget {
   }
 }
 
-String? _rangeLabel(UserTransactionsState state) {
+String? _rangeLabel(UserTransactionsState state, dynamic formatter) {
   switch (state.rangePreset) {
     case UserTransactionsRangePreset.thisMonth:
       return 'This Month';
@@ -345,14 +344,14 @@ String? _rangeLabel(UserTransactionsState state) {
         return null;
       }
       if (from != null && to != null) {
-        final fromLabel = _transactionsFormatter.formatDate(from.toLocal());
-        final toLabel = _transactionsFormatter.formatDate(to.toLocal());
+        final fromLabel = formatter.formatDate(from.toLocal());
+        final toLabel = formatter.formatDate(to.toLocal());
         return '$fromLabel - $toLabel';
       }
       if (from != null) {
-        return 'From ${_transactionsFormatter.formatDate(from.toLocal())}';
+        return 'From ${formatter.formatDate(from.toLocal())}';
       }
-      return 'Until ${_transactionsFormatter.formatDate(to!.toLocal())}';
+      return 'Until ${formatter.formatDate(to!.toLocal())}';
   }
 }
 

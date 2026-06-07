@@ -18,8 +18,6 @@ import '../../../models/user_vehicle_model.dart';
 import '../../../models/user_vehicle_state.dart';
 import 'user_vehicle_document_sheet.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
 class UserVehicleDocumentsTabView extends ConsumerWidget {
   const UserVehicleDocumentsTabView({required this.provider, super.key});
 
@@ -31,6 +29,7 @@ class UserVehicleDocumentsTabView extends ConsumerWidget {
     final state = ref.watch(provider);
     final controller = ref.read(provider.notifier);
     final baseUrl = ref.watch(apiBaseUrlProvider);
+    final formatter = ref.watch(appDateFormatterProvider);
     final isInitialLoading =
         state.isLoadingDocuments && state.documents.isEmpty;
 
@@ -68,6 +67,7 @@ class UserVehicleDocumentsTabView extends ConsumerWidget {
           for (final document in state.documents) ...[
             _DocumentCard(
               document: document,
+              formatter: formatter,
               isBusy: state.isUpdatingDocument || state.isDeletingDocument,
               onView: () => _openDocument(context, baseUrl, document),
               onEdit: () => _showDocumentSheet(context, document),
@@ -248,6 +248,7 @@ class _SummaryCard extends StatelessWidget {
 class _DocumentCard extends StatelessWidget {
   const _DocumentCard({
     required this.document,
+    required this.formatter,
     required this.isBusy,
     required this.onView,
     required this.onEdit,
@@ -255,6 +256,7 @@ class _DocumentCard extends StatelessWidget {
   });
 
   final UserVehicleDocument document;
+  final AppDateFormatter formatter;
   final bool isBusy;
   final VoidCallback onView;
   final VoidCallback onEdit;
@@ -371,7 +373,7 @@ class _DocumentCard extends StatelessWidget {
                 icon: Icons.event_outlined,
                 label: document.expiryAt == null
                     ? 'No expiry'
-                    : 'Expiry ${_dateText(document.expiryAt)}',
+                    : 'Expiry ${_dateText(document.expiryAt, formatter)}',
               ),
               _MetaPill(
                 icon: document.isVisible
@@ -384,7 +386,7 @@ class _DocumentCard extends StatelessWidget {
               ),
               _MetaPill(
                 icon: Icons.calendar_today_outlined,
-                label: 'Created ${_dateText(document.createdAt)}',
+                label: 'Created ${_dateText(document.createdAt, formatter)}',
               ),
               for (final tag in document.tags.take(4))
                 _MetaPill(icon: Icons.label_outline_rounded, label: tag),
@@ -712,9 +714,9 @@ String _extensionFromName(String value) {
   return normalized.substring(dot + 1);
 }
 
-String _dateText(DateTime? value) {
+String _dateText(DateTime? value, AppDateFormatter formatter) {
   if (value == null) return '-';
-  return _dateFormatter.formatDate(value.toLocal());
+  return formatter.formatDate(value);
 }
 
 String _display(String value) {

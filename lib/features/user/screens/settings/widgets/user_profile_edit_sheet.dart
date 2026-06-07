@@ -6,6 +6,7 @@ import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../controllers/user_providers.dart';
 import '../../../controllers/user_settings_controller.dart';
@@ -27,8 +28,6 @@ class UserProfileEditSheet extends ConsumerStatefulWidget {
 }
 
 class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
-  static final RegExp _emailPattern = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
-
   final _formKey = GlobalKey<FormState>();
 
   late final TextEditingController _nameController;
@@ -231,13 +230,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                   controller: _nameController,
                   label: 'Name',
                   textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    final name = (value ?? '').trim();
-                    if (name.length < 2) {
-                      return 'Name must be at least 2 characters.';
-                    }
-                    return null;
-                  },
+                  validator: Validators.adminName,
                 ),
                 const SizedBox(height: OpenVtsSpacing.xs),
                 _textField(
@@ -245,16 +238,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                   label: 'Email (optional)',
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    final email = (value ?? '').trim();
-                    if (email.isEmpty) {
-                      return null;
-                    }
-                    if (!_emailPattern.hasMatch(email)) {
-                      return 'Enter a valid email.';
-                    }
-                    return null;
-                  },
+                  validator: Validators.adminEmailOptional,
                 ),
                 const SizedBox(height: OpenVtsSpacing.xs),
                 if (mobilePrefixOptions.isEmpty)
@@ -264,12 +248,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                     hint: '+1',
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
-                    validator: (value) {
-                      if ((value ?? '').trim().isEmpty) {
-                        return 'Mobile prefix is required.';
-                      }
-                      return null;
-                    },
+                    validator: Validators.mobilePrefix,
                   )
                 else
                   _dropdownField<String>(
@@ -307,27 +286,18 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                   textInputAction: TextInputAction.next,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(15),
+                    LengthLimitingTextInputFormatter(
+                      Validators.maxMobileNumberLength,
+                    ),
                   ],
-                  validator: (value) {
-                    final mobile = (value ?? '').trim();
-                    if (mobile.length < 7 || mobile.length > 15) {
-                      return 'Mobile must be 7 to 15 digits.';
-                    }
-                    return null;
-                  },
+                  validator: Validators.mobileNumber,
                 ),
                 const SizedBox(height: OpenVtsSpacing.xs),
                 _textField(
                   controller: _addressController,
                   label: 'Address Line',
                   textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    if ((value ?? '').trim().isEmpty) {
-                      return 'Address is required.';
-                    }
-                    return null;
-                  },
+                  validator: Validators.address,
                 ),
                 const SizedBox(height: OpenVtsSpacing.xs),
                 if (countryOptions.isEmpty)
@@ -337,7 +307,8 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                     hint: 'US',
                     textInputAction: TextInputAction.next,
                     validator: (value) {
-                      if ((value ?? '').trim().isEmpty) {
+                      final country = (value ?? '').trim();
+                      if (country.isEmpty) {
                         return 'Country is required.';
                       }
                       return null;
@@ -376,7 +347,8 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                     hint: 'CA',
                     textInputAction: TextInputAction.next,
                     validator: (value) {
-                      if ((value ?? '').trim().isEmpty) {
+                      final state = (value ?? '').trim();
+                      if (state.isEmpty) {
                         return 'State is required.';
                       }
                       return null;
@@ -414,7 +386,8 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                     label: 'City',
                     textInputAction: TextInputAction.next,
                     validator: (value) {
-                      if ((value ?? '').trim().isEmpty) {
+                      final city = (value ?? '').trim();
+                      if (city.isEmpty) {
                         return 'City is required.';
                       }
                       return null;
@@ -453,17 +426,15 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                   controller: _pincodeController,
                   label: 'Pincode',
                   hint: 'Optional',
+                  keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.done,
                   inputFormatters: [
-                    LengthLimitingTextInputFormatter(12),
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(
+                      Validators.maxPincodeLength,
+                    ),
                   ],
-                  validator: (value) {
-                    final pin = (value ?? '').trim();
-                    if (pin.length > 12) {
-                      return 'Pincode max length is 12.';
-                    }
-                    return null;
-                  },
+                  validator: Validators.pincodeOptional,
                 ),
                 if (_submitError != null) ...[
                   const SizedBox(height: OpenVtsSpacing.xs),

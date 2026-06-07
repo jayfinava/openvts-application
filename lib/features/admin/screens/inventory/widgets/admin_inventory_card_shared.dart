@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../core/providers/app_preferences_provider.dart';
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../core/utils/date_time_formatter.dart';
 
 class AdminInventoryRoundedSurface extends StatelessWidget {
   const AdminInventoryRoundedSurface({required this.child, super.key});
@@ -265,27 +267,26 @@ class AdminInventoryInfoGrid extends StatelessWidget {
   }
 }
 
-class AdminInventoryCardFooter extends StatelessWidget {
+class AdminInventoryCardFooter extends ConsumerWidget {
   const AdminInventoryCardFooter({
-    required this.createdValue,
+    required this.createdAt,
     required this.statusLabel,
     super.key,
   });
 
-  final String createdValue;
+  final DateTime? createdAt;
   final String statusLabel;
 
-  static final DateFormat createdFormat = DateFormat('yyyy-MM-dd HH:mm');
-
-  static String formatCreatedAt(DateTime? value) {
-    if (value == null) {
-      return '-';
-    }
-    return createdFormat.format(value.toLocal());
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final prefs = ref.watch(appLocalizationPreferencesProvider);
+    final formatter = AppDateFormatter(
+      datePattern: prefs.dateFormat,
+      use24Hour: prefs.use24Hour,
+      timezone: prefs.timezone,
+    );
+    final createdValue = createdAt != null ? formatter.formatDateTime(createdAt) : '-';
+
     return Row(
       children: [
         Expanded(

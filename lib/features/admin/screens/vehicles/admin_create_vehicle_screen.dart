@@ -197,23 +197,21 @@ class _AdminCreateVehicleScreenState
           hintText: 'RV215',
           controller: _nameController,
           textInputAction: TextInputAction.next,
-          validator: (value) =>
-              Validators.required(value, fieldName: 'Vehicle name'),
+          validator: Validators.vehicleName,
         ),
         OpenVtsTextField(
-          label: 'VIN',
+          label: 'VIN (optional)',
           hintText: 'Vehicle identification number',
           controller: _vinController,
           textInputAction: TextInputAction.next,
-          validator: (value) => Validators.required(value, fieldName: 'VIN'),
+          validator: Validators.vinOptional,
         ),
         OpenVtsTextField(
-          label: 'Plate number',
+          label: 'Plate number (optional)',
           hintText: 'MH85FR5664',
           controller: _plateController,
           textInputAction: TextInputAction.next,
-          validator: (value) =>
-              Validators.required(value, fieldName: 'Plate number'),
+          validator: Validators.plateNumberOptional,
         ),
         OpenVtsSearchableDropdown<String>(
           label: 'Vehicle type',

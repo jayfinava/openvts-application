@@ -5,6 +5,7 @@ import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
@@ -96,28 +97,28 @@ class _UserVehicleEditSheetState extends ConsumerState<UserVehicleEditSheet> {
                     hintText: 'Vehicle name',
                     prefixIcon: Icons.directions_car_filled_outlined,
                     textInputAction: TextInputAction.next,
-                    validator: (value) {
-                      if ((value?.trim() ?? '').isEmpty) {
-                        return 'Name is required.';
-                      }
-                      return null;
-                    },
+                    maxLength: Validators.maxVehicleNameLength,
+                    validator: Validators.vehicleName,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   OpenVtsTextField(
-                    label: 'Plate Number',
+                    label: 'Plate Number (optional)',
                     controller: _plateController,
                     hintText: 'Plate number',
                     prefixIcon: Icons.confirmation_number_outlined,
                     textInputAction: TextInputAction.next,
+                    maxLength: Validators.maxPlateNumberLength,
+                    validator: Validators.plateNumberOptional,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   OpenVtsTextField(
-                    label: 'VIN',
+                    label: 'VIN (optional)',
                     controller: _vinController,
                     hintText: 'VIN',
                     prefixIcon: Icons.tag_outlined,
                     textInputAction: TextInputAction.next,
+                    maxLength: Validators.maxVinLength,
+                    validator: Validators.vinOptional,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   _VehicleTypeField(

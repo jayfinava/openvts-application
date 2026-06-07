@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:open_vts/core/theme/open_vts_colors.dart';
 import 'package:open_vts/core/theme/open_vts_radius.dart';
 import 'package:open_vts/core/theme/open_vts_spacing.dart';
@@ -7,9 +8,7 @@ import 'package:open_vts/core/utils/date_time_formatter.dart';
 import 'package:open_vts/features/user/models/user_support_model.dart';
 import 'package:open_vts/shared/widgets/open_vts_card.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
-class UserSupportTicketCard extends StatelessWidget {
+class UserSupportTicketCard extends ConsumerWidget {
   const UserSupportTicketCard({
     required this.ticket,
     this.onTap,
@@ -26,7 +25,8 @@ class UserSupportTicketCard extends StatelessWidget {
   final bool showUnreadIndicator;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final activityDate =
         ticket.lastMessageAt ?? ticket.updatedAt ?? ticket.createdAt;
     final preview = lastMessagePreview?.trim();
@@ -103,7 +103,7 @@ class UserSupportTicketCard extends StatelessWidget {
                     child: Text(
                       activityDate == null
                           ? 'No activity yet'
-                          : _dateFormatter.formatDateTime(activityDate),
+                          : dateFormatter.formatDateTime(activityDate),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(

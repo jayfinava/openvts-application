@@ -110,10 +110,7 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
                       controller: _nameController,
                       textInputAction: TextInputAction.next,
                       prefixIcon: Icons.person_outline_rounded,
-                      validator: (value) => Validators.required(
-                        value,
-                        fieldName: 'Full name',
-                      ),
+                      validator: Validators.adminName,
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     OpenVtsTextField(
@@ -152,10 +149,7 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
                             keyboardType: TextInputType.phone,
                             textInputAction: TextInputAction.next,
                             prefixIcon: Icons.phone_rounded,
-                            validator: (value) => Validators.required(
-                              value,
-                              fieldName: 'Mobile number',
-                            ),
+                            validator: Validators.mobileNumber,
                           ),
                         ),
                       ],
@@ -171,10 +165,7 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
                       controller: _usernameController,
                       textInputAction: TextInputAction.next,
                       prefixIcon: Icons.alternate_email_rounded,
-                      validator: (value) => Validators.required(
-                        value,
-                        fieldName: 'Username',
-                      ),
+                      validator: Validators.adminUsername,
                     ),
                   ],
                 ),
@@ -187,10 +178,7 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
                       controller: _companyNameController,
                       textInputAction: TextInputAction.next,
                       prefixIcon: Icons.apartment_rounded,
-                      validator: (value) => Validators.required(
-                        value,
-                        fieldName: 'Company name',
-                      ),
+                      validator: Validators.companyName,
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     OpenVtsTextField(
@@ -199,10 +187,7 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
                       textInputAction: TextInputAction.next,
                       prefixIcon: Icons.place_outlined,
                       maxLines: 2,
-                      validator: (value) => Validators.required(
-                        value,
-                        fieldName: 'Address',
-                      ),
+                      validator: Validators.address,
                     ),
                   ],
                 ),
@@ -251,7 +236,7 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
                       keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.done,
                       prefixIcon: Icons.pin_drop_outlined,
-                      validator: _pincodeValidator,
+                      validator: Validators.pincodeOptional,
                     ),
                   ],
                 ),
@@ -542,13 +527,6 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
     _city = _blankToNull(user.city);
   }
 
-  String? _pincodeValidator(String? value) {
-    final normalized = value?.trim() ?? '';
-    if (normalized.length > 10) {
-      return 'Use 10 characters or fewer';
-    }
-    return null;
-  }
 }
 
 String _initialText(String? value) {

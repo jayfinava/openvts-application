@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/router/route_paths.dart';
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../core/utils/date_time_formatter.dart';
 import '../../../models/admin_dashboard_model.dart';
 import 'admin_dashboard_list_card.dart';
 
-class AdminTopClientsCard extends StatelessWidget {
+class AdminTopClientsCard extends ConsumerWidget {
   const AdminTopClientsCard({
     required this.clients,
     required this.currency,
@@ -18,7 +20,9 @@ class AdminTopClientsCard extends StatelessWidget {
   final String currency;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
+
     return AdminDashboardListCard(
       title: 'Top Clients',
       icon: Icons.people_outline_rounded,
@@ -27,17 +31,26 @@ class AdminTopClientsCard extends StatelessWidget {
       emptyMessage: 'Client revenue will appear after payments are recorded.',
       itemCount: clients.length,
       itemBuilder: (context, index) {
-        return _TopClientRow(client: clients[index], currency: currency);
+        return _TopClientRow(
+          client: clients[index],
+          currency: currency,
+          formatter: formatter,
+        );
       },
     );
   }
 }
 
 class _TopClientRow extends StatelessWidget {
-  const _TopClientRow({required this.client, required this.currency});
+  const _TopClientRow({
+    required this.client,
+    required this.currency,
+    required this.formatter,
+  });
 
   final AdminTopClient client;
   final String currency;
+  final AppDateFormatter formatter;
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +93,7 @@ class _TopClientRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Paid ${adminDashboardRelativeDate(client.lastPaymentAt)}',
+                  'Paid ${adminDashboardRelativeDate(client.lastPaymentAt, formatter: formatter)}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(

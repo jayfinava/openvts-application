@@ -18,8 +18,6 @@ import '../../../../models/user_subusers_state.dart';
 import 'user_subuser_delete_sheet.dart';
 import 'user_subuser_edit_sheet.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
 typedef UserSubUserDetailsProvider = AutoDisposeStateNotifierProvider<
     UserSubUserDetailsController, UserSubUserDetailsState>;
 
@@ -33,6 +31,7 @@ class UserSubUserProfileTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final state = ref.watch(provider);
     final controller = ref.read(provider.notifier);
     final subUser = state.subUser;
@@ -88,8 +87,8 @@ class UserSubUserProfileTab extends ConsumerWidget {
           title: 'Timeline',
           icon: Icons.schedule_rounded,
           rows: [
-            _InfoRow(label: 'Created', value: _dateText(subUser.createdAt)),
-            _InfoRow(label: 'Updated', value: _dateText(subUser.updatedAt)),
+            _InfoRow(label: 'Created', value: _dateText(subUser.createdAt, dateFormatter)),
+            _InfoRow(label: 'Updated', value: _dateText(subUser.updatedAt, dateFormatter)),
           ],
         ),
       ],
@@ -459,9 +458,9 @@ String _mobile(UserSubUser subUser) {
   return value.isEmpty ? '-' : value;
 }
 
-String _dateText(DateTime? value) {
+String _dateText(DateTime? value, dynamic formatter) {
   if (value == null) {
     return '-';
   }
-  return _dateFormatter.formatDateTime(value.toLocal());
+  return formatter.formatDateTime(value.toLocal());
 }

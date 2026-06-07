@@ -20,8 +20,6 @@ import '../../../models/user_vehicle_state.dart';
 import 'user_vehicle_sensor_history_sheet.dart';
 import 'user_vehicle_sensor_sheet.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
 class UserVehicleSensorsTabView extends ConsumerStatefulWidget {
   const UserVehicleSensorsTabView({required this.provider, super.key});
 
@@ -80,6 +78,7 @@ class _UserVehicleSensorsTabViewState
           for (final sensor in state.sensors) ...[
             _SensorCard(
               sensor: sensor,
+              formatter: ref.watch(appDateFormatterProvider),
               isBusy: state.isUpdatingSensor ||
                   state.isDeletingSensor ||
                   state.isLoadingSensorHistory,
@@ -250,6 +249,7 @@ class _HeaderCard extends StatelessWidget {
 class _SensorCard extends StatelessWidget {
   const _SensorCard({
     required this.sensor,
+    required this.formatter,
     required this.isBusy,
     required this.onEdit,
     required this.onHistory,
@@ -257,6 +257,7 @@ class _SensorCard extends StatelessWidget {
   });
 
   final UserVehicleSensor sensor;
+  final AppDateFormatter formatter;
   final bool isBusy;
   final VoidCallback onEdit;
   final VoidCallback onHistory;
@@ -399,7 +400,7 @@ class _SensorCard extends StatelessWidget {
                 icon: Icons.schedule_rounded,
                 label: sensor.lastUpdated == null
                     ? 'Not updated'
-                    : _dateFormatter
+                    : formatter
                         .formatDateTime(sensor.lastUpdated!.toLocal()),
               ),
               if (sensor.code.trim().isNotEmpty)

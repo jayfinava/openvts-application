@@ -18,8 +18,6 @@ import '../../../../../shared/widgets/open_vts_search_field.dart';
 import '../../../controllers/user_providers.dart';
 import '../../../models/user_share_track_link_model.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
 class UserShareTrackLinkFormSheet extends ConsumerStatefulWidget {
   const UserShareTrackLinkFormSheet({
     required this.scrollController,
@@ -134,6 +132,7 @@ class _UserShareTrackLinkFormSheetState
 
   @override
   Widget build(BuildContext context) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final state = ref.watch(userShareTrackLinkControllerProvider);
     final isSaving = _isEditing
         ? state.isUpdating(widget.link!.endpointId)
@@ -273,7 +272,7 @@ class _UserShareTrackLinkFormSheetState
                   Expanded(
                     child: _PickerTile(
                       label: 'Date',
-                      value: _dateFormatter.formatDate(_expiryAt),
+                      value: dateFormatter.formatDate(_expiryAt),
                       icon: Icons.calendar_today_outlined,
                       onTap: _pickDate,
                     ),
@@ -282,7 +281,7 @@ class _UserShareTrackLinkFormSheetState
                   Expanded(
                     child: _PickerTile(
                       label: 'Time',
-                      value: _dateFormatter.formatTime(_expiryAt),
+                      value: dateFormatter.formatTime(_expiryAt),
                       icon: Icons.schedule_rounded,
                       onTap: _pickTime,
                     ),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../../core/utils/validators.dart';
 import '../../../../../../shared/helpers/phone_helper.dart';
 import '../../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../../shared/widgets/open_vts_button.dart';
@@ -115,7 +116,7 @@ class _UserDriverEditSheetState extends ConsumerState<UserDriverEditSheet> {
                     hintText: 'Driver name',
                     prefixIcon: Icons.badge_outlined,
                     textInputAction: TextInputAction.next,
-                    validator: _nameValidator,
+                    validator: Validators.driverName,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   Row(
@@ -148,7 +149,7 @@ class _UserDriverEditSheetState extends ConsumerState<UserDriverEditSheet> {
                           keyboardType: TextInputType.phone,
                           textInputAction: TextInputAction.next,
                           prefixIcon: Icons.phone_outlined,
-                          validator: _mobileValidator,
+                          validator: Validators.mobileNumber,
                         ),
                       ),
                     ],
@@ -170,7 +171,7 @@ class _UserDriverEditSheetState extends ConsumerState<UserDriverEditSheet> {
                     hintText: 'Username',
                     textInputAction: TextInputAction.next,
                     prefixIcon: Icons.alternate_email_rounded,
-                    validator: _usernameValidator,
+                    validator: Validators.driverUsername,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   OpenVtsTextField(
@@ -266,6 +267,7 @@ class _UserDriverEditSheetState extends ConsumerState<UserDriverEditSheet> {
                     hintText: 'Address',
                     textInputAction: TextInputAction.next,
                     prefixIcon: Icons.home_outlined,
+                    validator: Validators.driverAddressOptional,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   OpenVtsTextField(
@@ -274,7 +276,7 @@ class _UserDriverEditSheetState extends ConsumerState<UserDriverEditSheet> {
                     hintText: 'Postal code',
                     textInputAction: TextInputAction.done,
                     prefixIcon: Icons.pin_drop_outlined,
-                    validator: _pincodeValidator,
+                    validator: Validators.driverPincodeOptional,
                   ),
                 ],
               ),
@@ -619,28 +621,6 @@ class _UserDriverEditSheetState extends ConsumerState<UserDriverEditSheet> {
   }
 
 
-  String? _nameValidator(String? value) {
-    final normalized = value?.trim() ?? '';
-    if (normalized.isEmpty) {
-      return 'Name is required';
-    }
-    if (normalized.length < 2) {
-      return 'Name must be at least 2 characters';
-    }
-    return null;
-  }
-
-  String? _usernameValidator(String? value) {
-    final normalized = value?.trim() ?? '';
-    if (normalized.isEmpty) {
-      return 'Username is required';
-    }
-    if (normalized.length < 3) {
-      return 'Username must be at least 3 characters';
-    }
-    return null;
-  }
-
   String? _optionalPasswordValidator(String? value) {
     final normalized = value?.trim() ?? '';
     if (normalized.isEmpty) {
@@ -649,20 +629,6 @@ class _UserDriverEditSheetState extends ConsumerState<UserDriverEditSheet> {
     if (normalized.length < 6) {
       return 'Password must be at least 6 characters';
     }
-    return null;
-  }
-
-  String? _mobileValidator(String? value) {
-    final normalized = value?.trim() ?? '';
-    if (normalized.isEmpty) {
-      return 'Mobile number is required';
-    }
-
-    final digitsOnly = RegExp(r'^\d{7,15}$');
-    if (!digitsOnly.hasMatch(normalized)) {
-      return 'Enter 7 to 15 digits';
-    }
-
     return null;
   }
 
@@ -677,14 +643,6 @@ class _UserDriverEditSheetState extends ConsumerState<UserDriverEditSheet> {
       return 'Enter a valid email address';
     }
 
-    return null;
-  }
-
-  String? _pincodeValidator(String? value) {
-    final normalized = value?.trim() ?? '';
-    if (normalized.isNotEmpty && normalized.length > 10) {
-      return 'Use 10 digits or fewer';
-    }
     return null;
   }
 

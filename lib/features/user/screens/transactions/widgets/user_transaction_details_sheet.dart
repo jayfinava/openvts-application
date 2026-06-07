@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../core/theme/open_vts_colors.dart';
@@ -14,8 +15,6 @@ import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_status_chip.dart';
 import '../../../models/user_transactions_model.dart';
 import 'user_transaction_detail_row.dart';
-
-const DateTimeFormatter _sheetDateFormatter = DateTimeFormatter();
 
 Future<void> showUserTransactionDetailsSheet({
   required BuildContext context,
@@ -34,7 +33,7 @@ Future<void> showUserTransactionDetailsSheet({
   );
 }
 
-class UserTransactionDetailsSheet extends StatelessWidget {
+class UserTransactionDetailsSheet extends ConsumerWidget {
   const UserTransactionDetailsSheet({
     required this.transaction,
     this.currentUserId,
@@ -45,7 +44,8 @@ class UserTransactionDetailsSheet extends StatelessWidget {
   final String? currentUserId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final sheetDateFormatter = ref.watch(appDateFormatterProvider);
     final hasFailure = transaction.status == UserTransactionStatus.failed ||
         _hasReadable(transaction.failureCode) ||
         _hasReadable(transaction.failureMessage);
@@ -126,7 +126,7 @@ class UserTransactionDetailsSheet extends StatelessWidget {
                         ),
                         _SheetRow(
                           label: 'Date/Time',
-                          value: _dateTimeLabel(transaction),
+                          value: _dateTimeLabel(transaction, sheetDateFormatter),
                         ),
                         _SheetRow(
                           label: 'Payment Type',
@@ -328,9 +328,9 @@ class UserTransactionDetailsSheet extends StatelessWidget {
     return normalizedCurrent == candidateId.toString();
   }
 
-  String _dateTimeLabel(UserTransaction source) {
+  String _dateTimeLabel(UserTransaction source, dynamic formatter) {
     if (source.createdAt != null) {
-      return _sheetDateFormatter.formatDateTime(source.createdAt!.toLocal());
+      return formatter.formatDateTime(source.createdAt!.toLocal());
     }
 
     return _safeValue(source.createdAtRaw);

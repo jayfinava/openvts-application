@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
@@ -8,9 +9,7 @@ import '../../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../models/user_subuser_model.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
-class UserSubUserCard extends StatelessWidget {
+class UserSubUserCard extends ConsumerWidget {
   const UserSubUserCard({
     required this.subUser,
     required this.isTogglingStatus,
@@ -25,7 +24,8 @@ class UserSubUserCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final isActive = subUser.isActive;
 
     return OpenVtsCard(
@@ -88,7 +88,7 @@ class UserSubUserCard extends StatelessWidget {
           const SizedBox(height: OpenVtsSpacing.xs),
           _InfoRow(label: 'Email', value: _displayEmail(subUser)),
           _InfoRow(label: 'Mobile', value: _displayMobile(subUser)),
-          _InfoRow(label: 'Created', value: _displayCreated(subUser)),
+          _InfoRow(label: 'Created', value: _displayCreated(subUser, dateFormatter)),
           const SizedBox(height: OpenVtsSpacing.xs),
           Row(
             children: [
@@ -227,10 +227,10 @@ String _displayMobile(UserSubUser subUser) {
   return merged.isEmpty ? '-' : merged;
 }
 
-String _displayCreated(UserSubUser subUser) {
+String _displayCreated(UserSubUser subUser, dynamic formatter) {
   final createdAt = subUser.createdAt;
   if (createdAt == null) {
     return 'Unknown';
   }
-  return _dateFormatter.formatDate(createdAt.toLocal());
+  return formatter.formatDate(createdAt.toLocal());
 }

@@ -21,8 +21,6 @@ import 'user_driver_assign_vehicle_sheet.dart';
 import 'user_driver_delete_sheet.dart';
 import 'user_driver_edit_sheet.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
-
 class UserDriverProfileTab extends ConsumerWidget {
   const UserDriverProfileTab({required this.provider, super.key});
 
@@ -31,6 +29,7 @@ class UserDriverProfileTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormatter = ref.watch(appDateFormatterProvider);
     final state = ref.watch(provider);
     final controller = ref.read(provider.notifier);
     final driver = state.driver;
@@ -79,7 +78,7 @@ class UserDriverProfileTab extends ConsumerWidget {
             ),
             _InfoRow(
               label: 'Created',
-              value: _dateText(driver.createdAt),
+              value: _dateText(driver.createdAt, dateFormatter),
             ),
           ],
         ),
@@ -580,11 +579,11 @@ String _phoneLabel(UserDriver driver) {
   return normalized.displayNumber;
 }
 
-String _dateText(DateTime? value) {
+String _dateText(DateTime? value, dynamic formatter) {
   if (value == null) {
     return '-';
   }
-  return _dateFormatter.formatDateTime(value.toLocal());
+  return formatter.formatDateTime(value.toLocal());
 }
 
 String _addressText(UserDriver driver) {

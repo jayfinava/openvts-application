@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/theme/open_vts_spacing.dart';
+import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
@@ -75,9 +76,7 @@ class _AdminInventoryEditSimSheetState
                 OpenVtsTextField(
                   label: 'SIM Number',
                   controller: _simNumberController,
-                  validator: (v) => (v ?? '').trim().isEmpty
-                      ? 'SIM number is required'
-                      : null,
+                  validator: Validators.simNumber,
                 ),
                 const SizedBox(height: OpenVtsSpacing.sm),
                 OpenVtsTextField(label: 'IMSI', controller: _imsiController),

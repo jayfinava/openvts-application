@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
@@ -13,7 +14,7 @@ import '../../../../models/user_landmark_model.dart';
 /// dot, description preview, geometry meta (radius / tolerance / point count),
 /// updated date, and edit/delete actions. Tapping the card body invokes
 /// [onSelect].
-class UserGeofenceCard extends StatelessWidget {
+class UserGeofenceCard extends ConsumerWidget {
   const UserGeofenceCard({
     super.key,
     required this.geofence,
@@ -31,10 +32,9 @@ class UserGeofenceCard extends StatelessWidget {
   final VoidCallback onDelete;
   final bool isDeleting;
 
-  static const DateTimeFormatter _formatter = DateTimeFormatter();
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     final color = _parseHex(geofence.color);
     final inactive = !geofence.isActive;
 
@@ -138,7 +138,7 @@ class UserGeofenceCard extends StatelessWidget {
                       if (geofence.updatedAt != null) ...[
                         const SizedBox(width: OpenVtsSpacing.sm),
                         Text(
-                          _formatter.formatDate(geofence.updatedAt!),
+                          formatter.formatDate(geofence.updatedAt!),
                           style: OpenVtsTypography.meta.copyWith(
                             color: OpenVtsColors.textTertiary,
                           ),
