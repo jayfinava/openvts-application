@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
@@ -11,7 +12,6 @@ import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../models/admin_vehicle_model.dart';
 
-const DateTimeFormatter _dateFormatter = DateTimeFormatter();
 const int _maxDocumentBytes = 10 * 1024 * 1024;
 const List<String> _blockedDocumentExtensions = <String>[
   'exe',
@@ -417,7 +417,7 @@ class _FilePickerField extends StatelessWidget {
   }
 }
 
-class _ExpiryField extends StatelessWidget {
+class _ExpiryField extends ConsumerWidget {
   const _ExpiryField({
     required this.value,
     required this.onPick,
@@ -429,7 +429,8 @@ class _ExpiryField extends StatelessWidget {
   final VoidCallback onClear;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
@@ -460,7 +461,7 @@ class _ExpiryField extends StatelessWidget {
                 Text(
                   value == null
                       ? 'Optional'
-                      : _dateFormatter.formatDateTime(value!),
+                      : formatter.formatDateTime(value!),
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
