@@ -1649,7 +1649,7 @@ class _OptionsSheet extends StatelessWidget {
                 width: 40,
                 margin: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
                 decoration: BoxDecoration(
-                  color: _softBorderColor(context),
+                  color: Theme.of(context).colorScheme.outlineVariant,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -1661,12 +1661,17 @@ class _OptionsSheet extends StatelessWidget {
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                   ),
                 ),
                 IconButton(
                   onPressed: () => Navigator.of(context).maybePop(),
-                  icon: const Icon(Icons.close_rounded, size: 20),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    size: 20,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                   tooltip: 'Close',
                 ),
               ],
@@ -1676,9 +1681,7 @@ class _OptionsSheet extends StatelessWidget {
               Text(
                 section.label,
                 style: OpenVtsTypography.label.copyWith(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? OpenVtsColors.darkTextSecondary
-                      : OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -1737,11 +1740,12 @@ class _ChoiceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final background =
-        selected ? _primaryInkColor(context) : _softSurfaceColor(context);
+    final background = selected
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.surfaceContainer;
     final foreground = selected
-        ? Theme.of(context).colorScheme.surface
-        : _primaryInkColor(context);
+        ? Theme.of(context).colorScheme.onPrimary
+        : Theme.of(context).colorScheme.onSurface;
 
     return Material(
       color: background,
@@ -1758,8 +1762,8 @@ class _ChoiceChip extends StatelessWidget {
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
             border: Border.all(
               color: selected
-                  ? _primaryInkColor(context)
-                  : _softBorderColor(context),
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.outlineVariant,
             ),
           ),
           child: Text(
@@ -1804,10 +1808,8 @@ class _RadioRow extends StatelessWidget {
                   : Icons.radio_button_off_rounded,
               size: 18,
               color: selected
-                  ? _primaryInkColor(context)
-                  : (Theme.of(context).brightness == Brightness.dark
-                      ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.5)
-                      : OpenVtsColors.textTertiary),
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             const SizedBox(width: OpenVtsSpacing.sm),
             Expanded(
@@ -1815,7 +1817,7 @@ class _RadioRow extends StatelessWidget {
                 label,
                 style: OpenVtsTypography.label.copyWith(
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  color: _primaryInkColor(context),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),

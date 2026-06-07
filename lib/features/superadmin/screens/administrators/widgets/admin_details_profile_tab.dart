@@ -197,6 +197,7 @@ class _AdminPersonalCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const fmt = DateTimeFormatter();
+    final scheme = Theme.of(context).colorScheme;
     final address = admin.address;
     final addressLine = address?.addressLine ?? admin.location;
     final city = address?.cityName ?? admin.cityName;
@@ -233,7 +234,7 @@ class _AdminPersonalCard extends ConsumerWidget {
                     Text(
                       admin.name,
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: scheme.onSurface,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -244,7 +245,7 @@ class _AdminPersonalCard extends ConsumerWidget {
                     Text(
                       '@${admin.username}',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: scheme.onSurface.withValues(alpha: 0.7),
                         fontSize: 11,
                       ),
                       maxLines: 1,
@@ -292,16 +293,16 @@ class _AdminPersonalCard extends ConsumerWidget {
               Expanded(
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.event_outlined,
                       size: 14,
-                      color: OpenVtsColors.textTertiary,
+                      color: scheme.onSurface.withValues(alpha: 0.6),
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Created: ',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textTertiary,
+                        color: scheme.onSurface.withValues(alpha: 0.6),
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                       ),
@@ -310,7 +311,7 @@ class _AdminPersonalCard extends ConsumerWidget {
                       child: Text(
                         created,
                         style: OpenVtsTypography.label.copyWith(
-                          color: OpenVtsColors.textSecondary,
+                          color: scheme.onSurface.withValues(alpha: 0.8),
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                         ),
@@ -325,16 +326,16 @@ class _AdminPersonalCard extends ConsumerWidget {
               Expanded(
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.login_outlined,
                       size: 14,
-                      color: OpenVtsColors.textTertiary,
+                      color: scheme.onSurface.withValues(alpha: 0.6),
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Last login: ',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textTertiary,
+                        color: scheme.onSurface.withValues(alpha: 0.6),
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                       ),
@@ -343,7 +344,7 @@ class _AdminPersonalCard extends ConsumerWidget {
                       child: Text(
                         lastLogin,
                         style: OpenVtsTypography.label.copyWith(
-                          color: OpenVtsColors.textSecondary,
+                          color: scheme.onSurface.withValues(alpha: 0.8),
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                         ),
@@ -393,6 +394,7 @@ class _CompanyCard extends StatelessWidget {
       (k) => (socialLinks[k]?.trim().isNotEmpty ?? false),
     );
 
+    final scheme = Theme.of(context).colorScheme;
     return _SectionCard(
       title: 'COMPANY',
       trailing: SizedBox(
@@ -401,10 +403,10 @@ class _CompanyCard extends StatelessWidget {
         child: IconButton(
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-          icon: const Icon(
+          icon: Icon(
             Icons.edit_outlined,
             size: 16,
-            color: OpenVtsColors.textSecondary,
+            color: scheme.onSurface.withValues(alpha: 0.7),
           ),
           tooltip: 'Edit company',
           onPressed: isBusy ? null : onEditCompany,
@@ -431,7 +433,7 @@ class _CompanyCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: _colorFromName(color),
                       shape: BoxShape.circle,
-                      border: Border.all(color: OpenVtsColors.border),
+                      border: Border.all(color: scheme.outline.withValues(alpha: 0.5)),
                     ),
                   ),
                 )
@@ -522,6 +524,7 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return OpenVtsCard(
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.md,
@@ -537,10 +540,10 @@ class _SectionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: OpenVtsColors.textTertiary,
+                    color: scheme.onSurface.withValues(alpha: 0.6),
                     letterSpacing: 0.4,
                   ),
                 ),
@@ -549,7 +552,7 @@ class _SectionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
-          const Divider(height: 1, color: OpenVtsColors.border),
+          Divider(height: 1, color: scheme.outline.withValues(alpha: 0.5)),
           const SizedBox(height: OpenVtsSpacing.xs),
           ...children,
         ],
@@ -612,13 +615,14 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
+            Icon(icon, size: 14, color: scheme.onSurface.withValues(alpha: 0.6)),
             const SizedBox(width: 8),
           ],
           SizedBox(
@@ -626,7 +630,7 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textTertiary,
+                color: scheme.onSurface.withValues(alpha: 0.6),
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
               ),
@@ -638,7 +642,7 @@ class _InfoRow extends StatelessWidget {
                 Text(
                   _displayValue(value ?? ''),
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: scheme.onSurface,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -1177,6 +1181,7 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
         ref.watch(superadminAdminDetailsControllerProvider(widget.adminId));
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
 
+    final scheme = Theme.of(context).colorScheme;
     final colorItems = <DropdownMenuItem<String>>[
       for (final c in _kPrimaryColorOptions)
         DropdownMenuItem<String>(
@@ -1189,11 +1194,11 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
                 decoration: BoxDecoration(
                   color: _colorFromName(c),
                   shape: BoxShape.circle,
-                  border: Border.all(color: OpenVtsColors.border),
+                  border: Border.all(color: scheme.outline.withValues(alpha: 0.5)),
                 ),
               ),
               const SizedBox(width: 8),
-              Text(c, style: const TextStyle(fontSize: 13)),
+              Text(c, style: TextStyle(fontSize: 13, color: scheme.onSurface)),
             ],
           ),
         ),
@@ -1208,7 +1213,7 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
           value: _primaryColor,
           child: Text(
             _primaryColor!,
-            style: const TextStyle(color: OpenVtsColors.textSecondary),
+            style: TextStyle(color: scheme.onSurface.withValues(alpha: 0.7)),
           ),
         ),
       );
@@ -1405,13 +1410,14 @@ class _SheetHandle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Center(
       child: Container(
         width: 36,
         height: 4,
         margin: const EdgeInsets.only(top: 10, bottom: 6),
         decoration: BoxDecoration(
-          color: OpenVtsColors.border,
+          color: scheme.outline.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(2),
         ),
       ),
@@ -1425,6 +1431,7 @@ class _SheetTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.md,
@@ -1441,17 +1448,18 @@ class _SheetTitle extends StatelessWidget {
                   title,
                   style: OpenVtsTypography.body.copyWith(
                     fontWeight: FontWeight.w700,
+                    color: scheme.onSurface,
                   ),
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close_rounded, size: 20),
+                icon: Icon(Icons.close_rounded, size: 20, color: scheme.onSurface),
                 onPressed: () => Navigator.of(context).maybePop(),
                 tooltip: 'Close',
               ),
             ],
           ),
-          const Divider(height: 1, color: OpenVtsColors.border),
+          Divider(height: 1, color: scheme.outline.withValues(alpha: 0.5)),
         ],
       ),
     );
@@ -1473,9 +1481,10 @@ class _SheetActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
-      decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: OpenVtsColors.border)),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: scheme.outline.withValues(alpha: 0.5))),
       ),
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.md,
@@ -1513,14 +1522,15 @@ class _FormSectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(top: OpenVtsSpacing.xs),
       child: Text(
         label,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w700,
-          color: OpenVtsColors.textTertiary,
+          color: scheme.onSurface.withValues(alpha: 0.6),
           letterSpacing: 0.6,
         ),
       ),
@@ -1545,6 +1555,7 @@ class _DropdownField<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1552,7 +1563,7 @@ class _DropdownField<T> extends StatelessWidget {
           label,
           style: OpenVtsTypography.meta.copyWith(
             fontWeight: FontWeight.w500,
-            color: OpenVtsColors.textSecondary,
+            color: scheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
         const SizedBox(height: OpenVtsSpacing.xxs),

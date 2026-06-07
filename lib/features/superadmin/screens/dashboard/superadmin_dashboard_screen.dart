@@ -411,6 +411,7 @@ class _MetricTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return OpenVtsCard(
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.md,
@@ -430,7 +431,7 @@ class _MetricTile extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textTertiary,
+                    color: theme.colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.8,
                   ),
@@ -439,7 +440,7 @@ class _MetricTile extends StatelessWidget {
               Icon(
                 data.icon,
                 size: 16,
-                color: OpenVtsColors.textTertiary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ],
           ),
@@ -448,7 +449,7 @@ class _MetricTile extends StatelessWidget {
             NumberFormat.decimalPattern('en_IN').format(data.value),
             style: OpenVtsTypography.numeric.copyWith(
               fontSize: 19,
-              color: OpenVtsColors.textPrimary,
+              color: theme.colorScheme.onSurface,
             ),
           ),
         ],
@@ -482,6 +483,7 @@ class _AdoptionGrowthSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final latestPoint = points.isNotEmpty ? points.last : null;
 
     return OpenVtsCard(
@@ -506,7 +508,7 @@ class _AdoptionGrowthSection extends StatelessWidget {
                       Text(
                         'Adoption & Growth',
                         style: OpenVtsTypography.titleSmall.copyWith(
-                          color: OpenVtsColors.textPrimary,
+                          color: theme.colorScheme.onSurface,
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                         ),
@@ -517,7 +519,7 @@ class _AdoptionGrowthSection extends StatelessWidget {
                             ? 'Platform growth across users, vehicles, and licenses.'
                             : 'Premium trend view for ${latestPoint.label} across users, vehicles, and license credits.',
                         style: OpenVtsTypography.meta.copyWith(
-                          color: OpenVtsColors.textSecondary,
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -634,11 +636,12 @@ class _RangeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(3),
@@ -663,13 +666,13 @@ class _RangeSelector extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? OpenVtsColors.white
+                              ? theme.colorScheme.primaryContainer
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
                           boxShadow: isSelected
                               ? [
                                   BoxShadow(
-                                    color: OpenVtsColors.brandInk.withValues(alpha: 0.08),
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.08),
                                     blurRadius: 10,
                                     offset: const Offset(0, 3),
                                   ),
@@ -680,8 +683,8 @@ class _RangeSelector extends StatelessWidget {
                           range.label,
                           style: OpenVtsTypography.meta.copyWith(
                             color: isSelected
-                                ? OpenVtsColors.textPrimary
-                                : OpenVtsColors.textTertiary,
+                                ? theme.colorScheme.onPrimaryContainer
+                                : theme.colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -708,6 +711,7 @@ class _LegendDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.xs,
@@ -739,7 +743,7 @@ class _LegendDot extends StatelessWidget {
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: theme.colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -766,6 +770,7 @@ class _ChartSeriesPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       constraints: const BoxConstraints(minWidth: 132),
       padding: const EdgeInsets.symmetric(
@@ -775,16 +780,16 @@ class _ChartSeriesPill extends StatelessWidget {
       decoration: BoxDecoration(
         color: isPrimary
             ? color.withValues(alpha: 0.08)
-            : OpenVtsColors.white,
+            : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
         border: Border.all(
           color: isPrimary
               ? color.withValues(alpha: 0.2)
-              : OpenVtsColors.border,
+              : theme.colorScheme.outlineVariant,
         ),
         boxShadow: [
           BoxShadow(
-            color: OpenVtsColors.brandInk.withValues(alpha: 0.04),
+            color: theme.colorScheme.primary.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -809,7 +814,7 @@ class _ChartSeriesPill extends StatelessWidget {
               Text(
                 label,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: theme.colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -818,7 +823,7 @@ class _ChartSeriesPill extends StatelessWidget {
                 _formatCompactMetric(value),
                 style: OpenVtsTypography.numeric.copyWith(
                   fontSize: 16,
-                  color: OpenVtsColors.textPrimary,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],
@@ -827,7 +832,7 @@ class _ChartSeriesPill extends StatelessWidget {
           Text(
             periodLabel,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textTertiary,
+              color: theme.colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -844,6 +849,7 @@ class _AdoptionChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final series = _buildSeries(points);
     final maxValue = _chartMax(series);
     final yValues = _chartYValues(maxValue);
@@ -859,18 +865,18 @@ class _AdoptionChart extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  OpenVtsColors.white,
-                  Color.lerp(OpenVtsColors.surface, OpenVtsColors.white, 0.45) ??
-                      OpenVtsColors.surface,
+                  theme.colorScheme.surface,
+                  Color.lerp(theme.colorScheme.surface, theme.colorScheme.onSurface, 0.08) ??
+                      theme.colorScheme.surface,
                 ],
               ),
               borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
               border: Border.all(
-                color: OpenVtsColors.border.withValues(alpha: 0.95),
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: OpenVtsColors.brandInk.withValues(alpha: 0.035),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.035),
                   blurRadius: 18,
                   offset: const Offset(0, 10),
                 ),
@@ -890,7 +896,7 @@ class _AdoptionChart extends StatelessWidget {
                       Text(
                         'Latest period',
                         style: OpenVtsTypography.meta.copyWith(
-                          color: OpenVtsColors.textSecondary,
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -901,14 +907,14 @@ class _AdoptionChart extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: OpenVtsColors.surface,
+                          color: theme.colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                          border: Border.all(color: OpenVtsColors.border),
+                          border: Border.all(color: theme.colorScheme.outlineVariant),
                         ),
                         child: Text(
                           latestPoint.label,
                           style: OpenVtsTypography.meta.copyWith(
-                            color: OpenVtsColors.textPrimary,
+                            color: theme.colorScheme.onPrimaryContainer,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -940,6 +946,8 @@ class _AdoptionChart extends StatelessWidget {
                               painter: _AdoptionChartPainter(
                                 series: series,
                                 maxValue: maxValue,
+                                surfaceColor: theme.colorScheme.surface,
+                                outlineColor: theme.colorScheme.outlineVariant,
                               ),
                               child: const SizedBox.expand(),
                             ),
@@ -1034,10 +1042,14 @@ class _AdoptionChartPainter extends CustomPainter {
   const _AdoptionChartPainter({
     required this.series,
     required this.maxValue,
+    required this.surfaceColor,
+    required this.outlineColor,
   });
 
   final List<_AdoptionSeries> series;
   final int maxValue;
+  final Color surfaceColor;
+  final Color outlineColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -1048,8 +1060,8 @@ class _AdoptionChartPainter extends CustomPainter {
       size.height - OpenVtsSpacing.sm,
     );
 
-    _drawPlotSurface(canvas, plotRect);
-    _drawGrid(canvas, plotRect);
+    _drawPlotSurface(canvas, plotRect, surfaceColor, outlineColor);
+    _drawGrid(canvas, plotRect, outlineColor);
 
     if (series.isEmpty || series.first.values.length < 2) {
       return;
@@ -1101,7 +1113,7 @@ class _AdoptionChartPainter extends CustomPainter {
     return oldDelegate.series != series || oldDelegate.maxValue != maxValue;
   }
 
-  void _drawPlotSurface(Canvas canvas, Rect plotRect) {
+  void _drawPlotSurface(Canvas canvas, Rect plotRect, Color surfaceColor, Color outlineColor) {
     canvas.drawRect(
       plotRect,
       Paint()
@@ -1109,16 +1121,16 @@ class _AdoptionChartPainter extends CustomPainter {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            OpenVtsColors.white.withValues(alpha: 0.55),
-            OpenVtsColors.surface.withValues(alpha: 0.18),
+            surfaceColor.withValues(alpha: 0.3),
+            surfaceColor.withValues(alpha: 0.05),
           ],
         ).createShader(plotRect),
     );
   }
 
-  void _drawGrid(Canvas canvas, Rect plotRect) {
+  void _drawGrid(Canvas canvas, Rect plotRect, Color outlineColor) {
     final gridPaint = Paint()
-      ..color = OpenVtsColors.border.withValues(alpha: 0.9)
+      ..color = outlineColor.withValues(alpha: 0.15)
       ..strokeWidth = 1;
 
     const gridLines = 6;
@@ -1288,6 +1300,7 @@ class _YAxisLabels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -1297,7 +1310,7 @@ class _YAxisLabels extends StatelessWidget {
               _formatAxisValue(value),
               textAlign: TextAlign.end,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textTertiary,
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
               ),
@@ -1315,6 +1328,7 @@ class _XAxisLabels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return LayoutBuilder(
       builder: (context, constraints) {
         final useRotation = constraints.maxWidth < 620;
@@ -1333,8 +1347,8 @@ class _XAxisLabels extends StatelessWidget {
               final showLabel = index == points.length - 1 || index % interval == 0;
               final style = OpenVtsTypography.meta.copyWith(
                 color: index == points.length - 1
-                    ? OpenVtsColors.textSecondary
-                    : OpenVtsColors.textTertiary,
+                    ? theme.colorScheme.onSurfaceVariant
+                    : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                 fontSize: 10,
                 fontWeight: index == points.length - 1
                     ? FontWeight.w700
@@ -1553,15 +1567,16 @@ class _VehicleStatusTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final percentage = totalDevices <= 0
         ? 0.0
         : (data.count / totalDevices).clamp(0.0, 1.0);
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: OpenVtsColors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(OpenVtsSpacing.sm),
@@ -1570,7 +1585,7 @@ class _VehicleStatusTile extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(data.icon, size: 12, color: OpenVtsColors.textTertiary),
+                Icon(data.icon, size: 12, color: theme.colorScheme.onSurfaceVariant),
                 const SizedBox(width: OpenVtsSpacing.xxs),
                 Expanded(
                   child: Text(
@@ -1578,7 +1593,7 @@ class _VehicleStatusTile extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.textTertiary,
+                      color: theme.colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.7,
                     ),
@@ -1590,7 +1605,7 @@ class _VehicleStatusTile extends StatelessWidget {
             RichText(
               text: TextSpan(
                 style: OpenVtsTypography.numeric.copyWith(
-                  color: OpenVtsColors.textPrimary,
+                  color: theme.colorScheme.onSurface,
                   fontSize: 18,
                 ),
                 children: [
@@ -1598,7 +1613,7 @@ class _VehicleStatusTile extends StatelessWidget {
                   TextSpan(
                     text: ' ${(percentage * 100).round()}%',
                     style: OpenVtsTypography.body.copyWith(
-                      color: OpenVtsColors.textTertiary,
+                      color: theme.colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -1611,7 +1626,7 @@ class _VehicleStatusTile extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: percentage,
                 minHeight: 4,
-                backgroundColor: OpenVtsColors.surface,
+                backgroundColor: theme.colorScheme.outlineVariant.withValues(alpha: 0.2),
                 color: data.color,
               ),
             ),
@@ -1659,7 +1674,7 @@ class _RecentVehiclesSection extends StatelessWidget {
                 final vehicle = vehicles[index];
                 return Column(
                   children: [
-                    if (index > 0) const Divider(height: 1, color: OpenVtsColors.border),
+                    if (index > 0) Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
                     _RecentVehicleRow(vehicle: vehicle),
                   ],
                 );
@@ -1676,6 +1691,7 @@ class _RecentVehicleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final dateText = vehicle.updatedAt == null
         ? '—'
       : _dashboardDateFormatter.formatDate(vehicle.updatedAt!.toLocal());
@@ -1690,14 +1706,14 @@ class _RecentVehicleRow extends StatelessWidget {
           Container(
             width: 34,
             height: 34,
-            decoration: const BoxDecoration(
-              color: OpenVtsColors.surface,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainer,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.local_shipping_outlined,
               size: 16,
-              color: OpenVtsColors.textTertiary,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -1710,7 +1726,7 @@ class _RecentVehicleRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.body.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: theme.colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1718,7 +1734,7 @@ class _RecentVehicleRow extends StatelessWidget {
                 Text(
                   vehicle.subtitle,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textTertiary,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -1739,7 +1755,7 @@ class _RecentVehicleRow extends StatelessWidget {
               Text(
                 dateText,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textTertiary,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -1780,7 +1796,7 @@ class _TransactionsSection extends StatelessWidget {
                 final transaction = transactions[index];
                 return Column(
                   children: [
-                    if (index > 0) const Divider(height: 1, color: OpenVtsColors.border),
+                    if (index > 0) Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
                     _TransactionRow(transaction: transaction),
                   ],
                 );
@@ -1893,7 +1909,7 @@ class _RecentUsersSection extends StatelessWidget {
                 final user = users[index];
                 return Column(
                   children: [
-                    if (index > 0) const Divider(height: 1, color: OpenVtsColors.border),
+                    if (index > 0) Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
                     _RecentUserRow(user: user),
                   ],
                 );
@@ -2081,7 +2097,7 @@ class _ActivityLogsSection extends StatelessWidget {
                 final log = logs[index];
                 return Column(
                   children: [
-                    if (index > 0) const Divider(height: 1, color: OpenVtsColors.border),
+                    if (index > 0) Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
                     _ActivityLogRow(log: log),
                   ],
                 );
@@ -2270,6 +2286,7 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return OpenVtsCard(
       padding: EdgeInsets.zero,
       child: Column(
@@ -2282,7 +2299,7 @@ class _SectionCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(icon, size: 16, color: OpenVtsColors.textPrimary),
+                Icon(icon, size: 16, color: theme.colorScheme.onSurface),
                 const SizedBox(width: OpenVtsSpacing.xs),
                 Expanded(
                   child: Text(
@@ -2294,7 +2311,7 @@ class _SectionCard extends StatelessWidget {
               ],
             ),
           ),
-          const Divider(height: 1, color: OpenVtsColors.border),
+          Divider(height: 1, color: theme.colorScheme.outlineVariant),
           child,
         ],
       ),

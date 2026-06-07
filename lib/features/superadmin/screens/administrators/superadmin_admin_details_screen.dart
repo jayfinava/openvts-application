@@ -255,12 +255,18 @@ class _HeaderMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return PopupMenuButton<_AdminDetailsMenuAction>(
       tooltip: 'More actions',
-      icon: const Icon(
+      icon: Icon(
         Icons.more_vert_rounded,
         size: 20,
-        color: OpenVtsColors.textSecondary,
+        color: scheme.onSurface.withValues(alpha: 0.7),
+      ),
+      color: scheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: scheme.outline.withValues(alpha: 0.2)),
       ),
       onSelected: (value) {
         switch (value) {
@@ -319,8 +325,10 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        isDestructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
+    final scheme = Theme.of(context).colorScheme;
+    final color = isDestructive
+        ? OpenVtsColors.error
+        : scheme.onSurface;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
