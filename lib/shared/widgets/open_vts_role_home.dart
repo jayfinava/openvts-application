@@ -170,8 +170,8 @@ class OpenVtsRoleHome extends StatelessWidget {
                           _TopBarAction(
                             tooltip: isDark ? 'Light mode' : 'Dark mode',
                             icon: isDark
-                                ? Icons.light_mode_outlined
-                                : Icons.dark_mode_outlined,
+                                ? Icons.light_mode
+                                : Icons.dark_mode,
                             borderColor: borderColor,
                             onPressed: onToggleTheme,
                           ),
@@ -261,7 +261,9 @@ class OpenVtsRoleHome extends StatelessWidget {
                               child: Column(
                                 children: [
                                   Image.asset(
-                                    'assets/brand/logo.png',
+                                    isDark
+                                        ? 'assets/brand/dark-logo.png'
+                                        : 'assets/brand/logo.png',
                                     height: logoHeight,
                                     fit: BoxFit.contain,
                                     errorBuilder: (_, __, ___) {
