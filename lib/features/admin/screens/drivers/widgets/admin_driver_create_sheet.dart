@@ -192,8 +192,7 @@ class _DriverCreateSheetState extends ConsumerState<_DriverCreateSheet> {
                   label: 'Name',
                   controller: _name,
                   prefixIcon: Icons.person_outline_rounded,
-                  validator: (value) =>
-                      Validators.required(value, fieldName: 'Name'),
+                  validator: (value) => Validators.driverName(value),
                 ),
                 const SizedBox(height: OpenVtsSpacing.sm),
                 LayoutBuilder(
@@ -219,8 +218,7 @@ class _DriverCreateSheetState extends ConsumerState<_DriverCreateSheet> {
                       controller: _mobile,
                       keyboardType: TextInputType.phone,
                       prefixIcon: Icons.phone_rounded,
-                      validator: (value) =>
-                          Validators.required(value, fieldName: 'Mobile'),
+                      validator: (value) => Validators.mobileNumber(value),
                     );
 
                     if (!isTablet) {
@@ -268,8 +266,7 @@ class _DriverCreateSheetState extends ConsumerState<_DriverCreateSheet> {
                   label: 'Username',
                   controller: _username,
                   prefixIcon: Icons.alternate_email_rounded,
-                  validator: (value) =>
-                      Validators.required(value, fieldName: 'Username'),
+                  validator: (value) => Validators.driverUsername(value),
                 ),
                 const SizedBox(height: OpenVtsSpacing.sm),
                 OpenVtsTextField(
@@ -293,7 +290,7 @@ class _DriverCreateSheetState extends ConsumerState<_DriverCreateSheet> {
                   validator: (value) {
                     final text = value?.trim() ?? '';
                     if (text.isEmpty) return 'Password is required';
-                    if (text.length < 6) return 'Minimum 6 characters';
+                    if (text.length < 8) return 'Minimum 8 characters';
                     return null;
                   },
                 ),
@@ -341,6 +338,7 @@ class _DriverCreateSheetState extends ConsumerState<_DriverCreateSheet> {
                   controller: _address,
                   prefixIcon: Icons.place_outlined,
                   maxLines: 2,
+                  validator: (value) => Validators.driverAddressOptional(value),
                 ),
                 const SizedBox(height: OpenVtsSpacing.sm),
                 OpenVtsTextField(
@@ -348,6 +346,7 @@ class _DriverCreateSheetState extends ConsumerState<_DriverCreateSheet> {
                   controller: _pincode,
                   keyboardType: TextInputType.number,
                   prefixIcon: Icons.pin_drop_outlined,
+                  validator: (value) => Validators.driverPincodeOptional(value),
                 ),
               ],
             ),

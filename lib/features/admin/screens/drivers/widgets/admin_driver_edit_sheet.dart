@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/theme/open_vts_spacing.dart';
+import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_bottom_sheet.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
@@ -185,8 +186,7 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
             OpenVtsTextField(
               label: 'Name',
               controller: _name,
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Name is required' : null,
+              validator: (v) => Validators.driverName(v),
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
             OpenVtsTextField(
@@ -221,19 +221,20 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
               label: 'Mobile',
               controller: _mobile,
               keyboardType: TextInputType.phone,
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Mobile is required' : null,
+              validator: (v) => Validators.mobileNumber(v),
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
             OpenVtsTextField(
               label: 'Username',
               controller: _username,
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Username is required'
-                  : null,
+              validator: (v) => Validators.driverUsername(v),
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
-            OpenVtsTextField(label: 'Address', controller: _address),
+            OpenVtsTextField(
+              label: 'Address',
+              controller: _address,
+              validator: (v) => Validators.driverAddressOptional(v),
+            ),
             const SizedBox(height: OpenVtsSpacing.sm),
             AdminUserDropdownField(
               label: 'Country',
@@ -273,7 +274,11 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
                   : (value) => setState(() => _cityValue = value),
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
-            OpenVtsTextField(label: 'Pincode', controller: _pincode),
+            OpenVtsTextField(
+              label: 'Pincode',
+              controller: _pincode,
+              validator: (v) => Validators.driverPincodeOptional(v),
+            ),
             const SizedBox(height: OpenVtsSpacing.sm),
             const Text('Attributes'),
             const SizedBox(height: OpenVtsSpacing.xs),
