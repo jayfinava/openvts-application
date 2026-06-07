@@ -7,6 +7,7 @@ import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../core/utils/date_time_formatter.dart';
 import '../../../controllers/user_providers.dart';
 import '../../../models/user_dashboard_model.dart';
 import 'user_dashboard_widget_card.dart';
@@ -306,7 +307,7 @@ class _VehicleSelector extends StatelessWidget {
   }
 }
 
-class _AlertRow extends StatelessWidget {
+class _AlertRow extends ConsumerWidget {
   const _AlertRow({
     required this.item,
     required this.isRead,
@@ -318,7 +319,8 @@ class _AlertRow extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     final severity = _SeverityStyle.from(item);
     final vehicle = _vehicleLabel(item);
     final title = item.title.trim().isEmpty ? item.source : item.title;
@@ -386,7 +388,7 @@ class _AlertRow extends StatelessWidget {
                       _MetaText(
                           item.source.isEmpty ? 'Source unknown' : item.source),
                       _MetaText(vehicle),
-                      _MetaText(userDashboardFormatShortTime(item.createdAt)),
+                      _MetaText(userDashboardFormatShortTime(item.createdAt, formatter: formatter)),
                     ],
                   ),
                   if (item.message.trim().isNotEmpty) ...[
@@ -501,12 +503,17 @@ class _AlertDetailSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                userDashboardFormatDateTime(alert.createdAt),
-                style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textTertiary,
-                  fontWeight: FontWeight.w600,
-                ),
+              Consumer(
+                builder: (context, ref, _) {
+                  final formatter = ref.watch(appDateFormatterProvider);
+                  return Text(
+                    userDashboardFormatDateTime(alert.createdAt, formatter: formatter),
+                    style: OpenVtsTypography.meta.copyWith(
+                      color: OpenVtsColors.textTertiary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: OpenVtsSpacing.md),
               _DetailSection(
@@ -591,13 +598,14 @@ class _DeliveryLogList extends StatelessWidget {
   }
 }
 
-class _DeliveryLogRow extends StatelessWidget {
+class _DeliveryLogRow extends ConsumerWidget {
   const _DeliveryLogRow({required this.delivery});
 
   final UserDashboardAlertDelivery delivery;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -632,9 +640,9 @@ class _DeliveryLogRow extends StatelessWidget {
                 [
                   delivery.status.isEmpty ? 'No status' : delivery.status,
                   if (delivery.deliveredAt != null)
-                    userDashboardFormatShortTime(delivery.deliveredAt)
+                    userDashboardFormatShortTime(delivery.deliveredAt, formatter: formatter)
                   else if (delivery.sentAt != null)
-                    userDashboardFormatShortTime(delivery.sentAt),
+                    userDashboardFormatShortTime(delivery.sentAt, formatter: formatter),
                 ].join(' - '),
                 style: OpenVtsTypography.meta.copyWith(
                   color: OpenVtsColors.textSecondary,

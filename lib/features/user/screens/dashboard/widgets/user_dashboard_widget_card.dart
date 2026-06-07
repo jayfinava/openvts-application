@@ -7,6 +7,7 @@ import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../core/utils/date_time_formatter.dart';
 
 class UserDashboardWidgetCard extends StatelessWidget {
   const UserDashboardWidgetCard({
@@ -359,13 +360,15 @@ String userDashboardFormatHours(num hours) {
   return '${userDashboardFormatDecimal(hours)} h';
 }
 
-String userDashboardFormatDateTime(DateTime? value) {
+String userDashboardFormatDateTime(DateTime? value, {AppDateFormatter? formatter}) {
   if (value == null) return 'Not updated yet';
+  if (formatter != null) return formatter.formatDateTime(value);
   return DateFormat('dd MMM yyyy, hh:mm a').format(value);
 }
 
-String userDashboardFormatShortTime(DateTime? value) {
+String userDashboardFormatShortTime(DateTime? value, {AppDateFormatter? formatter}) {
   if (value == null) return 'No time';
+  if (formatter != null) return formatter.formatDate(value);
   return DateFormat('dd MMM, hh:mm a').format(value);
 }
 

@@ -7,6 +7,7 @@ import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../shared/widgets/open_vts_date_time_range_selector.dart';
 import '../../../controllers/user_providers.dart';
 import '../../../models/user_dashboard_model.dart';
@@ -463,18 +464,19 @@ class _SensorStatsGrid extends StatelessWidget {
   }
 }
 
-class _SensorHistoryChart extends StatelessWidget {
+class _SensorHistoryChart extends ConsumerWidget {
   const _SensorHistoryChart({required this.points, required this.unit});
 
   final List<UserDashboardSensorHistoryPoint> points;
   final String unit;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     return SizedBox(
       height: 172,
       child: CustomPaint(
-        painter: _SensorHistoryChartPainter(points: points, unit: unit),
+        painter: _SensorHistoryChartPainter(points: points, unit: unit, formatter: formatter),
         size: Size.infinite,
       ),
     );
@@ -482,10 +484,11 @@ class _SensorHistoryChart extends StatelessWidget {
 }
 
 class _SensorHistoryChartPainter extends CustomPainter {
-  const _SensorHistoryChartPainter({required this.points, required this.unit});
+  const _SensorHistoryChartPainter({required this.points, required this.unit, required this.formatter});
 
   final List<UserDashboardSensorHistoryPoint> points;
   final String unit;
+  final AppDateFormatter formatter;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -589,7 +592,7 @@ class _SensorHistoryChartPainter extends CustomPainter {
     if (validPoints.first.t != null) {
       _paintLabel(
         canvas,
-        userDashboardFormatShortTime(validPoints.first.t),
+        userDashboardFormatShortTime(validPoints.first.t, formatter: formatter),
         Offset(left, top + chartHeight + 8),
         alignment: TextAlign.left,
       );
@@ -597,7 +600,7 @@ class _SensorHistoryChartPainter extends CustomPainter {
     if (validPoints.last.t != null) {
       _paintLabel(
         canvas,
-        userDashboardFormatShortTime(validPoints.last.t),
+        userDashboardFormatShortTime(validPoints.last.t, formatter: formatter),
         Offset(size.width - right, top + chartHeight + 8),
         alignment: TextAlign.right,
       );
@@ -657,7 +660,7 @@ class _SensorHistoryChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _SensorHistoryChartPainter oldDelegate) {
-    return oldDelegate.points != points || oldDelegate.unit != unit;
+    return oldDelegate.points != points || oldDelegate.unit != unit || oldDelegate.formatter != formatter;
   }
 }
 

@@ -5,6 +5,7 @@ import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
+import '../../../../core/utils/date_time_formatter.dart';
 import '../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../shared/widgets/open_vts_loader.dart';
@@ -289,7 +290,7 @@ class _DashboardHeader extends StatelessWidget {
   }
 }
 
-class _UpdatedTimePill extends StatelessWidget {
+class _UpdatedTimePill extends ConsumerWidget {
   const _UpdatedTimePill({
     required this.updatedAt,
     required this.isRefreshing,
@@ -299,7 +300,8 @@ class _UpdatedTimePill extends StatelessWidget {
   final bool isRefreshing;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
     return Container(
       height: 34,
       padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.sm),
@@ -335,7 +337,7 @@ class _UpdatedTimePill extends StatelessWidget {
             ),
             const SizedBox(width: OpenVtsSpacing.xxs),
             Text(
-              userDashboardFormatDateTime(updatedAt),
+              userDashboardFormatDateTime(updatedAt, formatter: formatter),
               style: OpenVtsTypography.meta.copyWith(
                 color: OpenVtsColors.textSecondary,
                 fontWeight: FontWeight.w700,
@@ -396,52 +398,57 @@ class _DashboardSelectorButton extends StatelessWidget {
     final selectedId = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            OpenVtsSpacing.md,
-            0,
-            OpenVtsSpacing.md,
-            OpenVtsSpacing.md,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Select dashboard',
-                style: OpenVtsTypography.titleSmall.copyWith(
-                  color: OpenVtsColors.textPrimary,
-                  fontWeight: FontWeight.w800,
-                ),
+      builder: (context) => Consumer(
+        builder: (context, ref, _) {
+          final formatter = ref.watch(appDateFormatterProvider);
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                OpenVtsSpacing.md,
+                0,
+                OpenVtsSpacing.md,
+                OpenVtsSpacing.md,
               ),
-              const SizedBox(height: OpenVtsSpacing.sm),
-              for (final dashboard in dashboards)
-                ListTile(
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                  leading: Icon(
-                    dashboard.id == selectedDashboardId
-                        ? Icons.radio_button_checked_rounded
-                        : Icons.radio_button_unchecked_rounded,
-                    size: 18,
-                    color: dashboard.id == selectedDashboardId
-                        ? OpenVtsColors.brandInk
-                        : OpenVtsColors.textTertiary,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Select dashboard',
+                    style: OpenVtsTypography.titleSmall.copyWith(
+                      color: OpenVtsColors.textPrimary,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                  title: Text(
-                    dashboard.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: dashboard.updatedAt == null
-                      ? null
-                      : Text(userDashboardFormatDateTime(dashboard.updatedAt)),
-                  onTap: () => Navigator.of(context).pop(dashboard.id),
-                ),
-            ],
-          ),
-        ),
+                  const SizedBox(height: OpenVtsSpacing.sm),
+                  for (final dashboard in dashboards)
+                    ListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(
+                        dashboard.id == selectedDashboardId
+                            ? Icons.radio_button_checked_rounded
+                            : Icons.radio_button_unchecked_rounded,
+                        size: 18,
+                        color: dashboard.id == selectedDashboardId
+                            ? OpenVtsColors.brandInk
+                            : OpenVtsColors.textTertiary,
+                      ),
+                      title: Text(
+                        dashboard.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: dashboard.updatedAt == null
+                          ? null
+                          : Text(userDashboardFormatDateTime(dashboard.updatedAt, formatter: formatter)),
+                      onTap: () => Navigator.of(context).pop(dashboard.id),
+                    ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
 
