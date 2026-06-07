@@ -679,7 +679,11 @@ class _SearchInput extends StatelessWidget {
             textAlignVertical: TextAlignVertical.center,
             cursorColor: _primaryInkColor(context),
             cursorWidth: 1.4,
-            style: _baseStyle.copyWith(color: OpenVtsColors.textPrimary),
+            style: _baseStyle.copyWith(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? OpenVtsColors.darkTextPrimary
+                  : OpenVtsColors.textPrimary,
+            ),
             strutStyle: const StrutStyle(
               fontFamily: OpenVtsTypography.primaryFontFamily,
               fontFamilyFallback: OpenVtsTypography.fontFallback,
@@ -695,18 +699,22 @@ class _SearchInput extends StatelessWidget {
               isCollapsed: false,
               hintText: 'Search by name, email\u2026',
               hintStyle: _baseStyle.copyWith(
-                color: OpenVtsColors.textTertiary,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.6)
+                    : OpenVtsColors.textTertiary,
                 fontWeight: FontWeight.w400,
               ),
-              prefixIcon: const Padding(
-                padding: EdgeInsetsDirectional.only(
+              prefixIcon: Padding(
+                padding: const EdgeInsetsDirectional.only(
                   start: OpenVtsSpacing.sm,
                   end: OpenVtsSpacing.xs,
                 ),
                 child: Icon(
                   Icons.search_rounded,
                   size: 18,
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? OpenVtsColors.darkTextSecondary
+                      : OpenVtsColors.textSecondary,
                 ),
               ),
               prefixIconConstraints: const BoxConstraints(
@@ -731,10 +739,12 @@ class _SearchInput extends StatelessWidget {
                           minHeight: 28,
                         ),
                         splashRadius: 16,
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.close_rounded,
                           size: 16,
-                          color: OpenVtsColors.textSecondary,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? OpenVtsColors.darkTextSecondary
+                              : OpenVtsColors.textSecondary,
                         ),
                       ),
                     ),
@@ -851,12 +861,14 @@ class _RecordsPerPageDropdown extends StatelessWidget {
         child: DropdownButton<int>(
           value: value,
           isDense: true,
-          icon: const Padding(
-            padding: EdgeInsetsDirectional.only(start: 2),
+          icon: Padding(
+            padding: const EdgeInsetsDirectional.only(start: 2),
             child: Icon(
               Icons.keyboard_arrow_down_rounded,
               size: 16,
-              color: OpenVtsColors.textSecondary,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? OpenVtsColors.darkTextSecondary
+                  : OpenVtsColors.textSecondary,
             ),
           ),
           style: OpenVtsTypography.label.copyWith(
@@ -987,7 +999,9 @@ class _CardHeader extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: OpenVtsTypography.label.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? OpenVtsColors.darkTextSecondary
+                      : OpenVtsColors.textSecondary,
                 ),
               ),
             ],
@@ -1174,10 +1188,12 @@ class _CardMenu extends StatelessWidget {
         ),
       ],
       enabled: !isBusy,
-      icon: const Icon(
+      icon: Icon(
         Icons.more_vert_rounded,
         size: 18,
-        color: OpenVtsColors.textSecondary,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? OpenVtsColors.darkTextSecondary
+            : OpenVtsColors.textSecondary,
       ),
       padding: EdgeInsets.zero,
       splashRadius: 18,
@@ -1303,7 +1319,9 @@ class _InfoRow extends StatelessWidget {
         Icon(
           icon,
           size: 16,
-          color: OpenVtsColors.textSecondary,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? OpenVtsColors.darkTextSecondary
+              : OpenVtsColors.textSecondary,
         ),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
@@ -1312,7 +1330,9 @@ class _InfoRow extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.label.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? OpenVtsColors.darkTextPrimary
+                  : OpenVtsColors.textPrimary,
               height: 1.4,
             ),
           ),
@@ -1441,7 +1461,9 @@ class _MetricCell extends StatelessWidget {
               Icon(
                 icon,
                 size: 14,
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? OpenVtsColors.darkTextSecondary
+                    : OpenVtsColors.textSecondary,
               ),
               const SizedBox(width: OpenVtsSpacing.xxs + 2),
               Flexible(
@@ -1450,7 +1472,9 @@ class _MetricCell extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? OpenVtsColors.darkTextSecondary
+                        : OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -1506,7 +1530,9 @@ class _PaginationFooter extends StatelessWidget {
           Text(
             'Showing $showingCount of $totalCount',
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? OpenVtsColors.darkTextSecondary
+                  : OpenVtsColors.textSecondary,
             ),
           ),
           if (pageCount > 1) ...[
@@ -1572,7 +1598,9 @@ class _PageButton extends StatelessWidget {
             size: 18,
             color: enabled
                 ? _primaryInkColor(context)
-                : OpenVtsColors.textTertiary,
+                : (Theme.of(context).brightness == Brightness.dark
+                    ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.5)
+                    : OpenVtsColors.textTertiary),
           ),
         ),
       ),
@@ -1621,7 +1649,7 @@ class _OptionsSheet extends StatelessWidget {
                 width: 40,
                 margin: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
                 decoration: BoxDecoration(
-                  color: OpenVtsColors.border,
+                  color: _softBorderColor(context),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -1648,7 +1676,9 @@ class _OptionsSheet extends StatelessWidget {
               Text(
                 section.label,
                 style: OpenVtsTypography.label.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? OpenVtsColors.darkTextSecondary
+                      : OpenVtsColors.textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -1775,7 +1805,9 @@ class _RadioRow extends StatelessWidget {
               size: 18,
               color: selected
                   ? _primaryInkColor(context)
-                  : OpenVtsColors.textTertiary,
+                  : (Theme.of(context).brightness == Brightness.dark
+                      ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.5)
+                      : OpenVtsColors.textTertiary),
             ),
             const SizedBox(width: OpenVtsSpacing.sm),
             Expanded(
