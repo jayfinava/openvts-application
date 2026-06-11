@@ -2221,14 +2221,20 @@ class _OtpVerificationSheet extends ConsumerStatefulWidget {
 class _OtpVerificationSheetState
     extends ConsumerState<_OtpVerificationSheet> {
   final _otp = TextEditingController();
-  bool _requested = false;
+  bool _initialOtpRequested = false;
+  bool _otpRequestSuccess = false;
   bool _submitting = false;
   bool _resending = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _requestOtp());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_initialOtpRequested) {
+        _initialOtpRequested = true;
+        _requestOtp();
+      }
+    });
   }
 
   @override
@@ -2249,7 +2255,7 @@ class _OtpVerificationSheetState
     if (!mounted) return;
     setState(() {
       _resending = false;
-      _requested = _requested || ok;
+      _otpRequestSuccess = ok;
     });
     if (ok) {
       ToastHelper.showInfo(
@@ -2375,7 +2381,7 @@ class _OtpVerificationSheetState
               OpenVtsButton(
                 label: 'Verify',
                 isLoading: _submitting,
-                onPressed: _confirm,
+                onPressed: _submitting || !_otpRequestSuccess ? null : _confirm,
               ),
             ],
           ),
