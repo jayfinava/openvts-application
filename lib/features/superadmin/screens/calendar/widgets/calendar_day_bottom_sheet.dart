@@ -60,6 +60,7 @@ class _CalendarDayEventTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final linkedDetailAsync = detail.isUser
         ? ref.watch(calendarUserDetailsProvider(detail.userId!))
         : detail.isVehicle
@@ -88,7 +89,9 @@ class _CalendarDayEventTile extends ConsumerWidget {
                       child: Text(
                         title,
                         style: OpenVtsTypography.label.copyWith(
-                          color: OpenVtsColors.textPrimary,
+                          color: isDark
+                              ? OpenVtsColors.darkTextPrimary
+                              : OpenVtsColors.textPrimary,
                         ),
                       ),
                     ),
@@ -101,7 +104,9 @@ class _CalendarDayEventTile extends ConsumerWidget {
                   Text(
                     subtitle,
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.textSecondary,
+                      color: isDark
+                          ? OpenVtsColors.darkTextSecondary
+                          : OpenVtsColors.textSecondary,
                     ),
                   ),
                 ],
@@ -113,7 +118,9 @@ class _CalendarDayEventTile extends ConsumerWidget {
                       child: Text(
                         item,
                         style: OpenVtsTypography.meta.copyWith(
-                          color: OpenVtsColors.textTertiary,
+                          color: isDark
+                              ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.7)
+                              : OpenVtsColors.textTertiary,
                         ),
                       ),
                     ),
@@ -201,19 +208,24 @@ class _CountBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
         vertical: 4,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk.withValues(alpha: 0.08),
+        color: isDark
+            ? OpenVtsColors.white.withValues(alpha: 0.1)
+            : OpenVtsColors.brandInk.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         '$count',
         style: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.textPrimary,
+          color: isDark
+              ? OpenVtsColors.darkTextPrimary
+              : OpenVtsColors.textPrimary,
           fontWeight: FontWeight.w600,
         ),
       ),

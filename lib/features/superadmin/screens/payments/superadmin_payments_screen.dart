@@ -248,7 +248,7 @@ class _PaymentsHeaderCard extends StatelessWidget {
           child: Text(
             'Transactions and revenue',
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textTertiary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ),
@@ -272,6 +272,7 @@ class _TransactionsHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final loaded = state.transactions.length;
     final total = state.total;
+    final scheme = Theme.of(context).colorScheme;
 
     return Row(
       children: [
@@ -279,7 +280,7 @@ class _TransactionsHeader extends StatelessWidget {
           child: Text(
             'Transactions',
             style: OpenVtsTypography.titleSmall.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: scheme.onSurface,
             ),
           ),
         ),
@@ -289,14 +290,14 @@ class _TransactionsHeader extends StatelessWidget {
             vertical: OpenVtsSpacing.xxs,
           ),
           decoration: BoxDecoration(
-            color: OpenVtsColors.surface,
+            color: scheme.surface,
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-            border: Border.all(color: OpenVtsColors.border),
+            border: Border.all(color: scheme.outlineVariant),
           ),
           child: Text(
             total > 0 ? '$loaded / $total' : '$loaded',
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: scheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),

@@ -32,7 +32,7 @@ class PaymentsAnalyticsSection extends StatelessWidget {
       return OpenVtsCard(
         child: Text(
           errorMessage!,
-          style: const TextStyle(color: OpenVtsColors.error),
+          style: TextStyle(color: Theme.of(context).colorScheme.error),
         ),
       );
     }
@@ -178,18 +178,18 @@ class _CompactKpiCard extends StatelessWidget {
           const SizedBox(height: OpenVtsSpacing.xs),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: OpenVtsColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
-              color: OpenVtsColors.textTertiary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -220,12 +220,12 @@ class _RevenueSummaryCard extends StatelessWidget {
                 color: OpenVtsColors.success.withValues(alpha: 0.9),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
-              const Text(
+              Text(
                 'Total Revenue',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: OpenVtsColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],
@@ -233,19 +233,19 @@ class _RevenueSummaryCard extends StatelessWidget {
           const SizedBox(height: OpenVtsSpacing.xs),
           Text(
             '${summary.currency} ${currencyFormat.format(summary.revenue)}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
-              color: OpenVtsColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           if (summary.success > 0) ...[
             const SizedBox(height: 4),
             Text(
               'Avg ${summary.currency} ${currencyFormat.format(summary.avgValue)} per transaction',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
-                color: OpenVtsColors.textTertiary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -347,7 +347,7 @@ class _SkeletonLine extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(6),
       ),
     );
@@ -362,7 +362,7 @@ class _SkeletonBlock extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(10),
       ),
     );

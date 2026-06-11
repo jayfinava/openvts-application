@@ -578,7 +578,7 @@ class _Avatar extends StatelessWidget {
       child: Text(
         _initials(name),
         style: OpenVtsTypography.label.copyWith(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.onPrimary,
           fontWeight: FontWeight.w700,
         ),
       ),

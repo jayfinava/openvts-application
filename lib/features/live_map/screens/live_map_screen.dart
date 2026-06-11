@@ -36,7 +36,6 @@ part 'replay/replay_widgets.dart';
 part 'widgets/map_controls.dart';
 
 const DateTimeFormatter _mapFmt = DateTimeFormatter();
-const Color _mapActionInkColor = Color(0xFF111827);
 const double _mapDrawerMinChildSize = 0.28;
 const double _mapDrawerInitialChildSize = 0.42;
 const double _mapDrawerMaxChildSize = 0.78;
@@ -131,6 +130,9 @@ class _CloseMapButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Tooltip(
       message: 'Close map',
       child: Material(
@@ -143,10 +145,12 @@ class _CloseMapButton extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: _mapActionInkColor,
+              color: isDark ? scheme.surface : const Color(0xFF111827),
               shape: BoxShape.circle,
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.10),
+                color: isDark
+                    ? scheme.outline
+                    : Colors.white.withValues(alpha: 0.10),
               ),
               boxShadow: [
                 BoxShadow(
@@ -156,10 +160,10 @@ class _CloseMapButton extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Icon(
+            child: Icon(
               Icons.close_rounded,
               size: 20,
-              color: Colors.white,
+              color: isDark ? scheme.onSurface : Colors.white,
             ),
           ),
         ),
@@ -175,6 +179,9 @@ class _MapDrawerCloseButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Tooltip(
       message: 'Close drawer',
       child: Material(
@@ -187,10 +194,12 @@ class _MapDrawerCloseButton extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: _mapActionInkColor,
+              color: isDark ? scheme.surfaceContainerHighest : const Color(0xFF111827),
               shape: BoxShape.circle,
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.10),
+                color: isDark
+                    ? scheme.outline
+                    : Colors.white.withValues(alpha: 0.10),
               ),
               boxShadow: [
                 BoxShadow(
@@ -200,10 +209,10 @@ class _MapDrawerCloseButton extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Icon(
+            child: Icon(
               Icons.keyboard_arrow_down_rounded,
               size: 20,
-              color: Colors.white,
+              color: isDark ? scheme.onSurface : Colors.white,
             ),
           ),
         ),
@@ -881,9 +890,10 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   }
 
   Future<void> _openLayerDrawer() {
+    final scheme = Theme.of(context).colorScheme;
     return _showMapActionSheet(
-      backgroundColor: Colors.white,
-      handleColor: Colors.black.withValues(alpha: 0.08),
+      backgroundColor: scheme.surface,
+      handleColor: scheme.outlineVariant,
       maxHeightFactor: 0.74,
       child: _MapLayerDrawer(
         initialLayerId: _selectedMapLayer.id,
@@ -907,9 +917,10 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   }
 
   Future<void> _openSettingsDrawer() {
+    final scheme = Theme.of(context).colorScheme;
     return _showMapActionSheet(
-      backgroundColor: Colors.white,
-      handleColor: Colors.black.withValues(alpha: 0.08),
+      backgroundColor: scheme.surface,
+      handleColor: scheme.outlineVariant,
       maxHeightFactor: 0.7,
       child: _MapSettingsDrawer(
         initialSettings: _visualSettings,
@@ -1942,10 +1953,10 @@ class _VehicleBottomDrawerState extends ConsumerState<_VehicleBottomDrawer>
                         _vehicleDisplayName(liveVehicle),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF141118),
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 3),
@@ -1956,7 +1967,7 @@ class _VehicleBottomDrawerState extends ConsumerState<_VehicleBottomDrawer>
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black.withValues(alpha: 0.48),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -1968,32 +1979,37 @@ class _VehicleBottomDrawerState extends ConsumerState<_VehicleBottomDrawer>
         ),
         OpenVtsBottomSheet.dragRegion(
           context: context,
-          child: TabBar(
-            controller: _tabController,
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            labelColor: const Color(0xFF141118),
-            unselectedLabelColor: Colors.black.withValues(alpha: 0.5),
-            indicatorColor: const Color(0xFF141118),
-            indicatorSize: TabBarIndicatorSize.label,
-            dividerColor: Colors.black.withValues(alpha: 0.06),
-            labelPadding: const EdgeInsets.symmetric(horizontal: 12),
-            labelStyle: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-            ),
-            unselectedLabelStyle: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-            tabs: const [
-              Tab(text: 'Details'),
-              Tab(text: 'Logs'),
-              Tab(text: 'replay'),
-              Tab(text: 'events'),
-              Tab(text: 'Sensors'),
-              Tab(text: 'Commands'),
-            ],
+          child: Builder(
+            builder: (context) {
+              final scheme = Theme.of(context).colorScheme;
+              return TabBar(
+                controller: _tabController,
+                isScrollable: true,
+                tabAlignment: TabAlignment.start,
+                labelColor: scheme.onSurface,
+                unselectedLabelColor: scheme.onSurfaceVariant,
+                indicatorColor: scheme.onSurface,
+                indicatorSize: TabBarIndicatorSize.label,
+                dividerColor: scheme.outlineVariant,
+                labelPadding: const EdgeInsets.symmetric(horizontal: 12),
+                labelStyle: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+                tabs: const [
+                  Tab(text: 'Details'),
+                  Tab(text: 'Logs'),
+                  Tab(text: 'replay'),
+                  Tab(text: 'events'),
+                  Tab(text: 'Sensors'),
+                  Tab(text: 'Commands'),
+                ],
+              );
+            },
           ),
         ),
         Expanded(
@@ -2403,6 +2419,7 @@ class _VehicleLogsTabState extends ConsumerState<_VehicleLogsTab> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final imei = _imei;
     if (imei.isEmpty) {
       return const _VehicleDrawerPlaceholderTab(
@@ -2416,7 +2433,7 @@ class _VehicleLogsTabState extends ConsumerState<_VehicleLogsTab> {
     final statusLabel = _socketConnected ? 'Live' : 'Connecting';
     final statusColor = _socketConnected
         ? const Color(0xFF20B15A)
-        : Colors.black.withValues(alpha: 0.42);
+        : scheme.onSurfaceVariant;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2448,7 +2465,7 @@ class _VehicleLogsTabState extends ConsumerState<_VehicleLogsTab> {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: Colors.black.withValues(alpha: 0.42),
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
               const Spacer(),
@@ -2467,7 +2484,7 @@ class _VehicleLogsTabState extends ConsumerState<_VehicleLogsTab> {
                 style: TextButton.styleFrom(
                   visualDensity: VisualDensity.compact,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  foregroundColor: const Color(0xFF141118),
+                  foregroundColor: scheme.onSurface,
                   textStyle: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
@@ -2536,11 +2553,12 @@ class _VehicleLogListRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final scheme = Theme.of(context).colorScheme;
     final unitFormatter = ref.watch(unitFormatterProvider);
     final dateFormatter = ref.watch(appDateFormatterProvider);
     final ignition = log.ignition ?? log.acc;
     return Material(
-      color: const Color(0xFFF7F7F8),
+      color: scheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -2557,10 +2575,10 @@ class _VehicleLogListRow extends ConsumerWidget {
                       children: [
                         Text(
                           _formatVehicleLogTime(log.displayTime, dateFormatter),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w900,
-                            color: Color(0xFF141118),
+                            color: scheme.onSurface,
                           ),
                         ),
                         const SizedBox(width: 6),
@@ -2572,7 +2590,7 @@ class _VehicleLogListRow extends ConsumerWidget {
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
-                              color: Colors.black.withValues(alpha: 0.50),
+                              color: scheme.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -2586,7 +2604,7 @@ class _VehicleLogListRow extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
-                        color: Colors.black.withValues(alpha: 0.45),
+                        color: scheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -2621,18 +2639,19 @@ class _VehicleLogPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final color = isPositive == true
         ? const Color(0xFF20B15A)
         : isPositive == false
             ? const Color(0xFFB42318)
-            : const Color(0xFF141118);
+            : scheme.onSurface;
     return Container(
       constraints: const BoxConstraints(minWidth: 48),
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Text(
         label,
@@ -2741,6 +2760,7 @@ class _VehicleLogDetailGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final scheme = Theme.of(context).colorScheme;
     final unitFormatter = ref.watch(unitFormatterProvider);
     final dateFormatter = ref.watch(appDateFormatterProvider);
     final rows = <({String label, String value})>[
@@ -2804,9 +2824,9 @@ class _VehicleLogDetailGrid extends ConsumerWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F8),
+        color: scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Column(
         children: [
@@ -2835,11 +2855,12 @@ class _VehicleLogDetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: BoxDecoration(
         border: showDivider
             ? Border(
-                bottom: BorderSide(color: Colors.black.withValues(alpha: 0.05)),
+                bottom: BorderSide(color: scheme.outlineVariant),
               )
             : null,
       ),
@@ -2855,7 +2876,7 @@ class _VehicleLogDetailRow extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
-                  color: Colors.black.withValues(alpha: 0.50),
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
             ),
@@ -2863,10 +2884,10 @@ class _VehicleLogDetailRow extends StatelessWidget {
             Expanded(
               child: SelectableText(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF141118),
+                  color: scheme.onSurface,
                   height: 1.25,
                 ),
               ),
@@ -3248,6 +3269,7 @@ class _VehicleEventsTabState extends ConsumerState<_VehicleEventsTab> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final imei = _imei;
     if (imei.isEmpty) {
       return const _VehicleDrawerPlaceholderTab(
@@ -3261,7 +3283,7 @@ class _VehicleEventsTabState extends ConsumerState<_VehicleEventsTab> {
     final statusLabel = _socketConnected ? 'Live' : 'Connecting';
     final statusColor = _socketConnected
         ? const Color(0xFF20B15A)
-        : Colors.black.withValues(alpha: 0.42);
+        : scheme.onSurfaceVariant;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -3293,7 +3315,7 @@ class _VehicleEventsTabState extends ConsumerState<_VehicleEventsTab> {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: Colors.black.withValues(alpha: 0.42),
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
               const Spacer(),
@@ -3384,9 +3406,10 @@ class _VehicleEventListRow extends ConsumerWidget {
     final visuals = _resolveAlertVisuals(event);
     final title = _vehicleEventTitle(event);
     final severity = _vehicleEventSeverity(event);
+    final scheme = Theme.of(context).colorScheme;
 
     return Material(
-      color: const Color(0xFFF7F7F8),
+      color: scheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -3417,10 +3440,10 @@ class _VehicleEventListRow extends ConsumerWidget {
                             title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w900,
-                              color: Color(0xFF141118),
+                              color: scheme.onSurface,
                             ),
                           ),
                         ),
@@ -3432,7 +3455,7 @@ class _VehicleEventListRow extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
-                            color: Colors.black.withValues(alpha: 0.45),
+                            color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
                           ),
                         ),
                       ],
@@ -3455,7 +3478,7 @@ class _VehicleEventListRow extends ConsumerWidget {
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
-                              color: Colors.black.withValues(alpha: 0.52),
+                              color: scheme.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -3483,11 +3506,12 @@ class _VehicleEventSeverityPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       constraints: const BoxConstraints(minWidth: 52),
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: color.withValues(alpha: 0.28)),
       ),
@@ -3923,13 +3947,14 @@ class _VehicleSensorCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final scheme = Theme.of(context).colorScheme;
     final formatter = ref.watch(appDateFormatterProvider);
     final source = sensor.sourceExpression;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F8),
+        color: scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
@@ -3947,10 +3972,10 @@ class _VehicleSensorCard extends ConsumerWidget {
                         sensor.displayName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
-                          color: Color(0xFF141118),
+                          color: scheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 3),
@@ -3961,7 +3986,7 @@ class _VehicleSensorCard extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
-                          color: Colors.black.withValues(alpha: 0.46),
+                          color: scheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -3980,10 +4005,10 @@ class _VehicleSensorCard extends ConsumerWidget {
                     sensor.displayValue,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w900,
-                      color: Color(0xFF141118),
+                      color: scheme.onSurface,
                     ),
                   ),
                 ),
@@ -5136,11 +5161,12 @@ class _VehicleCommandComposerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F8),
+        color: scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(10),
@@ -5149,12 +5175,12 @@ class _VehicleCommandComposerCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Text(
+                Text(
                   'Command',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFF141118),
+                    color: scheme.onSurface,
                   ),
                 ),
                 const Spacer(),
@@ -5178,10 +5204,10 @@ class _VehicleCommandComposerCard extends StatelessWidget {
                       command.displayTitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF141118),
+                        color: scheme.onSurface,
                       ),
                     ),
                   );
@@ -5190,7 +5216,7 @@ class _VehicleCommandComposerCard extends StatelessWidget {
               decoration: InputDecoration(
                 isDense: true,
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: scheme.surface,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 10,
                   vertical: 9,
@@ -5198,13 +5224,13 @@ class _VehicleCommandComposerCard extends StatelessWidget {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Colors.black.withValues(alpha: 0.08),
+                    color: scheme.outlineVariant,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Colors.black.withValues(alpha: 0.08),
+                    color: scheme.outlineVariant,
                   ),
                 ),
               ),
@@ -5213,7 +5239,7 @@ class _VehicleCommandComposerCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color: Colors.black.withValues(alpha: 0.45),
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
               items: commands.map((command) {
@@ -5227,10 +5253,10 @@ class _VehicleCommandComposerCard extends StatelessWidget {
                         command.displayTitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF141118),
+                          color: scheme.onSurface,
                         ),
                       ),
                       if (command.command.trim() != command.displayTitle) ...[
@@ -5243,7 +5269,7 @@ class _VehicleCommandComposerCard extends StatelessWidget {
                             fontSize: 9,
                             fontWeight: FontWeight.w700,
                             fontFamily: 'monospace',
-                            color: Colors.black.withValues(alpha: 0.42),
+                            color: scheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -5269,7 +5295,7 @@ class _VehicleCommandComposerCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: Colors.black.withValues(alpha: 0.42),
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -5279,33 +5305,33 @@ class _VehicleCommandComposerCard extends StatelessWidget {
               minLines: 2,
               maxLines: 3,
               maxLength: maxPayloadLength,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 height: 1.25,
                 fontFamily: 'monospace',
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF141118),
+                color: scheme.onSurface,
               ),
               decoration: InputDecoration(
                 counterText: '',
                 hintText: 'Enter command text',
                 hintStyle: TextStyle(
                   fontSize: 12,
-                  color: Colors.black.withValues(alpha: 0.32),
+                  color: scheme.onSurfaceVariant,
                 ),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: scheme.surface,
                 contentPadding: const EdgeInsets.all(10),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Colors.black.withValues(alpha: 0.08),
+                    color: scheme.outlineVariant,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Colors.black.withValues(alpha: 0.08),
+                    color: scheme.outlineVariant,
                   ),
                 ),
               ),
@@ -5320,7 +5346,7 @@ class _VehicleCommandComposerCard extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     color: payloadLength > maxPayloadLength
                         ? const Color(0xFFB42318)
-                        : Colors.black.withValues(alpha: 0.42),
+                        : scheme.onSurfaceVariant,
                   ),
                 ),
                 const Spacer(),
@@ -5354,11 +5380,12 @@ class _VehicleCommandLatestStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F8),
+        color: scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -5367,7 +5394,7 @@ class _VehicleCommandLatestStatusCard extends StatelessWidget {
             Icon(
               isError ? Icons.error_outline_rounded : Icons.schedule_rounded,
               size: 15,
-              color: Colors.black.withValues(alpha: 0.52),
+              color: scheme.onSurfaceVariant,
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -5378,7 +5405,7 @@ class _VehicleCommandLatestStatusCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
-                  color: Colors.black.withValues(alpha: 0.62),
+                  color: scheme.onSurface,
                 ),
               ),
             ),
@@ -5393,7 +5420,7 @@ class _VehicleCommandLatestStatusCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black.withValues(alpha: 0.42),
+                    color: scheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -5477,9 +5504,10 @@ class _VehicleCommandHistoryRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final scheme = Theme.of(context).colorScheme;
     final formatter = ref.watch(appDateFormatterProvider);
     return Material(
-      color: const Color(0xFFF7F7F8),
+      color: scheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -5505,7 +5533,7 @@ class _VehicleCommandHistoryRow extends ConsumerWidget {
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
-                              color: Colors.black.withValues(alpha: 0.42),
+                              color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
                             ),
                           ),
                         ),
@@ -5516,11 +5544,11 @@ class _VehicleCommandHistoryRow extends ConsumerWidget {
                       entry.command.trim().isEmpty ? '--' : entry.command,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
                         fontFamily: 'monospace',
-                        color: Color(0xFF141118),
+                        color: scheme.onSurface,
                       ),
                     ),
                     if (entry.hasDeviceResponse ||
@@ -5535,7 +5563,7 @@ class _VehicleCommandHistoryRow extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
-                          color: Colors.black.withValues(alpha: 0.46),
+                          color: scheme.onSurfaceVariant.withValues(alpha: 0.75),
                         ),
                       ),
                     ],
@@ -5546,7 +5574,7 @@ class _VehicleCommandHistoryRow extends ConsumerWidget {
               Icon(
                 Icons.chevron_right_rounded,
                 size: 18,
-                color: Colors.black.withValues(alpha: 0.35),
+                color: scheme.onSurfaceVariant.withValues(alpha: 0.6),
               ),
             ],
           ),
@@ -5563,22 +5591,23 @@ class _VehicleCommandStatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       constraints: const BoxConstraints(maxWidth: 170),
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Text(
         _vehicleCommandStatusLabel(status),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 9,
           fontWeight: FontWeight.w900,
-          color: Color(0xFF141118),
+          color: scheme.onSurface,
         ),
       ),
     );
@@ -5596,9 +5625,10 @@ class _VehicleCommandDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
-      backgroundColor: Colors.white,
+      backgroundColor: scheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 520, maxHeight: 640),
@@ -6605,12 +6635,13 @@ class _VehicleMetaItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 1),
-          child: Icon(icon, size: 13, color: const Color(0xFF141118)),
+          child: Icon(icon, size: 13, color: scheme.onSurface),
         ),
         const SizedBox(width: 8),
         Expanded(
@@ -6622,7 +6653,7 @@ class _VehicleMetaItem extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black.withValues(alpha: 0.44),
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 2),
@@ -6630,10 +6661,10 @@ class _VehicleMetaItem extends StatelessWidget {
                 value,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF141118),
+                  color: scheme.onSurface,
                   height: 1.15,
                 ),
               ),
@@ -6658,17 +6689,18 @@ class _VehicleDetailsNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.03),
+        color: scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
         child: Row(
           children: [
-            Icon(icon, size: 13, color: Colors.black.withValues(alpha: 0.58)),
+            Icon(icon, size: 13, color: scheme.onSurfaceVariant),
             const SizedBox(width: 6),
             Expanded(
               child: Text(
@@ -6676,7 +6708,7 @@ class _VehicleDetailsNotice extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black.withValues(alpha: 0.56),
+                  color: scheme.onSurfaceVariant,
                   height: 1.35,
                 ),
               ),
@@ -6685,7 +6717,7 @@ class _VehicleDetailsNotice extends StatelessWidget {
               TextButton(
                 onPressed: onRetry,
                 style: TextButton.styleFrom(
-                  foregroundColor: const Color(0xFF141118),
+                  foregroundColor: scheme.onSurface,
                   minimumSize: Size.zero,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -6980,6 +7012,8 @@ class _VehiclesTab extends ConsumerWidget {
         .toList(growable: false)
       ..sort(_compareVehicleListOrder);
 
+    final scheme = Theme.of(context).colorScheme;
+
     return Column(
       children: [
         Padding(
@@ -6987,25 +7021,25 @@ class _VehiclesTab extends ConsumerWidget {
           child: TextField(
             controller: searchController,
             textInputAction: TextInputAction.search,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF141118),
+              color: scheme.onSurface,
             ),
             decoration: InputDecoration(
               hintText: 'Search vehicle',
               hintStyle: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: Colors.black.withValues(alpha: 0.36),
+                color: scheme.onSurfaceVariant,
               ),
               prefixIcon: Icon(
                 Icons.search_rounded,
                 size: 20,
-                color: Colors.black.withValues(alpha: 0.42),
+                color: scheme.onSurfaceVariant,
               ),
               filled: true,
-              fillColor: const Color(0xFFF4F5F7),
+              fillColor: scheme.surfaceContainerHighest,
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -7033,7 +7067,7 @@ class _VehiclesTab extends ConsumerWidget {
                   itemCount: filteredVehicles.length,
                   separatorBuilder: (_, __) => Divider(
                     height: 1,
-                    color: Colors.black.withValues(alpha: 0.08),
+                    color: scheme.outlineVariant,
                   ),
                   itemBuilder: (context, index) {
                     final vehicle = filteredVehicles[index];
@@ -7068,6 +7102,7 @@ class _VehicleListTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final scheme = Theme.of(context).colorScheme;
     final formatter = ref.watch(appDateFormatterProvider);
     final isRunning = _isRunningVehicle(vehicle);
     final statusColor = _vehicleRunningIndicatorColor(isRunning);
@@ -7099,10 +7134,10 @@ class _VehicleListTile extends ConsumerWidget {
                       _vehicleDisplayName(vehicle),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF141118),
+                        color: scheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -7113,7 +7148,7 @@ class _VehicleListTile extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black.withValues(alpha: 0.42),
+                        color: scheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -7128,10 +7163,10 @@ class _VehicleListTile extends ConsumerWidget {
                     children: [
                       TextSpan(
                         text: _formatVehicleSpeed(vehicle.speed),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF141118),
+                          color: scheme.onSurface,
                         ),
                       ),
                       TextSpan(
@@ -7139,7 +7174,7 @@ class _VehicleListTile extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
-                          color: Colors.black.withValues(alpha: 0.38),
+                          color: scheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -7154,10 +7189,10 @@ class _VehicleListTile extends ConsumerWidget {
                   textAlign: TextAlign.right,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF141118),
+                    color: scheme.onSurface,
                   ),
                 ),
               ),
@@ -7166,7 +7201,7 @@ class _VehicleListTile extends ConsumerWidget {
                 Icon(
                   Icons.my_location_rounded,
                   size: 16,
-                  color: Colors.black.withValues(alpha: 0.34),
+                  color: scheme.onSurfaceVariant,
                 ),
               ],
             ],
@@ -7530,24 +7565,25 @@ class _HistorySummaryPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: const Color(0xFF141118)),
+          Icon(icon, size: 12, color: scheme.onSurface),
           const SizedBox(width: 5),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF141118),
+              color: scheme.onSurface,
             ),
           ),
         ],
@@ -8144,14 +8180,15 @@ class _HistoryStopReasonPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 96),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: scheme.surface,
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: Colors.black.withValues(alpha: 0.12)),
+          border: Border.all(color: scheme.outlineVariant),
         ),
         child: Text(
           label,
@@ -8160,7 +8197,7 @@ class _HistoryStopReasonPill extends StatelessWidget {
           style: TextStyle(
             fontSize: 9,
             fontWeight: FontWeight.w700,
-            color: Colors.black.withValues(alpha: 0.46),
+            color: scheme.onSurfaceVariant,
           ),
         ),
       ),
@@ -9462,7 +9499,7 @@ class _AlertsTab extends ConsumerWidget {
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
       itemCount: visibleAlerts.length,
       separatorBuilder: (_, __) =>
-          Divider(height: 1, color: Colors.black.withValues(alpha: 0.06)),
+          Divider(height: 1, color: scheme.outlineVariant.withValues(alpha: 0.3)),
       itemBuilder: (context, index) {
         final alert = visibleAlerts[index];
         final visuals = _resolveAlertVisuals(alert);
@@ -9503,10 +9540,10 @@ class _AlertsTab extends ConsumerWidget {
                             alert.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF141118),
+                              color: scheme.onSurface,
                               height: 1.2,
                             ),
                           ),
@@ -9521,7 +9558,7 @@ class _AlertsTab extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black.withValues(alpha: 0.48),
+                        color: scheme.onSurfaceVariant,
                         height: 1.25,
                       ),
                     ),
@@ -9534,7 +9571,7 @@ class _AlertsTab extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
-                          color: Colors.black.withValues(alpha: 0.58),
+                          color: scheme.onSurfaceVariant,
                           height: 1.3,
                         ),
                       ),
@@ -9645,20 +9682,21 @@ class _DrawerEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 16, color: Colors.black.withValues(alpha: 0.42)),
+            Icon(icon, size: 16, color: scheme.onSurfaceVariant),
             const SizedBox(height: 8),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF141118),
+                color: scheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),
@@ -9668,7 +9706,7 @@ class _DrawerEmptyState extends StatelessWidget {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
-                color: Colors.black.withValues(alpha: 0.52),
+                color: scheme.onSurfaceVariant,
                 height: 1.3,
               ),
             ),
@@ -9994,23 +10032,24 @@ class _VehicleMarker extends StatelessWidget {
                     filterQuality: FilterQuality.high,
                     gaplessPlayback: true,
                     errorBuilder: (context, error, stackTrace) {
+                      final scheme = Theme.of(context).colorScheme;
                       return DecoratedBox(
                         decoration: BoxDecoration(
                           color: markerColor,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: Colors.white,
+                            color: scheme.surface,
                             width: 2.4,
                           ),
                         ),
-                        child: const SizedBox(
+                        child: SizedBox(
                           width: 34,
                           height: 34,
                           child: Center(
                             child: Icon(
                               Icons.directions_car_filled_rounded,
                               size: 18,
-                              color: Colors.white,
+                              color: scheme.surface,
                             ),
                           ),
                         ),

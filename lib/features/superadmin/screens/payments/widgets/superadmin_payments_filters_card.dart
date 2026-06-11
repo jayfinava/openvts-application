@@ -40,13 +40,13 @@ class SuperadminPaymentsFiltersCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(
                   'Filters',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -132,7 +132,7 @@ class _CollapsibleFiltersSectionState
                 Text(
                   'Advanced Filters',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -142,7 +142,7 @@ class _CollapsibleFiltersSectionState
                       ? Icons.expand_less_rounded
                       : Icons.expand_more_rounded,
                   size: 18,
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ],
             ),
@@ -205,7 +205,7 @@ class _CollapsibleFiltersSectionState
           Text(
             'Date Range',
             style: OpenVtsTypography.label.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
@@ -277,7 +277,7 @@ class _CollapsibleFiltersSectionState
           Text(
             'Status',
             style: OpenVtsTypography.label.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
@@ -402,6 +402,7 @@ class _FilterChoiceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -415,16 +416,16 @@ class _FilterChoiceChip extends StatelessWidget {
             vertical: OpenVtsSpacing.xs,
           ),
           decoration: BoxDecoration(
-            color: selected ? OpenVtsColors.brandInk : OpenVtsColors.surface,
+            color: selected ? scheme.primary : scheme.surface,
             borderRadius: BorderRadius.circular(OpenVtsRadius.md),
             border: Border.all(
-              color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
+              color: selected ? scheme.primary : scheme.outlineVariant,
             ),
           ),
           child: Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
+              color: selected ? scheme.onPrimary : scheme.onSurface,
               fontWeight: FontWeight.w600,
             ),
           ),

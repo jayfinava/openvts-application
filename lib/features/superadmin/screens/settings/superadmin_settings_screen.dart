@@ -91,38 +91,42 @@ class _SettingsHeader extends StatelessWidget {
               color: OpenVtsColors.brandInk,
               borderRadius: BorderRadius.circular(OpenVtsRadius.md),
             ),
-            child: const Icon(
-              Icons.tune_rounded,
-              size: 18,
-              color: OpenVtsColors.white,
+            child: Builder(
+              builder: (context) => Icon(
+                Icons.tune_rounded,
+                size: 18,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Settings',
-                  style: TextStyle(
-                    fontFamily: OpenVtsTypography.primaryFontFamily,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: OpenVtsColors.textPrimary,
+          Expanded(
+            child: Builder(
+              builder: (context) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Settings',
+                    style: TextStyle(
+                      fontFamily: OpenVtsTypography.primaryFontFamily,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
-                ),
-                SizedBox(height: 2),
-                Text(
-                  'Profile, branding, mail, localization, and platform preferences.',
-                  style: TextStyle(
-                    fontFamily: OpenVtsTypography.primaryFontFamily,
-                    fontSize: 11.5,
-                    height: 1.35,
-                    color: OpenVtsColors.textSecondary,
+                  const SizedBox(height: 2),
+                  Text(
+                    'Profile, branding, mail, localization, and platform preferences.',
+                    style: TextStyle(
+                      fontFamily: OpenVtsTypography.primaryFontFamily,
+                      fontSize: 11.5,
+                      height: 1.35,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -216,10 +220,10 @@ class _SectionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = isSelected ? OpenVtsColors.brandInk : OpenVtsColors.surfaceElevated;
-    final fg = isSelected ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor =
-        isSelected ? OpenVtsColors.brandInk : OpenVtsColors.border;
+    final scheme = Theme.of(context).colorScheme;
+    final bg = isSelected ? scheme.primary : scheme.surfaceContainer;
+    final fg = isSelected ? scheme.onPrimary : scheme.onSurface;
+    final borderColor = isSelected ? scheme.primary : scheme.outlineVariant;
 
     return Material(
       color: Colors.transparent,

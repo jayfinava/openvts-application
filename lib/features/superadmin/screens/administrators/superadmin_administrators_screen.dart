@@ -1085,15 +1085,12 @@ class _StatusToggle extends StatelessWidget {
 
     return Tooltip(
       message: isActive ? 'Deactivate administrator' : 'Activate administrator',
-      child: Transform.scale(
-        scale: 0.85,
-        child: Switch(
+      child: SizedBox(
+        width: 44,
+        height: 44,
+        child: Switch.adaptive(
           value: isActive,
           onChanged: isBusy ? null : onChanged,
-          activeThumbColor: OpenVtsColors.white,
-          activeTrackColor: _primaryInkColor(context),
-          inactiveThumbColor: OpenVtsColors.white,
-          inactiveTrackColor: _softBorderColor(context),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       ),

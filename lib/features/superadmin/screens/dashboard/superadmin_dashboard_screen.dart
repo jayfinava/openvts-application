@@ -114,13 +114,25 @@ class _SuperadminDashboardScreenState
                     ),
                   _MetricsGrid(counts: dashboard.counts),
                   const SizedBox(height: OpenVtsSpacing.sm),
-                  _AdoptionGrowthSection(
-                    points: _pointsForRange(dashboard.adoptionGrowth),
-                    selectedRange: _selectedRange,
-                    onRangeChanged: (range) {
-                      setState(() {
-                        _selectedRange = range;
-                      });
+                  Consumer(
+                    builder: (context, ref, _) {
+                      final dashboardState =
+                          ref.watch(superadminDashboardControllerProvider);
+                      final dashboardController = ref.read(
+                          superadminDashboardControllerProvider.notifier);
+                      return _AdoptionGrowthSection(
+                        points: _pointsForRange(dashboard.adoptionGrowth),
+                        selectedRange: _selectedRange,
+                        onRangeChanged: (range) {
+                          setState(() {
+                            _selectedRange = range;
+                          });
+                        },
+                        visibleMetrics: dashboardState.visibleMetrics,
+                        onToggleMetric: (metric) {
+                          dashboardController.toggleMetricVisibility(metric);
+                        },
+                      );
                     },
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
@@ -475,11 +487,15 @@ class _AdoptionGrowthSection extends StatelessWidget {
     required this.points,
     required this.selectedRange,
     required this.onRangeChanged,
+    required this.visibleMetrics,
+    required this.onToggleMetric,
   });
 
   final List<SuperadminAdoptionPoint> points;
   final _DashboardChartRange selectedRange;
   final ValueChanged<_DashboardChartRange> onRangeChanged;
+  final Set<String> visibleMetrics;
+  final ValueChanged<String> onToggleMetric;
 
   @override
   Widget build(BuildContext context) {
@@ -533,15 +549,30 @@ class _AdoptionGrowthSection extends StatelessWidget {
               ],
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: OpenVtsSpacing.md),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.md),
             child: Wrap(
               spacing: OpenVtsSpacing.md,
               runSpacing: OpenVtsSpacing.xs,
               children: [
-                _LegendDot(label: 'Vehicles', color: OpenVtsColors.info),
-                _LegendDot(label: 'Users', color: OpenVtsColors.success),
-                _LegendDot(label: 'Licenses', color: OpenVtsColors.warning),
+                _LegendDot(
+                  label: 'Vehicles',
+                  color: OpenVtsColors.info,
+                  isSelected: visibleMetrics.contains('vehicles'),
+                  onTap: () => onToggleMetric('vehicles'),
+                ),
+                _LegendDot(
+                  label: 'Users',
+                  color: OpenVtsColors.success,
+                  isSelected: visibleMetrics.contains('users'),
+                  onTap: () => onToggleMetric('users'),
+                ),
+                _LegendDot(
+                  label: 'Licenses',
+                  color: OpenVtsColors.warning,
+                  isSelected: visibleMetrics.contains('licenses'),
+                  onTap: () => onToggleMetric('licenses'),
+                ),
               ],
             ),
           ),
@@ -553,25 +584,28 @@ class _AdoptionGrowthSection extends StatelessWidget {
                 spacing: OpenVtsSpacing.sm,
                 runSpacing: OpenVtsSpacing.sm,
                 children: [
-                  _ChartSeriesPill(
-                    label: 'Vehicles',
-                    color: OpenVtsColors.info,
-                    value: latestPoint.vehicles,
-                    periodLabel: latestPoint.label,
-                  ),
-                  _ChartSeriesPill(
-                    label: 'Users',
-                    color: OpenVtsColors.success,
-                    value: latestPoint.users,
-                    periodLabel: latestPoint.label,
-                  ),
-                  _ChartSeriesPill(
-                    label: 'Licenses',
-                    color: OpenVtsColors.warning,
-                    value: latestPoint.licenses,
-                    periodLabel: latestPoint.label,
-                    isPrimary: true,
-                  ),
+                  if (visibleMetrics.contains('vehicles'))
+                    _ChartSeriesPill(
+                      label: 'Vehicles',
+                      color: OpenVtsColors.info,
+                      value: latestPoint.vehicles,
+                      periodLabel: latestPoint.label,
+                    ),
+                  if (visibleMetrics.contains('users'))
+                    _ChartSeriesPill(
+                      label: 'Users',
+                      color: OpenVtsColors.success,
+                      value: latestPoint.users,
+                      periodLabel: latestPoint.label,
+                    ),
+                  if (visibleMetrics.contains('licenses'))
+                    _ChartSeriesPill(
+                      label: 'Licenses',
+                      color: OpenVtsColors.warning,
+                      value: latestPoint.licenses,
+                      periodLabel: latestPoint.label,
+                      isPrimary: true,
+                    ),
                 ],
               ),
             ),
@@ -612,9 +646,12 @@ class _AdoptionGrowthSection extends StatelessWidget {
                       )
                     : KeyedSubtree(
                         key: ValueKey<String>(
-                          '${selectedRange.name}-${points.length}-${points.last.label}',
+                          '${selectedRange.name}-${points.length}-${points.last.label}-${visibleMetrics.join('-')}',
                         ),
-                        child: _AdoptionChart(points: points),
+                        child: _AdoptionChart(
+                          points: points,
+                          visibleMetrics: visibleMetrics,
+                        ),
                       ),
               ),
             ),
@@ -704,50 +741,83 @@ class _LegendDot extends StatelessWidget {
   const _LegendDot({
     required this.label,
     required this.color,
+    required this.isSelected,
+    required this.onTap,
   });
 
   final String label;
   final Color color;
+  final bool isSelected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: OpenVtsSpacing.xs,
-        vertical: OpenVtsSpacing.xxs + 2,
-      ),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 9,
-            height: 9,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.18),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          padding: const EdgeInsets.symmetric(
+            horizontal: OpenVtsSpacing.xs,
+            vertical: OpenVtsSpacing.xxs + 2,
+          ),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? color.withValues(alpha: 0.12)
+                : color.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+            border: isSelected
+                ? Border.all(
+                    color: color.withValues(alpha: 0.3),
+                    width: 1.2,
+                  )
+                : null,
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 9,
+                height: 9,
+                decoration: BoxDecoration(
+                  color: isSelected ? color : color.withValues(alpha: 0.5),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withValues(
+                          alpha: isSelected ? 0.18 : 0.08),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: OpenVtsSpacing.xxs),
+              Text(
+                label,
+                style: OpenVtsTypography.meta.copyWith(
+                  color: isSelected
+                      ? theme.colorScheme.onSurface
+                      : theme.colorScheme.onSurfaceVariant,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: OpenVtsSpacing.xxs),
-          Text(
-            label,
-            style: OpenVtsTypography.meta.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -843,15 +913,22 @@ class _ChartSeriesPill extends StatelessWidget {
 }
 
 class _AdoptionChart extends StatelessWidget {
-  const _AdoptionChart({required this.points});
+  const _AdoptionChart({
+    required this.points,
+    required this.visibleMetrics,
+  });
 
   final List<SuperadminAdoptionPoint> points;
+  final Set<String> visibleMetrics;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final series = _buildSeries(points);
-    final maxValue = _chartMax(series);
+    final filteredSeries = series
+        .where((s) => visibleMetrics.contains(s.label.toLowerCase()))
+        .toList();
+    final maxValue = _chartMax(filteredSeries);
     final yValues = _chartYValues(maxValue);
     final latestPoint = points.last;
 
@@ -944,10 +1021,11 @@ class _AdoptionChart extends StatelessWidget {
                             borderRadius: BorderRadius.circular(OpenVtsRadius.md),
                             child: CustomPaint(
                               painter: _AdoptionChartPainter(
-                                series: series,
+                                series: filteredSeries,
                                 maxValue: maxValue,
                                 surfaceColor: theme.colorScheme.surface,
                                 outlineColor: theme.colorScheme.outlineVariant,
+                                backgroundColor: theme.colorScheme.surface,
                               ),
                               child: const SizedBox.expand(),
                             ),
@@ -1044,12 +1122,14 @@ class _AdoptionChartPainter extends CustomPainter {
     required this.maxValue,
     required this.surfaceColor,
     required this.outlineColor,
+    required this.backgroundColor,
   });
 
   final List<_AdoptionSeries> series;
   final int maxValue;
   final Color surfaceColor;
   final Color outlineColor;
+  final Color backgroundColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -1110,7 +1190,9 @@ class _AdoptionChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _AdoptionChartPainter oldDelegate) {
-    return oldDelegate.series != series || oldDelegate.maxValue != maxValue;
+    return oldDelegate.series != series ||
+        oldDelegate.maxValue != maxValue ||
+        oldDelegate.backgroundColor != backgroundColor;
   }
 
   void _drawPlotSurface(Canvas canvas, Rect plotRect, Color surfaceColor, Color outlineColor) {
@@ -1260,7 +1342,7 @@ class _AdoptionChartPainter extends CustomPainter {
     canvas.drawCircle(
       point,
       haloRadius / 1.8,
-      Paint()..color = OpenVtsColors.white,
+      Paint()..color = backgroundColor,
     );
     canvas.drawCircle(
       point,
@@ -2146,7 +2228,7 @@ class _ActivityLogRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tone = _activityTone(log.title);
+    final tone = _activityTone(log.title, context);
     final relativeText = _formatRelativeDate(log.createdAt, shortUnits: true);
 
     return Padding(
@@ -2240,18 +2322,19 @@ class _ActivityLogRow extends StatelessWidget {
     );
   }
 
-  _ActivityTone _activityTone(String title) {
+  _ActivityTone _activityTone(String title, BuildContext context) {
     final value = title.toLowerCase();
+    final scheme = Theme.of(context).colorScheme;
     if (value.contains('login') || value.contains('auth')) {
-      return const _ActivityTone(
+      return _ActivityTone(
         icon: Icons.login_rounded,
-        color: Color(0xFF8B6FF7),
+        color: scheme.tertiary,
       );
     }
     if (value.contains('upload')) {
-      return const _ActivityTone(
+      return _ActivityTone(
         icon: Icons.cloud_upload_outlined,
-        color: OpenVtsColors.textTertiary,
+        color: scheme.onSurfaceVariant,
       );
     }
     return const _ActivityTone(

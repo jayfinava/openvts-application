@@ -236,8 +236,8 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
       maxChildSize: 0.95,
       builder: (context, scrollController) {
         return DecoratedBox(
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(OpenVtsRadius.xl),
             ),
@@ -250,7 +250,7 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                   width: 44,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: OpenVtsColors.border,
+                    color: Theme.of(context).colorScheme.outlineVariant,
                     borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
                   ),
                 ),
@@ -282,7 +282,10 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                   ],
                 ),
               ),
-              const Divider(height: 1, color: OpenVtsColors.divider),
+              Divider(
+                height: 1,
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
               Expanded(
                 child: state.isLoadingAdmins && admins.isEmpty
                     ? const OpenVtsLoader()
@@ -319,7 +322,7 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                               child: Text(
                                 'No administrators available. Pull to refresh and try again.',
                                 style: OpenVtsTypography.meta.copyWith(
-                                  color: OpenVtsColors.textSecondary,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -342,7 +345,7 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                               errorText: amountError,
                               suffixText: _currencySuffix(selectedAdmin),
                               suffixStyle: OpenVtsTypography.label.copyWith(
-                                color: OpenVtsColors.textSecondary,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -391,7 +394,7 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                           Text(
                             'Manual payments update transactions and analytics after successful submission.',
                             style: OpenVtsTypography.meta.copyWith(
-                              color: OpenVtsColors.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],

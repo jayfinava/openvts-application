@@ -25,11 +25,16 @@
       "Bash(xargs grep -l \"AdminVehicleLogItem\")",
       "Bash(xargs grep -l \"class AdminVehicleLogItem\")",
       "Bash(xargs grep -l \"class AppNotification\")",
-      "Bash(tmux new-session *)"
+      "Bash(tmux new-session *)",
+      "Bash(flutter run -d chrome 2>&1 > /tmp/flutter_run.log & *)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(python3 /tmp/test_dark.py)",
+      "Bash(curl -s http://localhost:8080)"
     ],
     "additionalDirectories": [
       "d:\\Users\\shash\\.claude\\projects\\d--development-openvts-application-main\\memory",
-      "\\tmp"
+      "\\tmp",
+      "d:\\tmp"
     ]
   }
 }

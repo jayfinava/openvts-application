@@ -384,6 +384,7 @@ class _ConversationHeader extends StatelessWidget {
     final fromName = ticket.fromUser?.displayName ??
         (ticket.fromUserId != null ? 'Admin #${ticket.fromUserId}' : 'Admin');
     final fromEmail = ticket.fromUser?.email.trim() ?? '';
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
       width: double.infinity,
@@ -393,9 +394,9 @@ class _ConversationHeader extends StatelessWidget {
         OpenVtsSpacing.md,
         OpenVtsSpacing.sm,
       ),
-      decoration: const BoxDecoration(
-        color: OpenVtsColors.surface,
-        border: Border(bottom: BorderSide(color: OpenVtsColors.border)),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        border: Border(bottom: BorderSide(color: colorScheme.outline)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -425,7 +426,7 @@ class _ConversationHeader extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.titleSmall.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: colorScheme.onSurface,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -435,7 +436,7 @@ class _ConversationHeader extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textTertiary,
+                        color: colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -645,12 +646,13 @@ class SuperadminSupportMessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final alignment = isMine ? Alignment.centerRight : Alignment.centerLeft;
+    final colorScheme = Theme.of(context).colorScheme;
     final borderColor = isMine
         ? OpenVtsColors.brandInk.withValues(alpha: 0.18)
-        : OpenVtsColors.border;
+        : colorScheme.outline;
     final backgroundColor = isMine
         ? OpenVtsColors.brandInk.withValues(alpha: 0.045)
-        : Theme.of(context).colorScheme.surface;
+        : colorScheme.surface;
 
     final senderLabel = message.sender?.displayName.trim().isNotEmpty == true
         ? message.sender!.displayName
@@ -680,7 +682,7 @@ class SuperadminSupportMessageBubble extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -691,7 +693,7 @@ class SuperadminSupportMessageBubble extends StatelessWidget {
                       _dateFormatter
                           .formatDateTime(message.createdAt!.toLocal()),
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textTertiary,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -702,7 +704,7 @@ class SuperadminSupportMessageBubble extends StatelessWidget {
                 Text(
                   message.message.trim(),
                   style: OpenVtsTypography.body.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: colorScheme.onSurface,
                     height: 1.38,
                   ),
                 ),
@@ -794,16 +796,16 @@ class _MessageAttachmentChip extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          border: Border.all(color: OpenVtsColors.border),
-          color: OpenVtsColors.surface,
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
+          color: Theme.of(context).colorScheme.surface,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.insert_drive_file_outlined,
               size: 16,
-              color: OpenVtsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             const SizedBox(width: OpenVtsSpacing.xs),
             Flexible(
@@ -816,7 +818,7 @@ class _MessageAttachmentChip extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -824,7 +826,7 @@ class _MessageAttachmentChip extends StatelessWidget {
                     Text(
                       _formatFileSize(attachment.sizeBytes),
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textTertiary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                 ],
@@ -924,14 +926,15 @@ class _ReplyComposer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return SafeArea(
       top: false,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(OpenVtsSpacing.md),
-        decoration: const BoxDecoration(
-          color: OpenVtsColors.surface,
-          border: Border(top: BorderSide(color: OpenVtsColors.border)),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          border: Border(top: BorderSide(color: colorScheme.outline)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -998,14 +1001,15 @@ class _ClosedTicketNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return SafeArea(
       top: false,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(OpenVtsSpacing.md),
-        decoration: const BoxDecoration(
-          color: OpenVtsColors.surface,
-          border: Border(top: BorderSide(color: OpenVtsColors.border)),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          border: Border(top: BorderSide(color: colorScheme.outline)),
         ),
         child: Container(
           padding: const EdgeInsets.symmetric(
@@ -1013,14 +1017,14 @@ class _ClosedTicketNotice extends StatelessWidget {
             vertical: OpenVtsSpacing.xs,
           ),
           decoration: BoxDecoration(
-            color: OpenVtsColors.surface,
-            border: Border.all(color: OpenVtsColors.border),
+            color: colorScheme.surface,
+            border: Border.all(color: colorScheme.outline),
             borderRadius: BorderRadius.circular(OpenVtsRadius.md),
           ),
           child: Text(
             'This ticket is closed or resolved. Replies are disabled.',
             style: OpenVtsTypography.body.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -1039,7 +1043,7 @@ class _MetaChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chipColor = color ?? OpenVtsColors.textSecondary;
+    final chipColor = color ?? Theme.of(context).colorScheme.onSurfaceVariant;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
@@ -1079,6 +1083,7 @@ class _InlineConversationError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
@@ -1086,13 +1091,13 @@ class _InlineConversationError extends StatelessWidget {
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.error.withValues(alpha: 0.07),
-        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.28)),
+        color: colorScheme.error.withValues(alpha: 0.07),
+        border: Border.all(color: colorScheme.error.withValues(alpha: 0.28)),
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       ),
       child: Text(
         message,
-        style: OpenVtsTypography.body.copyWith(color: OpenVtsColors.error),
+        style: OpenVtsTypography.body.copyWith(color: colorScheme.error),
       ),
     );
   }

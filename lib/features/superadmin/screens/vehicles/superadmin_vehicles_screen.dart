@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
@@ -177,6 +176,7 @@ class _HeaderLogoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsetsDirectional.only(start: OpenVtsSpacing.sm),
       child: Align(
@@ -185,12 +185,12 @@ class _HeaderLogoTile extends StatelessWidget {
           height: 36,
           width: 36,
           decoration: BoxDecoration(
-            color: OpenVtsColors.brandInk,
+            color: scheme.primary,
             borderRadius: BorderRadius.circular(OpenVtsRadius.md),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.directions_car_outlined,
-            color: OpenVtsColors.white,
+            color: scheme.onPrimary,
             size: 18,
           ),
         ),
@@ -231,6 +231,7 @@ class _InlineVehicleLoadMoreFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: OpenVtsSpacing.xs),
       child: Center(
@@ -240,7 +241,7 @@ class _InlineVehicleLoadMoreFooter extends StatelessWidget {
             Text(
               'Showing $visibleCount of $totalCount',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: scheme.onSurfaceVariant,
                   ),
             ),
             const SizedBox(height: OpenVtsSpacing.xxs),
@@ -262,6 +263,7 @@ class _VehicleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -286,7 +288,7 @@ class _VehicleCard extends StatelessWidget {
                             style: OpenVtsTypography.body.copyWith(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: OpenVtsColors.textPrimary,
+                              color: scheme.onSurface,
                             ),
                           ),
                         ),
@@ -300,7 +302,7 @@ class _VehicleCard extends StatelessWidget {
                     Text(
                       vehicle.type,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: scheme.onSurfaceVariant,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -446,15 +448,16 @@ class _VehicleInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: OpenVtsColors.textTertiary),
+        Icon(icon, size: 16, color: scheme.onSurfaceVariant),
         const SizedBox(width: OpenVtsSpacing.xs),
         Text(
           '$label :  ',
           style: OpenVtsTypography.meta.copyWith(
-            color: OpenVtsColors.textSecondary,
+            color: scheme.onSurfaceVariant,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -464,7 +467,7 @@ class _VehicleInfoRow extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: scheme.onSurface,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -481,16 +484,17 @@ class _VehicleIconBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       height: 44,
       width: 44,
-      decoration: const BoxDecoration(
-        color: OpenVtsColors.brandInk,
+      decoration: BoxDecoration(
+        color: scheme.primary,
         shape: BoxShape.circle,
       ),
       child: Icon(
         _vehicleIcon(type),
-        color: OpenVtsColors.white,
+        color: scheme.onPrimary,
         size: 20,
       ),
     );
@@ -504,20 +508,21 @@ class _PlateChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.xs,
         vertical: 3,
       ),
       decoration: BoxDecoration(
-        color: _compactSurfaceColor(context),
+        color: scheme.surfaceContainer,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: _compactBorderColor(context)),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Text(
         label,
         style: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.textSecondary,
+          color: scheme.onSurfaceVariant,
           fontSize: 11,
           fontWeight: FontWeight.w600,
         ),
@@ -533,20 +538,21 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final backgroundColor = switch (label) {
-      'Active' => OpenVtsColors.surface,
-      'Idle' => OpenVtsColors.warning.withValues(alpha: 0.14),
-      'Inactive' => OpenVtsColors.textTertiary.withValues(alpha: 0.16),
-      'Offline' => OpenVtsColors.error.withValues(alpha: 0.12),
-      _ => OpenVtsColors.info.withValues(alpha: 0.12),
+      'Active' => scheme.surfaceContainer,
+      'Idle' => scheme.tertiary.withValues(alpha: 0.14),
+      'Inactive' => scheme.onSurfaceVariant.withValues(alpha: 0.16),
+      'Offline' => scheme.error.withValues(alpha: 0.12),
+      _ => scheme.tertiary.withValues(alpha: 0.12),
     };
 
     final foregroundColor = switch (label) {
-      'Active' => OpenVtsColors.textPrimary,
-      'Idle' => OpenVtsColors.warning,
-      'Inactive' => OpenVtsColors.textSecondary,
-      'Offline' => OpenVtsColors.error,
-      _ => OpenVtsColors.info,
+      'Active' => scheme.onSurface,
+      'Idle' => scheme.tertiary,
+      'Inactive' => scheme.onSurfaceVariant,
+      'Offline' => scheme.error,
+      _ => scheme.tertiary,
     };
 
     return Container(
@@ -570,17 +576,6 @@ class _StatusChip extends StatelessWidget {
   }
 }
 
-Color _compactSurfaceColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkSurface
-      : OpenVtsColors.background;
-}
-
-Color _compactBorderColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkBorder
-      : OpenVtsColors.border;
-}
 
 /*
           LayoutBuilder(
