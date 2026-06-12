@@ -2682,11 +2682,12 @@ class _VehicleLogDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final attributesText =
         log.attributes == null ? null : _formatVehicleLogJson(log.attributes);
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
-      backgroundColor: Colors.white,
+      backgroundColor: scheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 520, maxHeight: 620),
@@ -2697,13 +2698,13 @@ class _VehicleLogDetailsDialog extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(14, 12, 8, 8),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Telemetry log',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w900,
-                        color: Color(0xFF141118),
+                        color: scheme.onSurface,
                       ),
                     ),
                   ),
@@ -2910,15 +2911,17 @@ class _VehicleLogCodeBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w900,
-            color: Color(0xFF141118),
+            color: scheme.onSurface,
           ),
         ),
         const SizedBox(height: 6),
@@ -2927,7 +2930,7 @@ class _VehicleLogCodeBlock extends StatelessWidget {
           constraints: const BoxConstraints(maxHeight: 180),
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFF111827),
+            color: isDark ? const Color(0xFF0A0A0A) : const Color(0xFF111827),
             borderRadius: BorderRadius.circular(12),
           ),
           child: SingleChildScrollView(
@@ -3547,11 +3550,12 @@ class _VehicleEventDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final metadataText =
         event.metadata.isEmpty ? null : _formatVehicleLogJson(event.metadata);
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
-      backgroundColor: Colors.white,
+      backgroundColor: scheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 520, maxHeight: 620),
@@ -3562,13 +3566,13 @@ class _VehicleEventDetailsDialog extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(14, 12, 8, 8),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Vehicle event',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w900,
-                        color: Color(0xFF141118),
+                        color: scheme.onSurface,
                       ),
                     ),
                   ),
@@ -3868,6 +3872,7 @@ class _VehicleSensorsTabState extends ConsumerState<_VehicleSensorsTab> {
     final telemetryTime = _telemetryMeta?.serverTime ??
         _vehicleSensorTelemetryUpdatedAt(widget.vehicle);
 
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -3875,12 +3880,12 @@ class _VehicleSensorsTabState extends ConsumerState<_VehicleSensorsTab> {
           padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
           child: Row(
             children: [
-              const Text(
+              Text(
                 'Sensors',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w900,
-                  color: Color(0xFF141118),
+                  color: scheme.onSurface,
                 ),
               ),
               const SizedBox(width: 8),
@@ -3889,7 +3894,7 @@ class _VehicleSensorsTabState extends ConsumerState<_VehicleSensorsTab> {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: Colors.black.withValues(alpha: 0.42),
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
               const Spacer(),
@@ -3909,7 +3914,7 @@ class _VehicleSensorsTabState extends ConsumerState<_VehicleSensorsTab> {
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black.withValues(alpha: 0.42),
+                      color: scheme.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -4023,7 +4028,7 @@ class _VehicleSensorCard extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
-                        color: Colors.black.withValues(alpha: 0.46),
+                        color: scheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -4040,7 +4045,7 @@ class _VehicleSensorCard extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black.withValues(alpha: 0.46),
+                    color: scheme.onSurfaceVariant,
                   ),
                 ),
               if (sensor.lastUpdated != null) ...[
@@ -4052,7 +4057,7 @@ class _VehicleSensorCard extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black.withValues(alpha: 0.38),
+                    color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -4071,23 +4076,24 @@ class _VehicleSensorStatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       constraints: const BoxConstraints(minWidth: 46, maxWidth: 90),
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Text(
         label,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         textAlign: TextAlign.center,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 9,
           fontWeight: FontWeight.w900,
-          color: Color(0xFF141118),
+          color: scheme.onSurface,
         ),
       ),
     );
@@ -4841,6 +4847,7 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final imei = _imei;
     final history = _visibleHistory;
     final selectedCommand = _selectedCommandId == null
@@ -4926,12 +4933,12 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
           padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
           child: Row(
             children: [
-              const Text(
+              Text(
                 'History',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w900,
-                  color: Color(0xFF141118),
+                  color: scheme.onSurface,
                 ),
               ),
               const SizedBox(width: 8),
@@ -4940,7 +4947,7 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: Colors.black.withValues(alpha: 0.42),
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
               const Spacer(),
@@ -4951,7 +4958,7 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
                     : () => unawaited(_loadHistory(refresh: true)),
                 visualDensity: VisualDensity.compact,
                 iconSize: 18,
-                color: const Color(0xFF141118),
+                color: scheme.onSurface,
                 icon: _loadingHistory
                     ? const SizedBox(
                         width: 14,
@@ -4975,7 +4982,7 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
                 style: TextButton.styleFrom(
                   visualDensity: VisualDensity.compact,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  foregroundColor: const Color(0xFF141118),
+                  foregroundColor: scheme.onSurface,
                   textStyle: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
@@ -5040,12 +5047,13 @@ class _VehicleCommandTargetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final hint = _vehicleCommandConnectionHint(vehicle);
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F8),
+        color: scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
@@ -5055,14 +5063,14 @@ class _VehicleCommandTargetCard extends StatelessWidget {
               width: 30,
               height: 30,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: scheme.surface,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+                border: Border.all(color: scheme.outlineVariant),
               ),
               child: Icon(
                 Icons.terminal_rounded,
                 size: 16,
-                color: Colors.black.withValues(alpha: 0.62),
+                color: scheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(width: 9),
@@ -5074,10 +5082,10 @@ class _VehicleCommandTargetCard extends StatelessWidget {
                     _vehicleDisplayName(vehicle),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w900,
-                      color: Color(0xFF141118),
+                      color: scheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 3),
@@ -5088,7 +5096,7 @@ class _VehicleCommandTargetCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black.withValues(alpha: 0.46),
+                      color: scheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -5110,13 +5118,14 @@ class _VehicleCommandConnectionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       constraints: const BoxConstraints(maxWidth: 112),
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Text(
         label,
@@ -5125,7 +5134,7 @@ class _VehicleCommandConnectionChip extends StatelessWidget {
         style: TextStyle(
           fontSize: 9,
           fontWeight: FontWeight.w900,
-          color: Colors.black.withValues(alpha: 0.58),
+          color: scheme.onSurfaceVariant,
         ),
       ),
     );
@@ -5645,13 +5654,13 @@ class _VehicleCommandDetailsDialog extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(14, 12, 8, 8),
                   child: Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Text(
                           'Command details',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w900,
-                            color: Color(0xFF141118),
+                            color: scheme.onSurface,
                           ),
                         ),
                       ),
@@ -6319,6 +6328,7 @@ class _VehicleDetailsHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return _VehicleDetailsCardShell(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -6329,13 +6339,13 @@ class _VehicleDetailsHeroCard extends StatelessWidget {
                 width: 30,
                 height: 30,
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.04),
+                  color: scheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.directions_car_filled_rounded,
                   size: 16,
-                  color: Color(0xFF141118),
+                  color: scheme.onSurface,
                 ),
               ),
               const SizedBox(width: 8),
@@ -6420,16 +6430,17 @@ class _VehicleInformationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return _VehicleDetailsCardShell(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Vehicle Information',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF141118),
+              color: scheme.onSurface,
             ),
           ),
           const SizedBox(height: 6),
@@ -6440,7 +6451,7 @@ class _VehicleInformationCard extends StatelessWidget {
                     if (entry.key < rows.length - 1)
                       Divider(
                         height: 1,
-                        color: Colors.black.withValues(alpha: 0.06),
+                        color: scheme.outlineVariant,
                       ),
                   ],
                 ),
@@ -6466,6 +6477,7 @@ class _VehicleLocationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return _VehicleDetailsCardShell(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -6476,22 +6488,22 @@ class _VehicleLocationCard extends StatelessWidget {
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.04),
+                  color: scheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.location_on_outlined,
                   size: 13,
-                  color: Color(0xFF141118),
+                  color: scheme.onSurface,
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'Location',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF141118),
+                  color: scheme.onSurface,
                 ),
               ),
             ],
@@ -6499,7 +6511,7 @@ class _VehicleLocationCard extends StatelessWidget {
           const SizedBox(height: 10),
           _VehicleLocationLine(label: 'Address', value: address),
           const SizedBox(height: 10),
-          Divider(height: 1, color: Colors.black.withValues(alpha: 0.06)),
+          Divider(height: 1, color: scheme.outlineVariant),
           const SizedBox(height: 10),
           _VehicleLocationLine(label: 'Lat / Long', value: latLongText),
           const SizedBox(height: 10),
@@ -6510,10 +6522,10 @@ class _VehicleLocationCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               child: Ink(
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: scheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                    color: Colors.black.withValues(alpha: 0.06),
+                    color: scheme.outlineVariant,
                   ),
                 ),
                 child: Padding(
@@ -6526,16 +6538,16 @@ class _VehicleLocationCard extends StatelessWidget {
                       Container(
                         width: 24,
                         height: 24,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
+                        decoration: BoxDecoration(
+                          color: scheme.surface,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.navigation_rounded,
                           size: 13,
                           color: onOpenNavigation == null
-                              ? Colors.black.withValues(alpha: 0.28)
-                              : const Color(0xFF141118),
+                              ? scheme.onSurface.withValues(alpha: 0.38)
+                              : scheme.onSurface,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -6546,8 +6558,8 @@ class _VehicleLocationCard extends StatelessWidget {
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: onOpenNavigation == null
-                                ? Colors.black.withValues(alpha: 0.28)
-                                : const Color(0xFF141118),
+                                ? scheme.onSurface.withValues(alpha: 0.38)
+                                : scheme.onSurface,
                           ),
                         ),
                       ),
@@ -6555,8 +6567,8 @@ class _VehicleLocationCard extends StatelessWidget {
                         Icons.chevron_right_rounded,
                         size: 16,
                         color: onOpenNavigation == null
-                            ? Colors.black.withValues(alpha: 0.22)
-                            : const Color(0xFF141118),
+                            ? scheme.onSurface.withValues(alpha: 0.38)
+                            : scheme.onSurface,
                       ),
                     ],
                   ),
@@ -6571,7 +6583,7 @@ class _VehicleLocationCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.w600,
-                color: Colors.black.withValues(alpha: 0.44),
+                color: scheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -6589,10 +6601,11 @@ class _VehicleStatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.04),
+        color: scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
@@ -6609,10 +6622,10 @@ class _VehicleStatusChip extends StatelessWidget {
           const SizedBox(width: 5),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF141118),
+              color: scheme.onSurface,
               height: 1,
             ),
           ),
@@ -6764,6 +6777,7 @@ class _VehicleDetailStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return _VehicleDetailsCardShell(
       child: Row(
         children: [
@@ -6771,10 +6785,10 @@ class _VehicleDetailStatCard extends StatelessWidget {
             width: 30,
             height: 30,
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: scheme.surfaceContainerHighest,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 15, color: const Color(0xFF141118)),
+            child: Icon(icon, size: 15, color: scheme.onSurface),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -6788,7 +6802,7 @@ class _VehicleDetailStatCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black.withValues(alpha: 0.44),
+                    color: scheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -6796,10 +6810,10 @@ class _VehicleDetailStatCard extends StatelessWidget {
                   value,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF141118),
+                    color: scheme.onSurface,
                     height: 1.1,
                   ),
                 ),
@@ -6819,11 +6833,12 @@ class _VehicleDetailsCardShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        border: Border.all(color: scheme.outlineVariant),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -6878,6 +6893,7 @@ class _VehicleInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -6886,19 +6902,19 @@ class _VehicleInfoRow extends StatelessWidget {
             width: 22,
             height: 22,
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: scheme.surfaceContainerHighest,
               shape: BoxShape.circle,
             ),
-            child: Icon(data.icon, size: 12, color: const Color(0xFF141118)),
+            child: Icon(data.icon, size: 12, color: scheme.onSurface),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               data.label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF141118),
+                color: scheme.onSurface,
               ),
             ),
           ),
@@ -6917,10 +6933,10 @@ class _VehicleInfoRow extends StatelessWidget {
                 const SizedBox(width: 5),
                 Text(
                   data.value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF141118),
+                    color: scheme.onSurface,
                   ),
                 ),
               ],
@@ -6932,10 +6948,10 @@ class _VehicleInfoRow extends StatelessWidget {
                 textAlign: TextAlign.right,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF141118),
+                  color: scheme.onSurface,
                   height: 1.25,
                 ),
               ),
@@ -6954,6 +6970,7 @@ class _VehicleLocationLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -6962,16 +6979,16 @@ class _VehicleLocationLine extends StatelessWidget {
           style: TextStyle(
             fontSize: 9,
             fontWeight: FontWeight.w600,
-            color: Colors.black.withValues(alpha: 0.44),
+            color: scheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 3),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF141118),
+            color: scheme.onSurface,
             height: 1.3,
           ),
         ),
@@ -8269,6 +8286,7 @@ class _HistoryQueryDialogState extends State<_HistoryQueryDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final now = DateTime.now();
 
     return Dialog(
@@ -8289,12 +8307,12 @@ class _HistoryQueryDialogState extends State<_HistoryQueryDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
+                Text(
                   'Get History',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF141118),
+                    color: scheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -8303,17 +8321,17 @@ class _HistoryQueryDialogState extends State<_HistoryQueryDialog> {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black.withValues(alpha: 0.56),
+                    color: scheme.onSurfaceVariant,
                     height: 1.35,
                   ),
                 ),
                 const SizedBox(height: 18),
-                const Text(
+                Text(
                   'Vehicle',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF141118),
+                    color: scheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -9465,6 +9483,8 @@ class _AlertsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatter = ref.watch(appDateFormatterProvider);
+    final scheme = Theme.of(context).colorScheme;
+
     if (isLoading && alerts.isEmpty) {
       return _DrawerScrollFill(
         scrollController: scrollController,
@@ -11060,7 +11080,7 @@ bool _isRunningStatus(String status, {double? speed}) {
 }
 
 Color _vehicleDetailsStatusColor(bool isRunning) {
-  return isRunning ? const Color(0xFF20B15A) : const Color(0xFF141118);
+  return isRunning ? const Color(0xFF20B15A) : const Color(0xFF9E9E9E);
 }
 
 String _formatVehicleStatusLabel(String status, {double? speed}) {

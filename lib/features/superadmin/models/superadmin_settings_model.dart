@@ -501,7 +501,12 @@ class SuperadminProfileSettings {
       address: addressMap != null
           ? SuperadminAddressSettings.fromJson(addressMap)
           : null,
-      cityName: _firstString(source, const [
+      cityName: _firstString(addressMap ?? const <String, dynamic>{}, const [
+            'cityName',
+            'city_name',
+            'city',
+          ]) ??
+          _firstString(source, const [
             'cityName',
             'city_name',
             'cityname',

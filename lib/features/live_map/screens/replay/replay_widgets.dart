@@ -815,6 +815,7 @@ class _ReplayControlIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isEnabled = onTap != null;
+    const mapActionInkColor = Color(0xFF111827);
 
     return Tooltip(
       message: tooltip,
@@ -827,7 +828,7 @@ class _ReplayControlIconButton extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: filled ? _mapActionInkColor : const Color(0xFFFFFFFF),
+              color: filled ? mapActionInkColor : const Color(0xFFFFFFFF),
               shape: BoxShape.circle,
               border: Border.all(
                 color: filled
@@ -850,7 +851,7 @@ class _ReplayControlIconButton extends StatelessWidget {
               color: filled
                   ? Colors.white
                   : isEnabled
-                      ? _mapActionInkColor
+                      ? mapActionInkColor
                       : const Color(0xFF9EA7B0),
             ),
           ),
