@@ -295,13 +295,14 @@ class SuperadminSettingsService {
     debugPrint('═' * 80);
 
     try {
-      await _apiClient.patch<void>(
+      final response = await _apiClient.patch<dynamic>(
         endpoint,
         data: payload,
         options: _mutationOptions,
-        parser: (_) {},
+        parser: (json) => json,
       );
       debugPrint('[SUPERADMIN_LOCALIZATION_SAVE] SUCCESS');
+      debugPrint('Response Data: ${_toJson(response.data)}');
     } on DioException catch (e) {
       debugPrint('═' * 80);
       debugPrint('[SUPERADMIN_LOCALIZATION_SAVE] ERROR');
@@ -332,6 +333,9 @@ class SuperadminSettingsService {
       'theme': {'theme': request.theme.apiValue},
       'timezoneOffset': {'timezoneOffset': request.timezoneOffset},
       'distanceUnit': {'distanceUnit': request.units.apiValue},
+      'units': {'units': request.units.apiValue},
+      'unit': {'unit': request.units.apiValue},
+      'measurementUnit': {'measurementUnit': request.units.apiValue},
       'defaultLat': {'defaultLat': request.defaultLat},
       'defaultLon': {'defaultLon': request.defaultLon},
       'mapZoom': {'mapZoom': request.mapZoom},
