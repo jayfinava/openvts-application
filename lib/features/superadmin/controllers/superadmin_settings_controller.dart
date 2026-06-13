@@ -453,6 +453,12 @@ class SuperadminSettingsController
     }
   }
 
+  Future<void> debugTestLocalizationFields(
+    SuperadminLocalizationSettings request,
+  ) async {
+    await _service.testLocalizationPayloadFields(request);
+  }
+
   // ---------------------------------------------------------------
   // Software config / data retention
   // ---------------------------------------------------------------
@@ -549,16 +555,38 @@ class SuperadminSettingsController
       final data = response?.data;
       if (data is Map) {
         final map = data.cast<String, dynamic>();
+
+        // Try single-value error keys
         for (final key in const ['message', 'error', 'detail']) {
           final value = map[key];
           if (value is String && value.trim().isNotEmpty) {
             return value.trim();
           }
         }
+
+        // Try errors array
+        final errors = map['errors'];
+        if (errors is List && errors.isNotEmpty) {
+          final first = errors.first;
+          if (first is String && first.trim().isNotEmpty) {
+            return first.trim();
+          }
+          if (first is Map) {
+            final firstMap = first.cast<String, dynamic>();
+            for (final key in const ['message', 'error', 'detail']) {
+              final value = firstMap[key];
+              if (value is String && value.trim().isNotEmpty) {
+                return value.trim();
+              }
+            }
+          }
+        }
+
+        // Try nested data object
         final nested = map['data'];
         if (nested is Map) {
           final nestedMap = nested.cast<String, dynamic>();
-          for (final key in const ['message', 'error']) {
+          for (final key in const ['message', 'error', 'detail']) {
             final value = nestedMap[key];
             if (value is String && value.trim().isNotEmpty) {
               return value.trim();

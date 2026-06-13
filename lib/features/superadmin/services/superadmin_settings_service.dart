@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
@@ -283,13 +285,89 @@ class SuperadminSettingsService {
     SuperadminLocalizationSettings request,
   ) async {
     final payload = request.toJson();
-    debugPrint('[Superadmin Localization Payload] $payload');
-    await _apiClient.patch<void>(
-      ApiEndpoints.superadmin.localization,
-      data: payload,
-      options: _mutationOptions,
-      parser: (_) {},
-    );
+    final endpoint = ApiEndpoints.superadmin.localization;
+
+    debugPrint('═' * 80);
+    debugPrint('[SUPERADMIN_LOCALIZATION_SAVE] REQUEST');
+    debugPrint('Endpoint: $endpoint');
+    debugPrint('METHOD: PATCH');
+    debugPrint('PAYLOAD: ${_toJson(payload)}');
+    debugPrint('═' * 80);
+
+    try {
+      await _apiClient.patch<void>(
+        endpoint,
+        data: payload,
+        options: _mutationOptions,
+        parser: (_) {},
+      );
+      debugPrint('[SUPERADMIN_LOCALIZATION_SAVE] SUCCESS');
+    } on DioException catch (e) {
+      debugPrint('═' * 80);
+      debugPrint('[SUPERADMIN_LOCALIZATION_SAVE] ERROR');
+      debugPrint('Status Code: ${e.response?.statusCode}');
+      debugPrint('Response Data: ${_toJson(e.response?.data)}');
+      debugPrint('Response Headers: ${e.response?.headers}');
+      debugPrint('Request Data: ${_toJson(e.requestOptions.data)}');
+      debugPrint('Request URL: ${e.requestOptions.uri}');
+      debugPrint('Request Method: ${e.requestOptions.method}');
+      debugPrint('═' * 80);
+      rethrow;
+    }
+  }
+
+  /// For debugging: test which payload fields are accepted by backend
+  Future<Map<String, bool>> testLocalizationPayloadFields(
+    SuperadminLocalizationSettings request,
+  ) async {
+    final results = <String, bool>{};
+    final endpoint = ApiEndpoints.superadmin.localization;
+
+    // Test each field individually
+    final fieldPayloads = {
+      'language': {'language': request.language},
+      'layoutDirection': {'layoutDirection': request.layoutDirection.apiValue},
+      'dateFormat': {'dateFormat': request.dateFormat},
+      'use24Hour': {'use24Hour': request.use24Hour},
+      'theme': {'theme': request.theme.apiValue},
+      'timezoneOffset': {'timezoneOffset': request.timezoneOffset},
+      'distanceUnit': {'distanceUnit': request.units.apiValue},
+      'defaultLat': {'defaultLat': request.defaultLat},
+      'defaultLon': {'defaultLon': request.defaultLon},
+      'mapZoom': {'mapZoom': request.mapZoom},
+    };
+
+    for (final field in fieldPayloads.entries) {
+      try {
+        debugPrint('[TEST_FIELD] Testing: ${field.key} = ${field.value}');
+        await _apiClient.patch<void>(
+          endpoint,
+          data: field.value,
+          options: _mutationOptions,
+          parser: (_) {},
+        );
+        results[field.key] = true;
+        debugPrint('[TEST_FIELD] ✓ ${field.key} accepted');
+      } catch (e) {
+        results[field.key] = false;
+        debugPrint('[TEST_FIELD] ✗ ${field.key} rejected: $e');
+      }
+    }
+
+    return results;
+  }
+
+  static String _toJson(dynamic value) {
+    try {
+      if (value == null) return 'null';
+      if (value is String) return value;
+      if (value is Map || value is List) {
+        return const JsonEncoder.withIndent('  ').convert(value);
+      }
+      return value.toString();
+    } catch (e) {
+      return value.toString();
+    }
   }
 
   Future<List<SuperadminLanguageOption>> getLanguages() async {
