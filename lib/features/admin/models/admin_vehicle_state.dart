@@ -135,6 +135,7 @@ class AdminVehicleDetailsState {
     required this.isRunningSensor,
     required this.errorMessage,
     required this.sectionErrorMessage,
+    required this.localUpdatedAt,
   });
 
   factory AdminVehicleDetailsState.initial({
@@ -188,6 +189,7 @@ class AdminVehicleDetailsState {
       isRunningSensor: false,
       errorMessage: null,
       sectionErrorMessage: null,
+      localUpdatedAt: null,
     );
   }
 
@@ -240,6 +242,7 @@ class AdminVehicleDetailsState {
 
   final String? errorMessage;
   final String? sectionErrorMessage;
+  final DateTime? localUpdatedAt;
 
   static const Object _unset = Object();
 
@@ -289,6 +292,7 @@ class AdminVehicleDetailsState {
     bool? isRunningSensor,
     Object? errorMessage = _unset,
     Object? sectionErrorMessage = _unset,
+    DateTime? localUpdatedAt,
   }) {
     return AdminVehicleDetailsState(
       vehicleId: vehicleId,
@@ -349,6 +353,7 @@ class AdminVehicleDetailsState {
       sectionErrorMessage: identical(sectionErrorMessage, _unset)
           ? this.sectionErrorMessage
           : sectionErrorMessage as String?,
+      localUpdatedAt: localUpdatedAt ?? this.localUpdatedAt,
     );
   }
 }

@@ -88,9 +88,14 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
   // Save
   // -----------------------------------------------------------------
 
+  bool _isSaving = false;
+
   Future<void> _save() async {
     final form = _formKey.currentState;
     if (form == null || !form.validate()) return;
+    if (_isSaving) return;
+
+    setState(() => _isSaving = true);
 
     final lat = double.tryParse(_latCtrl.text.trim());
     final lon = double.tryParse(_lonCtrl.text.trim());
@@ -111,40 +116,38 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
 
     final ok = await _controller.updateLocalization(request);
     if (!mounted) return;
+
+    setState(() => _isSaving = false);
+
     if (ok) {
+      setState(() {
+        _hydrated = true;
+        _language = request.language;
+        _direction = request.layoutDirection;
+        _dateFormat = request.dateFormat;
+        _use24Hour = request.use24Hour;
+        _theme = request.theme;
+        _timezone = request.timezoneOffset;
+        _units = request.units;
+        _latCtrl.text = request.defaultLat == 0 ? '' : request.defaultLat.toString();
+        _lonCtrl.text = request.defaultLon == 0 ? '' : request.defaultLon.toString();
+        _zoomCtrl.text = request.mapZoom.toString();
+      });
+
       ToastHelper.showSuccess('Localization saved');
 
-      // Apply preferences immediately with saved request values (confirmed by successful API save).
-      // This updates appLocalizationPreferencesProvider, which cascades to appDateFormatterProvider,
-      // triggering UI rebuilds across all date/time displays.
-      await ref.read(appLocalizationPreferencesProvider.notifier).applyFromAdminSettings(
-            language: request.language,
-            dateFormat: request.dateFormat,
-            use24Hour: request.use24Hour,
-            theme: request.theme.apiValue,
-            timezoneOffset: request.timezoneOffset,
-            layoutDirection: request.layoutDirection.apiValue,
-            units: request.units.apiValue,
-          );
-      if (!mounted) return;
-
-      // Rehydrate form from request (what we just saved), ensuring it reflects saved values.
-      // Do NOT reload from backend because response may differ or have parsing issues.
-      if (mounted) {
-        setState(() {
-          _hydrated = true;
-          _language = request.language;
-          _direction = request.layoutDirection;
-          _dateFormat = request.dateFormat;
-          _use24Hour = request.use24Hour;
-          _theme = request.theme;
-          _timezone = request.timezoneOffset;
-          _units = request.units;
-          _latCtrl.text = request.defaultLat == 0 ? '' : request.defaultLat.toString();
-          _lonCtrl.text = request.defaultLon == 0 ? '' : request.defaultLon.toString();
-          _zoomCtrl.text = request.mapZoom.toString();
-        });
-      }
+      final prefNotifier = ref.read(appLocalizationPreferencesProvider.notifier);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        prefNotifier.applyFromAdminSettings(
+          language: request.language,
+          dateFormat: request.dateFormat,
+          use24Hour: request.use24Hour,
+          theme: request.theme.apiValue,
+          timezoneOffset: request.timezoneOffset,
+          layoutDirection: request.layoutDirection.apiValue,
+          units: request.units.apiValue,
+        );
+      });
     } else {
       ToastHelper.showError(
         ref.read(adminSettingsControllerProvider).sectionErrorMessage ??
@@ -401,9 +404,9 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
           const SizedBox(height: OpenVtsSpacing.md),
           OpenVtsButton(
             label: 'Save changes',
-            isLoading: state.isSavingLocalization,
+            isLoading: state.isSavingLocalization || _isSaving,
             height: 44,
-            onPressed: state.isSavingLocalization ? null : _save,
+            onPressed: (state.isSavingLocalization || _isSaving) ? null : _save,
           ),
         ],
       ),

@@ -1364,6 +1364,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
   bool _isInitializingProfileLocation = true;
 
   String? _initialCityName;
+  String? _initialCityValue;
 
   @override
   void initState() {
@@ -1384,7 +1385,10 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     _stateCode =
         a?.stateCode?.trim().isNotEmpty == true ? a!.stateCode : null;
 
-    _initialCityName = a?.cityName?.trim().isNotEmpty == true ? a!.cityName : null;
+    _initialCityName = a?.cityDisplayName?.trim().isNotEmpty == true
+        ? a!.cityDisplayName
+        : (p.cityName?.trim().isNotEmpty == true ? p.cityName : null);
+    _initialCityValue = a?.cityValue;
     _cityName = _initialCityName;
 
     unawaited(_loadCatalogs());
@@ -1417,11 +1421,18 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         await _loadStates(_countryCode!);
         if (_stateCode != null) {
           await _loadCities(_countryCode!, _stateCode!);
+        } else {
+          if (mounted) setState(() => _isInitializingProfileLocation = false);
         }
+      } else {
+        if (mounted) setState(() => _isInitializingProfileLocation = false);
       }
     } catch (_) {
       if (!mounted) return;
-      setState(() => _loadingCatalogs = false);
+      setState(() {
+        _loadingCatalogs = false;
+        _isInitializingProfileLocation = false;
+      });
     }
   }
 
@@ -1460,10 +1471,20 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         _loadingCities = false;
       });
 
-      // Try to match initial city name if available
+      // Try to match initial city using multiple strategies
       SuperadminCityOption? matchedOption;
 
-      if (_initialCityName != null && _initialCityName!.isNotEmpty) {
+      if (_initialCityValue != null && _initialCityValue!.isNotEmpty) {
+        try {
+          matchedOption = _cities.firstWhere(
+            (c) => c.name.toLowerCase() == _initialCityValue!.toLowerCase(),
+          );
+        } catch (_) {
+          matchedOption = null;
+        }
+      }
+
+      if (matchedOption == null && _initialCityName != null && _initialCityName!.isNotEmpty) {
         try {
           matchedOption = _cities.firstWhere(
             (c) => c.name.toLowerCase() == _initialCityName!.toLowerCase(),
@@ -1479,9 +1500,17 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
           _cityName = matchedOption!.name;
         });
       } else if (_initialCityName != null && _initialCityName!.isNotEmpty) {
-        // Keep initial city name even if not in list
+        // Not found in list — inject synthetic option so dropdown shows saved city
         setState(() {
           _cityName = _initialCityName;
+          _cities = [
+            SuperadminCityOption(
+              name: _initialCityName!,
+              countryCode: _countryCode ?? '',
+              stateCode: _stateCode ?? '',
+            ),
+            ..._cities,
+          ];
         });
       }
 

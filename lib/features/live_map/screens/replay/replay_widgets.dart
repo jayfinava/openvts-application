@@ -481,14 +481,15 @@ class _ReplayHudStat extends StatelessWidget {
   }
 }
 
-class _ReplayMiniSpeedometer extends StatelessWidget {
+class _ReplayMiniSpeedometer extends ConsumerWidget {
   const _ReplayMiniSpeedometer({required this.speedKph});
 
   final double? speedKph;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final speed = (speedKph ?? 0).clamp(0, 120).toDouble();
+    final uf = ref.watch(unitFormatterProvider);
 
     return SizedBox(
       width: 64,
@@ -521,15 +522,15 @@ class _ReplayMiniSpeedometer extends StatelessWidget {
               ),
             ),
           ),
-          const Positioned(
+          Positioned(
             top: 30,
             left: 0,
             right: 0,
             child: Text(
-              'km/h',
+              uf.speedLabel,
               textAlign: TextAlign.center,
               maxLines: 1,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 8,
                 fontWeight: FontWeight.w700,
                 color: Color(0xFF6B7280),

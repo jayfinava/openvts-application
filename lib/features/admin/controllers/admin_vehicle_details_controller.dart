@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/admin_vehicle_model.dart';
 import '../models/admin_vehicle_state.dart';
 import '../services/admin_vehicle_service.dart';
+import '../services/admin_vehicle_timestamp_storage.dart';
 
 class AdminVehicleDetailsController
     extends StateNotifier<AdminVehicleDetailsState> {
@@ -62,8 +63,26 @@ class AdminVehicleDetailsController
     state = state.copyWith(
         isLoadingVehicle: true, errorMessage: null, sectionErrorMessage: null);
     try {
-      final vehicle = await _service.getVehicleById(state.vehicleId);
+      var vehicle = await _service.getVehicleById(state.vehicleId);
       _loadedTabs.add(AdminVehicleDetailsTab.details);
+
+      if (vehicle.updatedAt == null) {
+        final persistedUpdatedAt =
+            await AdminVehicleTimestampStorage.readUpdatedAt(state.vehicleId);
+        if (persistedUpdatedAt != null) {
+          vehicle = vehicle.copyWith(updatedAt: persistedUpdatedAt);
+          state = state.copyWith(localUpdatedAt: persistedUpdatedAt);
+        }
+      } else {
+        unawaited(
+          AdminVehicleTimestampStorage.persistUpdatedAt(
+            state.vehicleId,
+            vehicle.updatedAt!,
+          ),
+        );
+        state = state.copyWith(localUpdatedAt: vehicle.updatedAt);
+      }
+
       state = state.copyWith(vehicle: vehicle, isLoadingVehicle: false);
       unawaited(_loadReferenceDataOnce());
     } catch (error) {
@@ -79,9 +98,34 @@ class AdminVehicleDetailsController
   Future<void> updateVehicle(AdminUpdateVehicleRequest request) async {
     state = state.copyWith(isUpdatingVehicle: true, sectionErrorMessage: null);
     try {
+      final localUpdateTime = DateTime.now().toUtc();
       final updated =
           await _service.updateVehicle(id: state.vehicleId, request: request);
-      state = state.copyWith(vehicle: updated, isUpdatingVehicle: false);
+
+      var vehicleToSet = updated;
+      DateTime? timestampToStore;
+
+      if (updated.updatedAt == null) {
+        vehicleToSet = updated.copyWith(updatedAt: localUpdateTime);
+        timestampToStore = localUpdateTime;
+      } else {
+        timestampToStore = updated.updatedAt;
+      }
+
+      if (timestampToStore != null) {
+        unawaited(
+          AdminVehicleTimestampStorage.persistUpdatedAt(
+            state.vehicleId,
+            timestampToStore,
+          ),
+        );
+      }
+
+      state = state.copyWith(
+        vehicle: vehicleToSet,
+        localUpdatedAt: timestampToStore,
+        isUpdatingVehicle: false,
+      );
       unawaited(_loadReferenceDataOnce());
     } catch (error) {
       state = state.copyWith(

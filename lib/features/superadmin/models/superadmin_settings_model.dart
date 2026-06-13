@@ -857,12 +857,13 @@ class SuperadminLocalizationSettings {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'language': language,
-        'layoutDirection': layoutDirection.apiValue,
+        'languageCode': language,
+        'direction': layoutDirection.apiValue,
         'dateFormat': dateFormat,
-        'use24Hour': use24Hour,
+        'timeFormat': use24Hour ? '24H' : '12H',
         'theme': theme.apiValue,
-        'timezoneOffset': timezoneOffset,
+        'timezone': timezoneOffset,
+        'distanceUnit': units.apiValue,
         'defaultLat': defaultLat,
         'defaultLon': defaultLon,
         'mapZoom': mapZoom,

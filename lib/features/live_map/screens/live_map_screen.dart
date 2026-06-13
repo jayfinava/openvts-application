@@ -7179,7 +7179,7 @@ class _VehicleListTile extends ConsumerWidget {
                   text: TextSpan(
                     children: [
                       TextSpan(
-                        text: _formatVehicleSpeed(vehicle.speed),
+                        text: _formatVehicleSpeed(ref.watch(unitFormatterProvider).speedFromKph(vehicle.speed)),
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -7187,7 +7187,7 @@ class _VehicleListTile extends ConsumerWidget {
                         ),
                       ),
                       TextSpan(
-                        text: ' km/h',
+                        text: ' ${ref.watch(unitFormatterProvider).speedLabel}',
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
@@ -7202,7 +7202,7 @@ class _VehicleListTile extends ConsumerWidget {
               SizedBox(
                 width: 52,
                 child: Text(
-                  _formatVehicleDistance(vehicle.distanceKm),
+                  _formatVehicleDistance(vehicle.distanceKm, ref.watch(unitFormatterProvider)),
                   textAlign: TextAlign.right,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -7513,16 +7513,17 @@ class _HistoryQueryHeaderText extends ConsumerWidget {
   }
 }
 
-class _HistorySummaryStrip extends StatelessWidget {
+class _HistorySummaryStrip extends ConsumerWidget {
   const _HistorySummaryStrip({required this.history});
 
   final SuperadminVehicleHistory history;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final analytics = history.analytics;
     final stopCount = analytics.stopCount ?? history.stopCount;
     final overspeedCount = analytics.overspeedCount ?? history.overspeedCount;
+    final uf = ref.watch(unitFormatterProvider);
 
     return Wrap(
       spacing: 6,
@@ -7544,18 +7545,18 @@ class _HistorySummaryStrip extends StatelessWidget {
         if (history.maxSpeedKph != null)
           _HistorySummaryPill(
             icon: Icons.speed_rounded,
-            label: '${_formatHistoryNumber(history.maxSpeedKph!, 1)} km/h max',
+            label: '${_formatHistoryNumber(uf.speedFromKph(history.maxSpeedKph!), 1)} ${uf.speedLabel} max',
           ),
         if (analytics.averageSpeedKph != null)
           _HistorySummaryPill(
             icon: Icons.query_stats_rounded,
             label:
-                '${_formatHistoryNumber(analytics.averageSpeedKph!, 1)} km/h avg',
+                '${_formatHistoryNumber(uf.speedFromKph(analytics.averageSpeedKph!), 1)} ${uf.speedLabel} avg',
           ),
         if (history.totalDistanceKm != null)
           _HistorySummaryPill(
             icon: Icons.route_rounded,
-            label: '${_formatHistoryNumber(history.totalDistanceKm!, 1)} km',
+            label: '${_formatHistoryNumber(uf.distanceFromKm(history.totalDistanceKm!), 1)} ${uf.distanceLabel}',
           ),
         if (analytics.runningDuration != null)
           _HistorySummaryPill(
@@ -8035,6 +8036,7 @@ class _HistoryRunningTimelineDetails extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatter = ref.watch(appDateFormatterProvider);
+    final uf = ref.watch(unitFormatterProvider);
     final duration = _historyEntryDuration(entry);
 
     return Column(
@@ -8054,7 +8056,7 @@ class _HistoryRunningTimelineDetails extends ConsumerWidget {
               child: _HistoryMetricBox(
                 label: 'Distance',
                 value: _formatHistoryDistanceValue(
-                  _historyEntryDistanceKm(entry),
+                  _historyEntryDistanceKm(entry), uf,
                 ),
               ),
             ),
@@ -8063,7 +8065,7 @@ class _HistoryRunningTimelineDetails extends ConsumerWidget {
               child: _HistoryMetricBox(
                 label: 'Avg Speed',
                 value: _formatHistorySpeedValue(
-                  _historyEntryAvgSpeedKph(entry),
+                  _historyEntryAvgSpeedKph(entry), uf,
                 ),
               ),
             ),
@@ -8072,7 +8074,7 @@ class _HistoryRunningTimelineDetails extends ConsumerWidget {
               child: _HistoryMetricBox(
                 label: 'Max Speed',
                 value: _formatHistorySpeedValue(
-                  _historyEntryMaxSpeedKph(entry),
+                  _historyEntryMaxSpeedKph(entry), uf,
                 ),
               ),
             ),
@@ -9404,20 +9406,20 @@ String _formatHistoryDuration(Duration? duration) {
   return '${seconds}s';
 }
 
-String _formatHistoryDistanceValue(double? value) {
+String _formatHistoryDistanceValue(double? value, UnitFormatter uf) {
   if (value == null) {
     return '--';
   }
 
-  return '${value.toStringAsFixed(2)} km';
+  return '${uf.distanceFromKm(value).toStringAsFixed(2)} ${uf.distanceLabel}';
 }
 
-String _formatHistorySpeedValue(double? value) {
+String _formatHistorySpeedValue(double? value, UnitFormatter uf) {
   if (value == null) {
     return '--';
   }
 
-  return '${value.toStringAsFixed(1)} km/h';
+  return '${uf.speedFromKph(value).toStringAsFixed(1)} ${uf.speedLabel}';
 }
 
 String _historyStopReasonLabel(SuperadminVehicleHistorySegment? segment) {
@@ -11627,12 +11629,12 @@ String _formatVehicleSpeed(double value) {
   return value.toStringAsFixed(value == value.roundToDouble() ? 0 : 1);
 }
 
-String _formatVehicleDistance(double? distanceKm) {
+String _formatVehicleDistance(double? distanceKm, UnitFormatter uf) {
   if (distanceKm == null) {
     return '--';
   }
 
-  return '${distanceKm.toStringAsFixed(1)} km';
+  return '${uf.distanceFromKm(distanceKm).toStringAsFixed(1)} ${uf.distanceLabel}';
 }
 
 Color _vehicleRunningIndicatorColor(bool isRunning) {

@@ -56,13 +56,21 @@ class AdminVehicleService {
     required AdminUpdateVehicleRequest request,
   }) async {
     final normalizedId = _requireId(id, 'id');
-    await _apiClient.patch<dynamic>(
+    final patchResponse = await _apiClient.patch<dynamic>(
       ApiEndpoints.admin.vehicleById(normalizedId),
       data: request.toJson(),
       options: _mutationOptions,
       parser: (json) => json,
     );
-    return getVehicleById(normalizedId);
+
+    var vehicle = await getVehicleById(normalizedId);
+
+    final patchUpdatedAt = _extractUpdatedAtFromResponse(patchResponse.data);
+    if (patchUpdatedAt != null && vehicle.updatedAt == null) {
+      vehicle = vehicle.copyWith(updatedAt: patchUpdatedAt);
+    }
+
+    return vehicle;
   }
 
   Future<void> updateVehicleStatus({
@@ -524,6 +532,58 @@ class AdminVehicleService {
       'pdf' => MediaType('application', 'pdf'),
       _ => null,
     };
+  }
+
+  DateTime? _extractUpdatedAtFromResponse(dynamic json) {
+    final source = _asMap(json);
+    final data = _asMap(source['data']);
+    final payload = data.isNotEmpty ? data : source;
+
+    return _firstDate(payload, const [
+      'updatedAt',
+      'updated_at',
+      'lastUpdate',
+      'last_update',
+      'modifiedAt',
+      'modified_at',
+    ]);
+  }
+
+  Map<String, dynamic> _asMap(dynamic value) {
+    if (value is Map<String, dynamic>) {
+      return value;
+    }
+    if (value is Map) {
+      return value.map((key, item) => MapEntry(key.toString(), item));
+    }
+    return const <String, dynamic>{};
+  }
+
+  dynamic _firstValue(Map<String, dynamic> source, List<String> keys) {
+    for (final key in keys) {
+      if (source.containsKey(key)) {
+        return source[key];
+      }
+    }
+    return null;
+  }
+
+  DateTime? _firstDate(Map<String, dynamic> source, List<String> keys) {
+    final value = _firstValue(source, keys);
+    if (value == null) {
+      return null;
+    }
+    if (value is DateTime) {
+      return value;
+    }
+    if (value is num) {
+      final intValue = value.toInt();
+      return DateTime.fromMillisecondsSinceEpoch(
+        intValue > 1000000000000 ? intValue : intValue * 1000,
+        isUtc: true,
+      ).toLocal();
+    }
+    return DateTime.tryParse(value.toString().trim())?.toLocal();
   }
 
   String _requireId(String value, String field) {

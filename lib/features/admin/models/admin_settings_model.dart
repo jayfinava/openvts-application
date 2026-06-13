@@ -180,7 +180,7 @@ class AdminAddressSettings {
     String? cityCode;
     int? cityId;
 
-    final priorityNames = const ['cityName', 'city_name'];
+    final priorityNames = const ['cityName', 'city_name', 'cityname'];
     for (final key in priorityNames) {
       if (source.containsKey(key)) {
         final val = _firstString(source, [key]);
@@ -191,10 +191,19 @@ class AdminAddressSettings {
       }
     }
 
-    if (cityName == null && source.containsKey('city')) {
-      final val = _firstString(source, const ['city']);
-      if (val != null && val.isNotEmpty && val.toLowerCase() != 'city') {
-        cityName = val;
+    if (source.containsKey('city')) {
+      final cityRaw = source['city'];
+      if (cityRaw is Map) {
+        final cityMap = _asMap(cityRaw);
+        cityName ??= _firstString(
+            cityMap, const ['name', 'cityName', 'city_name', 'label']);
+        cityId ??= _firstInt(cityMap, const ['id', '_id']);
+        cityCode ??= _firstString(cityMap, const ['code']);
+      } else if (cityName == null) {
+        final val = _firstString(source, const ['city']);
+        if (val != null && val.isNotEmpty && val.toLowerCase() != 'city') {
+          cityName = val;
+        }
       }
     }
 
@@ -203,13 +212,13 @@ class AdminAddressSettings {
       if (source.containsKey(key)) {
         final val = _firstString(source, [key]);
         if (val != null && val.isNotEmpty) {
-          cityCode = val;
+          cityCode ??= val;
           break;
         }
       }
     }
 
-    cityId = _firstInt(source, const ['cityId', 'city_id']);
+    cityId ??= _firstInt(source, const ['cityId', 'city_id']);
 
     return AdminAddressSettings(
       id: _firstInt(source, const ['id', 'addressId']),
@@ -478,7 +487,8 @@ class AdminProfileSettings {
 
       // Look for address fields at root level and copy them
       for (final key in ['addressLine', 'address', 'line', 'countryCode', 'country',
-                         'stateCode', 'state', 'cityName', 'city', 'cityId', 'pincode',
+                         'stateCode', 'state', 'cityName', 'city_name', 'cityname', 'city',
+                         'cityId', 'city_id', 'cityCode', 'city_code', 'pincode',
                          'pinCode', 'zip', 'zipCode', 'fullAddress', 'formatted']) {
         if (source.containsKey(key)) {
           rootLevelAddressFields[key] = source[key];
@@ -487,6 +497,35 @@ class AdminProfileSettings {
 
       if (rootLevelAddressFields.isNotEmpty) {
         addressMap = rootLevelAddressFields;
+      }
+    }
+
+    final parsedAddress = addressMap != null
+        ? AdminAddressSettings.fromJson(addressMap)
+        : null;
+
+    // Extract city name: prefer parsed address city, then try root-level
+    String? rootCityName;
+    if (parsedAddress?.cityName != null) {
+      rootCityName = parsedAddress!.cityName;
+    } else {
+      final rootCity = source['city'];
+      if (rootCity is Map) {
+        final cityMap = _asMap(rootCity);
+        rootCityName = _firstString(
+            cityMap, const ['name', 'cityName', 'city_name', 'label']);
+      } else {
+        rootCityName = _firstString(source, const [
+          'cityName',
+          'city_name',
+          'cityname',
+        ]);
+        if (rootCityName == null) {
+          final val = _firstString(source, const ['city']);
+          if (val != null && val.toLowerCase() != 'city') {
+            rootCityName = val;
+          }
+        }
       }
     }
 
@@ -517,14 +556,8 @@ class AdminProfileSettings {
       mobileVerifiedAt: _firstDate(source, const ['mobileVerifiedAt']),
       company:
           companyMap != null ? AdminCompanySettings.fromJson(companyMap) : null,
-      address:
-          addressMap != null ? AdminAddressSettings.fromJson(addressMap) : null,
-      cityName: _firstString(source, const [
-            'cityName',
-            'city_name',
-            'cityname',
-            'city',
-          ]),
+      address: parsedAddress,
+      cityName: rootCityName,
     );
   }
 
@@ -583,6 +616,8 @@ class AdminUpdateProfileRequest {
     this.countryCode,
     this.stateCode,
     this.cityName,
+    this.cityId,
+    this.cityCode,
     this.pincode,
   });
 
@@ -594,6 +629,8 @@ class AdminUpdateProfileRequest {
   final String? countryCode;
   final String? stateCode;
   final String? cityName;
+  final int? cityId;
+  final String? cityCode;
   final String? pincode;
 
   Map<String, dynamic> toJson() {
@@ -606,6 +643,9 @@ class AdminUpdateProfileRequest {
     if (countryCode != null) json['countryCode'] = countryCode;
     if (stateCode != null) json['stateCode'] = stateCode;
     if (cityName != null) json['cityName'] = cityName;
+    if (cityName != null) json['city'] = cityName;
+    if (cityId != null) json['cityId'] = cityId;
+    if (cityCode != null) json['cityCode'] = cityCode;
     if (pincode != null) json['pincode'] = pincode;
     return json;
   }
@@ -859,7 +899,9 @@ class AdminLocalizationSettings {
       timezoneOffset:
           _firstString(source, const ['timezoneOffset', 'timezone']) ??
               '+00:00',
-      units: AdminUnits.fromValue(source['units']),
+      units: AdminUnits.fromValue(
+        source['units'] ?? source['distanceUnit'] ?? source['measurementUnit'],
+      ),
       defaultLat: _firstDouble(source, const ['defaultLat', 'lat']) ?? 0,
       defaultLon: _firstDouble(source, const ['defaultLon', 'lon', 'lng']) ?? 0,
       mapZoom: _firstInt(source, const ['mapZoom', 'zoom']) ?? 10,
@@ -874,6 +916,7 @@ class AdminLocalizationSettings {
         'theme': theme.apiValue,
         'timezoneOffset': timezoneOffset,
         'units': units.apiValue,
+        'distanceUnit': units.apiValue,
         'defaultLat': defaultLat,
         'defaultLon': defaultLon,
         'mapZoom': mapZoom,

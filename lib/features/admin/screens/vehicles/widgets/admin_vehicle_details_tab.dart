@@ -88,7 +88,7 @@ class AdminVehicleDetailsOverviewTab extends StatelessWidget {
             title: 'Dates',
             items: [
               _SectionItem(label: 'Created At', value: _date(vehicle.createdAt)),
-              _SectionItem(label: 'Updated At', value: _date(vehicle.updatedAt)),
+              _SectionItem(label: 'Updated At', value: _date(vehicle.displayUpdatedAt)),
             ],
           ),
         ),

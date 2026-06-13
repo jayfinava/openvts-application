@@ -94,11 +94,23 @@ class AdminVehicleListItem {
         'modified_at',
         'lastUpdated',
         'last_updated',
+        'lastUpdate',
+        'last_update',
         'updatedOn',
         'updated_on',
         'timestamp',
         'updatedDate',
         'updated_date',
+        'lastSeen',
+        'last_seen',
+        'positionUpdatedAt',
+        'position_updated_at',
+        'gpsTime',
+        'gps_time',
+        'deviceTime',
+        'device_time',
+        'serverTime',
+        'server_time',
       ]),
       imei: imei,
       simNumber: simNumber,
@@ -158,6 +170,8 @@ class AdminVehicleDetails {
   final String gmtOffset;
   final Map<String, dynamic> vehicleMeta;
   final AdminVehiclePlanMini? plan;
+
+  DateTime? get displayUpdatedAt => updatedAt;
 
   AdminVehicleDetails copyWith({
     String? id,
@@ -233,11 +247,23 @@ class AdminVehicleDetails {
         'modified_at',
         'lastUpdated',
         'last_updated',
+        'lastUpdate',
+        'last_update',
         'updatedOn',
         'updated_on',
         'timestamp',
         'updatedDate',
         'updated_date',
+        'lastSeen',
+        'last_seen',
+        'positionUpdatedAt',
+        'position_updated_at',
+        'gpsTime',
+        'gps_time',
+        'deviceTime',
+        'device_time',
+        'serverTime',
+        'server_time',
       ]),
       imei: _firstString(source, const ['imei']) ??
           _firstString(
@@ -321,6 +347,7 @@ class AdminVehicleDeviceMini {
     required this.ignitionSource,
     required this.liveOdometer,
     required this.liveEngineHours,
+    required this.createdAt,
   });
 
   final String id;
@@ -333,6 +360,7 @@ class AdminVehicleDeviceMini {
   final String ignitionSource;
   final bool? liveOdometer;
   final bool? liveEngineHours;
+  final DateTime? createdAt;
 
   factory AdminVehicleDeviceMini.fromJson(dynamic json) {
     final source = _asMap(json);
@@ -357,6 +385,7 @@ class AdminVehicleDeviceMini {
       liveOdometer: _firstBool(source, const ['liveOdometer', 'live_odometer']),
       liveEngineHours:
           _firstBool(source, const ['liveEngineHours', 'live_engine_hours']),
+      createdAt: _firstDate(source, const ['createdAt', 'created_at']),
     );
   }
 }

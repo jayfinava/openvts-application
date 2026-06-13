@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../core/utils/unit_formatter.dart';
 import '../../../models/user_route_optimisation_model.dart';
 
 /// Compact 2-up grid of summary metrics for an optimisation result.
@@ -11,7 +13,7 @@ import '../../../models/user_route_optimisation_model.dart';
 /// Designed to fit on a phone without horizontal scroll: six tiles wrap into
 /// three rows of two. Uses muted surfaces and small fonts deliberately —
 /// this is a status read-out, not a hero stat.
-class RouteOptimisationMetricStrip extends StatelessWidget {
+class RouteOptimisationMetricStrip extends ConsumerWidget {
   const RouteOptimisationMetricStrip({
     required this.result,
     super.key,
@@ -19,10 +21,10 @@ class RouteOptimisationMetricStrip extends StatelessWidget {
 
   final RouteOptimisationResult result;
 
-  String get _savedLabel {
+  String _savedLabel(UnitFormatter uf) {
     final saved = result.originalDistanceKm - result.optimizedDistanceKm;
     final clamped = saved < 0 ? 0.0 : saved;
-    return '${clamped.toStringAsFixed(2)} km';
+    return '${uf.distanceFromKm(clamped).toStringAsFixed(2)} ${uf.distanceLabel}';
   }
 
   String get _improvementLabel {
@@ -38,18 +40,19 @@ class RouteOptimisationMetricStrip extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uf = ref.watch(unitFormatterProvider);
     final tiles = <Widget>[
       _MetricTile(
         label: 'Original',
-        value: '${result.originalDistanceKm.toStringAsFixed(2)} km',
+        value: '${uf.distanceFromKm(result.originalDistanceKm).toStringAsFixed(2)} ${uf.distanceLabel}',
       ),
       _MetricTile(
         label: 'Optimised',
-        value: '${result.optimizedDistanceKm.toStringAsFixed(2)} km',
+        value: '${uf.distanceFromKm(result.optimizedDistanceKm).toStringAsFixed(2)} ${uf.distanceLabel}',
         emphasis: true,
       ),
-      _MetricTile(label: 'Saved', value: _savedLabel),
+      _MetricTile(label: 'Saved', value: _savedLabel(uf)),
       _MetricTile(label: 'Improvement', value: _improvementLabel),
       _MetricTile(label: 'Algorithm', value: result.algorithmUsed, wide: true),
       _MetricTile(label: 'Time', value: _timeLabel),
