@@ -1587,22 +1587,14 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                   OpenVtsTextField(
                     label: 'Name',
                     controller: _name,
-                    validator: (v) =>
-                        (v ?? '').trim().isEmpty ? 'Name is required' : null,
+                    validator: Validators.adminName,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   OpenVtsTextField(
                     label: 'Email',
                     controller: _email,
                     keyboardType: TextInputType.emailAddress,
-                    validator: (v) {
-                      final t = (v ?? '').trim();
-                      if (t.isEmpty) return 'Email is required';
-                      if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(t)) {
-                        return 'Enter a valid email';
-                      }
-                      return null;
-                    },
+                    validator: Validators.adminEmailRequired,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   Row(
@@ -1632,6 +1624,11 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                           label: 'Mobile',
                           controller: _mobile,
                           keyboardType: TextInputType.phone,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(Validators.maxMobileNumberLength),
+                          ],
+                          validator: Validators.mobileNumberOptional,
                         ),
                       ),
                     ],
@@ -1730,6 +1727,12 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                   OpenVtsTextField(
                     label: 'Pincode',
                     controller: _pincode,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(Validators.maxPincodeLength),
+                    ],
+                    validator: Validators.pincodeOptional,
                   ),
                   const SizedBox(height: OpenVtsSpacing.md),
                   OpenVtsButton(
