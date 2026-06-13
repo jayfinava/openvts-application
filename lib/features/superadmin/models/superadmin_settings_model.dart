@@ -863,7 +863,6 @@ class SuperadminLocalizationSettings {
         'use24Hour': use24Hour,
         'theme': theme.apiValue,
         'timezoneOffset': timezoneOffset,
-        'distanceUnit': units.apiValue,
         'defaultLat': defaultLat,
         'defaultLon': defaultLon,
         'mapZoom': mapZoom,
