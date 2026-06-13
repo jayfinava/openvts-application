@@ -48,6 +48,9 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
   void initState() {
     super.initState();
     _hydrate(widget.state.localization);
+    if (widget.state.localization != null) {
+      _syncToGlobalPreferences(widget.state.localization!);
+    }
   }
 
   @override
@@ -55,6 +58,7 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
     super.didUpdateWidget(oldWidget);
     if (!_hydrated && widget.state.localization != null) {
       _hydrate(widget.state.localization);
+      _syncToGlobalPreferences(widget.state.localization!);
     }
   }
 
@@ -71,6 +75,19 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
     _lonCtrl.text = loc.defaultLon == 0 ? '' : loc.defaultLon.toString();
     _zoomCtrl.text = loc.mapZoom.toString();
     _hydrated = true;
+  }
+
+  void _syncToGlobalPreferences(SuperadminLocalizationSettings loc) {
+    final prefNotifier = ref.read(appLocalizationPreferencesProvider.notifier);
+    prefNotifier.applyFromSuperadminSettings(
+      language: loc.language,
+      dateFormat: loc.dateFormat,
+      use24Hour: loc.use24Hour,
+      theme: loc.theme.apiValue,
+      timezoneOffset: loc.timezoneOffset,
+      layoutDirection: loc.layoutDirection.apiValue,
+      units: loc.units.apiValue,
+    );
   }
 
   @override
