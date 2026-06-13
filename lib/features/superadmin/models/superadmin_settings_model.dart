@@ -847,7 +847,9 @@ class SuperadminLocalizationSettings {
       timezoneOffset:
           _firstString(source, const ['timezoneOffset', 'timezone']) ??
               '+00:00',
-      units: SuperadminUnits.fromValue(source['units']),
+      units: SuperadminUnits.fromValue(
+        source['distanceUnit'] ?? source['units'] ?? source['measurementUnit'],
+      ),
       defaultLat: _firstDouble(source, const ['defaultLat', 'lat']) ?? 0,
       defaultLon: _firstDouble(source, const ['defaultLon', 'lon', 'lng']) ?? 0,
       mapZoom: _firstInt(source, const ['mapZoom', 'zoom']) ?? 10,
@@ -861,7 +863,7 @@ class SuperadminLocalizationSettings {
         'use24Hour': use24Hour,
         'theme': theme.apiValue,
         'timezoneOffset': timezoneOffset,
-        'units': units.apiValue,
+        'distanceUnit': units.apiValue,
         'defaultLat': defaultLat,
         'defaultLon': defaultLon,
         'mapZoom': mapZoom,

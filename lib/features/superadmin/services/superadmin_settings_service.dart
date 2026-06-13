@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
 
 import '../../../core/api/api_client.dart';
@@ -281,9 +282,11 @@ class SuperadminSettingsService {
   Future<void> updateLocalization(
     SuperadminLocalizationSettings request,
   ) async {
+    final payload = request.toJson();
+    debugPrint('[Superadmin Localization Payload] $payload');
     await _apiClient.patch<void>(
       ApiEndpoints.superadmin.localization,
-      data: request.toJson(),
+      data: payload,
       options: _mutationOptions,
       parser: (_) {},
     );
