@@ -1,0 +1,816 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
+
+import '../../../../core/theme/open_vts_colors.dart';
+import '../../../../core/theme/open_vts_radius.dart';
+import '../../../../core/theme/open_vts_spacing.dart';
+import '../../../../core/theme/open_vts_typography.dart';
+import '../../../../core/utils/date_time_formatter.dart';
+import '../../../../shared/widgets/open_vts_bottom_sheet.dart';
+import '../../../../shared/widgets/open_vts_error_view.dart';
+import '../../../../shared/widgets/open_vts_loader.dart';
+import '../../../../shared/widgets/open_vts_page_scaffold.dart';
+import '../../controllers/superadmin_calendar_controller.dart';
+import '../../models/superadmin_calendar_model.dart';
+import 'widgets/calendar_day_bottom_sheet.dart';
+
+class SuperadminCalendarScreen extends ConsumerWidget {
+  const SuperadminCalendarScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
+    final focusedDate = ref.watch(calendarFocusedDateProvider);
+    final selectedDate = ref.watch(calendarSelectedDateProvider);
+    final eventsAsync = ref.watch(calendarEventsProvider);
+    final filters = ref.watch(calendarFiltersProvider);
+    final selectedOrFocusedDate = selectedDate ?? focusedDate;
+    final today = DateTime.now();
+
+    return OpenVtsPageScaffold(
+      title: 'Calendar',
+      headerMode: OpenVtsPageHeaderMode.closeable,
+      leading: const _HeaderLogoTile(),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        OpenVtsSpacing.md,
+        OpenVtsSpacing.md,
+        OpenVtsSpacing.md,
+        OpenVtsSpacing.sm,
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _CalendarToolbar(
+            displayedDate: selectedOrFocusedDate,
+            focusedDate: focusedDate,
+            filters: filters,
+            onPreviousMonth: () {
+              ref.read(calendarFocusedDateProvider.notifier).state =
+                  DateTime(focusedDate.year, focusedDate.month - 1, 1);
+            },
+            onToday: () {
+              final now = DateTime.now();
+              ref.read(calendarFocusedDateProvider.notifier).state = now;
+              ref.read(calendarSelectedDateProvider.notifier).state = now;
+            },
+            onNextMonth: () {
+              ref.read(calendarFocusedDateProvider.notifier).state =
+                  DateTime(focusedDate.year, focusedDate.month + 1, 1);
+            },
+            onToggleFilter: (value, selected) {
+              final notifier = ref.read(calendarFiltersProvider.notifier);
+              notifier.state = selected
+                  ? <String>[...filters, value]
+                  : filters.where((filter) => filter != value).toList();
+            },
+          ),
+          const SizedBox(height: OpenVtsSpacing.sm),
+          Expanded(
+            child: eventsAsync.when(
+              loading: () => const OpenVtsLoader(),
+              error: (err, stack) => OpenVtsErrorView(
+                message: _calendarErrorMessage(err),
+                onRetry: () => ref.refresh(calendarEventsProvider),
+              ),
+              data: (events) {
+                final eventsByDate = <String, CalendarEvent>{
+                  for (final event in events) event.date: event,
+                };
+                const gridHorizontalInset = 6.0;
+                const dayGapX = 3.0;
+                const dayGapY = 6.0;
+                const rowBuffer = 4.0;
+
+                return Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final tableWidth = (constraints.maxWidth - (gridHorizontalInset * 2))
+                            .clamp(280.0, 420.0)
+                            .toDouble();
+                        final columnWidth = (tableWidth / 7).clamp(44.0, 56.0).toDouble();
+                        final rowHeight = columnWidth + (dayGapY * 2) + rowBuffer;
+
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            gridHorizontalInset,
+                            OpenVtsSpacing.xs,
+                            gridHorizontalInset,
+                            0,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                DateFormat('MMMM yyyy').format(focusedDate),
+                                textAlign: TextAlign.center,
+                                style: OpenVtsTypography.titleMedium.copyWith(
+                                  color: Theme.of(context).brightness == Brightness.dark
+                                      ? OpenVtsColors.darkTextPrimary
+                                      : OpenVtsColors.textPrimary,
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: OpenVtsSpacing.md),
+                              TableCalendar<CalendarEvent>(
+                                shouldFillViewport: false,
+                                sixWeekMonthsEnforced: true,
+                                rowHeight: rowHeight,
+                                firstDay: DateTime.utc(2000, 1, 1),
+                                lastDay: DateTime.utc(2050, 12, 31),
+                                focusedDay: focusedDate,
+                                headerVisible: false,
+                                daysOfWeekHeight: 20,
+                                startingDayOfWeek: StartingDayOfWeek.sunday,
+                                availableCalendarFormats: const <CalendarFormat, String>{
+                                  CalendarFormat.month: 'Month',
+                                },
+                                selectedDayPredicate: (day) => isSameDay(selectedDate, day),
+                                eventLoader: (day) {
+                                  final event = eventsByDate[_formatDay(day)];
+                                  return event == null
+                                      ? const <CalendarEvent>[]
+                                      : <CalendarEvent>[event];
+                                },
+                                onDaySelected: (selectedDay, focusedDay) {
+                                  ref.read(calendarSelectedDateProvider.notifier).state = selectedDay;
+                                  ref.read(calendarFocusedDateProvider.notifier).state = focusedDay;
+                                  _showDayDetailsSheet(context, ref, selectedDay);
+                                },
+                                onPageChanged: (focusedDay) {
+                                  ref.read(calendarFocusedDateProvider.notifier).state = focusedDay;
+                                },
+                                calendarStyle: const CalendarStyle(
+                                  outsideDaysVisible: true,
+                                  cellMargin: EdgeInsets.zero,
+                                  cellPadding: EdgeInsets.zero,
+                                  markersMaxCount: 0,
+                                ),
+                                daysOfWeekStyle: DaysOfWeekStyle(
+                                  weekdayStyle: OpenVtsTypography.meta.copyWith(
+                                    color: Theme.of(context).brightness == Brightness.dark
+                                        ? OpenVtsColors.darkTextSecondary
+                                        : OpenVtsColors.textTertiary,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  weekendStyle: OpenVtsTypography.meta.copyWith(
+                                    color: Theme.of(context).brightness == Brightness.dark
+                                        ? OpenVtsColors.darkTextSecondary
+                                        : OpenVtsColors.textTertiary,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                calendarBuilders: CalendarBuilders(
+                                  defaultBuilder: (ctx, day, _) => _buildDayCell(
+                                    context: ctx,
+                                    day: day,
+                                    event: eventsByDate[_formatDay(day)],
+                                    visibleFilters: filters,
+                                    horizontalGap: dayGapX,
+                                    verticalGap: dayGapY,
+                                  ),
+                                  todayBuilder: (ctx, day, _) => _buildDayCell(
+                                    context: ctx,
+                                    day: day,
+                                    event: eventsByDate[_formatDay(day)],
+                                    visibleFilters: filters,
+                                    horizontalGap: dayGapX,
+                                    verticalGap: dayGapY,
+                                    isToday: true,
+                                  ),
+                                  selectedBuilder: (ctx, day, _) => _buildDayCell(
+                                    context: ctx,
+                                    day: day,
+                                    event: eventsByDate[_formatDay(day)],
+                                    visibleFilters: filters,
+                                    horizontalGap: dayGapX,
+                                    verticalGap: dayGapY,
+                                    isSelected: true,
+                                    isToday: isSameDay(day, today),
+                                  ),
+                                  outsideBuilder: (ctx, day, _) => _buildOutsideDayCell(
+                                    ctx,
+                                    day,
+                                    horizontalGap: dayGapX,
+                                    verticalGap: dayGapY,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDayDetailsSheet(BuildContext context, WidgetRef ref, DateTime date) {
+    final formatter = ref.read(appDateFormatterProvider);
+    OpenVtsBottomSheet.show(
+      context: context,
+      title: formatter.formatDate(date),
+      child: CalendarDayBottomSheet(date: date),
+    );
+  }
+
+  Widget _buildDayCell({
+    required BuildContext context,
+    required DateTime day,
+    required List<String> visibleFilters,
+    required double horizontalGap,
+    required double verticalGap,
+    CalendarEvent? event,
+    bool isToday = false,
+    bool isSelected = false,
+    bool isOutside = false,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final foregroundColor = isSelected
+        ? (isDark ? OpenVtsColors.brandInk : OpenVtsColors.white)
+        : isOutside
+            ? (isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textTertiary)
+            : isToday
+                ? (isDark ? OpenVtsColors.white : OpenVtsColors.brandInk)
+                : (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary);
+
+    final backgroundColor = isSelected
+        ? (isDark ? OpenVtsColors.white : OpenVtsColors.brandInk)
+        : isToday
+        ? (isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface)
+        : (isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated);
+
+    final borderColor = isSelected
+        ? (isDark ? OpenVtsColors.white : OpenVtsColors.brandInk)
+        : isToday
+        ? (isDark ? OpenVtsColors.darkBorder : OpenVtsColors.divider)
+        : (isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border).withValues(alpha: 0.88);
+
+    final metrics = <_DayMetricData>[];
+
+    if (event != null) {
+      final selectedMetricColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
+      if (visibleFilters.contains('users') && event.usersCount > 0) {
+        metrics.add(
+          _DayMetricData(
+            color: isSelected ? selectedMetricColor : OpenVtsColors.brandInk,
+            label: 'Users',
+            value: event.usersCount,
+          ),
+        );
+      }
+      if (visibleFilters.contains('vehicle') && event.vehiclesCount > 0) {
+        metrics.add(
+          _DayMetricData(
+            color: isSelected ? selectedMetricColor : OpenVtsColors.success,
+            label: 'Vehicle',
+            value: event.vehiclesCount,
+          ),
+        );
+      }
+      if (visibleFilters.contains('expiry') && event.expiryCount > 0) {
+        metrics.add(
+          _DayMetricData(
+            color: isSelected ? selectedMetricColor : OpenVtsColors.error,
+            label: 'Expiry',
+            value: event.expiryCount,
+          ),
+        );
+      }
+    }
+
+    final visibleMetricRows = metrics
+        .take(2)
+        .map(
+          (metric) => _DayMetricRow(
+            color: metric.color,
+            label: metric.label,
+            value: metric.value,
+            inverted: isSelected,
+          ),
+        )
+        .toList(growable: false);
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: horizontalGap, vertical: verticalGap),
+      child: Center(
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(5.5, 5, 5.5, 4),
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+              border: Border.all(color: borderColor),
+              boxShadow: isSelected
+                  ? <BoxShadow>[
+                      BoxShadow(
+                        color: (isDark ? OpenVtsColors.white : OpenVtsColors.brandInk)
+                            .withValues(alpha: 0.06),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${day.day}',
+                  style: OpenVtsTypography.body.copyWith(
+                    color: foregroundColor,
+                    fontSize: 14,
+                    height: 1.0,
+                    fontWeight: isSelected || isToday ? FontWeight.w700 : FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ...visibleMetricRows,
+                      if (isToday && !isOutside) ...[
+                        const Spacer(),
+                        _TodayBadge(inverted: isSelected),
+                      ] else
+                        const Spacer(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOutsideDayCell(
+    BuildContext context,
+    DateTime day, {
+    required double horizontalGap,
+    required double verticalGap,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: horizontalGap, vertical: verticalGap),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 9),
+          child: Text(
+            '${day.day}',
+            style: OpenVtsTypography.meta.copyWith(
+              color: isDark
+                  ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.5)
+                  : OpenVtsColors.textTertiary.withValues(alpha: 0.72),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatDay(DateTime date) {
+    return '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  String _calendarErrorMessage(Object err) {
+    if (err is DioException) {
+      final responseMessage = _extractResponseMessage(err.response?.data);
+      if (responseMessage != null) {
+        return responseMessage;
+      }
+
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout ||
+          err.type == DioExceptionType.sendTimeout) {
+        return 'Calendar request timed out. Please try again.';
+      }
+
+      if (err.type == DioExceptionType.connectionError) {
+        return 'Unable to reach the calendar service right now.';
+      }
+
+      final message = err.message?.trim();
+      if (message != null && message.isNotEmpty) {
+        return message;
+      }
+    }
+
+    final raw = err.toString().trim();
+    if (raw.startsWith('Exception: ')) {
+      return raw.substring('Exception: '.length).trim();
+    }
+    if (raw.startsWith('ApiException')) {
+      final separatorIndex = raw.indexOf(': ');
+      if (separatorIndex != -1 && separatorIndex + 2 < raw.length) {
+        return raw.substring(separatorIndex + 2).trim();
+      }
+    }
+
+    return raw.isEmpty ? 'Failed to load calendar events' : raw;
+  }
+
+  String? _extractResponseMessage(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      for (final key in const ['message', 'error']) {
+        final value = data[key];
+        if (value is String && value.trim().isNotEmpty) {
+          return value.trim();
+        }
+
+        if (value is List) {
+          final parts = value
+              .whereType<String>()
+              .map((item) => item.trim())
+              .where((item) => item.isNotEmpty)
+              .toList(growable: false);
+          if (parts.isNotEmpty) {
+            return parts.join(', ');
+          }
+        }
+      }
+
+      final nestedData = data['data'];
+      if (!identical(nestedData, data)) {
+        return _extractResponseMessage(nestedData);
+      }
+    }
+
+    if (data is String && data.trim().isNotEmpty) {
+      return data.trim();
+    }
+
+    return null;
+  }
+}
+
+class _HeaderLogoTile extends StatelessWidget {
+  const _HeaderLogoTile();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(start: OpenVtsSpacing.sm),
+      child: Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: Container(
+          height: 36,
+          width: 36,
+          decoration: BoxDecoration(
+            color: OpenVtsColors.brandInk,
+            borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+          ),
+          child: const Icon(
+            Icons.calendar_month_outlined,
+            color: OpenVtsColors.white,
+            size: 18,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CalendarToolbar extends ConsumerWidget {
+  const _CalendarToolbar({
+    required this.displayedDate,
+    required this.focusedDate,
+    required this.filters,
+    required this.onPreviousMonth,
+    required this.onToday,
+    required this.onNextMonth,
+    required this.onToggleFilter,
+  });
+
+  final DateTime displayedDate;
+  final DateTime focusedDate;
+  final List<String> filters;
+  final VoidCallback onPreviousMonth;
+  final VoidCallback onToday;
+  final VoidCallback onNextMonth;
+  final void Function(String value, bool selected) onToggleFilter;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatter = ref.watch(appDateFormatterProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                formatter.formatDate(displayedDate),
+                style: OpenVtsTypography.titleMedium.copyWith(
+                  color: isDark
+                      ? OpenVtsColors.darkTextPrimary
+                      : OpenVtsColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            _NavigationButton(
+              icon: Icons.chevron_left_rounded,
+              onPressed: onPreviousMonth,
+            ),
+            const SizedBox(width: OpenVtsSpacing.xs),
+            FilledButton.tonal(
+              style: FilledButton.styleFrom(
+                backgroundColor: isDark
+                    ? OpenVtsColors.darkSurface
+                    : OpenVtsColors.surface,
+                foregroundColor: isDark
+                    ? OpenVtsColors.darkTextPrimary
+                    : OpenVtsColors.textPrimary,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: OpenVtsSpacing.md,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+                  side: BorderSide(
+                    color: isDark
+                        ? OpenVtsColors.darkBorder
+                        : OpenVtsColors.border,
+                  ),
+                ),
+              ),
+              onPressed: onToday,
+              child: const Text('Today'),
+            ),
+            const SizedBox(width: OpenVtsSpacing.xs),
+            _NavigationButton(
+              icon: Icons.chevron_right_rounded,
+              onPressed: onNextMonth,
+            ),
+          ],
+        ),
+        const SizedBox(height: OpenVtsSpacing.sm),
+        Wrap(
+          spacing: OpenVtsSpacing.xs,
+          runSpacing: OpenVtsSpacing.xs,
+          children: [
+            _FilterPill(
+              label: 'Users',
+              value: 'users',
+              icon: Icons.person_outline_rounded,
+              selected: filters.contains('users'),
+              onChanged: onToggleFilter,
+            ),
+            _FilterPill(
+              label: 'Vehicle',
+              value: 'vehicle',
+              icon: Icons.directions_car_outlined,
+              selected: filters.contains('vehicle'),
+              onChanged: onToggleFilter,
+            ),
+            _FilterPill(
+              label: 'Expiry',
+              value: 'expiry',
+              icon: Icons.warning_amber_rounded,
+              selected: filters.contains('expiry'),
+              onChanged: onToggleFilter,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _NavigationButton extends StatelessWidget {
+  const _NavigationButton({
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return SizedBox(
+      width: 38,
+      height: 38,
+      child: IconButton(
+        onPressed: onPressed,
+        style: IconButton.styleFrom(
+          backgroundColor: isDark
+              ? OpenVtsColors.darkSurface
+              : OpenVtsColors.surface,
+          foregroundColor: isDark
+              ? OpenVtsColors.darkTextPrimary
+              : OpenVtsColors.textPrimary,
+          side: BorderSide(
+            color: isDark
+                ? OpenVtsColors.darkBorder
+                : OpenVtsColors.border,
+            width: 1,
+          ),
+          elevation: 0,
+        ),
+        icon: Icon(icon, size: 20),
+      ),
+    );
+  }
+}
+
+class _FilterPill extends StatelessWidget {
+  const _FilterPill({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.selected,
+    required this.onChanged,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+  final bool selected;
+  final void Function(String value, bool selected) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return FilterChip(
+      selected: selected,
+      onSelected: (nextValue) => onChanged(value, nextValue),
+      avatar: Icon(
+        icon,
+        size: 15,
+        color: selected
+            ? OpenVtsColors.white
+            : (isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary),
+      ),
+      label: Text(label),
+      backgroundColor: isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated,
+      selectedColor: isDark ? OpenVtsColors.white : OpenVtsColors.brandInk,
+      checkmarkColor: isDark ? OpenVtsColors.brandInk : OpenVtsColors.white,
+      side: BorderSide(
+        color: selected
+            ? (isDark
+                ? OpenVtsColors.white.withValues(alpha: 0.95)
+                : OpenVtsColors.brandInk.withValues(alpha: 0.95))
+            : (isDark
+                ? OpenVtsColors.darkBorder.withValues(alpha: 0.85)
+                : OpenVtsColors.border.withValues(alpha: 0.85)),
+        width: selected ? 1.5 : 1,
+      ),
+      labelStyle: OpenVtsTypography.meta.copyWith(
+        color: selected
+            ? (isDark ? OpenVtsColors.brandInk : OpenVtsColors.white)
+            : (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary),
+        fontWeight: FontWeight.w600,
+        fontSize: selected ? 12 : 11,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+      ),
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      visualDensity: VisualDensity.compact,
+      elevation: 0,
+      pressElevation: 0,
+    );
+  }
+}
+
+class _DayMetricRow extends StatelessWidget {
+  const _DayMetricRow({
+    required this.color,
+    required this.label,
+    required this.value,
+    required this.inverted,
+  });
+
+  final Color color;
+  final String label;
+  final int value;
+  final bool inverted;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final labelColor = inverted
+        ? scheme.onPrimary
+        : scheme.onSurfaceVariant;
+    final valueColor = inverted ? scheme.onPrimary : scheme.onSurface;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 1.5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 3.5,
+            height: 3.5,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 3),
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: OpenVtsTypography.meta.copyWith(
+                fontSize: 8.5,
+                color: labelColor,
+                fontWeight: FontWeight.w500,
+                height: 1.1,
+              ),
+            ),
+          ),
+          const SizedBox(width: 2),
+          Text(
+            '$value',
+            style: OpenVtsTypography.meta.copyWith(
+              fontSize: 8.5,
+              color: valueColor,
+              fontWeight: FontWeight.w700,
+              height: 1.1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DayMetricData {
+  const _DayMetricData({
+    required this.color,
+    required this.label,
+    required this.value,
+  });
+
+  final Color color;
+  final String label;
+  final int value;
+}
+
+class _TodayBadge extends StatelessWidget {
+  const _TodayBadge({required this.inverted});
+
+  final bool inverted;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final text = Text(
+      'TODAY',
+      style: OpenVtsTypography.meta.copyWith(
+        fontSize: inverted ? 6.5 : 7,
+        height: 1.0,
+        color: inverted
+            ? scheme.onPrimary
+            : scheme.onPrimary,
+        fontWeight: FontWeight.w700,
+        letterSpacing: inverted ? 0.2 : 0.25,
+      ),
+    );
+
+    if (inverted) {
+      return text;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 4,
+        vertical: 2,
+      ),
+      decoration: BoxDecoration(
+        color: scheme.primary,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+      ),
+      child: text,
+    );
+  }
+}
