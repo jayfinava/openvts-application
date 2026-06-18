@@ -228,9 +228,9 @@ class _UserRecentAlertsWidgetState
               onTap: () => _openAlertDetail(items[index]),
             ),
             if (index != items.take(10).length - 1)
-              Divider(
+              const Divider(
                 height: OpenVtsSpacing.md,
-                color: context.border(),
+                color: OpenVtsColors.border,
               ),
           ],
           if (items.length > 10) ...[
@@ -239,7 +239,7 @@ class _UserRecentAlertsWidgetState
               'Showing 10 of ${items.length} latest alerts',
               textAlign: TextAlign.center,
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textTertiary(),
+                color: OpenVtsColors.textTertiary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -276,6 +276,7 @@ class _VehicleSelector extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+          borderSide: const BorderSide(color: OpenVtsColors.border),
         ),
       ),
       items: [
@@ -369,7 +370,7 @@ class _AlertRow extends ConsumerWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: OpenVtsTypography.label.copyWith(
-                            color: context.textPrimary(),
+                            color: OpenVtsColors.textPrimary,
                             fontWeight:
                                 isRead ? FontWeight.w700 : FontWeight.w900,
                           ),
@@ -397,7 +398,7 @@ class _AlertRow extends ConsumerWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: context.textSecondary(),
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                   ],
@@ -405,10 +406,10 @@ class _AlertRow extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: OpenVtsSpacing.xs),
-            Icon(
+            const Icon(
               Icons.chevron_right_rounded,
               size: 18,
-              color: context.textTertiary(),
+              color: OpenVtsColors.textTertiary,
             ),
           ],
         ),
@@ -443,8 +444,8 @@ class _AlertDetailSheet extends StatelessWidget {
         final alert = state.valueOrNull ?? initialItem;
           final severity = _SeverityStyle.from(alert);
         return DecoratedBox(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
+          decoration: const BoxDecoration(
+            color: OpenVtsColors.surfaceElevated,
             borderRadius:
                 BorderRadius.vertical(top: Radius.circular(OpenVtsRadius.lg)),
           ),
@@ -462,7 +463,7 @@ class _AlertDetailSheet extends StatelessWidget {
                   width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: context.border(),
+                    color: OpenVtsColors.border,
                     borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                   ),
                 ),
@@ -475,7 +476,7 @@ class _AlertDetailSheet extends StatelessWidget {
                   _AlertChip(
                     label:
                         alert.source.isEmpty ? 'Source unknown' : alert.source,
-                    color: context.textSecondary(),
+                    color: OpenVtsColors.textSecondary,
                   ),
                   const Spacer(),
                   IconButton(
@@ -489,7 +490,7 @@ class _AlertDetailSheet extends StatelessWidget {
               Text(
                 alert.title.trim().isEmpty ? alert.source : alert.title,
                 style: OpenVtsTypography.titleSmall.copyWith(
-                  color: context.textPrimary(),
+                  color: OpenVtsColors.textPrimary,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -497,7 +498,7 @@ class _AlertDetailSheet extends StatelessWidget {
               Text(
                 _detailVehicleLabel(alert),
                 style: OpenVtsTypography.label.copyWith(
-                  color: context.textSecondary(),
+                  color: OpenVtsColors.textSecondary,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -508,7 +509,7 @@ class _AlertDetailSheet extends StatelessWidget {
                   return Text(
                     userDashboardFormatDateTime(alert.createdAt, formatter: formatter),
                     style: OpenVtsTypography.meta.copyWith(
-                      color: context.textTertiary(),
+                      color: OpenVtsColors.textTertiary,
                       fontWeight: FontWeight.w600,
                     ),
                   );
@@ -522,7 +523,7 @@ class _AlertDetailSheet extends StatelessWidget {
                       ? 'No message provided.'
                       : alert.message,
                   style: OpenVtsTypography.body.copyWith(
-                    color: context.textPrimary(),
+                    color: OpenVtsColors.textPrimary,
                   ),
                 ),
               ),
@@ -538,7 +539,7 @@ class _AlertDetailSheet extends StatelessWidget {
                           value: entry.value?.toString() ?? 'No value',
                         ),
                         if (entry.key != alert.meta!.keys.last)
-                          Divider(height: OpenVtsSpacing.sm, color: context.border()),
+                          const Divider(height: OpenVtsSpacing.sm),
                       ],
                     ],
                   ),
@@ -612,14 +613,14 @@ class _DeliveryLogRow extends ConsumerWidget {
           width: 28,
           height: 28,
           decoration: BoxDecoration(
-            color: context.surface(),
+            color: OpenVtsColors.surface,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-            border: Border.all(color: context.border()),
+            border: Border.all(color: OpenVtsColors.border),
           ),
-          child: Icon(
+          child: const Icon(
             Icons.mail_outline_rounded,
             size: 15,
-            color: context.textSecondary(),
+            color: OpenVtsColors.textSecondary,
           ),
         ),
         const SizedBox(width: OpenVtsSpacing.sm),
@@ -630,7 +631,7 @@ class _DeliveryLogRow extends ConsumerWidget {
               Text(
                 delivery.channel.isEmpty ? 'Channel unknown' : delivery.channel,
                 style: OpenVtsTypography.label.copyWith(
-                  color: context.textPrimary(),
+                  color: OpenVtsColors.textPrimary,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -644,7 +645,7 @@ class _DeliveryLogRow extends ConsumerWidget {
                     userDashboardFormatShortTime(delivery.sentAt, formatter: formatter),
                 ].join(' - '),
                 style: OpenVtsTypography.meta.copyWith(
-                  color: context.textSecondary(),
+                  color: OpenVtsColors.textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -653,7 +654,7 @@ class _DeliveryLogRow extends ConsumerWidget {
                 Text(
                   delivery.failureReason!,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: context.error(),
+                    color: OpenVtsColors.error,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -678,9 +679,9 @@ class _DetailSection extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: context.surface(),
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: context.border()),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -688,7 +689,7 @@ class _DetailSection extends StatelessWidget {
           Text(
             title.toUpperCase(),
             style: OpenVtsTypography.meta.copyWith(
-              color: context.textTertiary(),
+              color: OpenVtsColors.textTertiary,
               fontSize: 10.5,
               fontWeight: FontWeight.w800,
             ),
@@ -719,7 +720,7 @@ class _DetailKeyValue extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.meta.copyWith(
-              color: context.textSecondary(),
+              color: OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -729,7 +730,7 @@ class _DetailKeyValue extends StatelessWidget {
           child: Text(
             value,
             style: OpenVtsTypography.meta.copyWith(
-              color: context.textPrimary(),
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -781,7 +782,7 @@ class _MetaText extends StatelessWidget {
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: OpenVtsTypography.meta.copyWith(
-        color: context.textTertiary(),
+        color: OpenVtsColors.textTertiary,
         fontSize: 10.5,
         fontWeight: FontWeight.w600,
       ),

@@ -21,7 +21,6 @@ class AdminPaymentsRevenueTrendChart extends StatelessWidget {
         : [...analytics.dailySeriesByCurrency.first.points]
       ..sort((a, b) => (a.dateTime ?? DateTime(1970))
           .compareTo(b.dateTime ?? DateTime(1970)));
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return OpenVtsCard(
       child: Column(
@@ -31,7 +30,7 @@ class AdminPaymentsRevenueTrendChart extends StatelessWidget {
           const SizedBox(height: OpenVtsSpacing.xxs),
           Text('Daily totals for selected range',
               style: OpenVtsTypography.meta
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                  .copyWith(color: OpenVtsColors.textSecondary)),
           const SizedBox(height: OpenVtsSpacing.sm),
           if (points.isEmpty)
             const OpenVtsEmptyState(
@@ -42,11 +41,7 @@ class AdminPaymentsRevenueTrendChart extends StatelessWidget {
             SizedBox(
               height: 150,
               child: CustomPaint(
-                painter: _TrendPainter(
-                  points,
-                  gridColor: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
-                  lineColor: isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
-                ),
+                painter: _TrendPainter(points),
                 child: const SizedBox.expand(),
               ),
             ),
@@ -57,15 +52,9 @@ class AdminPaymentsRevenueTrendChart extends StatelessWidget {
 }
 
 class _TrendPainter extends CustomPainter {
-  _TrendPainter(
-    this.points, {
-    required this.gridColor,
-    required this.lineColor,
-  });
+  _TrendPainter(this.points);
 
   final List<AdminDailyPoint> points;
-  final Color gridColor;
-  final Color lineColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -75,7 +64,7 @@ class _TrendPainter extends CustomPainter {
     final safeMax = maxValue <= 0 ? 1 : maxValue;
 
     final grid = Paint()
-      ..color = gridColor.withValues(alpha: 0.7)
+      ..color = OpenVtsColors.border.withValues(alpha: 0.7)
       ..strokeWidth = 1;
     for (var i = 0; i <= 4; i++) {
       final y = size.height * i / 4;
@@ -83,7 +72,7 @@ class _TrendPainter extends CustomPainter {
     }
 
     final line = Paint()
-      ..color = lineColor
+      ..color = OpenVtsColors.textPrimary
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
@@ -103,7 +92,5 @@ class _TrendPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _TrendPainter oldDelegate) =>
-      oldDelegate.points != points ||
-      oldDelegate.gridColor != gridColor ||
-      oldDelegate.lineColor != lineColor;
+      oldDelegate.points != points;
 }

@@ -22,24 +22,24 @@ class AdminPaymentsStatusDistribution extends StatelessWidget {
     return OpenVtsCard(
       child: Row(
         children: [
-          _item(context, 'Success', success, OpenVtsColors.success),
+          _item('Success', success, OpenVtsColors.success),
           const SizedBox(width: OpenVtsSpacing.sm),
-          _item(context, 'Pending', pending, OpenVtsColors.warning),
+          _item('Pending', pending, OpenVtsColors.warning),
           const SizedBox(width: OpenVtsSpacing.sm),
-          _item(context, 'Failed', failed, OpenVtsColors.error),
+          _item('Failed', failed, OpenVtsColors.error),
         ],
       ),
     );
   }
 
-  Widget _item(BuildContext context, String label, int value, Color color) {
+  Widget _item(String label, int value, Color color) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
               style: OpenVtsTypography.meta
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                  .copyWith(color: OpenVtsColors.textSecondary)),
           const SizedBox(height: OpenVtsSpacing.xxs),
           Text(value.toString(),
               style: OpenVtsTypography.titleSmall.copyWith(color: color)),

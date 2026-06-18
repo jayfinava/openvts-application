@@ -192,7 +192,7 @@ class _MetadataCard extends StatelessWidget {
             Text(
               'No metadata',
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textSecondary,
                 fontWeight: FontWeight.w600,
               ),
             )
@@ -218,13 +218,13 @@ class _CardHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Text(
             title,
             style: OpenVtsTypography.label.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -251,7 +251,7 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textTertiary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -265,7 +265,7 @@ class _InfoRow extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
+                color: OpenVtsColors.textPrimary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -296,9 +296,9 @@ class _CompactActionButton extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: isLoading ? null : onPressed,
         style: OutlinedButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          foregroundColor: Theme.of(context).colorScheme.onSurface,
-          side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+          backgroundColor: OpenVtsColors.white,
+          foregroundColor: OpenVtsColors.textPrimary,
+          side: const BorderSide(color: OpenVtsColors.border),
           padding: const EdgeInsets.symmetric(horizontal: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -351,7 +351,7 @@ class _SectionStateCard extends StatelessWidget {
                 Text(
                   'Loading $title',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),

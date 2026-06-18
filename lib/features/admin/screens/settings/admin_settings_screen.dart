@@ -71,7 +71,6 @@ class _SettingsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return OpenVtsCard(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.md,
@@ -93,7 +92,7 @@ class _SettingsHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -104,17 +103,17 @@ class _SettingsHeader extends StatelessWidget {
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
+                    color: OpenVtsColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(
                   'Manage profile, localization and SMTP settings.',
                   style: TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 11.5,
                     height: 1.35,
-                    color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
               ],

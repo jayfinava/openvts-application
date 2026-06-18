@@ -99,16 +99,22 @@ class AdminTelemetryLogCard extends StatelessWidget {
               ),
             if (item.attributes.isNotEmpty) ...[
               const SizedBox(height: OpenVtsSpacing.xxs),
-              _AttributeRow(
-                label: 'Attributes',
-                value: prettyJson(item.attributes).replaceAll('\n', ' '),
+              Text(
+                'Attributes: ${prettyJson(item.attributes).replaceAll('\n', ' ')}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: OpenVtsTypography.meta
+                    .copyWith(color: OpenVtsColors.textSecondary),
               ),
             ],
             if (item.raw.trim().isNotEmpty) ...[
               const SizedBox(height: OpenVtsSpacing.xxs),
-              _AttributeRow(
-                label: 'Raw',
-                value: item.raw,
+              Text(
+                'Raw: ${item.raw}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: OpenVtsTypography.meta
+                    .copyWith(color: OpenVtsColors.textSecondary),
               ),
             ],
           ],
@@ -131,58 +137,30 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
-
     return Padding(
       padding: const EdgeInsets.only(top: OpenVtsSpacing.xxs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, size: 14, color: textColor),
+          Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
           const SizedBox(width: OpenVtsSpacing.xs),
           if (label.isNotEmpty) ...[
             Text('$label: ',
                 style: OpenVtsTypography.meta.copyWith(
-                    color: textColor, fontWeight: FontWeight.w500)),
+                    color: OpenVtsColors.textSecondary,
+                    fontWeight: FontWeight.w500)),
           ],
           Expanded(
             child: Text(
               value.trim().isEmpty ? '—' : value.trim(),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: OpenVtsTypography.meta.copyWith(color: textColor),
+              style: OpenVtsTypography.meta
+                  .copyWith(color: OpenVtsColors.textSecondary),
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _AttributeRow extends StatelessWidget {
-  const _AttributeRow({
-    required this.label,
-    required this.value,
-  });
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
-
-    return Text(
-      '$label: $value',
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: OpenVtsTypography.meta.copyWith(color: textColor),
     );
   }
 }

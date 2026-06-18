@@ -719,11 +719,8 @@ class _SearchInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final fillColor = _softSurfaceColor(context);
     final borderColor = _softBorderColor(context);
-    final textColor = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-    final hintColor = isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textTertiary;
 
     final border = OutlineInputBorder(
       borderRadius: BorderRadius.circular(OpenVtsRadius.md),
@@ -746,7 +743,7 @@ class _SearchInput extends StatelessWidget {
             textAlignVertical: TextAlignVertical.center,
             cursorColor: _primaryInkColor(context),
             cursorWidth: 1.4,
-            style: _baseStyle.copyWith(color: textColor),
+            style: _baseStyle.copyWith(color: OpenVtsColors.textPrimary),
             strutStyle: const StrutStyle(
               fontFamily: OpenVtsTypography.primaryFontFamily,
               fontFamilyFallback: OpenVtsTypography.fontFallback,
@@ -762,18 +759,18 @@ class _SearchInput extends StatelessWidget {
               isCollapsed: false,
               hintText: 'Search by name, email\u2026',
               hintStyle: _baseStyle.copyWith(
-                color: hintColor,
+                color: OpenVtsColors.textTertiary,
                 fontWeight: FontWeight.w400,
               ),
-              prefixIcon: Padding(
-                padding: const EdgeInsetsDirectional.only(
+              prefixIcon: const Padding(
+                padding: EdgeInsetsDirectional.only(
                   start: OpenVtsSpacing.sm,
                   end: OpenVtsSpacing.xs,
                 ),
                 child: Icon(
                   Icons.search_rounded,
                   size: 18,
-                  color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               prefixIconConstraints: const BoxConstraints(
@@ -798,10 +795,10 @@ class _SearchInput extends StatelessWidget {
                           minHeight: 28,
                         ),
                         splashRadius: 16,
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.close_rounded,
                           size: 16,
-                          color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                          color: OpenVtsColors.textSecondary,
                         ),
                       ),
                     ),
@@ -899,7 +896,6 @@ class _RecordsPerPageDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final options = <int>[
       ..._recordsPerPageOptions,
       if (!_recordsPerPageOptions.contains(value)) value,
@@ -919,12 +915,12 @@ class _RecordsPerPageDropdown extends StatelessWidget {
         child: DropdownButton<int>(
           value: value,
           isDense: true,
-          icon: Padding(
-            padding: const EdgeInsetsDirectional.only(start: 2),
+          icon: const Padding(
+            padding: EdgeInsetsDirectional.only(start: 2),
             child: Icon(
               Icons.keyboard_arrow_down_rounded,
               size: 16,
-              color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+              color: OpenVtsColors.textSecondary,
             ),
           ),
           style: OpenVtsTypography.label.copyWith(
@@ -975,10 +971,8 @@ class _PaginationFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final canPrev = currentPage > 1;
     final canNext = currentPage < pageCount;
-    final secondaryTextColor = isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
 
     return Padding(
       padding: const EdgeInsets.only(top: OpenVtsSpacing.xs),
@@ -987,7 +981,7 @@ class _PaginationFooter extends StatelessWidget {
           Text(
             'Showing $showingCount of $totalCount',
             style: OpenVtsTypography.meta.copyWith(
-              color: secondaryTextColor,
+              color: OpenVtsColors.textSecondary,
             ),
           ),
           if (pageCount > 1) ...[
@@ -1007,7 +1001,6 @@ class _PaginationFooter extends StatelessWidget {
                     'Page $currentPage of $pageCount',
                     style: OpenVtsTypography.label.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
                     ),
                   ),
                 ),
@@ -1193,7 +1186,7 @@ class _ChoiceChip extends StatelessWidget {
     final background =
         selected ? _primaryInkColor(context) : _softSurfaceColor(context);
     final foreground = selected
-        ? OpenVtsColors.white
+        ? Theme.of(context).colorScheme.surface
         : _primaryInkColor(context);
 
     return Material(
@@ -1241,10 +1234,6 @@ class _RadioRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final unselectedIconColor =
-        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textTertiary;
-
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(OpenVtsRadius.md),
@@ -1260,7 +1249,9 @@ class _RadioRow extends StatelessWidget {
                   ? Icons.radio_button_checked_rounded
                   : Icons.radio_button_off_rounded,
               size: 18,
-              color: selected ? _primaryInkColor(context) : unselectedIconColor,
+              color: selected
+                  ? _primaryInkColor(context)
+                  : OpenVtsColors.textTertiary,
             ),
             const SizedBox(width: OpenVtsSpacing.sm),
             Expanded(

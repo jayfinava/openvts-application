@@ -379,18 +379,12 @@ class _CreateTicketHelperCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.xxs),
-          Builder(builder: (context) {
-            final isDark =
-                Theme.of(context).brightness == Brightness.dark;
-            return Text(
-              detail,
-              style: OpenVtsTypography.meta.copyWith(
-                color: isDark
-                    ? OpenVtsColors.darkTextSecondary
-                    : OpenVtsColors.textSecondary,
-              ),
-            );
-          }),
+          Text(
+            detail,
+            style: OpenVtsTypography.meta.copyWith(
+              color: OpenVtsColors.textSecondary,
+            ),
+          ),
         ],
       ),
     );
@@ -593,11 +587,6 @@ class _TicketFormActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-
     return SafeArea(
       top: false,
       child: Container(
@@ -607,9 +596,9 @@ class _TicketFormActionBar extends StatelessWidget {
           OpenVtsSpacing.md,
           OpenVtsSpacing.md,
         ),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          border: Border(top: BorderSide(color: borderColor)),
+        decoration: const BoxDecoration(
+          color: OpenVtsColors.surface,
+          border: Border(top: BorderSide(color: OpenVtsColors.border)),
         ),
         child: Align(
           alignment: Alignment.center,
@@ -652,11 +641,6 @@ class _DraftAttachmentWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-
     return Wrap(
       spacing: OpenVtsSpacing.xs,
       runSpacing: OpenVtsSpacing.xs,
@@ -668,9 +652,9 @@ class _DraftAttachmentWrap extends StatelessWidget {
                 end: OpenVtsSpacing.xxs,
               ),
               decoration: BoxDecoration(
-                border: Border.all(color: borderColor),
+                border: Border.all(color: OpenVtsColors.border),
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                color: backgroundColor,
+                color: OpenVtsColors.surface,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,

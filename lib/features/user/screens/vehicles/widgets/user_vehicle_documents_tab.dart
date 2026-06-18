@@ -134,17 +134,17 @@ class UserVehicleDocumentsTabView extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text('Delete document'),
-        content: Text('Delete this document?'),
+        title: const Text('Delete document'),
+        content: const Text('Delete this document?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
             style: TextButton.styleFrom(foregroundColor: OpenVtsColors.error),
-            child: Text('Delete'),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -193,16 +193,16 @@ class _SummaryCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.description_outlined,
                       size: 17,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      color: OpenVtsColors.textSecondary,
                     ),
                     const SizedBox(width: OpenVtsSpacing.xs),
                     Text(
                       'Documents',
                       style: OpenVtsTypography.label.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: OpenVtsColors.textPrimary,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -220,7 +220,7 @@ class _SummaryCard extends StatelessWidget {
                 Text(
                   '$documentCount files - $typeCount vehicle types',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -287,7 +287,7 @@ class _DocumentCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: OpenVtsColors.textPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
                       ),
@@ -298,7 +298,7 @@ class _DocumentCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: OpenVtsColors.textSecondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -315,7 +315,7 @@ class _DocumentCard extends StatelessWidget {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Icon(Icons.more_vert_rounded, size: 18),
+                    : const Icon(Icons.more_vert_rounded, size: 18),
                 onSelected: (action) {
                   switch (action) {
                     case _DocumentAction.view:
@@ -381,8 +381,8 @@ class _DocumentCard extends StatelessWidget {
                     : Icons.visibility_off_outlined,
                 label: document.isVisible ? 'Visible' : 'Hidden',
                 color: document.isVisible
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
+                    ? OpenVtsColors.brandInk
+                    : OpenVtsColors.textTertiary,
               ),
               _MetaPill(
                 icon: Icons.calendar_today_outlined,
@@ -447,7 +447,7 @@ class _LoadingCard extends StatelessWidget {
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -507,7 +507,7 @@ class _InlineError extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
+          const Icon(
             Icons.error_outline_rounded,
             size: 16,
             color: OpenVtsColors.error,
@@ -541,14 +541,14 @@ class _ExtensionBadge extends StatelessWidget {
       height: 40,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Text(
         label.length > 4 ? label.substring(0, 4) : label,
         style: OpenVtsTypography.meta.copyWith(
-          color: Theme.of(context).colorScheme.onSurface,
+          color: OpenVtsColors.textPrimary,
           fontSize: 10,
           fontWeight: FontWeight.w800,
         ),
@@ -567,7 +567,7 @@ class _InfoLine extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Text(
@@ -575,7 +575,7 @@ class _InfoLine extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -589,28 +589,27 @@ class _MetaPill extends StatelessWidget {
   const _MetaPill({
     required this.icon,
     required this.label,
-    this.color,
+    this.color = OpenVtsColors.textSecondary,
   });
 
   final IconData icon;
   final String label;
-  final Color? color;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final displayColor = color ?? Theme.of(context).colorScheme.onSurfaceVariant;
     return Container(
       constraints: const BoxConstraints(maxWidth: 260),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: displayColor.withValues(alpha: 0.06),
+        color: color.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: displayColor.withValues(alpha: 0.18)),
+        border: Border.all(color: color.withValues(alpha: 0.18)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: displayColor),
+          Icon(icon, size: 12, color: color),
           const SizedBox(width: 4),
           Flexible(
             child: Text(
@@ -618,7 +617,7 @@ class _MetaPill extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: displayColor,
+                color: color,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
               ),
@@ -644,7 +643,7 @@ class _MenuRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color =
-        isDestructive ? OpenVtsColors.error : Theme.of(context).colorScheme.onSurface;
+        isDestructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

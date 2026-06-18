@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/router/route_paths.dart';
+import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
@@ -58,7 +59,7 @@ class _RecentUserRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -71,7 +72,7 @@ class _RecentUserRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                     fontSize: 10.5,
                   ),
                 ),
@@ -91,7 +92,7 @@ class _RecentUserRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -102,7 +103,7 @@ class _RecentUserRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                     fontSize: 10,
                   ),
                 ),

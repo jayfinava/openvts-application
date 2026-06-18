@@ -123,7 +123,7 @@ class UserMapDefaultsCard extends StatelessWidget {
           Text(
             'Quick presets',
             style: OpenVtsTypography.meta.copyWith(
-              color: context.textSecondary(),
+              color: OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -164,7 +164,7 @@ class _CoordinateField extends StatelessWidget {
         Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: context.textSecondary(),
+            color: OpenVtsColors.textSecondary,
             fontWeight: FontWeight.w600,
           ),
         ),

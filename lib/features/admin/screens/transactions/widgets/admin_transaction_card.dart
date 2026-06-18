@@ -23,11 +23,6 @@ class AdminTransactionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formatter = const DateTimeFormatter();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textPrimaryColor =
-        isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-    final textSecondaryColor =
-        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
 
     return OpenVtsCard(
       onTap: onTap,
@@ -45,7 +40,7 @@ class AdminTransactionCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.numeric.copyWith(
                     fontSize: 22,
-                    color: textPrimaryColor,
+                    color: OpenVtsColors.textPrimary,
                   ),
                 ),
               ),
@@ -63,53 +58,41 @@ class AdminTransactionCard extends StatelessWidget {
                     ? '-'
                     : transaction.createdAtRaw)
                 : formatter.formatDateTime(transaction.createdAt!.toLocal()),
-            textSecondaryColor: textSecondaryColor,
           ),
           _row(
               icon: Icons.payments_outlined,
-              label: 'Mode: ${transaction.paymentMode.label}',
-              textSecondaryColor: textSecondaryColor),
+              label: 'Mode: ${transaction.paymentMode.label}'),
           _row(
               icon: Icons.compare_arrows_rounded,
-              label: 'Type: ${transaction.paymentType.label}',
-              textSecondaryColor: textSecondaryColor),
+              label: 'Type: ${transaction.paymentType.label}'),
           _copyRow(context,
               icon: Icons.tag_rounded,
               label: 'Reference',
-              value: transaction.referenceDisplay,
-              textSecondaryColor: textSecondaryColor),
+              value: transaction.referenceDisplay),
           _row(
               icon: Icons.account_balance_wallet_outlined,
-              label: 'Provider: ${transaction.providerDisplay}',
-              textSecondaryColor: textSecondaryColor),
+              label: 'Provider: ${transaction.providerDisplay}'),
           _row(
               icon: Icons.person_outline_rounded,
-              label: 'Counterparty: ${transaction.counterpartyName}',
-              textSecondaryColor: textSecondaryColor),
+              label: 'Counterparty: ${transaction.counterpartyName}'),
           _row(
               icon: Icons.badge_outlined,
-              label: 'Recorded By: ${transaction.recordedByName}',
-              textSecondaryColor: textSecondaryColor),
+              label: 'Recorded By: ${transaction.recordedByName}'),
           _copyRow(context,
               icon: Icons.numbers_rounded,
               label: 'Transaction ID',
-              value: transaction.id,
-              textSecondaryColor: textSecondaryColor),
+              value: transaction.id),
         ],
       ),
     );
   }
 
-  Widget _row({
-    required IconData icon,
-    required String label,
-    required Color textSecondaryColor,
-  }) {
+  Widget _row({required IconData icon, required String label}) {
     return Padding(
       padding: const EdgeInsets.only(top: OpenVtsSpacing.xxs),
       child: Row(
         children: [
-          Icon(icon, size: 14, color: textSecondaryColor),
+          Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
@@ -117,7 +100,7 @@ class AdminTransactionCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta
-                  .copyWith(color: textSecondaryColor),
+                  .copyWith(color: OpenVtsColors.textSecondary),
             ),
           ),
         ],
@@ -130,7 +113,6 @@ class AdminTransactionCard extends StatelessWidget {
     required IconData icon,
     required String label,
     required String value,
-    required Color textSecondaryColor,
   }) {
     final normalized = value.trim();
     final display = normalized.isEmpty || normalized == '—' ? '-' : normalized;
@@ -140,7 +122,7 @@ class AdminTransactionCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 14, color: textSecondaryColor),
+          Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
@@ -148,7 +130,7 @@ class AdminTransactionCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta
-                  .copyWith(color: textSecondaryColor),
+                  .copyWith(color: OpenVtsColors.textSecondary),
             ),
           ),
           if (display != '-')
@@ -157,10 +139,10 @@ class AdminTransactionCard extends StatelessWidget {
                 Clipboard.setData(ClipboardData(text: display));
                 ToastHelper.showSuccess('$label copied', context: context);
               },
-              child: Padding(
-                padding: const EdgeInsets.all(2),
+              child: const Padding(
+                padding: EdgeInsets.all(2),
                 child: Icon(Icons.copy_rounded,
-                    size: 14, color: textSecondaryColor),
+                    size: 14, color: OpenVtsColors.textSecondary),
               ),
             ),
         ],

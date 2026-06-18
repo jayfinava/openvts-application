@@ -62,7 +62,7 @@ class UserProfileHeaderCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: context.textPrimary(),
+                        color: OpenVtsColors.textPrimary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -73,7 +73,7 @@ class UserProfileHeaderCard extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.meta.copyWith(
-                          color: context.textSecondary(),
+                          color: OpenVtsColors.textSecondary,
                         ),
                       ),
                     ],
@@ -84,7 +84,7 @@ class UserProfileHeaderCard extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.meta.copyWith(
-                          color: context.textSecondary(),
+                          color: OpenVtsColors.textSecondary,
                         ),
                       ),
                     ],
@@ -95,7 +95,7 @@ class UserProfileHeaderCard extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.meta.copyWith(
-                          color: context.textSecondary(),
+                          color: OpenVtsColors.textSecondary,
                         ),
                       ),
                     ],
@@ -141,14 +141,14 @@ class UserProfileHeaderCard extends ConsumerWidget {
                 Text(
                   'Joined ${profileHeaderDateFormatter.formatDate(profile.createdAt!.toLocal())}',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: context.textTertiary(),
+                    color: OpenVtsColors.textTertiary,
                   ),
                 ),
               if (profile.updatedAt != null)
                 Text(
                   'Updated ${profileHeaderDateFormatter.formatDateTime(profile.updatedAt!.toLocal())}',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: context.textTertiary(),
+                    color: OpenVtsColors.textTertiary,
                   ),
                 ),
             ],

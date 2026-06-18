@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/open_vts_colors.dart';
 import '../../../core/theme/open_vts_spacing.dart';
 import '../../../core/theme/open_vts_typography.dart';
 import '../open_vts_card.dart';
@@ -45,7 +46,7 @@ class OpenVtsDashboardMetricCard extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textTertiary,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.8,
                   ),
@@ -54,7 +55,7 @@ class OpenVtsDashboardMetricCard extends StatelessWidget {
               Icon(
                 icon,
                 size: 16,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textTertiary,
               ),
             ],
           ),
@@ -63,7 +64,7 @@ class OpenVtsDashboardMetricCard extends StatelessWidget {
             value,
             style: OpenVtsTypography.numeric.copyWith(
               fontSize: 19,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
             ),
           ),
           if (subtitle != null) ...[
@@ -73,7 +74,7 @@ class OpenVtsDashboardMetricCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textSecondary,
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
               ),

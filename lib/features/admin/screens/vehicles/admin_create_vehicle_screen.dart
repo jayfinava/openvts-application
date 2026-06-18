@@ -245,12 +245,12 @@ class _AdminCreateVehicleScreenState
 
   Widget _assignmentSection() {
     final userOptions = [
-      OpenVtsDropdownOption<String>(
+      const OpenVtsDropdownOption<String>(
         value: _createUserValue,
         label: '+ Create new user',
         subtitle: 'Create user without leaving this vehicle form',
         leading: Icon(Icons.add_circle_outline_rounded,
-            size: 20, color: Theme.of(context).colorScheme.primary),
+            size: 20, color: OpenVtsColors.brandInk),
         searchText: 'add create new user',
       ),
       ..._users
@@ -269,12 +269,12 @@ class _AdminCreateVehicleScreenState
     ];
 
     final deviceOptions = [
-      OpenVtsDropdownOption<String>(
+      const OpenVtsDropdownOption<String>(
         value: _createDeviceValue,
         label: '+ Add new device',
         subtitle: 'Create device without leaving this form',
         leading: Icon(Icons.add_circle_outline,
-            size: 20, color: Theme.of(context).colorScheme.primary),
+            size: 20, color: OpenVtsColors.brandInk),
         searchText: 'add new create device',
       ),
       ..._devices.map(
@@ -288,12 +288,12 @@ class _AdminCreateVehicleScreenState
     ];
 
     final planOptions = [
-      OpenVtsDropdownOption<String>(
+      const OpenVtsDropdownOption<String>(
         value: _createPlanValue,
         label: '+ Create new plan',
         subtitle: 'Create pricing plan without leaving this form',
         leading: Icon(Icons.add_circle_outline,
-            size: 20, color: Theme.of(context).colorScheme.primary),
+            size: 20, color: OpenVtsColors.brandInk),
         searchText: 'create new pricing plan',
       ),
       ..._plans.map(
@@ -569,14 +569,14 @@ class _AdminCreateVehicleScreenState
     showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text('Discard new vehicle?'),
-        content: Text(
+        title: const Text('Discard new vehicle?'),
+        content: const Text(
           'Your changes will be lost. This action cannot be undone.',
         ),
         actions: [
           TextButton(
             onPressed: () => dialogContext.pop(),
-            child: Text('Keep editing'),
+            child: const Text('Keep editing'),
           ),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: OpenVtsColors.error),
@@ -586,7 +586,7 @@ class _AdminCreateVehicleScreenState
                 context.pop();
               }
             },
-            child: Text('Discard'),
+            child: const Text('Discard'),
           ),
         ],
       ),
@@ -601,10 +601,10 @@ class _IntroBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       decoration: BoxDecoration(
-        color: isDark ? OpenVtsColors.darkSurface : Theme.of(context).colorScheme.surface,
+        color: isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
         border: Border.all(
-          color: isDark ? OpenVtsColors.darkBorder : Theme.of(context).colorScheme.outlineVariant,
+          color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
         ),
       ),
       child: Row(
@@ -625,7 +625,7 @@ class _IntroBanner extends StatelessWidget {
               size: 18,
               color: isDark
                   ? OpenVtsColors.darkTextPrimary
-                  : Theme.of(context).colorScheme.primary,
+                  : OpenVtsColors.brandInk,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -643,7 +643,7 @@ class _IntroBanner extends StatelessWidget {
                 Text(
                   'Complete the sections below. Required fields are marked with an asterisk (*).',
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
               ],
@@ -678,7 +678,7 @@ class _FormSection extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
         border: Border.all(
-          color: isDark ? OpenVtsColors.darkBorder : Theme.of(context).colorScheme.outlineVariant,
+          color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
         ),
       ),
       child: Column(
@@ -723,14 +723,14 @@ class _SectionHeader extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color:
-                isDark ? OpenVtsColors.darkBackground : Theme.of(context).colorScheme.surface,
+                isDark ? OpenVtsColors.darkBackground : OpenVtsColors.surface,
             shape: BoxShape.circle,
           ),
           child: Icon(
             icon,
             size: 18,
             color:
-                isDark ? OpenVtsColors.darkTextPrimary : Theme.of(context).colorScheme.primary,
+                isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk,
           ),
         ),
         const SizedBox(width: OpenVtsSpacing.sm),
@@ -749,7 +749,7 @@ class _SectionHeader extends StatelessWidget {
               Text(
                 description,
                 style: OpenVtsTypography.label.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
             ],
@@ -785,7 +785,7 @@ class _StickyActionBar extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: isDark ? OpenVtsColors.darkBorder : Theme.of(context).colorScheme.outlineVariant,
+            color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
           ),
         ),
       ),

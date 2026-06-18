@@ -119,17 +119,13 @@ class UserGeofencesScreen extends ConsumerWidget {
       isScrollControlled: false,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
-        final isDark = Theme.of(ctx).brightness == Brightness.dark;
-        final bgColor = isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated;
-        final titleColor = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-        final subtitleColor = isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
         return SafeArea(
           top: false,
           child: Container(
             margin: const EdgeInsets.all(OpenVtsSpacing.sm),
             padding: const EdgeInsets.all(OpenVtsSpacing.md),
             decoration: BoxDecoration(
-              color: bgColor,
+              color: OpenVtsColors.surfaceElevated,
               borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
             ),
             child: Column(
@@ -139,7 +135,7 @@ class UserGeofencesScreen extends ConsumerWidget {
                 Text(
                   'Delete geofence?',
                   style: OpenVtsTypography.titleSmall.copyWith(
-                    color: titleColor,
+                    color: OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -147,7 +143,7 @@ class UserGeofencesScreen extends ConsumerWidget {
                 Text(
                   '"${geofence.name}" will be permanently removed.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: subtitleColor,
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: OpenVtsSpacing.md),
@@ -271,10 +267,8 @@ class _HeaderIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final disabled = onTap == null;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = primary ? OpenVtsColors.brandInk : (isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated);
-    final fg = primary ? OpenVtsColors.white : (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary);
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
+    final bg = primary ? OpenVtsColors.brandInk : OpenVtsColors.surfaceElevated;
+    final fg = primary ? OpenVtsColors.white : OpenVtsColors.textPrimary;
     return Tooltip(
       message: tooltip,
       child: InkResponse(
@@ -286,7 +280,7 @@ class _HeaderIconButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: disabled ? bg.withValues(alpha: 0.55) : bg,
             borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-            border: primary ? null : Border.all(color: borderColor),
+            border: primary ? null : Border.all(color: OpenVtsColors.border),
           ),
           alignment: Alignment.center,
           child: showSpinner

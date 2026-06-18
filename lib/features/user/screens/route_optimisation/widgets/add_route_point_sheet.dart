@@ -77,9 +77,7 @@ class _OptionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: context.isDarkMode
-          ? OpenVtsColors.darkSurfaceElevated
-          : OpenVtsColors.surfaceElevated,
+      color: OpenVtsColors.surfaceElevated,
       borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       child: InkWell(
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
@@ -88,11 +86,7 @@ class _OptionTile extends StatelessWidget {
           padding: const EdgeInsets.all(OpenVtsSpacing.sm),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-            border: Border.all(
-              color: context.isDarkMode
-                  ? OpenVtsColors.darkBorder
-                  : OpenVtsColors.border,
-            ),
+            border: Border.all(color: OpenVtsColors.border),
           ),
           child: Row(
             children: [
@@ -101,16 +95,10 @@ class _OptionTile extends StatelessWidget {
                 height: 34,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: context.isDarkMode
-                      ? OpenVtsColors.darkSurface
-                      : OpenVtsColors.surface,
+                  color: OpenVtsColors.surface,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
                 ),
-                child: Icon(icon,
-                    size: 16,
-                    color: context.isDarkMode
-                        ? OpenVtsColors.darkTextPrimary
-                        : OpenVtsColors.textPrimary),
+                child: Icon(icon, size: 16, color: OpenVtsColors.textPrimary),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
               Expanded(
@@ -123,9 +111,7 @@ class _OptionTile extends StatelessWidget {
                     Text(
                       subtitle,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: context.isDarkMode
-                            ? OpenVtsColors.darkTextSecondary
-                            : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                   ],

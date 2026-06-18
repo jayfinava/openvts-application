@@ -21,13 +21,6 @@ class AdminTransactionDetailsSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formatter = const DateTimeFormatter();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final surfaceColor = isDark ? OpenVtsColors.darkSurface : OpenVtsColors.white;
-    final textPrimaryColor =
-        isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-    final textSecondaryColor =
-        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
 
     return DraggableScrollableSheet(
       expand: false,
@@ -36,8 +29,8 @@ class AdminTransactionDetailsSheet extends StatelessWidget {
       maxChildSize: 0.96,
       builder: (context, scrollController) {
         return DecoratedBox(
-          decoration: BoxDecoration(
-            color: surfaceColor,
+          decoration: const BoxDecoration(
+            color: OpenVtsColors.white,
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(OpenVtsRadius.xl),
             ),
@@ -65,19 +58,18 @@ class AdminTransactionDetailsSheet extends StatelessWidget {
                       child: Text(
                         'Transaction Details',
                         style: OpenVtsTypography.titleSmall.copyWith(
-                          color: textPrimaryColor,
+                          color: OpenVtsColors.textPrimary,
                         ),
                       ),
                     ),
                     IconButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: Icon(Icons.close_rounded,
-                          color: textPrimaryColor),
+                      icon: const Icon(Icons.close_rounded),
                     ),
                   ],
                 ),
               ),
-              Divider(height: 1, color: borderColor),
+              const Divider(height: 1),
               Expanded(
                 child: ListView(
                   controller: scrollController,
@@ -91,7 +83,7 @@ class AdminTransactionDetailsSheet extends StatelessWidget {
                               transaction.amountDisplay,
                               style: OpenVtsTypography.numeric.copyWith(
                                 fontSize: 24,
-                                color: textPrimaryColor,
+                                color: OpenVtsColors.textPrimary,
                               ),
                             ),
                           ),
@@ -179,7 +171,7 @@ class AdminTransactionDetailsSheet extends StatelessWidget {
                             Text(
                               'Metadata',
                               style: OpenVtsTypography.label.copyWith(
-                                color: textPrimaryColor,
+                                color: OpenVtsColors.textPrimary,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -188,7 +180,7 @@ class AdminTransactionDetailsSheet extends StatelessWidget {
                               const JsonEncoder.withIndent('  ')
                                   .convert(transaction.meta),
                               style: OpenVtsTypography.meta.copyWith(
-                                color: textSecondaryColor,
+                                color: OpenVtsColors.textSecondary,
                               ),
                             ),
                           ],
@@ -240,12 +232,6 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textPrimaryColor =
-        isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-    final textSecondaryColor =
-        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-
     return OpenVtsCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,12 +239,12 @@ class _Section extends StatelessWidget {
           Text(
             title,
             style: OpenVtsTypography.label.copyWith(
-              color: textPrimaryColor,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
-          ...rows.map((row) => _Row(row: row, textSecondaryColor: textSecondaryColor)),
+          ...rows.map((row) => _Row(row: row)),
         ],
       ),
     );
@@ -280,10 +266,9 @@ class _RowData {
 }
 
 class _Row extends StatelessWidget {
-  const _Row({required this.row, required this.textSecondaryColor});
+  const _Row({required this.row});
 
   final _RowData row;
-  final Color textSecondaryColor;
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +288,7 @@ class _Row extends StatelessWidget {
               overflow:
                   row.multiline ? TextOverflow.visible : TextOverflow.ellipsis,
               style: OpenVtsTypography.meta
-                  .copyWith(color: textSecondaryColor),
+                  .copyWith(color: OpenVtsColors.textSecondary),
             ),
           ),
           if (row.copy && value != '-')
@@ -313,10 +298,10 @@ class _Row extends StatelessWidget {
                 ToastHelper.showSuccess('${row.label} copied',
                     context: context);
               },
-              child: Padding(
-                padding: const EdgeInsets.all(2),
+              child: const Padding(
+                padding: EdgeInsets.all(2),
                 child: Icon(Icons.copy_rounded,
-                    size: 14, color: textSecondaryColor),
+                    size: 14, color: OpenVtsColors.textSecondary),
               ),
             ),
         ],

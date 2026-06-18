@@ -176,14 +176,14 @@ class _TopAssetRow extends StatelessWidget {
           height: 30,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: context.surface(),
+            color: OpenVtsColors.surface,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-            border: Border.all(color: context.border()),
+            border: Border.all(color: OpenVtsColors.border),
           ),
           child: Text(
             '$rank',
             style: OpenVtsTypography.meta.copyWith(
-              color: context.textPrimary(),
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -203,7 +203,7 @@ class _TopAssetRow extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: context.textPrimary(),
+                        color: OpenVtsColors.textPrimary,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -212,7 +212,7 @@ class _TopAssetRow extends StatelessWidget {
                   Text(
                     userDashboardFormatDistance(item.drivenKm),
                     style: OpenVtsTypography.meta.copyWith(
-                      color: context.textPrimary(),
+                      color: OpenVtsColors.textPrimary,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -225,7 +225,7 @@ class _TopAssetRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: context.textSecondary(),
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
               ],
@@ -236,7 +236,7 @@ class _TopAssetRow extends StatelessWidget {
                   value: percent,
                   minHeight: 7,
                   color: OpenVtsColors.brandInk,
-                  backgroundColor: context.surface(),
+                  backgroundColor: OpenVtsColors.surface,
                 ),
               ),
             ],
@@ -275,9 +275,9 @@ class _SkeletonBlock extends StatelessWidget {
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: context.surface(),
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: context.border()),
+        border: Border.all(color: OpenVtsColors.border),
       ),
     );
   }

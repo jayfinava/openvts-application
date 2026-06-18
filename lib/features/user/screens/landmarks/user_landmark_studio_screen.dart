@@ -105,7 +105,6 @@ class _StudioHeaderCard extends StatelessWidget {
         isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
     final subtitleColor =
         isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
 
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
@@ -118,7 +117,7 @@ class _StudioHeaderCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: iconBg,
               borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-              border: Border.all(color: borderColor),
+              border: Border.all(color: OpenVtsColors.border),
             ),
             child: Icon(
               Icons.map_outlined,
@@ -241,7 +240,6 @@ class _LandmarkOptionCard extends StatelessWidget {
         isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
     final subtitleColor =
         isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
 
     return OpenVtsCard(
       onTap: onTap,
@@ -258,7 +256,7 @@ class _LandmarkOptionCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: iconBg,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                  border: Border.all(color: borderColor),
+                  border: Border.all(color: OpenVtsColors.border),
                 ),
                 child: Icon(option.icon, size: 18, color: titleColor),
               ),

@@ -109,12 +109,7 @@ class RoutePointsPanel extends ConsumerWidget {
           onClear: () => _clearAll(context, controller, state),
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
-        Divider(
-          height: 1,
-          color: context.isDarkMode
-              ? OpenVtsColors.darkBorder
-              : OpenVtsColors.border,
-        ),
+        const Divider(height: 1, color: OpenVtsColors.border),
         Expanded(
           child: state.points.isEmpty
               ? const Padding(
@@ -162,22 +157,14 @@ class _Header extends StatelessWidget {
               vertical: 2,
             ),
             decoration: BoxDecoration(
-              color: context.isDarkMode
-                  ? OpenVtsColors.darkSurface
-                  : OpenVtsColors.surface,
+              color: OpenVtsColors.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-              border: Border.all(
-                color: context.isDarkMode
-                    ? OpenVtsColors.darkBorder
-                    : OpenVtsColors.border,
-              ),
+              border: Border.all(color: OpenVtsColors.border),
             ),
             child: Text(
               '$count',
               style: OpenVtsTypography.meta.copyWith(
-                color: context.isDarkMode
-                    ? OpenVtsColors.darkTextPrimary
-                    : OpenVtsColors.textPrimary,
+                color: OpenVtsColors.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -201,9 +188,8 @@ class _RoundTripPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = active ? OpenVtsColors.brandInk : (context.isDarkMode ? OpenVtsColors.darkSurfaceElevated : OpenVtsColors.surfaceElevated);
-    final fg = active ? OpenVtsColors.white : (context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary);
-    final borderColor = active ? OpenVtsColors.brandInk : (context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border);
+    final bg = active ? OpenVtsColors.brandInk : OpenVtsColors.surfaceElevated;
+    final fg = active ? OpenVtsColors.white : OpenVtsColors.textSecondary;
     return Material(
       color: bg,
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -214,7 +200,9 @@ class _RoundTripPill extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-            border: Border.all(color: borderColor),
+            border: Border.all(
+              color: active ? OpenVtsColors.brandInk : OpenVtsColors.border,
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -335,19 +323,13 @@ class _SecondaryAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = context.isDarkMode
-        ? OpenVtsColors.darkTextPrimary
-        : OpenVtsColors.textPrimary;
-    final borderColor = context.isDarkMode
-        ? OpenVtsColors.darkBorder
-        : OpenVtsColors.border;
     return OutlinedButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, size: 14),
       label: Text(label, style: OpenVtsTypography.label),
       style: OutlinedButton.styleFrom(
-        foregroundColor: textColor,
-        side: BorderSide(color: borderColor),
+        foregroundColor: OpenVtsColors.textPrimary,
+        side: const BorderSide(color: OpenVtsColors.border),
         minimumSize: const Size(0, 36),
         padding: const EdgeInsets.symmetric(horizontal: 12),
         shape: RoundedRectangleBorder(
@@ -370,15 +352,12 @@ class _SubtleAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = context.isDarkMode
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
     return TextButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, size: 14),
       label: Text(label, style: OpenVtsTypography.label),
       style: TextButton.styleFrom(
-        foregroundColor: textColor,
+        foregroundColor: OpenVtsColors.textSecondary,
         minimumSize: const Size(0, 36),
         padding: const EdgeInsets.symmetric(horizontal: 8),
       ),
@@ -442,14 +421,12 @@ class _PointsList extends StatelessWidget {
                 : null,
             dragHandle: ReorderableDragStartListener(
               index: i,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4),
                 child: Icon(
                   Icons.drag_indicator,
                   size: 16,
-                  color: context.isDarkMode
-                      ? OpenVtsColors.darkTextTertiary
-                      : OpenVtsColors.textTertiary,
+                  color: OpenVtsColors.textTertiary,
                 ),
               ),
             ),

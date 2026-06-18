@@ -260,14 +260,14 @@ class _HeaderCard extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: context.textPrimary().withValues(alpha: 0.04),
+                  color: OpenVtsColors.textPrimary.withValues(alpha: 0.04),
                   borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                  border: Border.all(color: context.border()),
+                  border: Border.all(color: OpenVtsColors.border),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.share_location_rounded,
                   size: 20,
-                  color: context.textSecondary(),
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
@@ -281,7 +281,7 @@ class _HeaderCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.titleSmall.copyWith(
                         fontSize: 17,
-                        color: context.textPrimary(),
+                        color: OpenVtsColors.textPrimary,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -292,7 +292,7 @@ class _HeaderCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
                         fontSize: 12,
-                        color: context.textSecondary(),
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                   ],
@@ -340,13 +340,13 @@ class _HeaderCard extends StatelessWidget {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.refresh_rounded, size: 18),
-                  color: context.textSecondary(),
+                  color: OpenVtsColors.textSecondary,
                   padding: EdgeInsets.zero,
                   style: IconButton.styleFrom(
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                      side: BorderSide(color: context.border()),
+                      side: const BorderSide(color: OpenVtsColors.border),
                     ),
                   ),
                 ),
@@ -358,7 +358,7 @@ class _HeaderCard extends StatelessWidget {
             Text(
               '$visibleCount of $totalCount links',
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textTertiary(),
+                color: OpenVtsColors.textTertiary,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
               ),
@@ -415,24 +415,24 @@ class _InlineError extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: context.error().withValues(alpha: 0.04),
+        color: OpenVtsColors.error.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-        border: Border.all(color: context.error().withValues(alpha: 0.16)),
+        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.16)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
+          const Icon(
             Icons.error_outline_rounded,
             size: 18,
-            color: context.error(),
+            color: OpenVtsColors.error,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
               message,
               style: OpenVtsTypography.meta.copyWith(
-                color: context.error(),
+                color: OpenVtsColors.error,
                 fontWeight: FontWeight.w700,
               ),
             ),

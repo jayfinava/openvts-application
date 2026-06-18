@@ -228,7 +228,7 @@ class _VehicleSelector extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          borderSide: BorderSide(color: context.border()),
+          borderSide: const BorderSide(color: OpenVtsColors.border),
         ),
       ),
       items: [
@@ -267,19 +267,10 @@ class _WeeklyComparisonChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gridColor = context.border();
-    final labelColor = context.textTertiary();
-    final dashColor = Theme.of(context).colorScheme.surface;
     return SizedBox(
       height: 172,
       child: CustomPaint(
-        painter: _WeeklyComparisonChartPainter(
-          points,
-          metric,
-          gridColor: gridColor,
-          labelColor: labelColor,
-          dashColor: dashColor,
-        ),
+        painter: _WeeklyComparisonChartPainter(points, metric),
         size: Size.infinite,
       ),
     );
@@ -287,19 +278,10 @@ class _WeeklyComparisonChart extends StatelessWidget {
 }
 
 class _WeeklyComparisonChartPainter extends CustomPainter {
-  _WeeklyComparisonChartPainter(
-    this.points,
-    this.metric, {
-    required this.gridColor,
-    required this.labelColor,
-    required this.dashColor,
-  });
+  _WeeklyComparisonChartPainter(this.points, this.metric);
 
   final List<UserDashboardWeeklyPoint> points;
   final _WeeklyMetric metric;
-  final Color gridColor;
-  final Color labelColor;
-  final Color dashColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -322,7 +304,7 @@ class _WeeklyComparisonChartPainter extends CustomPainter {
     final scale = math.max(maxValue, 1);
 
     final gridPaint = Paint()
-      ..color = gridColor
+      ..color = OpenVtsColors.border
       ..strokeWidth = 1;
     for (var line = 0; line < 4; line++) {
       final y = top + chartHeight * line / 3;
@@ -336,10 +318,10 @@ class _WeeklyComparisonChartPainter extends CustomPainter {
       ..color = OpenVtsColors.brandInk
       ..style = PaintingStyle.fill;
     final lastPaint = Paint()
-      ..color = labelColor
+      ..color = OpenVtsColors.textTertiary
       ..style = PaintingStyle.fill;
     final dashPaint = Paint()
-      ..color = dashColor.withValues(alpha: 0.85)
+      ..color = OpenVtsColors.surfaceElevated.withValues(alpha: 0.85)
       ..strokeWidth = 1;
 
     for (var index = 0; index < points.length; index++) {
@@ -391,7 +373,7 @@ class _WeeklyComparisonChartPainter extends CustomPainter {
         text: TextSpan(
           text: label.length > 3 ? label.substring(0, 3) : label,
           style: OpenVtsTypography.meta.copyWith(
-            color: labelColor,
+            color: OpenVtsColors.textTertiary,
             fontSize: 9.5,
             fontWeight: FontWeight.w700,
           ),
@@ -407,7 +389,7 @@ class _WeeklyComparisonChartPainter extends CustomPainter {
   void _drawLegend(Canvas canvas) {
     _legendPainter('This week', OpenVtsColors.brandInk)
         .paint(canvas, const Offset(4, 0));
-    _legendPainter('Last week', labelColor)
+    _legendPainter('Last week', OpenVtsColors.textTertiary)
         .paint(canvas, const Offset(92, 0));
   }
 
@@ -427,11 +409,7 @@ class _WeeklyComparisonChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _WeeklyComparisonChartPainter oldDelegate) {
-    return oldDelegate.points != points ||
-        oldDelegate.metric != metric ||
-        oldDelegate.gridColor != gridColor ||
-        oldDelegate.labelColor != labelColor ||
-        oldDelegate.dashColor != dashColor;
+    return oldDelegate.points != points || oldDelegate.metric != metric;
   }
 }
 
@@ -471,9 +449,9 @@ class _SkeletonBlock extends StatelessWidget {
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: context.surface(),
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: context.border()),
+        border: Border.all(color: OpenVtsColors.border),
       ),
     );
   }

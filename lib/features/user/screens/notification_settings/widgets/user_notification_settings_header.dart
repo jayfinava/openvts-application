@@ -38,14 +38,14 @@ class UserNotificationSettingsHeader extends StatelessWidget {
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: context.isDarkMode ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
+                  color: OpenVtsColors.surface,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+                  border: Border.all(color: OpenVtsColors.border),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.notifications_none_rounded,
                   size: 16,
-                  color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
@@ -56,7 +56,7 @@ class UserNotificationSettingsHeader extends StatelessWidget {
                     Text(
                       'Notification Preferences',
                       style: OpenVtsTypography.label.copyWith(
-                        color: context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
+                        color: OpenVtsColors.textPrimary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -64,7 +64,7 @@ class UserNotificationSettingsHeader extends StatelessWidget {
                     Text(
                       'Choose how vehicle alerts, overspeed events, and geofence events reach you.',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                   ],
@@ -99,7 +99,7 @@ class UserNotificationSettingsHeader extends StatelessWidget {
             Text(
               'Last saved ${_headerDateFormatter.formatDateTime(lastSavedAt!.toLocal())}',
               style: OpenVtsTypography.meta.copyWith(
-                color: context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary,
+                color: OpenVtsColors.textTertiary,
               ),
             ),
           ],
@@ -126,9 +126,9 @@ class _MetricChip extends StatelessWidget {
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: context.isDarkMode ? OpenVtsColors.darkSurfaceElevated : OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.surfaceElevated,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -136,13 +136,13 @@ class _MetricChip extends StatelessWidget {
           Icon(
             icon,
             size: 14,
-            color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+            color: OpenVtsColors.textSecondary,
           ),
           const SizedBox(width: OpenVtsSpacing.xxs),
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w600,
             ),
           ),

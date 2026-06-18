@@ -302,13 +302,13 @@ class _InlineErrorBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline_rounded, color: Theme.of(context).colorScheme.error),
+          const Icon(Icons.error_outline_rounded, color: OpenVtsColors.error),
           const SizedBox(width: OpenVtsSpacing.sm),
           Expanded(
             child: Text(
               message,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.error,
+                    color: OpenVtsColors.error,
                   ),
             ),
           ),

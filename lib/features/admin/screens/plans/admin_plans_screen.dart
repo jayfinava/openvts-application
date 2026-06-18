@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
 import '../../../../shared/widgets/open_vts_bottom_sheet.dart';
@@ -170,7 +171,7 @@ class _PlansHeaderCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.titleSmall.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: OpenVtsSpacing.xxs),
@@ -179,7 +180,7 @@ class _PlansHeaderCard extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
               ],
@@ -211,7 +212,7 @@ class _CountText extends StatelessWidget {
     return Text(
       '$filteredCount of $totalCount plans',
       style: OpenVtsTypography.meta.copyWith(
-        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        color: OpenVtsColors.textSecondary,
         fontWeight: FontWeight.w600,
       ),
     );

@@ -18,7 +18,6 @@ class UserTransactionsSummaryStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final successCount = transactions
         .where((item) => item.status == UserTransactionStatus.success)
         .length;
@@ -38,9 +37,7 @@ class UserTransactionsSummaryStrip extends StatelessWidget {
           Text(
             'Summary',
             style: OpenVtsTypography.meta.copyWith(
-              color: isDark
-                  ? OpenVtsColors.darkTextSecondary
-                  : OpenVtsColors.textSecondary,
+              color: OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -72,9 +69,7 @@ class UserTransactionsSummaryStrip extends StatelessWidget {
             Text(
               'Totals by currency',
               style: OpenVtsTypography.meta.copyWith(
-                color: isDark
-                    ? OpenVtsColors.darkTextSecondary
-                    : OpenVtsColors.textSecondary,
+                color: OpenVtsColors.textSecondary,
               ),
             ),
             const SizedBox(height: OpenVtsSpacing.xxs),
@@ -145,27 +140,20 @@ class _AmountChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.xs,
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: isDark
-            ? OpenVtsColors.darkSurfaceElevated
-            : OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.surfaceElevated,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(
-          color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
-        ),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Text(
         label,
         style: OpenVtsTypography.meta.copyWith(
-          color: isDark
-              ? OpenVtsColors.darkTextPrimary
-              : OpenVtsColors.textPrimary,
+          color: OpenVtsColors.textPrimary,
           fontWeight: FontWeight.w600,
         ),
       ),

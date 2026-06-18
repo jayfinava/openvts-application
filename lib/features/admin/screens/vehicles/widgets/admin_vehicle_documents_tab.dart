@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../shared/widgets/open_vts_bottom_sheet.dart';
@@ -12,12 +11,6 @@ import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../models/admin_vehicle_model.dart';
 import 'admin_vehicle_document_sheet.dart';
-
-Color _textSecondaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextSecondary
-      : Theme.of(context).colorScheme.onSurfaceVariant;
-}
 
 class AdminVehicleDocumentsTab extends ConsumerWidget {
   const AdminVehicleDocumentsTab({
@@ -86,49 +79,12 @@ class AdminVehicleDocumentsTab extends ConsumerWidget {
                     Text(doc.title,
                         style: Theme.of(context).textTheme.titleSmall),
                     const SizedBox(height: OpenVtsSpacing.xxs),
-                    Builder(
-                      builder: (context) => Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Document type: ${_safe(doc.docTypeName)}',
-                            style: TextStyle(
-                              color: _textSecondaryColor(context),
-                            ),
-                          ),
-                          Text(
-                            'File: ${_safe(doc.fileName)}',
-                            style: TextStyle(
-                              color: _textSecondaryColor(context),
-                            ),
-                          ),
-                          Text(
-                            'Expiry: ${formatter.formatDate(doc.expiryAt)}',
-                            style: TextStyle(
-                              color: _textSecondaryColor(context),
-                            ),
-                          ),
-                          Text(
-                            'Visibility: ${doc.isVisible ? 'Visible' : 'Hidden'}',
-                            style: TextStyle(
-                              color: _textSecondaryColor(context),
-                            ),
-                          ),
-                          Text(
-                            'Tags: ${_safe(doc.tags)}',
-                            style: TextStyle(
-                              color: _textSecondaryColor(context),
-                            ),
-                          ),
-                          Text(
-                            'Created: ${formatter.formatDate(doc.createdAt)}',
-                            style: TextStyle(
-                              color: _textSecondaryColor(context),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    Text('Document type: ${_safe(doc.docTypeName)}'),
+                    Text('File: ${_safe(doc.fileName)}'),
+                    Text('Expiry: ${formatter.formatDate(doc.expiryAt)}'),
+                    Text('Visibility: ${doc.isVisible ? 'Visible' : 'Hidden'}'),
+                    Text('Tags: ${_safe(doc.tags)}'),
+                    Text('Created: ${formatter.formatDate(doc.createdAt)}'),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     Wrap(
                       spacing: OpenVtsSpacing.xs,
@@ -136,18 +92,18 @@ class AdminVehicleDocumentsTab extends ConsumerWidget {
                       children: [
                         OutlinedButton(
                           onPressed: () => _openFile(context, doc),
-                          child: Text('Open'),
+                          child: const Text('Open'),
                         ),
                         OutlinedButton(
                           onPressed: () =>
                               _openDocumentSheet(context, initial: doc),
-                          child: Text('Edit'),
+                          child: const Text('Edit'),
                         ),
                         OutlinedButton(
                           onPressed: isDeleting
                               ? null
                               : () => _confirmDelete(context, doc),
-                          child: Text('Delete'),
+                          child: const Text('Delete'),
                         ),
                       ],
                     ),
@@ -193,16 +149,16 @@ class AdminVehicleDocumentsTab extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text('Delete document'),
+        title: const Text('Delete document'),
         content: Text('Delete ${doc.title}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text('Delete'),
+            child: const Text('Delete'),
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/open_vts_colors.dart';
 import '../../../core/theme/open_vts_radius.dart';
 import '../../../core/theme/open_vts_spacing.dart';
 import '../../../core/theme/open_vts_typography.dart';
@@ -25,7 +26,7 @@ class OpenVtsDashboardHeader extends StatelessWidget {
         Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: OpenVtsColors.textSecondary,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -37,7 +38,7 @@ class OpenVtsDashboardHeader extends StatelessWidget {
             value,
             maxLines: 1,
             style: OpenVtsTypography.numeric.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
               fontSize: 24,
               fontWeight: FontWeight.w700,
             ),
@@ -73,19 +74,19 @@ class OpenVtsDashboardMetricPill extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
             const SizedBox(width: OpenVtsSpacing.xxs),
           ],
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.textSecondary,
               fontSize: 10.5,
               fontWeight: FontWeight.w700,
             ),
@@ -94,7 +95,7 @@ class OpenVtsDashboardMetricPill extends StatelessWidget {
           Text(
             value,
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -124,21 +125,21 @@ class OpenVtsDashboardStatusPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
             const SizedBox(width: OpenVtsSpacing.xxs),
           ],
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.textSecondary,
               fontSize: 10.5,
               fontWeight: FontWeight.w800,
             ),
@@ -147,7 +148,7 @@ class OpenVtsDashboardStatusPill extends StatelessWidget {
           Text(
             value.toString(),
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w800,
             ),
           ),

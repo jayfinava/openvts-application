@@ -27,10 +27,6 @@ class OpenVtsTheme {
         secondary: OpenVtsColors.brandInkSoft,
         surface: OpenVtsColors.surfaceElevated,
         error: OpenVtsColors.error,
-        onSurface: OpenVtsColors.textPrimary,
-        onSurfaceVariant: OpenVtsColors.textSecondary,
-        outlineVariant: OpenVtsColors.border,
-        surfaceContainer: OpenVtsColors.surface,
       ),
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
@@ -59,10 +55,6 @@ class OpenVtsTheme {
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
           borderSide: const BorderSide(color: OpenVtsColors.brandInk),
         ),
-        hintStyle: const TextStyle(color: OpenVtsColors.textSecondary),
-        labelStyle: const TextStyle(color: OpenVtsColors.textSecondary),
-        errorStyle: const TextStyle(color: OpenVtsColors.error),
-        helperStyle: const TextStyle(color: OpenVtsColors.textTertiary),
       ),
     );
   }
@@ -78,10 +70,6 @@ class OpenVtsTheme {
         secondary: OpenVtsColors.darkTextSecondary,
         surface: OpenVtsColors.darkSurface,
         error: OpenVtsColors.error,
-        onSurface: OpenVtsColors.darkTextPrimary,
-        onSurfaceVariant: OpenVtsColors.darkTextSecondary,
-        outlineVariant: OpenVtsColors.darkBorder,
-        surfaceContainer: Color(0xFF201C28),
       ),
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
@@ -92,28 +80,6 @@ class OpenVtsTheme {
         titleTextStyle: OpenVtsTypography.titleSmall.copyWith(
           color: OpenVtsColors.darkTextPrimary,
         ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: OpenVtsColors.darkSurface,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          borderSide: const BorderSide(color: OpenVtsColors.darkBorder),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          borderSide: const BorderSide(color: OpenVtsColors.darkBorder),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          borderSide: const BorderSide(color: OpenVtsColors.white),
-        ),
-        hintStyle: const TextStyle(color: OpenVtsColors.darkTextSecondary),
-        labelStyle: const TextStyle(color: OpenVtsColors.darkTextSecondary),
-        errorStyle: const TextStyle(color: OpenVtsColors.darkError),
-        helperStyle: const TextStyle(color: OpenVtsColors.darkTextSecondary),
       ),
     );
   }

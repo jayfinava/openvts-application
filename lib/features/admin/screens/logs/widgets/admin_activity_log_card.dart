@@ -85,29 +85,26 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
-
     return Padding(
       padding: const EdgeInsets.only(top: OpenVtsSpacing.xxs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, size: 14, color: textColor),
+          Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
           const SizedBox(width: OpenVtsSpacing.xs),
           if (label.isNotEmpty) ...[
             Text('$label: ',
                 style: OpenVtsTypography.meta.copyWith(
-                    color: textColor, fontWeight: FontWeight.w500)),
+                    color: OpenVtsColors.textSecondary,
+                    fontWeight: FontWeight.w500)),
           ],
           Expanded(
             child: Text(
               value.trim().isEmpty ? '—' : value.trim(),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: OpenVtsTypography.meta.copyWith(color: textColor),
+              style: OpenVtsTypography.meta
+                  .copyWith(color: OpenVtsColors.textSecondary),
             ),
           ),
         ],

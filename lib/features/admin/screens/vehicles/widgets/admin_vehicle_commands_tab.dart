@@ -14,24 +14,6 @@ import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../models/admin_vehicle_model.dart';
 
-Color _textSecondaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextSecondary
-      : Theme.of(context).colorScheme.onSurfaceVariant;
-}
-
-Color _borderColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkBorder
-      : Theme.of(context).colorScheme.outlineVariant;
-}
-
-Color _surfaceColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkSurface
-      : Theme.of(context).colorScheme.surface;
-}
-
 class AdminVehicleCommandsTab extends StatefulWidget {
   const AdminVehicleCommandsTab({
     super.key,
@@ -123,7 +105,7 @@ class _AdminVehicleCommandsTabState extends State<AdminVehicleCommandsTab> {
                     vertical: OpenVtsSpacing.xs,
                   ),
                 ),
-                hint: Text('Select command template'),
+                hint: const Text('Select command template'),
                 items: widget.customCommands
                     .map(
                       (item) => DropdownMenuItem<String>(
@@ -176,35 +158,33 @@ class _AdminVehicleCommandsTabState extends State<AdminVehicleCommandsTab> {
               ),
               if (_latestStatus != '-') ...[
                 const SizedBox(height: OpenVtsSpacing.sm),
-                Builder(
-                  builder: (context) => Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: OpenVtsSpacing.sm,
-                      vertical: OpenVtsSpacing.xs,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _surfaceColor(context),
-                      borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                      border: Border.all(color: _borderColor(context)),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.info_rounded,
-                          size: 16,
-                          color: _textSecondaryColor(context),
-                        ),
-                        const SizedBox(width: OpenVtsSpacing.xs),
-                        Expanded(
-                          child: Text(
-                            'Status: $_latestStatus',
-                            style: OpenVtsTypography.meta.copyWith(
-                              fontSize: 12,
-                            ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: OpenVtsSpacing.sm,
+                    vertical: OpenVtsSpacing.xs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: OpenVtsColors.background,
+                    borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+                    border: Border.all(color: OpenVtsColors.border),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.info_rounded,
+                        size: 16,
+                        color: OpenVtsColors.textSecondary,
+                      ),
+                      const SizedBox(width: OpenVtsSpacing.xs),
+                      Expanded(
+                        child: Text(
+                          'Status: $_latestStatus',
+                          style: OpenVtsTypography.meta.copyWith(
+                            fontSize: 12,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -412,25 +392,18 @@ class _TargetVehicleCard extends StatelessWidget {
           ),
           if (vehicle.plateNumber.trim().isNotEmpty) ...[
             const SizedBox(height: 2),
-            Builder(
-              builder: (context) => Text(
-                vehicle.plateNumber,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: OpenVtsTypography.meta.copyWith(
-                  color: _textSecondaryColor(context),
-                  fontSize: 12,
-                ),
+            Text(
+              vehicle.plateNumber,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: OpenVtsTypography.meta.copyWith(
+                color: OpenVtsColors.textSecondary,
+                fontSize: 12,
               ),
             ),
           ],
           const SizedBox(height: OpenVtsSpacing.sm),
-          Builder(
-            builder: (context) => Divider(
-              height: 1,
-              color: _borderColor(context),
-            ),
-          ),
+          const Divider(height: 1, color: OpenVtsColors.border),
           const SizedBox(height: OpenVtsSpacing.sm),
           Row(
             children: [
@@ -499,7 +472,7 @@ class _DetailItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: _textSecondaryColor(context).withValues(alpha: 0.6)),
+        Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Column(
@@ -509,7 +482,7 @@ class _DetailItem extends StatelessWidget {
               Text(
                 label,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: _textSecondaryColor(context),
+                  color: OpenVtsColors.textSecondary,
                   fontSize: 10,
                 ),
               ),
@@ -565,7 +538,7 @@ class _CommandHistoryCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
-          Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+          const Divider(height: 1, color: OpenVtsColors.border),
           const SizedBox(height: OpenVtsSpacing.sm),
           Row(
             children: [
@@ -594,7 +567,7 @@ class _CommandHistoryCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textSecondary,
                 fontSize: 12,
               ),
             ),
@@ -616,28 +589,24 @@ class _StatusChip extends StatelessWidget {
 
   final String status;
 
-  Color _getStatusColor(BuildContext context) {
+  Color _getStatusColor() {
     switch (status.toUpperCase()) {
       case 'RESPONDED':
-        return Theme.of(context).brightness == Brightness.dark
-            ? OpenVtsColors.darkSuccess
-            : OpenVtsColors.success;
+        return OpenVtsColors.success;
       case 'FAILED':
       case 'ENCODE_FAILED':
       case 'ERROR':
-        return Theme.of(context).colorScheme.error;
+        return OpenVtsColors.error;
       case 'TIMEOUT':
-        return Theme.of(context).brightness == Brightness.dark
-            ? OpenVtsColors.darkWarning
-            : OpenVtsColors.warning;
+        return OpenVtsColors.warning;
       default:
-        return Theme.of(context).colorScheme.onSurfaceVariant;
+        return OpenVtsColors.textSecondary;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final color = _getStatusColor(context);
+    final color = _getStatusColor();
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.xs,

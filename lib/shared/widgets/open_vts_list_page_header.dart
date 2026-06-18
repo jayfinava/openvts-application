@@ -291,7 +291,7 @@ class OpenVtsListPageSearchInput extends StatelessWidget {
             textAlignVertical: TextAlignVertical.center,
             cursorColor: OpenVtsListPageTheme.primaryInkColor(context),
             cursorWidth: 1.4,
-            style: _baseStyle.copyWith(color: Theme.of(context).colorScheme.onSurface),
+            style: _baseStyle.copyWith(color: OpenVtsColors.textPrimary),
             strutStyle: const StrutStyle(
               fontFamily: OpenVtsTypography.primaryFontFamily,
               fontFamilyFallback: OpenVtsTypography.fontFallback,
@@ -307,18 +307,18 @@ class OpenVtsListPageSearchInput extends StatelessWidget {
               isCollapsed: false,
               hintText: hintText,
               hintStyle: _baseStyle.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textTertiary,
                 fontWeight: FontWeight.w400,
               ),
-              prefixIcon: Padding(
-                padding: const EdgeInsetsDirectional.only(
+              prefixIcon: const Padding(
+                padding: EdgeInsetsDirectional.only(
                   start: OpenVtsSpacing.sm,
                   end: OpenVtsSpacing.xs,
                 ),
                 child: Icon(
                   Icons.search_rounded,
                   size: 18,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               prefixIconConstraints: const BoxConstraints(
@@ -343,10 +343,10 @@ class OpenVtsListPageSearchInput extends StatelessWidget {
                           minHeight: 28,
                         ),
                         splashRadius: 16,
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.close_rounded,
                           size: 16,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: OpenVtsColors.textSecondary,
                         ),
                       ),
                     ),
@@ -469,12 +469,12 @@ class OpenVtsListPageRecordsDropdown extends StatelessWidget {
         child: DropdownButton<int>(
           value: value,
           isDense: true,
-          icon: Padding(
-            padding: const EdgeInsetsDirectional.only(start: 2),
+          icon: const Padding(
+            padding: EdgeInsetsDirectional.only(start: 2),
             child: Icon(
               Icons.keyboard_arrow_down_rounded,
               size: 16,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.textSecondary,
             ),
           ),
           style: OpenVtsTypography.label.copyWith(
@@ -532,7 +532,7 @@ class OpenVtsListPagePaginationFooter extends StatelessWidget {
           Text(
             'Showing $showingCount of $totalCount',
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.textSecondary,
             ),
           ),
           if (pageCount > 1) ...[
@@ -551,7 +551,6 @@ class OpenVtsListPagePaginationFooter extends StatelessWidget {
                   child: Text(
                     'Page $currentPage of $pageCount',
                     style: OpenVtsTypography.label.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -606,7 +605,7 @@ class OpenVtsListPagePageButton extends StatelessWidget {
             size: 18,
             color: enabled
                 ? OpenVtsListPageTheme.primaryInkColor(context)
-                : Theme.of(context).colorScheme.onSurfaceVariant,
+                : OpenVtsColors.textTertiary,
           ),
         ),
       ),
@@ -652,7 +651,7 @@ class OpenVtsListPageOptionsSheet extends StatelessWidget {
                 width: 40,
                 margin: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.outlineVariant,
+                  color: OpenVtsColors.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -679,7 +678,7 @@ class OpenVtsListPageOptionsSheet extends StatelessWidget {
               Text(
                 section.label,
                 style: OpenVtsTypography.label.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: OpenVtsColors.textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -812,7 +811,7 @@ class OpenVtsListPageRadioRow extends StatelessWidget {
               size: 18,
               color: selected
                   ? OpenVtsListPageTheme.primaryInkColor(context)
-                  : Theme.of(context).colorScheme.onSurfaceVariant,
+                  : OpenVtsColors.textTertiary,
             ),
             const SizedBox(width: OpenVtsSpacing.sm),
             Expanded(

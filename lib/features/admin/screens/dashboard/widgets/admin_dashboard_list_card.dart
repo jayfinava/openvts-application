@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -60,7 +61,7 @@ class AdminDashboardListCard extends StatelessWidget {
               ],
             ),
           ),
-          Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+          const Divider(height: 1),
           if (itemCount == 0)
             AdminDashboardCompactEmpty(
               icon: icon,
@@ -98,11 +99,11 @@ class AdminDashboardListHeading extends StatelessWidget {
           width: 28,
           height: 28,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
+            color: OpenVtsColors.surface,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+            border: Border.all(color: OpenVtsColors.border),
           ),
-          child: Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          child: Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
         ),
         const SizedBox(width: OpenVtsSpacing.xs),
         Flexible(
@@ -111,7 +112,7 @@ class AdminDashboardListHeading extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.label.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -137,8 +138,8 @@ class AdminDashboardInitialsAvatar extends StatelessWidget {
       width: size,
       height: size,
       alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
+      decoration: const BoxDecoration(
+        color: OpenVtsColors.brandInk,
         shape: BoxShape.circle,
       ),
       child: Text(
@@ -146,7 +147,7 @@ class AdminDashboardInitialsAvatar extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.clip,
         style: OpenVtsTypography.meta.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: OpenVtsColors.white,
           fontSize: 11,
           fontWeight: FontWeight.w900,
         ),
@@ -166,11 +167,11 @@ class AdminDashboardLeadingIcon extends StatelessWidget {
       width: 36,
       height: 36,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
-      child: Icon(icon, size: 17, color: Theme.of(context).colorScheme.onSurfaceVariant),
+      child: Icon(icon, size: 17, color: OpenVtsColors.textSecondary),
     );
   }
 }
@@ -179,29 +180,28 @@ class AdminDashboardStatusChip extends StatelessWidget {
   const AdminDashboardStatusChip({
     required this.label,
     this.icon,
-    this.color,
+    this.color = OpenVtsColors.textSecondary,
     super.key,
   });
 
   final String label;
   final IconData? icon;
-  final Color? color;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final iconColor = color ?? Theme.of(context).colorScheme.onSurfaceVariant;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 12, color: iconColor),
+            Icon(icon, size: 12, color: color),
             const SizedBox(width: 4),
           ],
           Flexible(
@@ -210,7 +210,7 @@ class AdminDashboardStatusChip extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textSecondary,
                 fontSize: 10.5,
                 fontWeight: FontWeight.w800,
               ),
@@ -246,18 +246,18 @@ class AdminDashboardCompactEmpty extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainer,
+                color: OpenVtsColors.surface,
                 borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                border: Border.all(color: OpenVtsColors.border),
               ),
-              child: Icon(icon, size: 18, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              child: Icon(icon, size: 18, color: OpenVtsColors.textTertiary),
             ),
             const SizedBox(height: OpenVtsSpacing.xs),
             Text(
               title,
               textAlign: TextAlign.center,
               style: OpenVtsTypography.label.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
+                color: OpenVtsColors.textPrimary,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -268,7 +268,7 @@ class AdminDashboardCompactEmpty extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textSecondary,
                 fontSize: 10.5,
               ),
             ),
@@ -321,7 +321,7 @@ class _DividedList extends StatelessWidget {
     return Column(
       children: [
         for (var index = 0; index < itemCount; index++) ...[
-          if (index > 0) Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+          if (index > 0) const Divider(height: 1),
           itemBuilder(context, index),
         ],
       ],
@@ -342,7 +342,7 @@ class _ViewAllButton extends StatelessWidget {
         visualDensity: VisualDensity.compact,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        foregroundColor: OpenVtsColors.textPrimary,
         textStyle: OpenVtsTypography.meta.copyWith(
           fontSize: 10.5,
           fontWeight: FontWeight.w800,

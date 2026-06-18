@@ -363,11 +363,6 @@ class _ConversationHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(
@@ -376,9 +371,9 @@ class _ConversationHeader extends StatelessWidget {
         OpenVtsSpacing.md,
         OpenVtsSpacing.sm,
       ),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        border: Border(bottom: BorderSide(color: borderColor)),
+      decoration: const BoxDecoration(
+        color: OpenVtsColors.surface,
+        border: Border(bottom: BorderSide(color: OpenVtsColors.border)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -648,19 +643,14 @@ class _AdminSupportMessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final alignment =
         isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
     final borderColor = isCurrentUser
         ? OpenVtsColors.brandInk.withValues(alpha: 0.18)
-        : isDark
-            ? OpenVtsColors.darkBorder
-            : OpenVtsColors.border;
+        : OpenVtsColors.border;
     final backgroundColor = isCurrentUser
         ? OpenVtsColors.brandInk.withValues(alpha: 0.045)
-        : isDark
-            ? OpenVtsColors.darkSurface
-            : OpenVtsColors.surface;
+        : Theme.of(context).colorScheme.surface;
 
     return Align(
       alignment: alignment,
@@ -686,9 +676,7 @@ class _AdminSupportMessageBubble extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: isDark
-                            ? OpenVtsColors.darkTextSecondary
-                            : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -698,9 +686,7 @@ class _AdminSupportMessageBubble extends StatelessWidget {
                     Text(
                       _dateFormatter.formatDateTime(message.createdAt!),
                       style: OpenVtsTypography.meta.copyWith(
-                        color: isDark
-                            ? OpenVtsColors.darkTextSecondary
-                            : OpenVtsColors.textTertiary,
+                        color: OpenVtsColors.textTertiary,
                       ),
                     ),
                   ],
@@ -760,19 +746,14 @@ class _ReplyComposer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-
     return SafeArea(
       top: false,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(OpenVtsSpacing.md),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          border: Border(top: BorderSide(color: borderColor)),
+        decoration: const BoxDecoration(
+          color: OpenVtsColors.surface,
+          border: Border(top: BorderSide(color: OpenVtsColors.border)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -839,14 +820,6 @@ class _ClosedTicketNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-    final textColor = isDark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(
@@ -861,14 +834,14 @@ class _ClosedTicketNotice extends StatelessWidget {
           vertical: OpenVtsSpacing.xs,
         ),
         decoration: BoxDecoration(
-          color: backgroundColor,
-          border: Border.all(color: borderColor),
+          color: OpenVtsColors.surface,
+          border: Border.all(color: OpenVtsColors.border),
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
         ),
         child: Text(
           'This ticket is closed. Reply may reopen or move it to In Progress based on backend behavior.',
           style: OpenVtsTypography.body.copyWith(
-            color: textColor,
+            color: OpenVtsColors.textSecondary,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -956,11 +929,6 @@ class _DraftAttachmentWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-
     return Wrap(
       spacing: OpenVtsSpacing.xs,
       runSpacing: OpenVtsSpacing.xs,
@@ -972,9 +940,9 @@ class _DraftAttachmentWrap extends StatelessWidget {
                 end: OpenVtsSpacing.xxs,
               ),
               decoration: BoxDecoration(
-                border: Border.all(color: borderColor),
+                border: Border.all(color: OpenVtsColors.border),
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                color: backgroundColor,
+                color: OpenVtsColors.surface,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -1052,11 +1020,6 @@ class _UploadedAttachmentChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-
     return InkWell(
       borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       onTap: () => _openAttachment(context),
@@ -1068,8 +1031,8 @@ class _UploadedAttachmentChip extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          border: Border.all(color: borderColor),
-          color: backgroundColor,
+          border: Border.all(color: OpenVtsColors.border),
+          color: OpenVtsColors.surface,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

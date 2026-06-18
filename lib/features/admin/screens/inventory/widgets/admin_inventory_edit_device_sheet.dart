@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
@@ -59,12 +58,7 @@ class _AdminInventoryEditDeviceSheetState
                 initialValue: _deviceTypeId,
                 items: _deviceTypes
                     .map((item) => DropdownMenuItem<String>(
-                        value: item.id, child: Text(item.name,
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? OpenVtsColors.darkTextPrimary
-                              : OpenVtsColors.textPrimary,
-                        ))))
+                        value: item.id, child: Text(item.name)))
                     .toList(growable: false),
                 decoration: const InputDecoration(labelText: 'Device Type'),
                 onChanged: isSubmitting
@@ -76,12 +70,7 @@ class _AdminInventoryEditDeviceSheetState
                 initialValue: _simId,
                 items: _simCards
                     .map((item) => DropdownMenuItem<String>(
-                        value: item.id, child: Text(item.simNumber,
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? OpenVtsColors.darkTextPrimary
-                              : OpenVtsColors.textPrimary,
-                        ))))
+                        value: item.id, child: Text(item.simNumber)))
                     .toList(growable: false),
                 decoration: const InputDecoration(labelText: 'SIM Number'),
                 onChanged:
@@ -90,25 +79,10 @@ class _AdminInventoryEditDeviceSheetState
               const SizedBox(height: OpenVtsSpacing.sm),
               DropdownButtonFormField<String>(
                 initialValue: _status,
-                items: [
-                  DropdownMenuItem(value: 'IN_STOCK', child: Text('IN_STOCK',
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? OpenVtsColors.darkTextPrimary
-                            : OpenVtsColors.textPrimary,
-                      ))),
-                  DropdownMenuItem(value: 'IN_USE', child: Text('IN_USE',
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? OpenVtsColors.darkTextPrimary
-                            : OpenVtsColors.textPrimary,
-                      ))),
-                  DropdownMenuItem(value: 'IN_SCRAP', child: Text('IN_SCRAP',
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? OpenVtsColors.darkTextPrimary
-                            : OpenVtsColors.textPrimary,
-                      ))),
+                items: const [
+                  DropdownMenuItem(value: 'IN_STOCK', child: Text('IN_STOCK')),
+                  DropdownMenuItem(value: 'IN_USE', child: Text('IN_USE')),
+                  DropdownMenuItem(value: 'IN_SCRAP', child: Text('IN_SCRAP')),
                 ],
                 decoration: const InputDecoration(labelText: 'Status'),
                 onChanged: isSubmitting
@@ -119,12 +93,7 @@ class _AdminInventoryEditDeviceSheetState
               SwitchListTile.adaptive(
                 value: _isActive,
                 contentPadding: EdgeInsets.zero,
-                title: Text('Active',
-                  style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? OpenVtsColors.darkTextPrimary
-                        : OpenVtsColors.textPrimary,
-                  )),
+                title: const Text('Active'),
                 onChanged:
                     isSubmitting ? null : (v) => setState(() => _isActive = v),
               ),

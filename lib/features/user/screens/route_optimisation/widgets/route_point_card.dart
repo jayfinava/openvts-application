@@ -52,15 +52,10 @@ class RoutePointCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = isSelected
-        ? OpenVtsColors.brandInk
-        : (context.isDarkMode
-            ? OpenVtsColors.darkBorder
-            : OpenVtsColors.border);
+    final borderColor =
+        isSelected ? OpenVtsColors.brandInk : OpenVtsColors.border;
     return Material(
-      color: context.isDarkMode
-          ? OpenVtsColors.darkSurfaceElevated
-          : OpenVtsColors.surfaceElevated,
+      color: OpenVtsColors.surfaceElevated,
       borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       child: InkWell(
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
@@ -111,9 +106,7 @@ class RoutePointCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: OpenVtsTypography.meta.copyWith(
-                            color: context.isDarkMode
-                                ? OpenVtsColors.darkTextSecondary
-                                : OpenVtsColors.textSecondary,
+                            color: OpenVtsColors.textSecondary,
                           ),
                         ),
                       ],
@@ -205,12 +198,8 @@ class _IndexBadge extends StatelessWidget {
       bg = OpenVtsColors.info;
       fg = OpenVtsColors.white;
     } else {
-      bg = context.isDarkMode
-          ? OpenVtsColors.darkSurface
-          : OpenVtsColors.surface;
-      fg = context.isDarkMode
-          ? OpenVtsColors.darkTextPrimary
-          : OpenVtsColors.textPrimary;
+      bg = OpenVtsColors.surface;
+      fg = OpenVtsColors.textPrimary;
     }
     return Container(
       width: 26,
@@ -349,23 +338,14 @@ class _MoveButton extends StatelessWidget {
         height: 18,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: enabled
-              ? (context.isDarkMode
-                  ? OpenVtsColors.darkSurface
-                  : OpenVtsColors.surface)
-              : Colors.transparent,
+          color: enabled ? OpenVtsColors.surface : Colors.transparent,
           borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
         ),
         child: Icon(
           icon,
           size: 14,
-          color: enabled
-              ? (context.isDarkMode
-                  ? OpenVtsColors.darkTextPrimary
-                  : OpenVtsColors.textPrimary)
-              : (context.isDarkMode
-                  ? OpenVtsColors.darkTextTertiary
-                  : OpenVtsColors.textTertiary),
+          color:
+              enabled ? OpenVtsColors.textPrimary : OpenVtsColors.textTertiary,
         ),
       ),
     );

@@ -114,8 +114,8 @@ class AdminCalendarScreen extends ConsumerWidget {
                                 textAlign: TextAlign.center,
                                 style: OpenVtsTypography.titleMedium.copyWith(
                                   color: OpenVtsColors.textPrimary,
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.w700,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                               const SizedBox(height: OpenVtsSpacing.md),
@@ -319,7 +319,7 @@ class AdminCalendarScreen extends ConsumerWidget {
         child: AspectRatio(
           aspectRatio: 1,
           child: Container(
-            padding: const EdgeInsets.fromLTRB(5.5, 5, 5.5, 4),
+            padding: const EdgeInsets.fromLTRB(7, 6, 7, 5),
             decoration: BoxDecoration(
               color: backgroundColor,
               borderRadius: BorderRadius.circular(OpenVtsRadius.md),
@@ -341,7 +341,7 @@ class AdminCalendarScreen extends ConsumerWidget {
                   '${day.day}',
                   style: OpenVtsTypography.body.copyWith(
                     color: foregroundColor,
-                    fontSize: 14,
+                    fontSize: 13,
                     height: 1.0,
                     fontWeight:
                         isSelected || isToday ? FontWeight.w700 : FontWeight.w600,
@@ -351,14 +351,10 @@ class AdminCalendarScreen extends ConsumerWidget {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       ...visibleMetricRows,
-                      if (isToday && !isOutside) ...[
-                        const Spacer(),
-                        _TodayBadge(inverted: isSelected),
-                      ] else
-                        const Spacer(),
+                      const Spacer(),
+                      if (isToday && !isOutside) _TodayBadge(inverted: isSelected),
                     ],
                   ),
                 ),
@@ -583,20 +579,16 @@ class _NavigationButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 38,
-      height: 38,
+      width: 36,
+      height: 36,
       child: IconButton(
         onPressed: onPressed,
         style: IconButton.styleFrom(
           backgroundColor: OpenVtsColors.surface,
           foregroundColor: OpenVtsColors.textPrimary,
-          side: const BorderSide(
-            color: OpenVtsColors.border,
-            width: 1,
-          ),
-          elevation: 0,
+          side: const BorderSide(color: OpenVtsColors.border),
         ),
-        icon: Icon(icon, size: 20),
+        icon: Icon(icon, size: 18),
       ),
     );
   }
@@ -624,23 +616,21 @@ class _FilterPill extends StatelessWidget {
       onSelected: (nextValue) => onChanged(value, nextValue),
       avatar: Icon(
         icon,
-        size: 15,
+        size: 14,
         color: selected ? OpenVtsColors.white : OpenVtsColors.textSecondary,
       ),
       label: Text(label),
       backgroundColor: OpenVtsColors.surfaceElevated,
-      selectedColor: OpenVtsColors.brandInk,
+      selectedColor: OpenVtsColors.brandInkSoft,
       checkmarkColor: OpenVtsColors.white,
       side: BorderSide(
         color: selected
-            ? OpenVtsColors.brandInk.withValues(alpha: 0.95)
+            ? OpenVtsColors.brandInkSoft.withValues(alpha: 0.9)
             : OpenVtsColors.border.withValues(alpha: 0.85),
-        width: selected ? 1.5 : 1,
       ),
       labelStyle: OpenVtsTypography.meta.copyWith(
         color: selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
         fontWeight: FontWeight.w600,
-        fontSize: selected ? 12 : 11,
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -669,14 +659,13 @@ class _DayMetricRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final labelColor = inverted
-        ? OpenVtsColors.white.withValues(alpha: 0.92)
+        ? OpenVtsColors.white.withValues(alpha: 0.88)
         : OpenVtsColors.textSecondary;
     final valueColor = inverted ? OpenVtsColors.white : OpenVtsColors.textPrimary;
 
     return Padding(
-      padding: const EdgeInsets.only(top: 1.5),
+      padding: const EdgeInsets.only(top: 1),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             width: 3.5,
@@ -693,10 +682,10 @@ class _DayMetricRow extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                fontSize: 8.5,
+                fontSize: 8,
                 color: labelColor,
                 fontWeight: FontWeight.w500,
-                height: 1.1,
+                height: 1.0,
               ),
             ),
           ),
@@ -704,10 +693,10 @@ class _DayMetricRow extends StatelessWidget {
           Text(
             '$value',
             style: OpenVtsTypography.meta.copyWith(
-              fontSize: 8.5,
+              fontSize: 8,
               color: valueColor,
               fontWeight: FontWeight.w700,
-              height: 1.1,
+              height: 1.0,
             ),
           ),
         ],
@@ -741,10 +730,10 @@ class _TodayBadge extends StatelessWidget {
         fontSize: inverted ? 6.5 : 7,
         height: 1.0,
         color: inverted
-            ? OpenVtsColors.white.withValues(alpha: 0.9)
+            ? OpenVtsColors.white.withValues(alpha: 0.86)
             : OpenVtsColors.white,
         fontWeight: FontWeight.w700,
-        letterSpacing: inverted ? 0.2 : 0.25,
+        letterSpacing: inverted ? 0.25 : 0.3,
       ),
     );
 
@@ -754,7 +743,7 @@ class _TodayBadge extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 4,
+        horizontal: 5,
         vertical: 2,
       ),
       decoration: BoxDecoration(

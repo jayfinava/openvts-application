@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../shared/widgets/open_vts_bottom_sheet.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
@@ -11,12 +10,6 @@ import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../models/admin_vehicle_model.dart';
 import 'admin_vehicle_sensor_sheet.dart';
-
-Color _textSecondaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextSecondary
-      : Theme.of(context).colorScheme.onSurfaceVariant;
-}
 
 class AdminVehicleSensorsTab extends StatefulWidget {
   const AdminVehicleSensorsTab({
@@ -115,42 +108,15 @@ class _AdminVehicleSensorsTabState extends State<AdminVehicleSensorsTab> {
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
-                        Builder(
-                          builder: (context) => Text(
-                            sensor.isOk ? 'Active' : 'Inactive',
-                            style: TextStyle(
-                              color: _textSecondaryColor(context),
-                            ),
-                          ),
-                        ),
+                        Text(sensor.isOk ? 'Active' : 'Inactive'),
                       ],
                     ),
                     const SizedBox(height: OpenVtsSpacing.xxs),
-                    Builder(
-                      builder: (context) => Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Live Value: ${_safe(sensor.latestValue)} ${_safe(sensor.unit ?? '')}',
-                            style: TextStyle(
-                              color: _textSecondaryColor(context),
-                            ),
-                          ),
-                          Text(
-                            'Status: ${_safe(sensor.status)}',
-                            style: TextStyle(
-                              color: _textSecondaryColor(context),
-                            ),
-                          ),
-                          Text(
-                            'Code: ${_safe(sensor.sourceKey ?? sensor.expression ?? '')}',
-                            style: TextStyle(
-                              color: _textSecondaryColor(context),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    Text(
+                        'Live Value: ${_safe(sensor.latestValue)} ${_safe(sensor.unit ?? '')}'),
+                    Text('Status: ${_safe(sensor.status)}'),
+                    Text(
+                        'Code: ${_safe(sensor.sourceKey ?? sensor.expression ?? '')}'),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     Wrap(
                       spacing: OpenVtsSpacing.xs,
@@ -158,7 +124,7 @@ class _AdminVehicleSensorsTabState extends State<AdminVehicleSensorsTab> {
                       children: [
                         OutlinedButton(
                           onPressed: () => _openEditSheet(sensor),
-                          child: Text('Edit'),
+                          child: const Text('Edit'),
                         ),
                         OutlinedButton(
                           onPressed: widget.isRunning
@@ -171,13 +137,13 @@ class _AdminVehicleSensorsTabState extends State<AdminVehicleSensorsTab> {
                                   child:
                                       CircularProgressIndicator(strokeWidth: 2),
                                 )
-                              : Text('Run'),
+                              : const Text('Run'),
                         ),
                         OutlinedButton(
                           onPressed: widget.isDeleting
                               ? null
                               : () => _deleteSensor(sensor),
-                          child: Text('Delete'),
+                          child: const Text('Delete'),
                         ),
                       ],
                     ),
@@ -262,16 +228,16 @@ class _AdminVehicleSensorsTabState extends State<AdminVehicleSensorsTab> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text('Delete sensor'),
+        title: const Text('Delete sensor'),
         content: Text('Delete ${sensor.name}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text('Delete'),
+            child: const Text('Delete'),
           ),
         ],
       ),

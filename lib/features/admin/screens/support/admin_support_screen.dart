@@ -209,16 +209,10 @@ class _ConversationSplitPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDark
-        ? OpenVtsColors.darkSurfaceElevated
-        : OpenVtsColors.surfaceElevated;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-
     return Container(
       decoration: BoxDecoration(
-        color: backgroundColor,
-        border: Border.all(color: borderColor),
+        color: OpenVtsColors.surfaceElevated,
+        border: Border.all(color: OpenVtsColors.border),
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       ),
       clipBehavior: Clip.antiAlias,
@@ -234,17 +228,6 @@ class _SelectTicketPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-    final iconColor = isDark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
-    final textColor = isDark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
-
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(OpenVtsSpacing.lg),
@@ -255,14 +238,14 @@ class _SelectTicketPlaceholder extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: backgroundColor,
-                border: Border.all(color: borderColor),
+                color: OpenVtsColors.surface,
+                border: Border.all(color: OpenVtsColors.border),
                 borderRadius: BorderRadius.circular(OpenVtsRadius.md),
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.forum_outlined,
                 size: 22,
-                color: iconColor,
+                color: OpenVtsColors.textSecondary,
               ),
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
@@ -275,7 +258,7 @@ class _SelectTicketPlaceholder extends StatelessWidget {
               'Open a support ticket to review the full conversation.',
               textAlign: TextAlign.center,
               style: OpenVtsTypography.body.copyWith(
-                color: textColor,
+                color: OpenVtsColors.textSecondary,
               ),
             ),
           ],

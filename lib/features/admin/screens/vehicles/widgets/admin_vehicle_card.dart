@@ -7,18 +7,6 @@ import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../models/admin_vehicle_model.dart';
 
-Color _textSecondaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextSecondary
-      : Theme.of(context).colorScheme.onSurfaceVariant;
-}
-
-Color _textPrimaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextPrimary
-      : Theme.of(context).colorScheme.onSurface;
-}
-
 class AdminVehicleCard extends StatelessWidget {
   const AdminVehicleCard({
     super.key,
@@ -134,7 +122,7 @@ class _CardHeader extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
               ],
@@ -170,7 +158,7 @@ class _PlateBadge extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: OpenVtsTypography.meta.copyWith(
-          color: _textSecondaryColor(context),
+          color: OpenVtsColors.textSecondary,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -320,8 +308,6 @@ class _InfoField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final resolved = value.trim().isEmpty ? '-' : value.trim();
-    final textSecondary = _textSecondaryColor(context);
-    final textPrimary = _textPrimaryColor(context);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -329,7 +315,7 @@ class _InfoField extends StatelessWidget {
         Icon(
           icon,
           size: 16,
-          color: textSecondary,
+          color: OpenVtsColors.textSecondary,
         ),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
@@ -338,7 +324,7 @@ class _InfoField extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             text: TextSpan(
               style: OpenVtsTypography.label.copyWith(
-                color: textPrimary,
+                color: OpenVtsColors.textPrimary,
                 height: 1.4,
               ),
               children: [
@@ -377,43 +363,37 @@ class _CreatedFooter extends StatelessWidget {
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
         border: Border.all(color: _softBorderColor(context)),
       ),
-      child: Builder(
-        builder: (context) {
-          final textSecondary = _textSecondaryColor(context);
-          final textPrimary = _textPrimaryColor(context);
-          return Row(
-            children: [
-              Icon(
-                Icons.schedule_outlined,
-                size: 16,
-                color: textSecondary,
-              ),
-              const SizedBox(width: OpenVtsSpacing.xs),
-              Expanded(
-                child: RichText(
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  text: TextSpan(
-                    style: OpenVtsTypography.label.copyWith(
-                      color: textPrimary,
-                      height: 1.4,
-                    ),
-                    children: [
-                      const TextSpan(
-                        text: 'Created : ',
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      TextSpan(
-                        text: createdValue,
-                        style: const TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                    ],
-                  ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.schedule_outlined,
+            size: 16,
+            color: OpenVtsColors.textSecondary,
+          ),
+          const SizedBox(width: OpenVtsSpacing.xs),
+          Expanded(
+            child: RichText(
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(
+                style: OpenVtsTypography.label.copyWith(
+                  color: OpenVtsColors.textPrimary,
+                  height: 1.4,
                 ),
+                children: [
+                  const TextSpan(
+                    text: 'Created : ',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  TextSpan(
+                    text: createdValue,
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ],
               ),
-            ],
-          );
-        },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -467,11 +447,11 @@ Color _softSurfaceColor(BuildContext context) {
 Color _softBorderColor(BuildContext context) {
   return Theme.of(context).brightness == Brightness.dark
       ? OpenVtsColors.darkBorder
-      : Theme.of(context).colorScheme.outlineVariant;
+      : OpenVtsColors.border;
 }
 
 Color _primaryInkColor(BuildContext context) {
   return Theme.of(context).brightness == Brightness.dark
       ? OpenVtsColors.darkTextPrimary
-      : Theme.of(context).colorScheme.primary;
+      : OpenVtsColors.brandInk;
 }

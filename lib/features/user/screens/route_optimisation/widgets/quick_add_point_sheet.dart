@@ -85,7 +85,7 @@ class _QuickAddBodyState extends State<_QuickAddBody> {
           Text(
             'Name',
             style: OpenVtsTypography.meta.copyWith(
-              color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+              color: OpenVtsColors.textSecondary,
             ),
           ),
           const SizedBox(height: 4),
@@ -108,11 +108,11 @@ class _QuickAddBodyState extends State<_QuickAddBody> {
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                borderSide: BorderSide(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+                borderSide: const BorderSide(color: OpenVtsColors.border),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                borderSide: BorderSide(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+                borderSide: const BorderSide(color: OpenVtsColors.border),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
@@ -127,8 +127,8 @@ class _QuickAddBodyState extends State<_QuickAddBody> {
                 child: OutlinedButton(
                   onPressed: () => Navigator.of(context).pop(),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
-                    side: BorderSide(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+                    foregroundColor: OpenVtsColors.textPrimary,
+                    side: const BorderSide(color: OpenVtsColors.border),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(OpenVtsRadius.button),
                     ),
@@ -179,10 +179,10 @@ class _CoordsRow extends StatelessWidget {
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: context.isDarkMode ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
         border: Border.all(
-          color: valid ? (context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border) : OpenVtsColors.error,
+          color: valid ? OpenVtsColors.border : OpenVtsColors.error,
         ),
       ),
       child: Row(
@@ -190,7 +190,7 @@ class _CoordsRow extends StatelessWidget {
           Icon(
             valid ? Icons.location_on_outlined : Icons.error_outline,
             size: 14,
-            color: valid ? (context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary) : OpenVtsColors.error,
+            color: valid ? OpenVtsColors.textSecondary : OpenVtsColors.error,
           ),
           const SizedBox(width: 6),
           Expanded(
@@ -199,7 +199,7 @@ class _CoordsRow extends StatelessWidget {
                   ? '${lat.toStringAsFixed(6)}, ${lon.toStringAsFixed(6)}'
                   : 'Invalid coordinates from map tap.',
               style: OpenVtsTypography.label.copyWith(
-                color: valid ? (context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary) : OpenVtsColors.error,
+                color: valid ? OpenVtsColors.textPrimary : OpenVtsColors.error,
               ),
             ),
           ),

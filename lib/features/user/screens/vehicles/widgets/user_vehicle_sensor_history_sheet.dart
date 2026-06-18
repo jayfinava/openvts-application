@@ -135,9 +135,9 @@ class _HistoryHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         children: [
@@ -145,11 +145,11 @@ class _HistoryHeader extends StatelessWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
+              color: OpenVtsColors.white,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              border: Border.all(color: OpenVtsColors.border),
             ),
-            child: Icon(Icons.timeline_rounded, size: 18),
+            child: const Icon(Icons.timeline_rounded, size: 18),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
           Expanded(
@@ -161,7 +161,7 @@ class _HistoryHeader extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -173,7 +173,7 @@ class _HistoryHeader extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -223,9 +223,9 @@ class _StatTile extends StatelessWidget {
           vertical: OpenVtsSpacing.xs,
         ),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: OpenVtsColors.surface,
           borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          border: Border.all(color: OpenVtsColors.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,7 +233,7 @@ class _StatTile extends StatelessWidget {
             Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textSecondary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -243,7 +243,7 @@ class _StatTile extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.label.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
+                color: OpenVtsColors.textPrimary,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -273,9 +273,9 @@ class _HistoryChart extends StatelessWidget {
       height: 152,
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -283,20 +283,12 @@ class _HistoryChart extends StatelessWidget {
           Text(
             '${values.length} numeric points',
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
-          Expanded(
-            child: CustomPaint(
-              painter: _HistoryChartPainter(
-                values,
-                outlineColor: Theme.of(context).colorScheme.outlineVariant,
-                lineColor: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-          ),
+          Expanded(child: CustomPaint(painter: _HistoryChartPainter(values))),
         ],
       ),
     );
@@ -316,9 +308,9 @@ class _HistoryRangeSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,7 +318,7 @@ class _HistoryRangeSummary extends StatelessWidget {
           Text(
             'Samples',
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -334,7 +326,7 @@ class _HistoryRangeSummary extends StatelessWidget {
           Text(
             _sampleText(firstTime, lastTime, history.points.length),
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -352,9 +344,9 @@ class _LoadingHistory extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         children: [
@@ -367,7 +359,7 @@ class _LoadingHistory extends StatelessWidget {
           Text(
             'Loading history',
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -387,15 +379,15 @@ class _HistoryEmpty extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Text(
         message,
         textAlign: TextAlign.center,
         style: OpenVtsTypography.meta.copyWith(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          color: OpenVtsColors.textSecondary,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -419,7 +411,7 @@ class _InlineError extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline_rounded,
+          const Icon(Icons.error_outline_rounded,
               size: 16, color: OpenVtsColors.error),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -438,31 +430,25 @@ class _InlineError extends StatelessWidget {
 }
 
 class _HistoryChartPainter extends CustomPainter {
-  const _HistoryChartPainter(
-    this.values, {
-    required this.outlineColor,
-    required this.lineColor,
-  });
+  const _HistoryChartPainter(this.values);
 
   final List<double> values;
-  final Color outlineColor;
-  final Color lineColor;
 
   @override
   void paint(Canvas canvas, Size size) {
     if (values.isEmpty || size.isEmpty) return;
 
     final gridPaint = Paint()
-      ..color = outlineColor
+      ..color = OpenVtsColors.border
       ..strokeWidth = 1;
     final linePaint = Paint()
-      ..color = lineColor
+      ..color = OpenVtsColors.brandInk
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
     final pointPaint = Paint()
-      ..color = lineColor
+      ..color = OpenVtsColors.brandInk
       ..style = PaintingStyle.fill;
 
     for (var index = 0; index < 4; index++) {
@@ -504,9 +490,7 @@ class _HistoryChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _HistoryChartPainter oldDelegate) {
-    return oldDelegate.values != values ||
-        oldDelegate.outlineColor != outlineColor ||
-        oldDelegate.lineColor != lineColor;
+    return oldDelegate.values != values;
   }
 }
 

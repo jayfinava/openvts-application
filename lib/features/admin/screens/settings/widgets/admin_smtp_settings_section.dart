@@ -15,31 +15,6 @@ import '../../../controllers/admin_settings_controller.dart';
 import '../../../models/admin_settings_model.dart';
 import '../../../models/admin_settings_state.dart';
 
-Color _getTextPrimary(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkTextPrimary
-        : OpenVtsColors.textPrimary;
-
-Color _getTextSecondary(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
-
-Color _getTextTertiary(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textTertiary;
-
-Color _getSurface(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkSurface
-        : OpenVtsColors.surface;
-
-Color _getBorder(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkBorder
-        : OpenVtsColors.border;
-
 // =====================================================================
 // SMTP settings section
 // =====================================================================
@@ -164,11 +139,10 @@ class _SmtpSettingsSectionState extends ConsumerState<SmtpSettingsSection> {
     final fallback = _emailCtrl.text.trim().isNotEmpty
         ? _emailCtrl.text.trim()
         : (widget.state.profile?.email ?? '');
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final email = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isDark ? OpenVtsColors.darkSurfaceElevated : OpenVtsColors.surfaceElevated,
+      backgroundColor: OpenVtsColors.surfaceElevated,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(OpenVtsRadius.lg),
@@ -447,9 +421,9 @@ class _StatusCard extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: _getSurface(context),
+              color: OpenVtsColors.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: _getBorder(context)),
+              border: Border.all(color: OpenVtsColors.border),
             ),
             child: Icon(
               isActive
@@ -457,11 +431,11 @@ class _StatusCard extends StatelessWidget {
                   : Icons.power_off_outlined,
               size: 16,
               color:
-                  isActive ? OpenVtsColors.success : _getTextTertiary(context),
+                  isActive ? OpenVtsColors.success : OpenVtsColors.textTertiary,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -472,17 +446,17 @@ class _StatusCard extends StatelessWidget {
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
-                    color: _getTextPrimary(context),
+                    color: OpenVtsColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 1),
+                SizedBox(height: 1),
                 Text(
                   'Outgoing mail uses this server when active.',
                   style: TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 11,
                     height: 1.3,
-                    color: _getTextSecondary(context),
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
               ],
@@ -516,41 +490,24 @@ class _EncryptionDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Encryption',
-          style: OpenVtsTypography.label.copyWith(
-            color: _getTextSecondary(context),
-          ),
-        ),
+        const Text('Encryption', style: OpenVtsTypography.label),
         const SizedBox(height: OpenVtsSpacing.xs),
         InputDecorator(
-          decoration: InputDecoration(
-            isDense: true,
-            filled: true,
-            fillColor: _getSurface(context),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: _getBorder(context)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: _getBorder(context)),
-            ),
-          ),
+          decoration: const InputDecoration(isDense: true),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<AdminSmtpType>(
               value: value,
               isExpanded: true,
-              icon: Icon(
+              icon: const Icon(
                 Icons.expand_more_rounded,
                 size: 18,
-                color: _getTextTertiary(context),
+                color: OpenVtsColors.textTertiary,
               ),
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: OpenVtsTypography.primaryFontFamily,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                color: _getTextPrimary(context),
+                color: OpenVtsColors.textPrimary,
               ),
               items: const [
                 DropdownMenuItem(
@@ -634,28 +591,28 @@ class _TestEmailSheetState extends State<_TestEmailSheet> {
                     height: 4,
                     margin: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
                     decoration: BoxDecoration(
-                      color: _getBorder(context),
+                      color: OpenVtsColors.border,
                       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                     ),
                   ),
                 ),
-                Text(
+                const Text(
                   'Send test email',
                   style: TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: _getTextPrimary(context),
+                    color: OpenVtsColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
+                const Text(
                   'A short message will be sent using the current SMTP config.',
                   style: TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 11.5,
                     height: 1.35,
-                    color: _getTextSecondary(context),
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: OpenVtsSpacing.sm),
@@ -730,11 +687,11 @@ class _SectionHeader extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: _getSurface(context),
+              color: OpenVtsColors.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: _getBorder(context)),
+              border: Border.all(color: OpenVtsColors.border),
             ),
-            child: Icon(icon, size: 16, color: _getTextPrimary(context)),
+            child: Icon(icon, size: 16, color: OpenVtsColors.textPrimary),
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -744,21 +701,21 @@ class _SectionHeader extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: _getTextPrimary(context),
+                    color: OpenVtsColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 1),
                 Text(
                   subtitle,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 11,
                     height: 1.3,
-                    color: _getTextSecondary(context),
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
               ],
@@ -800,7 +757,7 @@ class _GroupedCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: _getTextSecondary(context)),
+              Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(
@@ -809,21 +766,21 @@ class _GroupedCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: OpenVtsTypography.primaryFontFamily,
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
-                        color: _getTextPrimary(context),
+                        color: OpenVtsColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 1),
                     Text(
                       subtitle,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: OpenVtsTypography.primaryFontFamily,
                         fontSize: 11,
                         height: 1.3,
-                        color: _getTextSecondary(context),
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                   ],

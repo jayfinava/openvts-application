@@ -215,12 +215,6 @@ class _HeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textPrimaryColor =
-        isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-    final textSecondaryColor =
-        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       child: Column(
@@ -236,21 +230,21 @@ class _HeaderCard extends StatelessWidget {
                     Text(
                       'Transactions',
                       style: OpenVtsTypography.titleSmall.copyWith(
-                        color: textPrimaryColor,
+                        color: OpenVtsColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: OpenVtsSpacing.xxs),
                     Text(
                       'Admin payments made to platform account.',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: textSecondaryColor,
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: OpenVtsSpacing.xxs),
                     Text(
                       '$loaded of $total transactions',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: textSecondaryColor,
+                        color: OpenVtsColors.textSecondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

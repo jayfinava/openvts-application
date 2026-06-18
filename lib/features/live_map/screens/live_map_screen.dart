@@ -3337,7 +3337,7 @@ class _VehicleEventsTabState extends ConsumerState<_VehicleEventsTab> {
                 style: TextButton.styleFrom(
                   visualDensity: VisualDensity.compact,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  foregroundColor: scheme.onSurface,
+                  foregroundColor: const Color(0xFF141118),
                   textStyle: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
@@ -3406,7 +3406,7 @@ class _VehicleEventListRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatter = ref.watch(appDateFormatterProvider);
-    final visuals = _resolveAlertVisuals(event, Theme.of(context).brightness);
+    final visuals = _resolveAlertVisuals(event);
     final title = _vehicleEventTitle(event);
     final severity = _vehicleEventSeverity(event);
     final scheme = Theme.of(context).colorScheme;
@@ -3649,13 +3649,11 @@ class _VehicleEventDetailGrid extends ConsumerWidget {
       ),
     ];
 
-    final scheme = Theme.of(context).colorScheme;
-
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerLow,
+        color: const Color(0xFFF7F7F8),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: scheme.outlineVariant),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
       ),
       child: Column(
         children: [
@@ -5456,7 +5454,6 @@ class _VehicleCommandPollStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final label = timedOut
         ? 'Still waiting for device response. History will update when backend receives it.'
         : status == null
@@ -5465,9 +5462,9 @@ class _VehicleCommandPollStrip extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerLow,
+        color: const Color(0xFFF7F7F8),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: scheme.outlineVariant),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -5793,13 +5790,11 @@ class _VehicleCommandDetailGrid extends ConsumerWidget {
       (label: 'Created', value: _formatVehicleLogDateTime(entry.createdAt, dateFormatter)),
     ];
 
-    final scheme = Theme.of(context).colorScheme;
-
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerLow,
+        color: const Color(0xFFF7F7F8),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: scheme.outlineVariant),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
       ),
       child: Column(
         children: [
@@ -5853,7 +5848,6 @@ class _VehicleReplaySetupTabState extends State<_VehicleReplaySetupTab> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final imei = widget.vehicle.imei.trim();
     final now = DateTime.now();
 
@@ -5869,7 +5863,7 @@ class _VehicleReplaySetupTabState extends State<_VehicleReplaySetupTab> {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: scheme.primary,
+                  color: const Color(0xFF141118),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -5887,10 +5881,10 @@ class _VehicleReplaySetupTabState extends State<_VehicleReplaySetupTab> {
                       _vehicleDisplayName(widget.vehicle),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
-                        color: scheme.onSurface,
+                        color: Color(0xFF141118),
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -6025,13 +6019,11 @@ class _ReplaySetupMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerLow,
+        color: const Color(0xFFF7F7F8),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: scheme.outlineVariant),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
@@ -6040,7 +6032,7 @@ class _ReplaySetupMessage extends StatelessWidget {
             Icon(
               Icons.info_outline_rounded,
               size: 14,
-              color: scheme.onSurfaceVariant,
+              color: Colors.black.withValues(alpha: 0.54),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -6049,7 +6041,7 @@ class _ReplaySetupMessage extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: scheme.onSurfaceVariant,
+                  color: Colors.black.withValues(alpha: 0.58),
                   height: 1.3,
                 ),
               ),
@@ -7398,16 +7390,15 @@ class _HistoryQueryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final history = state.history;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: scheme.surfaceContainerLow,
+          color: const Color(0xFFF7F7F9),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: scheme.outlineVariant),
+          border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
         ),
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -7483,7 +7474,6 @@ class _HistoryQueryHeaderText extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
     final formatter = ref.watch(appDateFormatterProvider);
     final request = state.request;
     final title = request?.vehicleLabel ?? 'Vehicle History';
@@ -7500,10 +7490,10 @@ class _HistoryQueryHeaderText extends ConsumerWidget {
           title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w800,
-            color: scheme.onSurface,
+            color: Color(0xFF141118),
           ),
         ),
         const SizedBox(height: 4),
@@ -7514,7 +7504,7 @@ class _HistoryQueryHeaderText extends ConsumerWidget {
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w600,
-            color: scheme.onSurfaceVariant,
+            color: Colors.black.withValues(alpha: 0.5),
             height: 1.25,
           ),
         ),
@@ -7657,8 +7647,6 @@ class _HistoryErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(18),
@@ -7671,13 +7659,13 @@ class _HistoryErrorState extends StatelessWidget {
               color: const Color(0xFFB42318).withValues(alpha: 0.9),
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               'Unable to load history',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
-                color: scheme.onSurface,
+                color: Color(0xFF141118),
               ),
             ),
             const SizedBox(height: 4),
@@ -7915,23 +7903,22 @@ class _HistoryTimelineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final reasonLabel = _historyStopReasonLabel(entry.primarySegment);
 
     return Material(
-      color: scheme.surface,
+      color: Colors.white,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(10),
         child: Ink(
           decoration: BoxDecoration(
-            color: isSelected ? scheme.surfaceContainerHigh : scheme.surface,
+            color: isSelected ? const Color(0xFFF7F7F8) : Colors.white,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: isSelected
-                  ? scheme.onSurface.withValues(alpha: 0.36)
-                  : scheme.outlineVariant,
+                  ? const Color(0xFF3F3F46).withValues(alpha: 0.36)
+                  : Colors.black.withValues(alpha: 0.1),
             ),
             boxShadow: [
               BoxShadow(
@@ -7954,10 +7941,10 @@ class _HistoryTimelineCard extends StatelessWidget {
                         '$number. ${_historyTimelineTitle(entry)}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: scheme.onSurface,
+                          color: Color(0xFF141118),
                         ),
                       ),
                     ),
@@ -8110,15 +8097,13 @@ class _HistoryMetricBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return Container(
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
       decoration: BoxDecoration(
-        color: scheme.surface,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: scheme.outlineVariant),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.12)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -8131,7 +8116,7 @@ class _HistoryMetricBox extends StatelessWidget {
             style: TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w600,
-              color: scheme.onSurfaceVariant,
+              color: Colors.black.withValues(alpha: 0.52),
             ),
           ),
           const SizedBox(height: 2),
@@ -8141,10 +8126,10 @@ class _HistoryMetricBox extends StatelessWidget {
             child: Text(
               value,
               maxLines: 1,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w800,
-                color: scheme.onSurface,
+                color: Color(0xFF141118),
               ),
             ),
           ),
@@ -9539,7 +9524,7 @@ class _AlertsTab extends ConsumerWidget {
           Divider(height: 1, color: scheme.outlineVariant.withValues(alpha: 0.3)),
       itemBuilder: (context, index) {
         final alert = visibleAlerts[index];
-        final visuals = _resolveAlertVisuals(alert, Theme.of(context).brightness);
+        final visuals = _resolveAlertVisuals(alert);
         final metaText = _buildAlertMeta(alert, formatter);
 
         return Padding(
@@ -9644,32 +9629,30 @@ String _buildAlertMeta(AppNotification alert, AppDateFormatter formatter) {
   return 'OpenVTS alert';
 }
 
-_AlertVisuals _resolveAlertVisuals(AppNotification alert, Brightness brightness) {
+_AlertVisuals _resolveAlertVisuals(AppNotification alert) {
   final key = [
     alert.severity,
     alert.category,
     alert.title,
   ].whereType<String>().join(' ').toLowerCase();
 
-  final isDark = brightness == Brightness.dark;
-
   if (key.contains('critical') ||
       key.contains('warning') ||
       key.contains('overspeed') ||
       key.contains('alarm')) {
-    return _AlertVisuals(
+    return const _AlertVisuals(
       icon: Icons.warning_amber_rounded,
-      iconColor: const Color(0xFFDA8A00),
-      dotColor: const Color(0xFFF2A11B),
-      backgroundColor: isDark ? const Color(0xFF3D2F1F) : const Color(0xFFFFF4E3),
+      iconColor: Color(0xFFDA8A00),
+      dotColor: Color(0xFFF2A11B),
+      backgroundColor: Color(0xFFFFF4E3),
     );
   }
 
-  return _AlertVisuals(
+  return const _AlertVisuals(
     icon: Icons.info_outline_rounded,
-    iconColor: const Color(0xFF4B84FF),
-    dotColor: const Color(0xFF4B84FF),
-    backgroundColor: isDark ? const Color(0xFF1F3D5C) : const Color(0xFFEAF1FF),
+    iconColor: Color(0xFF4B84FF),
+    dotColor: Color(0xFF4B84FF),
+    backgroundColor: Color(0xFFEAF1FF),
   );
 }
 
@@ -9763,9 +9746,6 @@ class _MapOverlayStatusPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -9776,12 +9756,12 @@ class _MapOverlayStatusPanel extends StatelessWidget {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: switch (item.kind) {
-                    _MapOverlayStatusKind.loading => isDark
-                        ? scheme.surfaceContainerLow
-                        : Colors.white.withValues(alpha: 0.94),
-                    _MapOverlayStatusKind.empty => isDark
-                        ? scheme.surfaceContainerHigh
-                        : const Color(0xFF141118).withValues(alpha: 0.78),
+                    _MapOverlayStatusKind.loading => Colors.white.withValues(
+                        alpha: 0.94,
+                      ),
+                    _MapOverlayStatusKind.empty => const Color(
+                        0xFF141118,
+                      ).withValues(alpha: 0.78),
                     _MapOverlayStatusKind.error => const Color(
                         0xFFB42318,
                       ).withValues(alpha: 0.92),
@@ -9815,9 +9795,7 @@ class _MapOverlayStatusPanel extends StatelessWidget {
                               ? Icons.error_outline_rounded
                               : Icons.info_outline_rounded,
                           size: 14,
-                          color: isDark
-                              ? scheme.onSurface
-                              : Colors.white.withValues(alpha: 0.96),
+                          color: Colors.white.withValues(alpha: 0.96),
                         ),
                       const SizedBox(width: 8),
                       Text(
@@ -9826,12 +9804,8 @@ class _MapOverlayStatusPanel extends StatelessWidget {
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           color: item.kind == _MapOverlayStatusKind.loading
-                              ? isDark
-                                  ? scheme.onSurface
-                                  : const Color(0xFF141118)
-                              : isDark
-                                  ? scheme.onSurface
-                                  : Colors.white,
+                              ? const Color(0xFF141118)
+                              : Colors.white,
                         ),
                       ),
                     ],
@@ -9902,9 +9876,6 @@ class _VehicleClusterMarker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Tooltip(
       message: '$count vehicles',
       child: MouseRegion(
@@ -9920,15 +9891,15 @@ class _VehicleClusterMarker extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: scheme.onSurface.withValues(alpha: 0.18),
+                    color: const Color(0xFF141118).withValues(alpha: 0.18),
                     shape: BoxShape.circle,
                   ),
                 ),
                 DecoratedBox(
                   decoration: BoxDecoration(
-                    color: isDark ? scheme.surface : scheme.primary,
+                    color: const Color(0xFF141118),
                     shape: BoxShape.circle,
-                    border: Border.all(color: isDark ? scheme.outline : Colors.white, width: 2.5),
+                    border: Border.all(color: Colors.white, width: 2.5),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.18),
@@ -10037,7 +10008,6 @@ class _VehicleMarker extends StatelessWidget {
   Widget build(BuildContext context) {
     final markerColor = _vehicleMarkerColor(status);
     final rippleColor = _vehicleRippleColor(status);
-    final scheme = Theme.of(context).colorScheme;
     final showStatusRipple = showRipple && _vehicleMarkerShowsRipple(status);
     final showMotionTrail =
         isInMotion && status == _VehicleMarkerStatus.running;
@@ -10084,6 +10054,7 @@ class _VehicleMarker extends StatelessWidget {
                     filterQuality: FilterQuality.high,
                     gaplessPlayback: true,
                     errorBuilder: (context, error, stackTrace) {
+                      final scheme = Theme.of(context).colorScheme;
                       return DecoratedBox(
                         decoration: BoxDecoration(
                           color: markerColor,
@@ -10120,20 +10091,20 @@ class _VehicleMarker extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: scheme.surfaceContainerLow,
+                    color: Colors.white.withValues(alpha: 0.94),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: scheme.outlineVariant,
+                      color: Colors.black.withValues(alpha: 0.08),
                     ),
                   ),
                   child: Text(
                     _vehicleDisplayName(vehicle),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
-                      color: scheme.onSurface,
+                      color: Color(0xFF141118),
                       height: 1,
                     ),
                   ),

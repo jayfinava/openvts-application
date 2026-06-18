@@ -46,9 +46,6 @@ class AdminInventoryCardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? OpenVtsColors.darkTextPrimary : inventoryPrimaryInkColor(context);
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -76,7 +73,7 @@ class AdminInventoryCardHeader extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.2,
-                  color: textColor,
+                  color: inventoryPrimaryInkColor(context),
                 ),
           ),
         ),
@@ -114,15 +111,10 @@ class AdminInventoryEditButton extends StatelessWidget {
         padding: EdgeInsets.zero,
         visualDensity: VisualDensity.compact,
         icon: isLoading
-            ? SizedBox(
+            ? const SizedBox(
                 width: 16,
                 height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    inventoryPrimaryInkColor(context),
-                  ),
-                ),
+                child: CircularProgressIndicator(strokeWidth: 2),
               )
             : Icon(
                 Icons.edit_outlined,
@@ -141,9 +133,6 @@ class AdminInventoryStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? OpenVtsColors.darkTextPrimary : inventoryPrimaryInkColor(context);
-
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
@@ -157,7 +146,7 @@ class AdminInventoryStatusBadge extends StatelessWidget {
       child: Text(
         label,
         style: OpenVtsTypography.label.copyWith(
-          color: textColor,
+          color: inventoryPrimaryInkColor(context),
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -180,9 +169,6 @@ class AdminInventoryInfoField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final resolved = value.trim().isEmpty ? '—' : value.trim();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-    final textColor = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,7 +176,7 @@ class AdminInventoryInfoField extends StatelessWidget {
         Icon(
           icon,
           size: 16,
-          color: iconColor,
+          color: OpenVtsColors.textSecondary,
         ),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
@@ -199,7 +185,7 @@ class AdminInventoryInfoField extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             text: TextSpan(
               style: OpenVtsTypography.label.copyWith(
-                color: textColor,
+                color: OpenVtsColors.textPrimary,
                 height: 1.4,
               ),
               children: [
@@ -320,10 +306,6 @@ class _CreatedPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-    final textColor = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
@@ -336,10 +318,10 @@ class _CreatedPill extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.schedule_outlined,
             size: 16,
-            color: iconColor,
+            color: OpenVtsColors.textSecondary,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -348,7 +330,7 @@ class _CreatedPill extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               text: TextSpan(
                 style: OpenVtsTypography.label.copyWith(
-                  color: textColor,
+                  color: OpenVtsColors.textPrimary,
                   height: 1.4,
                 ),
                 children: [
@@ -377,9 +359,6 @@ class _StockStatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-
     return Container(
       constraints: const BoxConstraints(minWidth: 108),
       padding: const EdgeInsets.symmetric(
@@ -397,7 +376,7 @@ class _StockStatusPill extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: OpenVtsTypography.label.copyWith(
-          color: textColor,
+          color: OpenVtsColors.textPrimary,
           fontWeight: FontWeight.w600,
         ),
       ),

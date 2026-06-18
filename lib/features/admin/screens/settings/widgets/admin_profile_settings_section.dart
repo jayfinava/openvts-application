@@ -10,44 +10,19 @@ import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
-import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../../shared/widgets/open_vts_role_home.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
+import '../../../../../core/utils/validators.dart';
 import '../../../../auth/controllers/auth_controller.dart';
 import '../../../controllers/admin_providers.dart';
 import '../../../controllers/admin_settings_controller.dart';
 import '../../../models/admin_settings_model.dart';
 import '../../../models/admin_settings_state.dart';
 import '../../../models/admin_users_model.dart';
-
-Color _getTextPrimary(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkTextPrimary
-        : OpenVtsColors.textPrimary;
-
-Color _getTextSecondary(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
-
-Color _getTextTertiary(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textTertiary;
-
-Color _getSurface(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkSurface
-        : OpenVtsColors.surface;
-
-Color _getBorder(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkBorder
-        : OpenVtsColors.border;
 
 const _allowedImageExts = ['png', 'jpg', 'jpeg', 'webp'];
 const int _maxImageBytes = 2 * 1024 * 1024;
@@ -748,7 +723,7 @@ class _VerificationRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: _getTextSecondary(context)),
+        Icon(icon, size: 18, color: OpenVtsColors.textSecondary),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Column(
@@ -756,10 +731,10 @@ class _VerificationRow extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: OpenVtsTypography.primaryFontFamily,
                   fontSize: 11,
-                  color: _getTextTertiary(context),
+                  color: OpenVtsColors.textTertiary,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.4,
                 ),
@@ -767,10 +742,10 @@ class _VerificationRow extends StatelessWidget {
               const SizedBox(height: 1),
               Text(
                 value.isNotEmpty ? value : '—',
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: OpenVtsTypography.primaryFontFamily,
                   fontSize: 12.5,
-                  color: _getTextPrimary(context),
+                  color: OpenVtsColors.textPrimary,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -1020,10 +995,10 @@ class _SectionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: _getTextTertiary(context),
+                    color: OpenVtsColors.textTertiary,
                     letterSpacing: 0.4,
                   ),
                 ),
@@ -1032,7 +1007,7 @@ class _SectionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
-          Divider(height: 1, color: _getBorder(context)),
+          const Divider(height: 1, color: OpenVtsColors.border),
           const SizedBox(height: OpenVtsSpacing.xs),
           ...children,
         ],
@@ -1063,16 +1038,16 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 14, color: _getTextTertiary(context)),
+          Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
           const SizedBox(width: 8),
           SizedBox(
             width: 100,
             child: Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: _getTextTertiary(context),
+                color: OpenVtsColors.textTertiary,
               ),
             ),
           ),
@@ -1080,10 +1055,10 @@ class _InfoRow extends StatelessWidget {
           Expanded(
             child: Text(
               value.trim().isEmpty ? '—' : value.trim(),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: _getTextPrimary(context),
+                color: OpenVtsColors.textPrimary,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -1277,7 +1252,6 @@ class _BottomSheetShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final inset = MediaQuery.of(context).viewInsets.bottom;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.only(bottom: inset),
       child: SafeArea(
@@ -1285,11 +1259,9 @@ class _BottomSheetShell extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.all(OpenVtsSpacing.sm),
           decoration: BoxDecoration(
-            color: isDark ? OpenVtsColors.darkSurfaceElevated : OpenVtsColors.surfaceElevated,
+            color: OpenVtsColors.surfaceElevated,
             borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-            border: Border.all(
-              color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
-            ),
+            border: Border.all(color: OpenVtsColors.border),
           ),
           child: ConstrainedBox(
             constraints: BoxConstraints(
@@ -1802,11 +1774,11 @@ class _DropdownField<T> extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: OpenVtsTypography.primaryFontFamily,
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: _getTextSecondary(context),
+            color: OpenVtsColors.textSecondary,
             letterSpacing: 0.3,
           ),
         ),
@@ -1819,14 +1791,14 @@ class _DropdownField<T> extends StatelessWidget {
               vertical: 10,
             ),
             filled: true,
-            fillColor: _getSurface(context),
+            fillColor: OpenVtsColors.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              borderSide: BorderSide(color: _getBorder(context)),
+              borderSide: const BorderSide(color: OpenVtsColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              borderSide: BorderSide(color: _getBorder(context)),
+              borderSide: const BorderSide(color: OpenVtsColors.border),
             ),
             suffixIcon: busy
                 ? const Padding(
@@ -1852,10 +1824,10 @@ class _DropdownField<T> extends StatelessWidget {
                             value: value,
                             child: Text(
                               value.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: OpenVtsTypography.primaryFontFamily,
                                 fontSize: 12.5,
-                                color: _getTextTertiary(context),
+                                color: OpenVtsColors.textTertiary,
                               ),
                             ),
                           ),
@@ -1867,18 +1839,18 @@ class _DropdownField<T> extends StatelessWidget {
                   isDense: true,
                   onChanged: enabled ? onChanged : null,
                   items: safeItems,
-                  hint: Text(
+                  hint: const Text(
                     'Select',
                     style: TextStyle(
                       fontFamily: OpenVtsTypography.primaryFontFamily,
                       fontSize: 12.5,
-                      color: _getTextTertiary(context),
+                      color: OpenVtsColors.textTertiary,
                     ),
                   ),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 12.5,
-                    color: _getTextPrimary(context),
+                    color: OpenVtsColors.textPrimary,
                   ),
                 );
               },
@@ -2422,28 +2394,28 @@ class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                 ],
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: OpenVtsTypography.primaryFontFamily,
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 8,
-                  color: _getTextPrimary(context),
+                  color: OpenVtsColors.textPrimary,
                 ),
                 decoration: InputDecoration(
                   counterText: '',
                   filled: true,
-                  fillColor: _getSurface(context),
+                  fillColor: OpenVtsColors.surface,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 14,
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                    borderSide: BorderSide(color: _getBorder(context)),
+                    borderSide: const BorderSide(color: OpenVtsColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                    borderSide: BorderSide(color: _getBorder(context)),
+                    borderSide: const BorderSide(color: OpenVtsColors.border),
                   ),
                 ),
               ),

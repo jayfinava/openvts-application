@@ -100,18 +100,11 @@ class _MetricTile extends StatelessWidget {
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: emphasis
-            ? OpenVtsColors.brandInk
-            : (context.isDarkMode
-                ? OpenVtsColors.darkSurfaceElevated
-                : OpenVtsColors.surfaceElevated),
+        color:
+            emphasis ? OpenVtsColors.brandInk : OpenVtsColors.surfaceElevated,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
         border: Border.all(
-          color: emphasis
-              ? OpenVtsColors.brandInk
-              : (context.isDarkMode
-                  ? OpenVtsColors.darkBorder
-                  : OpenVtsColors.border),
+          color: emphasis ? OpenVtsColors.brandInk : OpenVtsColors.border,
         ),
       ),
       child: Column(
@@ -123,9 +116,7 @@ class _MetricTile extends StatelessWidget {
             style: OpenVtsTypography.meta.copyWith(
               color: emphasis
                   ? OpenVtsColors.white.withValues(alpha: 0.8)
-                  : (context.isDarkMode
-                      ? OpenVtsColors.darkTextTertiary
-                      : OpenVtsColors.textTertiary),
+                  : OpenVtsColors.textTertiary,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.4,
               fontSize: 10,
@@ -137,11 +128,7 @@ class _MetricTile extends StatelessWidget {
             maxLines: wide ? 2 : 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.label.copyWith(
-              color: emphasis
-                  ? OpenVtsColors.white
-                  : (context.isDarkMode
-                      ? OpenVtsColors.darkTextPrimary
-                      : OpenVtsColors.textPrimary),
+              color: emphasis ? OpenVtsColors.white : OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w700,
             ),
           ),

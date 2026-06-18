@@ -241,27 +241,20 @@ class _HeaderValueChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.xs,
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: isDark
-            ? OpenVtsColors.darkSurfaceElevated
-            : OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.surfaceElevated,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(
-          color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
-        ),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Text(
         '$label: $value',
         style: OpenVtsTypography.meta.copyWith(
-          color: isDark
-              ? OpenVtsColors.darkTextPrimary
-              : OpenVtsColors.textPrimary,
+          color: OpenVtsColors.textPrimary,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -276,25 +269,20 @@ class _HeaderTagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.xs,
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(
-          color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
-        ),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Text(
         text,
         style: OpenVtsTypography.meta.copyWith(
-          color: isDark
-              ? OpenVtsColors.darkTextSecondary
-              : OpenVtsColors.textSecondary,
+          color: OpenVtsColors.textSecondary,
           fontWeight: FontWeight.w600,
         ),
       ),

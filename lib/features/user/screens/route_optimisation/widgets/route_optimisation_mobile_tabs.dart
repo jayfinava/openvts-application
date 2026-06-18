@@ -55,15 +55,9 @@ class RouteOptimisationMobileTabs extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: context.isDarkMode
-            ? OpenVtsColors.darkSurfaceElevated
-            : OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.surfaceElevated,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(
-          color: context.isDarkMode
-              ? OpenVtsColors.darkBorder
-              : OpenVtsColors.border,
-        ),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         children: [
@@ -103,11 +97,7 @@ class _Segment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bg = selected ? OpenVtsColors.brandInk : Colors.transparent;
-    final fg = selected
-        ? OpenVtsColors.white
-        : (context.isDarkMode
-            ? OpenVtsColors.darkTextSecondary
-            : OpenVtsColors.textSecondary);
+    final fg = selected ? OpenVtsColors.white : OpenVtsColors.textSecondary;
 
     return Material(
       color: bg,

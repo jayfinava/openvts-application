@@ -278,8 +278,6 @@ class _CardMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     if (isLoggingIn) {
       return const Padding(
         padding: EdgeInsetsDirectional.only(start: OpenVtsSpacing.xs),
@@ -297,15 +295,15 @@ class _CardMenu extends StatelessWidget {
         for (final action in AdminUserCardAction.values)
           if (action == AdminUserCardAction.delete) ...[
             const PopupMenuDivider(),
-            _menuItem(context, action, isDark),
+            _menuItem(context, action),
           ] else
-            _menuItem(context, action, isDark),
+            _menuItem(context, action),
       ],
       enabled: !isBusy,
-      icon: Icon(
+      icon: const Icon(
         Icons.more_vert_rounded,
         size: 18,
-        color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+        color: OpenVtsColors.textSecondary,
       ),
       padding: EdgeInsets.zero,
       splashRadius: 18,
@@ -316,15 +314,8 @@ class _CardMenu extends StatelessWidget {
   PopupMenuItem<AdminUserCardAction> _menuItem(
     BuildContext context,
     AdminUserCardAction action,
-    bool isDark,
   ) {
     final isDelete = action == AdminUserCardAction.delete;
-    final textColor = isDelete
-        ? OpenVtsColors.error
-        : isDark
-            ? OpenVtsColors.darkTextPrimary
-            : OpenVtsColors.textPrimary;
-
     return PopupMenuItem<AdminUserCardAction>(
       value: action,
       child: Row(
@@ -332,13 +323,13 @@ class _CardMenu extends StatelessWidget {
           Icon(
             action.icon,
             size: 16,
-            color: textColor,
+            color: isDelete ? OpenVtsColors.error : null,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Text(
             action.label,
             style: OpenVtsTypography.label.copyWith(
-              color: textColor,
+              color: isDelete ? OpenVtsColors.error : null,
             ),
           ),
         ],
@@ -444,15 +435,10 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final secondaryTextColor =
-        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-    final primaryTextColor = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, size: 16, color: secondaryTextColor),
+        Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Text(
@@ -460,7 +446,7 @@ class _InfoRow extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.label.copyWith(
-              color: primaryTextColor,
+              color: OpenVtsColors.textPrimary,
               height: 1.4,
             ),
           ),
@@ -566,10 +552,6 @@ class _MetricCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final secondaryTextColor =
-        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-
     return Container(
       padding: const EdgeInsetsDirectional.symmetric(
         horizontal: OpenVtsSpacing.sm,
@@ -586,7 +568,7 @@ class _MetricCell extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 14, color: secondaryTextColor),
+              Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
               const SizedBox(width: OpenVtsSpacing.xxs + 2),
               Flexible(
                 child: Text(
@@ -594,7 +576,7 @@ class _MetricCell extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: secondaryTextColor,
+                    color: OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

@@ -51,7 +51,7 @@ class UserNotificationSaveBar extends StatelessWidget {
                           ? 'Saving changes...'
                           : 'You have unsaved changes.',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -90,7 +90,7 @@ class UserNotificationSaveBar extends StatelessWidget {
                           ? 'Saving changes...'
                           : 'You have unsaved changes.',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

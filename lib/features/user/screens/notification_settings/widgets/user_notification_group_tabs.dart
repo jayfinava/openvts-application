@@ -100,22 +100,22 @@ class _GroupChoiceChip extends StatelessWidget {
           item.icon,
           size: 15,
           color:
-              selected ? OpenVtsColors.brandInk : (context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary),
+              selected ? OpenVtsColors.brandInk : OpenVtsColors.textSecondary,
         ),
         label: Text(item.label),
         onSelected: (_) => onTap(),
         materialTapTargetSize: MaterialTapTargetSize.padded,
         selectedColor: OpenVtsColors.brandInk.withValues(alpha: 0.10),
-        backgroundColor: context.isDarkMode ? OpenVtsColors.darkSurfaceElevated : OpenVtsColors.surfaceElevated,
+        backgroundColor: OpenVtsColors.surfaceElevated,
         side: BorderSide(
-          color: selected ? OpenVtsColors.brandInk : (context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+          color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         ),
         labelStyle: OpenVtsTypography.meta.copyWith(
           color:
-              selected ? OpenVtsColors.brandInk : (context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary),
+              selected ? OpenVtsColors.brandInk : OpenVtsColors.textSecondary,
           fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
         ),
       ),

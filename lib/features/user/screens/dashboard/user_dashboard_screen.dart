@@ -239,7 +239,7 @@ class _DashboardHeader extends StatelessWidget {
             Text(
               'Dashboard',
               style: OpenVtsTypography.titleSmall.copyWith(
-                color: context.textPrimary(),
+                color: OpenVtsColors.textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
               ),
@@ -250,7 +250,7 @@ class _DashboardHeader extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textSecondary(),
+                color: OpenVtsColors.textSecondary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -308,7 +308,7 @@ class _UpdatedTimePill extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: context.border()),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -325,21 +325,21 @@ class _UpdatedTimePill extends ConsumerWidget {
             Text(
               'Refreshing',
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textSecondary(),
+                color: OpenVtsColors.textSecondary,
                 fontWeight: FontWeight.w700,
               ),
             ),
           ] else ...[
-            Icon(
+            const Icon(
               Icons.schedule_rounded,
               size: 14,
-              color: context.textTertiary(),
+              color: OpenVtsColors.textTertiary,
             ),
             const SizedBox(width: OpenVtsSpacing.xxs),
             Text(
               userDashboardFormatDateTime(updatedAt, formatter: formatter),
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textSecondary(),
+                color: OpenVtsColors.textSecondary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -375,8 +375,8 @@ class _DashboardSelectorButton extends StatelessWidget {
           horizontal: OpenVtsSpacing.sm,
           vertical: 0,
         ),
-        foregroundColor: context.textPrimary(),
-        side: BorderSide(color: context.border()),
+        foregroundColor: OpenVtsColors.textPrimary,
+        side: const BorderSide(color: OpenVtsColors.border),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         ),
@@ -416,7 +416,7 @@ class _DashboardSelectorButton extends StatelessWidget {
                   Text(
                     'Select dashboard',
                     style: OpenVtsTypography.titleSmall.copyWith(
-                      color: context.textPrimary(),
+                      color: OpenVtsColors.textPrimary,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -432,7 +432,7 @@ class _DashboardSelectorButton extends StatelessWidget {
                         size: 18,
                         color: dashboard.id == selectedDashboardId
                             ? OpenVtsColors.brandInk
-                            : context.textTertiary(),
+                            : OpenVtsColors.textTertiary,
                       ),
                       title: Text(
                         dashboard.name,
@@ -478,9 +478,9 @@ class _RefreshIconButton extends StatelessWidget {
         padding: EdgeInsets.zero,
         backgroundColor: Theme.of(context).colorScheme.surface,
         disabledBackgroundColor: Theme.of(context).colorScheme.surface,
-        foregroundColor: context.textPrimary(),
-        disabledForegroundColor: context.textTertiary(),
-        side: BorderSide(color: context.border()),
+        foregroundColor: OpenVtsColors.textPrimary,
+        disabledForegroundColor: OpenVtsColors.textTertiary,
+        side: const BorderSide(color: OpenVtsColors.border),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         ),
@@ -527,27 +527,26 @@ class _DashboardInlineError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final errorColor = context.error();
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: errorColor.withValues(alpha: 0.08),
+        color: OpenVtsColors.error.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: errorColor.withValues(alpha: 0.16)),
+        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.16)),
       ),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.error_outline_rounded,
             size: 17,
-            color: errorColor,
+            color: OpenVtsColors.error,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
               message,
               style: OpenVtsTypography.meta.copyWith(
-                color: errorColor,
+                color: OpenVtsColors.error,
                 fontWeight: FontWeight.w600,
               ),
             ),

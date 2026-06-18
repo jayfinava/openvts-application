@@ -30,42 +30,32 @@ class RouteOptimisationMarker extends StatelessWidget {
 
   static const double dimension = 28;
 
-  Color _fill(BuildContext context) {
+  Color get _fill {
     switch (role) {
       case RouteMarkerRole.start:
         return OpenVtsColors.brandInk;
       case RouteMarkerRole.end:
         return OpenVtsColors.info;
       case RouteMarkerRole.waypoint:
-        return context.isDarkMode
-            ? OpenVtsColors.darkSurfaceElevated
-            : OpenVtsColors.surfaceElevated;
+        return OpenVtsColors.surfaceElevated;
     }
   }
 
-  Color _fg(BuildContext context) {
+  Color get _fg {
     switch (role) {
       case RouteMarkerRole.start:
       case RouteMarkerRole.end:
         return OpenVtsColors.white;
       case RouteMarkerRole.waypoint:
-        return context.isDarkMode
-            ? OpenVtsColors.darkTextPrimary
-            : OpenVtsColors.textPrimary;
+        return OpenVtsColors.textPrimary;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final fillColor = _fill(context);
-    final fgColor = _fg(context);
     final borderColor = isSelected
         ? OpenVtsColors.brandInk
-        : (role == RouteMarkerRole.waypoint
-            ? (context.isDarkMode
-                ? OpenVtsColors.darkBorder
-                : OpenVtsColors.border)
-            : fillColor);
+        : (role == RouteMarkerRole.waypoint ? OpenVtsColors.border : _fill);
     final borderWidth = isSelected ? 2.0 : 1.0;
 
     return GestureDetector(
@@ -77,7 +67,7 @@ class RouteOptimisationMarker extends StatelessWidget {
         height: dimension,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: fillColor,
+          color: _fill,
           shape: BoxShape.circle,
           border: Border.all(color: borderColor, width: borderWidth),
           boxShadow: const [
@@ -91,7 +81,7 @@ class RouteOptimisationMarker extends StatelessWidget {
         child: Text(
           '$label',
           style: OpenVtsTypography.meta.copyWith(
-            color: fgColor,
+            color: _fg,
             fontWeight: FontWeight.w700,
             height: 1,
           ),

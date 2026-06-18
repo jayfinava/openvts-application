@@ -179,10 +179,7 @@ class _RouteOptimisationMapPanelState
           points: currentPts,
           strokeWidth: hasResult ? 2.0 : 3.0,
           color: hasResult
-              ? (context.isDarkMode
-                      ? OpenVtsColors.darkTextTertiary
-                      : OpenVtsColors.textTertiary)
-                  .withValues(alpha: 0.55)
+              ? OpenVtsColors.textTertiary.withValues(alpha: 0.55)
               : OpenVtsColors.brandInk,
         ),
       );
@@ -427,9 +424,9 @@ class _HintBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: (context.isDarkMode ? OpenVtsColors.darkSurfaceElevated : OpenVtsColors.surfaceElevated).withValues(alpha: 0.96),
+        color: OpenVtsColors.surfaceElevated.withValues(alpha: 0.96),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -439,7 +436,7 @@ class _HintBubble extends StatelessWidget {
         child: Text(
           text,
           style: OpenVtsTypography.meta.copyWith(
-            color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+            color: OpenVtsColors.textSecondary,
           ),
         ),
       ),

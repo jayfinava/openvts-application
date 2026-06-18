@@ -17,31 +17,6 @@ import '../../../controllers/admin_settings_controller.dart';
 import '../../../models/admin_settings_model.dart';
 import '../../../models/admin_settings_state.dart';
 
-Color _getTextPrimary(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkTextPrimary
-        : OpenVtsColors.textPrimary;
-
-Color _getTextSecondary(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
-
-Color _getTextTertiary(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textTertiary;
-
-Color _getSurface(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkSurface
-        : OpenVtsColors.surface;
-
-Color _getBorder(BuildContext context) =>
-    Theme.of(context).brightness == Brightness.dark
-        ? OpenVtsColors.darkBorder
-        : OpenVtsColors.border;
-
 // =====================================================================
 // Localization settings section
 // =====================================================================
@@ -578,9 +553,9 @@ class _PreviewTile extends StatelessWidget {
         vertical: 8,
       ),
       decoration: BoxDecoration(
-        color: _getSurface(context),
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: _getBorder(context)),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -588,11 +563,11 @@ class _PreviewTile extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: OpenVtsTypography.primaryFontFamily,
               fontSize: 10,
               fontWeight: FontWeight.w500,
-              color: _getTextTertiary(context),
+              color: OpenVtsColors.textTertiary,
             ),
           ),
           const SizedBox(height: 2),
@@ -600,11 +575,11 @@ class _PreviewTile extends StatelessWidget {
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: OpenVtsTypography.primaryFontFamily,
               fontSize: 12.5,
               fontWeight: FontWeight.w600,
-              color: _getTextPrimary(context),
+              color: OpenVtsColors.textPrimary,
             ),
           ),
         ],
@@ -641,12 +616,12 @@ class _LanguageDropdown extends StatelessWidget {
       child: DropdownButton<String>(
         value: value.isEmpty ? null : value,
         isExpanded: true,
-        icon: Icon(
+        icon: const Icon(
           Icons.expand_more_rounded,
           size: 18,
-          color: _getTextTertiary(context),
+          color: OpenVtsColors.textTertiary,
         ),
-        style: _dropdownTextStyle(context),
+        style: _dropdownTextStyle,
         items: items,
         onChanged: onChanged,
       ),
@@ -677,12 +652,12 @@ class _DateFormatDropdown extends StatelessWidget {
       child: DropdownButton<String>(
         value: value.isEmpty ? null : value,
         isExpanded: true,
-        icon: Icon(
+        icon: const Icon(
           Icons.expand_more_rounded,
           size: 18,
-          color: _getTextTertiary(context),
+          color: OpenVtsColors.textTertiary,
         ),
-        style: _dropdownTextStyle(context),
+        style: _dropdownTextStyle,
         items: items,
         onChanged: onChanged,
       ),
@@ -713,12 +688,12 @@ class _TimezoneDropdown extends StatelessWidget {
       child: DropdownButton<String>(
         value: value.isEmpty ? null : value,
         isExpanded: true,
-        icon: Icon(
+        icon: const Icon(
           Icons.expand_more_rounded,
           size: 18,
-          color: _getTextTertiary(context),
+          color: OpenVtsColors.textTertiary,
         ),
-        style: _dropdownTextStyle(context),
+        style: _dropdownTextStyle,
         items: items,
         onChanged: onChanged,
       ),
@@ -736,27 +711,10 @@ class _DropdownShell extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: OpenVtsTypography.label.copyWith(
-            color: _getTextSecondary(context),
-          ),
-        ),
+        Text(label, style: OpenVtsTypography.label),
         const SizedBox(height: OpenVtsSpacing.xs),
         InputDecorator(
-          decoration: InputDecoration(
-            isDense: true,
-            filled: true,
-            fillColor: _getSurface(context),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: _getBorder(context)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: _getBorder(context)),
-            ),
-          ),
+          decoration: const InputDecoration(isDense: true),
           child: DropdownButtonHideUnderline(child: child),
         ),
       ],
@@ -764,11 +722,11 @@ class _DropdownShell extends StatelessWidget {
   }
 }
 
-TextStyle _dropdownTextStyle(BuildContext context) => TextStyle(
+const TextStyle _dropdownTextStyle = TextStyle(
   fontFamily: OpenVtsTypography.primaryFontFamily,
   fontSize: 13,
   fontWeight: FontWeight.w500,
-  color: _getTextPrimary(context),
+  color: OpenVtsColors.textPrimary,
 );
 
 // =====================================================================
@@ -797,9 +755,9 @@ class _SegmentedControl<T> extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: _getSurface(context),
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: _getBorder(context)),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -845,7 +803,7 @@ class _SegBtn extends StatelessWidget {
             fontFamily: OpenVtsTypography.primaryFontFamily,
             fontSize: 11.5,
             fontWeight: FontWeight.w600,
-            color: selected ? OpenVtsColors.white : _getTextPrimary(context),
+            color: selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
           ),
         ),
       ),
@@ -872,11 +830,11 @@ class _LabeledRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: OpenVtsTypography.primaryFontFamily,
               fontSize: 12.5,
               fontWeight: FontWeight.w500,
-              color: _getTextPrimary(context),
+              color: OpenVtsColors.textPrimary,
             ),
           ),
         ),
@@ -945,26 +903,26 @@ class _PresetChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: _getSurface(context),
+          color: OpenVtsColors.surface,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-          border: Border.all(color: _getBorder(context)),
+          border: Border.all(color: OpenVtsColors.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.place_outlined,
               size: 12,
-              color: _getTextSecondary(context),
+              color: OpenVtsColors.textSecondary,
             ),
             const SizedBox(width: 4),
             Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: OpenVtsTypography.primaryFontFamily,
                 fontSize: 11.5,
                 fontWeight: FontWeight.w500,
-                color: _getTextPrimary(context),
+                color: OpenVtsColors.textPrimary,
               ),
             ),
           ],
@@ -1001,11 +959,11 @@ class _SectionHeader extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: _getSurface(context),
+              color: OpenVtsColors.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: _getBorder(context)),
+              border: Border.all(color: OpenVtsColors.border),
             ),
-            child: Icon(icon, size: 16, color: _getTextPrimary(context)),
+            child: Icon(icon, size: 16, color: OpenVtsColors.textPrimary),
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -1015,21 +973,21 @@ class _SectionHeader extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: _getTextPrimary(context),
+                    color: OpenVtsColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 1),
                 Text(
                   subtitle,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 11,
                     height: 1.3,
-                    color: _getTextSecondary(context),
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
               ],
@@ -1071,7 +1029,7 @@ class _GroupedCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: _getTextSecondary(context)),
+              Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(
@@ -1080,21 +1038,21 @@ class _GroupedCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: OpenVtsTypography.primaryFontFamily,
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
-                        color: _getTextPrimary(context),
+                        color: OpenVtsColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 1),
                     Text(
                       subtitle,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: OpenVtsTypography.primaryFontFamily,
                         fontSize: 11,
                         height: 1.3,
-                        color: _getTextSecondary(context),
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                   ],

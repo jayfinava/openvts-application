@@ -13,30 +13,6 @@ import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../models/admin_vehicle_model.dart';
 
-Color _textSecondaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextSecondary
-      : Theme.of(context).colorScheme.onSurfaceVariant;
-}
-
-Color _textTertiaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.6)
-      : Theme.of(context).colorScheme.onSurfaceVariant;
-}
-
-Color _borderColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkBorder
-      : Theme.of(context).colorScheme.outlineVariant;
-}
-
-Color _surfaceColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkSurface
-      : Theme.of(context).colorScheme.surface;
-}
-
 class AdminVehicleEventsTab extends StatefulWidget {
   const AdminVehicleEventsTab({
     super.key,
@@ -103,7 +79,7 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
               Text(
                 'Date Range',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: _textSecondaryColor(context),
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               const SizedBox(height: OpenVtsSpacing.xs),
@@ -115,16 +91,16 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
                     vertical: OpenVtsSpacing.sm,
                   ),
                   decoration: BoxDecoration(
-                    border: Border.all(color: _borderColor(context)),
+                    border: Border.all(color: OpenVtsColors.border),
                     borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                    color: _surfaceColor(context),
+                    color: OpenVtsColors.surface,
                   ),
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.calendar_month_rounded,
                         size: 18,
-                        color: _textSecondaryColor(context),
+                        color: OpenVtsColors.textSecondary,
                       ),
                       const SizedBox(width: OpenVtsSpacing.sm),
                       Expanded(
@@ -133,10 +109,10 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ),
-                      Icon(
+                      const Icon(
                         Icons.chevron_right_rounded,
                         size: 18,
-                        color: _textTertiaryColor(context),
+                        color: OpenVtsColors.textTertiary,
                       ),
                     ],
                   ),
@@ -431,14 +407,14 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
                   Expanded(
                     child: TextButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: Text('Cancel'),
+                      child: const Text('Cancel'),
                     ),
                   ),
                   const SizedBox(width: OpenVtsSpacing.sm),
                   Expanded(
                     child: TextButton(
                       onPressed: _setToday,
-                      child: Text('Today'),
+                      child: const Text('Today'),
                     ),
                   ),
                 ],
@@ -493,14 +469,14 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: Icon(Icons.chevron_left_rounded, size: 20),
+                  icon: const Icon(Icons.chevron_left_rounded, size: 20),
                   onPressed: _previousMonth,
                   padding: EdgeInsets.zero,
                   constraints:
                       const BoxConstraints(minWidth: 32, minHeight: 32),
                 ),
                 IconButton(
-                  icon: Icon(Icons.chevron_right_rounded, size: 20),
+                  icon: const Icon(Icons.chevron_right_rounded, size: 20),
                   onPressed: _nextMonth,
                   padding: EdgeInsets.zero,
                   constraints:
@@ -642,7 +618,7 @@ class _WeekdayLabel extends StatelessWidget {
         child: Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: OpenVtsColors.textSecondary,
             fontSize: 11,
             fontWeight: FontWeight.w600,
           ),
@@ -676,13 +652,13 @@ class _DateCell extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: isStart || isEnd
-              ? Theme.of(context).colorScheme.primary
+              ? OpenVtsColors.brandInk
               : inRange
-                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+                  ? OpenVtsColors.brandInk.withValues(alpha: 0.1)
                   : Colors.transparent,
           border: Border.all(
             color: isToday && !isStart && !isEnd
-                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
+                ? OpenVtsColors.brandInk.withValues(alpha: 0.3)
                 : Colors.transparent,
             width: 1,
           ),
@@ -695,10 +671,10 @@ class _DateCell extends StatelessWidget {
             fontSize: 12,
             fontWeight: FontWeight.w600,
             color: isStart || isEnd
-                ? Theme.of(context).colorScheme.onPrimary
+                ? Colors.white
                 : isToday
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onSurface,
+                    ? OpenVtsColors.brandInk
+                    : OpenVtsColors.textPrimary,
           ),
         ),
       ),
@@ -743,7 +719,7 @@ class _EventCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
-          Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+          const Divider(height: 1, color: OpenVtsColors.border),
           const SizedBox(height: OpenVtsSpacing.sm),
           Row(
             children: [
@@ -775,7 +751,7 @@ class _EventCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textSecondary,
                 fontSize: 12,
               ),
             ),
@@ -810,7 +786,7 @@ class _InfoItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Column(
@@ -820,7 +796,7 @@ class _InfoItem extends StatelessWidget {
               Text(
                 label,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: OpenVtsColors.textSecondary,
                   fontSize: 10,
                 ),
               ),
@@ -846,26 +822,22 @@ class _SeverityChip extends StatelessWidget {
 
   final String severity;
 
-  Color _getSeverityColor(BuildContext context) {
+  Color _getSeverityColor() {
     switch (severity.toUpperCase()) {
       case 'CRITICAL':
-        return Theme.of(context).colorScheme.error;
+        return OpenVtsColors.error;
       case 'WARNING':
-        return Theme.of(context).brightness == Brightness.dark
-            ? OpenVtsColors.darkWarning
-            : OpenVtsColors.warning;
+        return OpenVtsColors.warning;
       case 'INFO':
-        return Theme.of(context).brightness == Brightness.dark
-            ? OpenVtsColors.darkSuccess
-            : OpenVtsColors.success;
+        return OpenVtsColors.success;
       default:
-        return Theme.of(context).colorScheme.onSurfaceVariant;
+        return OpenVtsColors.textSecondary;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final color = _getSeverityColor(context);
+    final color = _getSeverityColor();
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.xs,

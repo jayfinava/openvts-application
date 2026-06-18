@@ -159,9 +159,9 @@ class _FleetSegmentedBar extends StatelessWidget {
       return Container(
         height: 16,
         decoration: BoxDecoration(
-          color: context.surface(),
+          color: OpenVtsColors.surface,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-          border: Border.all(color: context.border()),
+          border: Border.all(color: OpenVtsColors.border),
         ),
       );
     }
@@ -198,9 +198,9 @@ class _FleetStatusChip extends StatelessWidget {
         vertical: 5,
       ),
       decoration: BoxDecoration(
-        color: context.surface(),
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: context.border()),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -217,7 +217,7 @@ class _FleetStatusChip extends StatelessWidget {
           Text(
             '${segment.label} ${userDashboardFormatNumber(segment.value)}',
             style: OpenVtsTypography.meta.copyWith(
-              color: context.textSecondary(),
+              color: OpenVtsColors.textSecondary,
               fontSize: 10.5,
               fontWeight: FontWeight.w800,
             ),
@@ -226,7 +226,7 @@ class _FleetStatusChip extends StatelessWidget {
           Text(
             '${userDashboardFormatDecimal(percent)}%',
             style: OpenVtsTypography.meta.copyWith(
-              color: context.textTertiary(),
+              color: OpenVtsColors.textTertiary,
               fontSize: 10.5,
               fontWeight: FontWeight.w700,
             ),
@@ -271,9 +271,9 @@ class _SkeletonBlock extends StatelessWidget {
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: context.surface(),
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: context.border()),
+        border: Border.all(color: OpenVtsColors.border),
       ),
     );
   }

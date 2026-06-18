@@ -38,9 +38,7 @@ class _RouteOptimisationReportCardState
     final body = SelectableText(
       report.isEmpty ? '(no report)' : report,
       style: OpenVtsTypography.meta.copyWith(
-        color: context.isDarkMode
-            ? OpenVtsColors.darkTextPrimary
-            : OpenVtsColors.textPrimary,
+        color: OpenVtsColors.textPrimary,
         fontFamily: 'monospace',
         fontFamilyFallback: const ['Courier', 'Menlo', 'Consolas'],
         height: 1.35,
@@ -50,15 +48,9 @@ class _RouteOptimisationReportCardState
 
     return Container(
       decoration: BoxDecoration(
-        color: context.isDarkMode
-            ? OpenVtsColors.darkSurface
-            : OpenVtsColors.surface,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(
-          color: context.isDarkMode
-              ? OpenVtsColors.darkBorder
-              : OpenVtsColors.border,
-        ),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -76,9 +68,7 @@ class _RouteOptimisationReportCardState
                 Text(
                   'Report',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: context.isDarkMode
-                        ? OpenVtsColors.darkTextSecondary
-                        : OpenVtsColors.textSecondary,
+                    color: OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.4,
                   ),
@@ -88,18 +78,14 @@ class _RouteOptimisationReportCardState
                   TextButton(
                     onPressed: () => setState(() => _expanded = !_expanded),
                     style: TextButton.styleFrom(
-                      foregroundColor: context.isDarkMode
-                          ? OpenVtsColors.darkTextSecondary
-                          : OpenVtsColors.textSecondary,
+                      foregroundColor: OpenVtsColors.textSecondary,
                       minimumSize: const Size(0, 28),
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                     ),
                     child: Text(
                       _expanded ? 'Show less' : 'Show more',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: context.isDarkMode
-                            ? OpenVtsColors.darkTextSecondary
-                            : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -150,13 +136,8 @@ class _RouteOptimisationReportCardState
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              (context.isDarkMode
-                                      ? OpenVtsColors.darkSurface
-                                      : OpenVtsColors.surface)
-                                  .withValues(alpha: 0),
-                              context.isDarkMode
-                                  ? OpenVtsColors.darkSurface
-                                  : OpenVtsColors.surface,
+                              OpenVtsColors.surface.withValues(alpha: 0),
+                              OpenVtsColors.surface,
                             ],
                           ),
                         ),

@@ -28,7 +28,7 @@ class UserProfileInfoCard extends StatelessWidget {
           Text(
             'Profile Details',
             style: OpenVtsTypography.label.copyWith(
-              color: context.textPrimary(),
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -116,9 +116,9 @@ class _DetailRow extends StatelessWidget {
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: context.surface(),
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: context.border()),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,7 +128,7 @@ class _DetailRow extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textSecondary(),
+                color: OpenVtsColors.textSecondary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -138,7 +138,7 @@ class _DetailRow extends StatelessWidget {
             child: Text(
               value,
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textPrimary(),
+                color: OpenVtsColors.textPrimary,
               ),
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/open_vts_colors.dart';
 import '../../core/theme/open_vts_spacing.dart';
 import '../../core/theme/open_vts_typography.dart';
 
@@ -21,15 +22,11 @@ class OpenVtsEmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              title,
-              style: OpenVtsTypography.titleSmall.copyWith(color: Theme.of(context).colorScheme.onSurface),
-              textAlign: TextAlign.center,
-            ),
+            Text(title, style: OpenVtsTypography.titleSmall, textAlign: TextAlign.center),
             const SizedBox(height: OpenVtsSpacing.xs),
             Text(
               message,
-              style: OpenVtsTypography.body.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: OpenVtsTypography.body.copyWith(color: OpenVtsColors.textSecondary),
               textAlign: TextAlign.center,
             ),
           ],

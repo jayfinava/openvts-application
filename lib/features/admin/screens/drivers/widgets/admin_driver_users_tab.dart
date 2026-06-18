@@ -153,9 +153,6 @@ class _UserCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? OpenVtsColors.darkTextPrimary
-                            : OpenVtsColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -164,9 +161,7 @@ class _UserCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? OpenVtsColors.darkTextSecondary
-                            : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                   ],
@@ -236,29 +231,22 @@ class _UserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark
-        ? OpenVtsColors.darkBorder.withValues(alpha: 0.5)
-        : OpenVtsColors.brandInk.withValues(alpha: 0.08);
-    final borderColor = isDark
-        ? OpenVtsColors.darkBorder.withValues(alpha: 0.8)
-        : OpenVtsColors.brandInk.withValues(alpha: 0.22);
-    final textColor = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk;
-
     return Container(
       height: 40,
       width: 40,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: bgColor,
+        color: OpenVtsColors.brandInk.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: borderColor),
+        border: Border.all(
+          color: OpenVtsColors.brandInk.withValues(alpha: 0.22),
+        ),
       ),
       child: Text(
         _initials(),
         style: OpenVtsTypography.label.copyWith(
           fontWeight: FontWeight.w700,
-          color: textColor,
+          color: OpenVtsColors.brandInk,
           fontSize: 13,
         ),
       ),
@@ -301,12 +289,8 @@ class _TinyTextButton extends StatelessWidget {
                       icon,
                       size: 14,
                       color: onPressed != null
-                          ? (Theme.of(context).brightness == Brightness.dark
-                              ? OpenVtsColors.darkTextSecondary
-                              : OpenVtsColors.textSecondary)
-                          : (Theme.of(context).brightness == Brightness.dark
-                              ? OpenVtsColors.textTertiary
-                              : OpenVtsColors.textTertiary),
+                          ? OpenVtsColors.textSecondary
+                          : OpenVtsColors.textTertiary,
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -314,12 +298,8 @@ class _TinyTextButton extends StatelessWidget {
                       style: OpenVtsTypography.meta.copyWith(
                         fontWeight: FontWeight.w600,
                         color: onPressed != null
-                            ? (Theme.of(context).brightness == Brightness.dark
-                                ? OpenVtsColors.darkTextSecondary
-                                : OpenVtsColors.textSecondary)
-                            : (Theme.of(context).brightness == Brightness.dark
-                                ? OpenVtsColors.textTertiary
-                                : OpenVtsColors.textTertiary),
+                            ? OpenVtsColors.textSecondary
+                            : OpenVtsColors.textTertiary,
                         fontSize: 10,
                       ),
                     ),

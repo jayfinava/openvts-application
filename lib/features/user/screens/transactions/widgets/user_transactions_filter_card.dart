@@ -90,30 +90,23 @@ class _UserTransactionsFilterCardState
               ),
               const Spacer(),
               if (widget.hasActiveFilters)
-                Builder(
-                  builder: (context) {
-                    final isDark = Theme.of(context).brightness == Brightness.dark;
-                    return TextButton.icon(
-                      onPressed: _handleClear,
-                      style: TextButton.styleFrom(
-                        foregroundColor: isDark
-                            ? OpenVtsColors.darkTextSecondary
-                            : OpenVtsColors.textSecondary,
-                        visualDensity: VisualDensity.compact,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: OpenVtsSpacing.xs,
-                        ),
-                        minimumSize: const Size(44, 44),
-                      ),
-                      icon: const Icon(Icons.filter_alt_off_outlined, size: 14),
-                      label: Text(
-                        'Clear',
-                        style: OpenVtsTypography.meta.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    );
-                  },
+                TextButton.icon(
+                  onPressed: _handleClear,
+                  style: TextButton.styleFrom(
+                    foregroundColor: OpenVtsColors.textSecondary,
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: OpenVtsSpacing.xs,
+                    ),
+                    minimumSize: const Size(44, 44),
+                  ),
+                  icon: const Icon(Icons.filter_alt_off_outlined, size: 14),
+                  label: Text(
+                    'Clear',
+                    style: OpenVtsTypography.meta.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
             ],
           ),
@@ -212,39 +205,32 @@ class _UserTransactionsFilterCardState
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
-          Builder(
-            builder: (context) {
-              final isDark = Theme.of(context).brightness == Brightness.dark;
-              return TextButton.icon(
-                onPressed: () {
-                  setState(() {
-                    _showAdvancedFilters = !showAdvancedFilters;
-                  });
-                },
-                style: TextButton.styleFrom(
-                  foregroundColor: isDark
-                      ? OpenVtsColors.darkTextSecondary
-                      : OpenVtsColors.textSecondary,
-                  minimumSize: const Size(44, 44),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.xs),
-                ),
-                icon: Icon(
-                  showAdvancedFilters
-                      ? Icons.expand_less_rounded
-                      : Icons.tune_rounded,
-                  size: 16,
-                ),
-                label: Text(
-                  showAdvancedFilters
-                      ? 'Hide payment filters'
-                      : 'Show payment filters',
-                  style: OpenVtsTypography.meta.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              );
+          TextButton.icon(
+            onPressed: () {
+              setState(() {
+                _showAdvancedFilters = !showAdvancedFilters;
+              });
             },
+            style: TextButton.styleFrom(
+              foregroundColor: OpenVtsColors.textSecondary,
+              minimumSize: const Size(44, 44),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.xs),
+            ),
+            icon: Icon(
+              showAdvancedFilters
+                  ? Icons.expand_less_rounded
+                  : Icons.tune_rounded,
+              size: 16,
+            ),
+            label: Text(
+              showAdvancedFilters
+                  ? 'Hide payment filters'
+                  : 'Show payment filters',
+              style: OpenVtsTypography.meta.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
           if (showAdvancedFilters) ...[
             const SizedBox(height: OpenVtsSpacing.xs),
@@ -358,13 +344,10 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Text(
       text,
       style: OpenVtsTypography.meta.copyWith(
-        color: isDark
-            ? OpenVtsColors.darkTextSecondary
-            : OpenVtsColors.textSecondary,
+        color: OpenVtsColors.textSecondary,
         fontWeight: FontWeight.w700,
       ),
     );
@@ -384,23 +367,16 @@ class _CompactChoiceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final selectedBgColor = isDark ? OpenVtsColors.white : OpenVtsColors.brandInk;
-    final selectedTextColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
     return ChoiceChip(
       selected: selected,
       showCheckmark: false,
       onSelected: (_) => onTap(),
       labelPadding: const EdgeInsets.symmetric(horizontal: 2),
       materialTapTargetSize: MaterialTapTargetSize.padded,
-      selectedColor: selectedBgColor,
-      backgroundColor: isDark
-          ? OpenVtsColors.darkSurfaceElevated
-          : OpenVtsColors.surfaceElevated,
+      selectedColor: OpenVtsColors.brandInk,
+      backgroundColor: OpenVtsColors.surfaceElevated,
       side: BorderSide(
-        color: selected
-            ? selectedBgColor
-            : (isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+        color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -408,11 +384,7 @@ class _CompactChoiceChip extends StatelessWidget {
       label: Text(
         label,
         style: OpenVtsTypography.meta.copyWith(
-          color: selected
-              ? selectedTextColor
-              : (isDark
-                  ? OpenVtsColors.darkTextPrimary
-                  : OpenVtsColors.textPrimary),
+          color: selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
           fontWeight: FontWeight.w600,
         ),
       ),

@@ -50,7 +50,7 @@ class _SuperadminVehiclesScreenState
                     dimension: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Icon(Icons.refresh_rounded, size: 20),
+                : const Icon(Icons.refresh_rounded, size: 20),
           ),
         ),
       ],
@@ -247,7 +247,7 @@ class _InlineVehicleLoadMoreFooter extends StatelessWidget {
             const SizedBox(height: OpenVtsSpacing.xxs),
             TextButton(
               onPressed: onPressed,
-              child: Text('Load more'),
+              child: const Text('Load more'),
             ),
           ],
         ),
@@ -659,7 +659,7 @@ class _StatusChip extends StatelessWidget {
             },
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
-          Divider(height: 1, color: OpenVtsColors.border),
+          const Divider(height: 1, color: OpenVtsColors.border),
           const SizedBox(height: OpenVtsSpacing.xs),
           _VehicleDetailsPanel(vehicle: vehicle),
         ],
@@ -710,7 +710,7 @@ class _VehicleTimestamp extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
+        const Icon(
           Icons.schedule_rounded,
           size: 16,
           color: OpenVtsColors.textSecondary,
@@ -812,11 +812,11 @@ class _VehicleDetailsPanel extends StatelessWidget {
           children: [
             deviceSection,
             const SizedBox(height: OpenVtsSpacing.xs),
-            Divider(height: 1, color: OpenVtsColors.border),
+            const Divider(height: 1, color: OpenVtsColors.border),
             const SizedBox(height: OpenVtsSpacing.xs),
             primaryUserSection,
             const SizedBox(height: OpenVtsSpacing.xs),
-            Divider(height: 1, color: OpenVtsColors.border),
+            const Divider(height: 1, color: OpenVtsColors.border),
             const SizedBox(height: OpenVtsSpacing.xs),
             addedBySection,
           ],

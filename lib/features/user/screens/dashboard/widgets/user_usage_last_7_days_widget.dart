@@ -186,7 +186,7 @@ class _VehicleSelector extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          borderSide: BorderSide(color: context.border()),
+          borderSide: const BorderSide(color: OpenVtsColors.border),
         ),
       ),
       items: [
@@ -227,7 +227,7 @@ class _UsageChart extends StatelessWidget {
     return SizedBox(
       height: 168,
       child: CustomPaint(
-        painter: _UsageChartPainter(points, borderColor: context.border(), textTertiaryColor: context.textTertiary(), surfaceColor: context.surface()),
+        painter: _UsageChartPainter(points),
         size: Size.infinite,
       ),
     );
@@ -235,12 +235,9 @@ class _UsageChart extends StatelessWidget {
 }
 
 class _UsageChartPainter extends CustomPainter {
-  _UsageChartPainter(this.points, {required this.borderColor, required this.textTertiaryColor, required this.surfaceColor});
+  _UsageChartPainter(this.points);
 
   final List<UserDashboardUsagePoint> points;
-  final Color borderColor;
-  final Color textTertiaryColor;
-  final Color surfaceColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -265,7 +262,7 @@ class _UsageChartPainter extends CustomPainter {
     final hourScale = math.max(maxHours, 1);
 
     final gridPaint = Paint()
-      ..color = borderColor
+      ..color = OpenVtsColors.border
       ..strokeWidth = 1;
     for (var line = 0; line < 4; line++) {
       final y = top + chartHeight * line / 3;
@@ -277,7 +274,7 @@ class _UsageChartPainter extends CustomPainter {
       ..color = OpenVtsColors.brandInk
       ..style = PaintingStyle.fill;
     final barTrackPaint = Paint()
-      ..color = surfaceColor
+      ..color = OpenVtsColors.surface
       ..style = PaintingStyle.fill;
     final slot = chartWidth / points.length;
     final barWidth = math.min(18.0, slot * 0.42).toDouble();
@@ -311,7 +308,7 @@ class _UsageChartPainter extends CustomPainter {
     }
 
     final linePaint = Paint()
-      ..color = textTertiaryColor
+      ..color = OpenVtsColors.textTertiary
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
@@ -326,7 +323,7 @@ class _UsageChartPainter extends CustomPainter {
     }
     canvas.drawPath(path, linePaint);
 
-    final dotPaint = Paint()..color = textTertiaryColor;
+    final dotPaint = Paint()..color = OpenVtsColors.textTertiary;
     for (final point in linePoints) {
       canvas.drawCircle(point, 3, dotPaint);
     }
@@ -344,7 +341,7 @@ class _UsageChartPainter extends CustomPainter {
         text: TextSpan(
           text: label.length > 3 ? label.substring(0, 3) : label,
           style: OpenVtsTypography.meta.copyWith(
-            color: textTertiaryColor,
+            color: OpenVtsColors.textTertiary,
             fontSize: 9.5,
             fontWeight: FontWeight.w700,
           ),
@@ -359,7 +356,7 @@ class _UsageChartPainter extends CustomPainter {
 
   void _drawLegend(Canvas canvas, Size size) {
     final driven = _legendPainter('Driven km', OpenVtsColors.brandInk);
-    final engine = _legendPainter('Engine hours', textTertiaryColor);
+    final engine = _legendPainter('Engine hours', OpenVtsColors.textTertiary);
     driven.paint(canvas, const Offset(4, 0));
     engine.paint(canvas, const Offset(92, 0));
   }
@@ -380,7 +377,7 @@ class _UsageChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _UsageChartPainter oldDelegate) {
-    return oldDelegate.points != points || oldDelegate.borderColor != borderColor || oldDelegate.textTertiaryColor != textTertiaryColor || oldDelegate.surfaceColor != surfaceColor;
+    return oldDelegate.points != points;
   }
 }
 
@@ -418,9 +415,9 @@ class _SkeletonBlock extends StatelessWidget {
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: context.surface(),
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: context.border()),
+        border: Border.all(color: OpenVtsColors.border),
       ),
     );
   }

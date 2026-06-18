@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
@@ -44,29 +45,28 @@ class AdminPaymentTransactionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
-          _row(context,
+          _row(
               'Date',
               item.createdAt == null
                   ? item.createdAtRaw
                   : formatter.formatDateTime(item.createdAt!.toLocal())),
-          _row(context, 'Mode', item.paymentMode.label),
-          _row(context, 'Type', item.paymentType.isEmpty ? '-' : item.paymentType),
-          _row(context, 'Reference', item.reference.isEmpty ? '-' : item.reference),
-          _row(context, 'Provider', item.provider.isEmpty ? '-' : item.provider),
-          _row(context, 'User', item.fromUser?.displayName ?? '-'),
+          _row('Mode', item.paymentMode.label),
+          _row('Type', item.paymentType.isEmpty ? '-' : item.paymentType),
+          _row('Reference', item.reference.isEmpty ? '-' : item.reference),
+          _row('Provider', item.provider.isEmpty ? '-' : item.provider),
+          _row('User', item.fromUser?.displayName ?? '-'),
           _row(
-              context,
               'Vehicle',
               item.vehicle['name']?.toString().trim().isNotEmpty == true
                   ? item.vehicle['name'].toString()
                   : (item.vehicle['plateNumber']?.toString() ?? '-')),
-          _row(context, 'Recorded By', item.recordedBy?.displayName ?? '-'),
+          _row('Recorded By', item.recordedBy?.displayName ?? '-'),
         ],
       ),
     );
   }
 
-  Widget _row(BuildContext context, String label, String value) {
+  Widget _row(String label, String value) {
     final text = value.trim().isEmpty ? '-' : value.trim();
     return Padding(
       padding: const EdgeInsets.only(top: OpenVtsSpacing.xxs),
@@ -75,7 +75,7 @@ class AdminPaymentTransactionCard extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style:
-            OpenVtsTypography.meta.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            OpenVtsTypography.meta.copyWith(color: OpenVtsColors.textSecondary),
       ),
     );
   }

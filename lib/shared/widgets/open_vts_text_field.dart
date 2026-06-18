@@ -5,18 +5,6 @@ import '../../core/theme/open_vts_colors.dart';
 import '../../core/theme/open_vts_spacing.dart';
 import '../../core/theme/open_vts_typography.dart';
 
-Color _textSecondaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextSecondary
-      : OpenVtsColors.textSecondary;
-}
-
-Color _textPrimaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextPrimary
-      : OpenVtsColors.textPrimary;
-}
-
 class OpenVtsTextField extends StatelessWidget {
   const OpenVtsTextField({
     required this.label,
@@ -56,15 +44,9 @@ class OpenVtsTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: OpenVtsTypography.label.copyWith(
-            color: _textSecondaryColor(context),
-          ),
-        ),
+        Text(label, style: OpenVtsTypography.label),
         const SizedBox(height: OpenVtsSpacing.xs),
         TextFormField(
-          style: TextStyle(color: _textPrimaryColor(context)),
           controller: controller,
           validator: validator,
           obscureText: obscureText,
@@ -82,7 +64,7 @@ class OpenVtsTextField extends StatelessWidget {
                 : Icon(
                     prefixIcon,
                     size: 20,
-                    color: _textSecondaryColor(context),
+                    color: OpenVtsColors.textSecondary,
                   ),
             suffixIcon: suffixIcon,
           ),

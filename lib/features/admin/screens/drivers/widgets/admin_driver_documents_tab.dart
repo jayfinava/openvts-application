@@ -190,9 +190,6 @@ class _DocCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? OpenVtsColors.darkTextPrimary
-                            : OpenVtsColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -201,9 +198,7 @@ class _DocCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? OpenVtsColors.darkTextSecondary
-                            : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                   ],
@@ -316,12 +311,8 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final color = isDestructive
-        ? OpenVtsColors.error
-        : (isDark
-            ? OpenVtsColors.darkTextPrimary
-            : OpenVtsColors.textPrimary);
+    final color =
+        isDestructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
     return Row(
       children: [
         Icon(icon, size: 16, color: color),

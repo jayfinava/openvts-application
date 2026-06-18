@@ -26,16 +26,9 @@ class RouteOptimisationMapControls extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: (context.isDarkMode
-                ? OpenVtsColors.darkSurfaceElevated
-                : OpenVtsColors.surfaceElevated)
-            .withValues(alpha: 0.96),
+        color: OpenVtsColors.surfaceElevated.withValues(alpha: 0.96),
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(
-          color: context.isDarkMode
-              ? OpenVtsColors.darkBorder
-              : OpenVtsColors.border,
-        ),
+        border: Border.all(color: OpenVtsColors.border),
         boxShadow: const [
           BoxShadow(
             color: Color(0x14000000),
@@ -84,13 +77,6 @@ class _CtlButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final enabled = onPressed != null;
-    final color = enabled
-        ? (context.isDarkMode
-            ? OpenVtsColors.darkTextPrimary
-            : OpenVtsColors.textPrimary)
-        : (context.isDarkMode
-            ? OpenVtsColors.darkTextTertiary
-            : OpenVtsColors.textTertiary);
     return Tooltip(
       message: tooltip,
       child: InkWell(
@@ -102,7 +88,9 @@ class _CtlButton extends StatelessWidget {
           child: Icon(
             icon,
             size: 16,
-            color: color,
+            color: enabled
+                ? OpenVtsColors.textPrimary
+                : OpenVtsColors.textTertiary,
           ),
         ),
       ),
@@ -118,9 +106,7 @@ class _Divider extends StatelessWidget {
     return Container(
       height: 1,
       width: 24,
-      color: context.isDarkMode
-          ? OpenVtsColors.darkBorder
-          : OpenVtsColors.border,
+      color: OpenVtsColors.border,
     );
   }
 }

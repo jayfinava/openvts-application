@@ -278,17 +278,17 @@ class _AdminVehicleDetailsScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text('Delete vehicle'),
-        content: Text('This action cannot be undone.'),
+        title: const Text('Delete vehicle'),
+        content: const Text('This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
             style: TextButton.styleFrom(foregroundColor: OpenVtsColors.error),
-            child: Text('Delete'),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -343,10 +343,10 @@ class _HeaderMenu extends StatelessWidget {
     return PopupMenuButton<_HeaderMenuAction>(
       tooltip: 'Vehicle actions',
       enabled: !isBusy,
-      icon: Icon(
+      icon: const Icon(
         Icons.more_vert_rounded,
         size: 20,
-        color: context.textSecondary(),
+        color: OpenVtsColors.textSecondary,
       ),
       onSelected: (action) {
         switch (action) {
@@ -407,7 +407,7 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isDestructive ? context.error() : context.textPrimary();
+    final color = isDestructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -429,7 +429,7 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? (context.isDarkMode ? OpenVtsColors.darkSuccess : Theme.of(context).colorScheme.primary) : context.textTertiary();
+    final color = isActive ? OpenVtsColors.brandInk : OpenVtsColors.textTertiary;
     return _MicroChip(
       label: isActive ? 'Active' : 'Inactive',
       icon: isActive ? Icons.check_circle_outline_rounded : Icons.pause_circle_outline_rounded,
@@ -496,23 +496,19 @@ class _SummaryCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Builder(
-                builder: (context) {
-                  return Container(
-                    height: 44,
-                    width: 44,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: context.surface(),
-                    ),
-                    child: Icon(
-                      Icons.directions_car_filled_rounded,
-                      size: 24,
-                      color: context.textPrimary(),
-                    ),
-                  );
-                },
+              Container(
+                height: 44,
+                width: 44,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: OpenVtsColors.surface,
+                ),
+                child: const Icon(
+                  Icons.directions_car_filled_rounded,
+                  size: 24,
+                  color: OpenVtsColors.textPrimary,
+                ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
               Expanded(
@@ -521,10 +517,10 @@ class _SummaryCard extends StatelessWidget {
                   children: [
                     Text(
                       vehicle.name.isEmpty ? 'Untitled Vehicle' : vehicle.name,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: context.textPrimary(),
+                        color: OpenVtsColors.textPrimary,
                         height: 1.2,
                       ),
                       maxLines: 1,
@@ -534,9 +530,9 @@ class _SummaryCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         vehicle.plateNumber,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
-                          color: context.textSecondary(),
+                          color: OpenVtsColors.textSecondary,
                           height: 1.2,
                         ),
                         maxLines: 1,
@@ -553,10 +549,10 @@ class _SummaryCard extends StatelessWidget {
                   _StatusChip(isActive: vehicle.isActive),
                   if (vehicle.isLicenseBlocked) ...[
                     const SizedBox(height: 4),
-                    _MicroChip(
+                    const _MicroChip(
                       label: 'License Blocked',
                       icon: Icons.lock_outline_rounded,
-                      color: context.error(),
+                      color: OpenVtsColors.error,
                     ),
                   ],
                 ],
@@ -573,7 +569,7 @@ class _SummaryCard extends StatelessWidget {
               _CompactInfoLine(icon: Icons.sim_card_outlined, value: vehicle.simNumber),
           ],
           const SizedBox(height: OpenVtsSpacing.md),
-          Divider(height: 1, color: context.border()),
+          const Divider(height: 1, color: OpenVtsColors.border),
           const SizedBox(height: OpenVtsSpacing.md),
           Row(
             children: [
@@ -633,7 +629,7 @@ class _CompactInfoLine extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xxs),
       child: Row(
         children: [
-          Icon(icon, size: 14, color: context.textTertiary()),
+          Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
@@ -641,7 +637,7 @@ class _CompactInfoLine extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textSecondary(),
+                color: OpenVtsColors.textSecondary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -679,13 +675,13 @@ class _MetricTile extends StatelessWidget {
         vertical: OpenVtsSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: context.isDarkMode ? OpenVtsColors.darkSurface : OpenVtsColors.background,
+        color: OpenVtsColors.background,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: context.border().withValues(alpha: 0.7)),
+        border: Border.all(color: OpenVtsColors.border.withValues(alpha: 0.7)),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: context.textSecondary()),
+          Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Column(
@@ -695,7 +691,7 @@ class _MetricTile extends StatelessWidget {
                 Text(
                   label,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: context.textSecondary(),
+                        color: OpenVtsColors.textSecondary,
                       ),
                 ),
                 const SizedBox(height: 2),

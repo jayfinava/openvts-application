@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/router/route_paths.dart';
+import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
@@ -39,7 +40,7 @@ class _RecentVehicleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = _vehicleStatus(context, vehicle);
+    final status = _vehicleStatus(vehicle);
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -60,7 +61,7 @@ class _RecentVehicleRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -70,7 +71,7 @@ class _RecentVehicleRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                     fontSize: 10.5,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
@@ -97,7 +98,7 @@ class _RecentVehicleRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                     fontSize: 10,
                   ),
                 ),
@@ -110,48 +111,48 @@ class _RecentVehicleRow extends StatelessWidget {
   }
 }
 
-_VehicleStatus _vehicleStatus(BuildContext context, AdminRecentVehicle vehicle) {
+_VehicleStatus _vehicleStatus(AdminRecentVehicle vehicle) {
   if (vehicle.licenseBlocked) {
-    return _VehicleStatus(
+    return const _VehicleStatus(
       label: 'License Blocked',
       icon: Icons.lock_outline_rounded,
-      color: Theme.of(context).colorScheme.error,
+      color: OpenVtsColors.error,
     );
   }
 
   if (!vehicle.hasDevice) {
-    return _VehicleStatus(
+    return const _VehicleStatus(
       label: 'No Device',
       icon: Icons.wifi_off_outlined,
-      color: Theme.of(context).colorScheme.onSurfaceVariant,
+      color: OpenVtsColors.textTertiary,
     );
   }
 
   switch (vehicle.liveStatus.trim().toUpperCase()) {
     case 'RUNNING':
-      return _VehicleStatus(
+      return const _VehicleStatus(
         label: 'Running',
         icon: Icons.speed_outlined,
-        color: Theme.of(context).colorScheme.secondary,
+        color: OpenVtsColors.success,
       );
     case 'STOP':
-      return _VehicleStatus(
+      return const _VehicleStatus(
         label: 'Stop',
         icon: Icons.pause_circle_outline_rounded,
-        color: Theme.of(context).colorScheme.tertiary,
+        color: OpenVtsColors.info,
       );
     case 'INACTIVE':
-      return _VehicleStatus(
+      return const _VehicleStatus(
         label: 'Inactive',
         icon: Icons.warning_amber_rounded,
-        color: Theme.of(context).colorScheme.tertiary,
+        color: OpenVtsColors.warning,
       );
     case 'NO_DATA':
     default:
-      return _VehicleStatus(
+      return const _VehicleStatus(
         label: 'No Data',
         icon: Icons.storage_outlined,
-        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        color: OpenVtsColors.textTertiary,
       );
   }
 }

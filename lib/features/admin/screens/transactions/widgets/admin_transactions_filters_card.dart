@@ -33,16 +33,6 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final surfaceElevatedColor = isDark
-        ? OpenVtsColors.darkSurfaceElevated
-        : OpenVtsColors.surfaceElevated;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-    final textPrimaryColor =
-        isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-    final textSecondaryColor =
-        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -55,14 +45,14 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: surfaceElevatedColor,
+                  color: OpenVtsColors.surfaceElevated,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                  border: Border.all(color: borderColor),
+                  border: Border.all(color: OpenVtsColors.border),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.tune_rounded,
                   size: 18,
-                  color: textPrimaryColor,
+                  color: OpenVtsColors.textPrimary,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
@@ -73,14 +63,14 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
                     Text(
                       'Filters',
                       style: OpenVtsTypography.titleSmall.copyWith(
-                        color: textPrimaryColor,
+                        color: OpenVtsColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: OpenVtsSpacing.xxs),
                     Text(
                       'Refine transactions by status, mode, type, and date.',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: textSecondaryColor,
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                   ],
@@ -89,10 +79,7 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.md),
-          _buildFilterFields(
-            borderColor: borderColor,
-            textPrimaryColor: textPrimaryColor,
-          ),
+          _buildFilterFields(),
           const SizedBox(height: OpenVtsSpacing.md),
           Row(
             children: [
@@ -103,7 +90,7 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
                   label: const Text('Clear'),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(44),
-                    side: BorderSide(color: borderColor),
+                    side: const BorderSide(color: OpenVtsColors.border),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(OpenVtsRadius.md),
                     ),
@@ -132,10 +119,7 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
     );
   }
 
-  Widget _buildFilterFields({
-    required Color borderColor,
-    required Color textPrimaryColor,
-  }) {
+  Widget _buildFilterFields() {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 600;
@@ -146,59 +130,39 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                      child: _buildStatusDropdown(
-                          borderColor: borderColor,
-                          textPrimaryColor: textPrimaryColor)),
+                  Expanded(child: _buildStatusDropdown()),
                   const SizedBox(width: OpenVtsSpacing.sm),
-                  Expanded(
-                      child: _buildPaymentModeDropdown(
-                          borderColor: borderColor,
-                          textPrimaryColor: textPrimaryColor)),
+                  Expanded(child: _buildPaymentModeDropdown()),
                 ],
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                      child: _buildPaymentTypeDropdown(
-                          borderColor: borderColor,
-                          textPrimaryColor: textPrimaryColor)),
+                  Expanded(child: _buildPaymentTypeDropdown()),
                   const SizedBox(width: OpenVtsSpacing.sm),
-                  Expanded(
-                      child: _buildDateRangeDropdown(
-                          borderColor: borderColor,
-                          textPrimaryColor: textPrimaryColor)),
+                  Expanded(child: _buildDateRangeDropdown()),
                 ],
               ),
               if (state.rangePreset == AdminTransactionsRangePreset.custom) ...[
                 const SizedBox(height: OpenVtsSpacing.sm),
-                _buildCustomDateRangeField(
-                    borderColor: borderColor,
-                    textPrimaryColor: textPrimaryColor),
+                _buildCustomDateRangeField(),
               ],
             ],
           );
         } else {
           return Column(
             children: [
-              _buildStatusDropdown(
-                  borderColor: borderColor, textPrimaryColor: textPrimaryColor),
+              _buildStatusDropdown(),
               const SizedBox(height: OpenVtsSpacing.sm),
-              _buildPaymentModeDropdown(
-                  borderColor: borderColor, textPrimaryColor: textPrimaryColor),
+              _buildPaymentModeDropdown(),
               const SizedBox(height: OpenVtsSpacing.sm),
-              _buildPaymentTypeDropdown(
-                  borderColor: borderColor, textPrimaryColor: textPrimaryColor),
+              _buildPaymentTypeDropdown(),
               const SizedBox(height: OpenVtsSpacing.sm),
-              _buildDateRangeDropdown(
-                  borderColor: borderColor, textPrimaryColor: textPrimaryColor),
+              _buildDateRangeDropdown(),
               if (state.rangePreset == AdminTransactionsRangePreset.custom) ...[
                 const SizedBox(height: OpenVtsSpacing.sm),
-                _buildCustomDateRangeField(
-                    borderColor: borderColor,
-                    textPrimaryColor: textPrimaryColor),
+                _buildCustomDateRangeField(),
               ],
             ],
           );
@@ -207,10 +171,7 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusDropdown({
-    required Color borderColor,
-    required Color textPrimaryColor,
-  }) {
+  Widget _buildStatusDropdown() {
     const options = [
       _DropdownOption<AdminTransactionStatus?>(value: null, label: 'All'),
       _DropdownOption(
@@ -232,15 +193,10 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
       value: state.selectedStatus,
       options: options,
       onChanged: onStatusChanged,
-      borderColor: borderColor,
-      textPrimaryColor: textPrimaryColor,
     );
   }
 
-  Widget _buildPaymentModeDropdown({
-    required Color borderColor,
-    required Color textPrimaryColor,
-  }) {
+  Widget _buildPaymentModeDropdown() {
     final options = <_DropdownOption<AdminPaymentMode?>>[
       const _DropdownOption<AdminPaymentMode?>(value: null, label: 'All'),
       ...AdminPaymentMode.values.map((mode) => _DropdownOption(
@@ -254,15 +210,10 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
       value: state.selectedMode,
       options: options,
       onChanged: onModeChanged,
-      borderColor: borderColor,
-      textPrimaryColor: textPrimaryColor,
     );
   }
 
-  Widget _buildPaymentTypeDropdown({
-    required Color borderColor,
-    required Color textPrimaryColor,
-  }) {
+  Widget _buildPaymentTypeDropdown() {
     const options = [
       _DropdownOption<AdminPaymentType?>(value: null, label: 'All'),
       _DropdownOption(value: AdminPaymentType.credit, label: 'Credit'),
@@ -274,15 +225,10 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
       value: state.selectedType,
       options: options,
       onChanged: onTypeChanged,
-      borderColor: borderColor,
-      textPrimaryColor: textPrimaryColor,
     );
   }
 
-  Widget _buildDateRangeDropdown({
-    required Color borderColor,
-    required Color textPrimaryColor,
-  }) {
+  Widget _buildDateRangeDropdown() {
     const options = [
       _DropdownOption(
         value: AdminTransactionsRangePreset.today,
@@ -331,15 +277,10 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
           onRangePresetChanged(value);
         }
       },
-      borderColor: borderColor,
-      textPrimaryColor: textPrimaryColor,
     );
   }
 
-  Widget _buildCustomDateRangeField({
-    required Color borderColor,
-    required Color textPrimaryColor,
-  }) {
+  Widget _buildCustomDateRangeField() {
     return OpenVtsDateTimeRangeField(
       label: 'Custom Range',
       title: 'Choose Date Range',
@@ -358,8 +299,6 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
     required T value,
     required List<_DropdownOption<T>> options,
     required ValueChanged<T?> onChanged,
-    required Color borderColor,
-    required Color textPrimaryColor,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -367,7 +306,7 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
         Text(
           label,
           style: OpenVtsTypography.label.copyWith(
-            color: textPrimaryColor,
+            color: OpenVtsColors.textPrimary,
           ),
         ),
         const SizedBox(height: OpenVtsSpacing.xs),
@@ -380,11 +319,11 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-              borderSide: BorderSide(color: borderColor),
+              borderSide: const BorderSide(color: OpenVtsColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-              borderSide: BorderSide(color: borderColor),
+              borderSide: const BorderSide(color: OpenVtsColors.border),
             ),
           ),
           items: options

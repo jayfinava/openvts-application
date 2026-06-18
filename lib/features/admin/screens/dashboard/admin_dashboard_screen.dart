@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/router/route_paths.dart';
+import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
@@ -272,14 +273,14 @@ class _VehicleLiveStatusSection extends StatelessWidget {
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  color: OpenVtsColors.surface,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                  border: Border.all(color: OpenVtsColors.border),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.directions_car_outlined,
                   size: 16,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
@@ -289,7 +290,7 @@ class _VehicleLiveStatusSection extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -298,14 +299,14 @@ class _VehicleLiveStatusSection extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  color: OpenVtsColors.surface,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                  border: Border.all(color: OpenVtsColors.border),
                 ),
                 child: Text(
                   'LIVE',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                     fontSize: 9.5,
                     fontWeight: FontWeight.w800,
                   ),
@@ -354,7 +355,7 @@ class _VehicleLiveStatusSection extends StatelessWidget {
             child: SizedBox(
               height: 10,
               child: ColoredBox(
-                color: Theme.of(context).colorScheme.surfaceContainer,
+                color: OpenVtsColors.surface,
                 child: Row(
                   children: [
                     for (final segment in segments)
@@ -388,7 +389,7 @@ class _VehicleLiveStatusSection extends StatelessWidget {
                 _StatusLegendItem(
                   label: 'No Device',
                   count: status.noDevice,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: OpenVtsColors.textTertiary,
                 ),
             ],
           ),
@@ -426,14 +427,14 @@ class _RevenueForecastSection extends StatelessWidget {
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  color: OpenVtsColors.surface,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                  border: Border.all(color: OpenVtsColors.border),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.trending_up_rounded,
                   size: 16,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
@@ -443,7 +444,7 @@ class _RevenueForecastSection extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -473,7 +474,7 @@ class _RevenueForecastSection extends StatelessWidget {
               Text(
                 '${collectedPct.round()}% collected',
                 style: OpenVtsTypography.meta.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: OpenVtsColors.textSecondary,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -485,7 +486,7 @@ class _RevenueForecastSection extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -500,14 +501,14 @@ class _RevenueForecastSection extends StatelessWidget {
           const SizedBox(height: OpenVtsSpacing.sm),
           Row(
             children: [
-              _RevenueLegendItem(
+              const _RevenueLegendItem(
                 label: 'Collected',
-                color: Theme.of(context).colorScheme.primary,
+                color: OpenVtsColors.brandInk,
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
               _RevenueLegendItem(
                 label: 'Projected',
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.45),
+                color: OpenVtsColors.brandInk.withValues(alpha: 0.45),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
               Expanded(
@@ -517,7 +518,7 @@ class _RevenueForecastSection extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -551,8 +552,8 @@ class _RevenueForecastSection extends StatelessWidget {
                     horizontal: OpenVtsSpacing.xs,
                     vertical: 8,
                   ),
-                  foregroundColor: Theme.of(context).colorScheme.onSurface,
-                  side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+                  foregroundColor: OpenVtsColors.textPrimary,
+                  side: const BorderSide(color: OpenVtsColors.border),
                   textStyle: OpenVtsTypography.meta.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -589,17 +590,17 @@ class _MetricPill extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
           const SizedBox(width: OpenVtsSpacing.xxs),
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.textSecondary,
               fontSize: 10.5,
               fontWeight: FontWeight.w700,
             ),
@@ -608,7 +609,7 @@ class _MetricPill extends StatelessWidget {
           Text(
             value,
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -634,19 +635,19 @@ class _StatusPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
           const SizedBox(width: OpenVtsSpacing.xxs),
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.textSecondary,
               fontSize: 10.5,
               fontWeight: FontWeight.w800,
             ),
@@ -655,7 +656,7 @@ class _StatusPill extends StatelessWidget {
           Text(
             formatNumber(value),
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -694,7 +695,7 @@ class _StatusLegendItem extends StatelessWidget {
         Text(
           '$label · $trailing',
           style: OpenVtsTypography.meta.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: OpenVtsColors.textSecondary,
             fontSize: 10.5,
             fontWeight: FontWeight.w600,
           ),
@@ -732,13 +733,13 @@ class _RevenueProgressBar extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                   child: ColoredBox(
-                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    color: OpenVtsColors.surface,
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: FractionallySizedBox(
                         widthFactor: (collectedPct.clamp(0, 100) / 100).toDouble(),
-                        child: ColoredBox(
-                          color: Theme.of(context).colorScheme.primary,
+                        child: const ColoredBox(
+                          color: OpenVtsColors.brandInk,
                         ),
                       ),
                     ),
@@ -752,7 +753,7 @@ class _RevenueProgressBar extends StatelessWidget {
                 child: Container(
                   width: 2,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.45),
+                    color: OpenVtsColors.brandInk.withValues(alpha: 0.45),
                     borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                   ),
                 ),
@@ -785,7 +786,7 @@ class _RevenueLegendItem extends StatelessWidget {
         Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: OpenVtsColors.textSecondary,
             fontSize: 10.5,
             fontWeight: FontWeight.w600,
           ),
@@ -809,7 +810,7 @@ class _PrimaryValueBlock extends StatelessWidget {
         Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: OpenVtsColors.textSecondary,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -821,7 +822,7 @@ class _PrimaryValueBlock extends StatelessWidget {
             value,
             maxLines: 1,
             style: OpenVtsTypography.numeric.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
               fontSize: 24,
               fontWeight: FontWeight.w700,
             ),
@@ -846,7 +847,7 @@ class _InlineMetric extends StatelessWidget {
         Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: OpenVtsColors.textSecondary,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -858,7 +859,7 @@ class _InlineMetric extends StatelessWidget {
             value,
             maxLines: 1,
             style: OpenVtsTypography.label.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -884,7 +885,7 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textSecondary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -897,7 +898,7 @@ class _InfoRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.end,
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
+                color: OpenVtsColors.textPrimary,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -919,23 +920,22 @@ class _InlineErrorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final errorColor = Theme.of(context).colorScheme.error;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: errorColor.withValues(alpha: 0.06),
+        color: OpenVtsColors.error.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
         border: Border.all(
-          color: errorColor.withValues(alpha: 0.18),
+          color: OpenVtsColors.error.withValues(alpha: 0.18),
         ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(OpenVtsSpacing.sm),
         child: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.info_outline_rounded,
               size: 16,
-              color: errorColor,
+              color: OpenVtsColors.error,
             ),
             const SizedBox(width: OpenVtsSpacing.xs),
             Expanded(
@@ -944,7 +944,7 @@ class _InlineErrorBanner extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: OpenVtsColors.textPrimary,
                   fontWeight: FontWeight.w600,
                 ),
               ),

@@ -37,9 +37,6 @@ class UserGeofenceCard extends ConsumerWidget {
     final formatter = ref.watch(appDateFormatterProvider);
     final color = _parseHex(geofence.color);
     final inactive = !geofence.isActive;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.brandInk;
-    final titleColor = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
 
     return Stack(
       children: [
@@ -49,7 +46,7 @@ class UserGeofenceCard extends ConsumerWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
               border: isSelected
-                  ? Border.all(color: borderColor, width: 1.4)
+                  ? Border.all(color: OpenVtsColors.brandInk, width: 1.4)
                   : null,
             ),
             child: OpenVtsCard(
@@ -72,7 +69,7 @@ class UserGeofenceCard extends ConsumerWidget {
                                   ? 'Untitled geofence'
                                   : geofence.name,
                               style: OpenVtsTypography.titleSmall.copyWith(
-                                color: titleColor,
+                                color: OpenVtsColors.textPrimary,
                                 fontWeight: FontWeight.w600,
                               ),
                               maxLines: 1,
@@ -118,7 +115,7 @@ class UserGeofenceCard extends ConsumerWidget {
                     Text(
                       geofence.description.trim(),
                       style: OpenVtsTypography.meta.copyWith(
-                        color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                         height: 1.35,
                       ),
                       maxLines: 2,
@@ -132,7 +129,7 @@ class UserGeofenceCard extends ConsumerWidget {
                         child: Text(
                           _geometrySummary(geofence),
                           style: OpenVtsTypography.meta.copyWith(
-                            color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                            color: OpenVtsColors.textSecondary,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -143,7 +140,7 @@ class UserGeofenceCard extends ConsumerWidget {
                         Text(
                           formatter.formatDate(geofence.updatedAt!),
                           style: OpenVtsTypography.meta.copyWith(
-                            color: isDark ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary,
+                            color: OpenVtsColors.textTertiary,
                           ),
                         ),
                       ],
@@ -159,7 +156,7 @@ class UserGeofenceCard extends ConsumerWidget {
             child: IgnorePointer(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: (isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated).withValues(alpha: 0.6),
+                  color: OpenVtsColors.surfaceElevated.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
                 ),
                 child: const Center(
@@ -228,8 +225,6 @@ class _ColorDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
     return Container(
       width: 12,
       height: 12,
@@ -237,7 +232,7 @@ class _ColorDot extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
-        border: Border.all(color: borderColor),
+        border: Border.all(color: OpenVtsColors.border),
       ),
     );
   }
@@ -259,11 +254,8 @@ class _RowAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final disabled = onTap == null;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final color = destructive
-        ? (isDark ? OpenVtsColors.darkError : OpenVtsColors.error)
-        : (isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary);
-    final disabledColor = isDark ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary;
+    final color =
+        destructive ? OpenVtsColors.error : OpenVtsColors.textSecondary;
     return Tooltip(
       message: tooltip,
       child: InkResponse(
@@ -274,7 +266,7 @@ class _RowAction extends StatelessWidget {
           child: Icon(
             icon,
             size: 18,
-            color: disabled ? disabledColor : color,
+            color: disabled ? OpenVtsColors.textTertiary : color,
           ),
         ),
       ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
 import '../../../../shared/widgets/open_vts_bottom_sheet.dart';
@@ -179,13 +180,13 @@ class _AdminPaymentsScreenState extends ConsumerState<AdminPaymentsScreen> {
                 Text(
                   'Manage transactions and renew vehicle subscriptions',
                   style: OpenVtsTypography.meta
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      .copyWith(color: OpenVtsColors.textSecondary),
                 ),
                 const SizedBox(height: OpenVtsSpacing.xxs),
                 Text(
                   '$loaded of $total transactions',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

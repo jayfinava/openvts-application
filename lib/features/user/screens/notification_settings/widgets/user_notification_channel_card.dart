@@ -56,7 +56,7 @@ class UserNotificationChannelCard extends StatelessWidget {
           Text(
             '$groupLabel Delivery Channels',
             style: OpenVtsTypography.meta.copyWith(
-              color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+              color: OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -64,7 +64,7 @@ class UserNotificationChannelCard extends StatelessWidget {
           Text(
             'Choose where alerts are delivered for this notification group.',
             style: OpenVtsTypography.meta.copyWith(
-              color: context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary,
+              color: OpenVtsColors.textTertiary,
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
@@ -80,9 +80,9 @@ class UserNotificationChannelCard extends StatelessWidget {
                   onChanged: (value) => onChanged(item.channel, value),
                 ),
                 if (index != channels.length - 1)
-                  Divider(
+                  const Divider(
                     height: OpenVtsSpacing.sm,
-                    color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border,
+                    color: OpenVtsColors.border,
                   ),
               ],
             );
@@ -124,14 +124,14 @@ class _ChannelToggleRow extends StatelessWidget {
           Icon(
             item.icon,
             size: 15,
-            color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+            color: OpenVtsColors.textSecondary,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
               item.label,
               style: OpenVtsTypography.body.copyWith(
-                color: context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
+                color: OpenVtsColors.textPrimary,
               ),
               overflow: TextOverflow.ellipsis,
             ),

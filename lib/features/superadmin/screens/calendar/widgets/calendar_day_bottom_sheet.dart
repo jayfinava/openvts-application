@@ -88,50 +88,39 @@ class _CalendarDayEventTile extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.label.copyWith(
                           color: isDark
                               ? OpenVtsColors.darkTextPrimary
                               : OpenVtsColors.textPrimary,
-                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-                    if (detail.count > 1) ...[
-                      const SizedBox(width: OpenVtsSpacing.xs),
+                    if (detail.count > 1)
                       _CountBadge(count: detail.count),
-                    ],
                   ],
                 ),
                 if (subtitle.isNotEmpty) ...[
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                     style: OpenVtsTypography.meta.copyWith(
                       color: isDark
                           ? OpenVtsColors.darkTextSecondary
                           : OpenVtsColors.textSecondary,
-                      fontSize: 12,
                     ),
                   ),
                 ],
                 if (metadata.isNotEmpty) ...[
-                  const SizedBox(height: 6),
+                  const SizedBox(height: OpenVtsSpacing.xs),
                   for (final item in metadata.take(2))
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         item,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.meta.copyWith(
                           color: isDark
                               ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.7)
                               : OpenVtsColors.textTertiary,
-                          fontSize: 11,
                         ),
                       ),
                     ),
@@ -201,17 +190,13 @@ class _EventTypeIcon extends StatelessWidget {
     }
 
     return Container(
-      width: 44,
-      height: 44,
+      width: 40,
+      height: 40,
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: color.withValues(alpha: 0.2),
-          width: 0.5,
-        ),
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14),
       ),
-      child: Icon(icon, size: 20, color: color),
+      child: Icon(icon, size: 18, color: color),
     );
   }
 }
@@ -226,29 +211,22 @@ class _CountBadge extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 8,
+        horizontal: OpenVtsSpacing.sm,
         vertical: 4,
       ),
       decoration: BoxDecoration(
         color: isDark
-            ? OpenVtsColors.white.withValues(alpha: 0.12)
-            : OpenVtsColors.brandInk.withValues(alpha: 0.12),
+            ? OpenVtsColors.white.withValues(alpha: 0.1)
+            : OpenVtsColors.brandInk.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: isDark
-              ? OpenVtsColors.white.withValues(alpha: 0.25)
-              : OpenVtsColors.brandInk.withValues(alpha: 0.25),
-          width: 0.5,
-        ),
       ),
       child: Text(
         '$count',
         style: OpenVtsTypography.meta.copyWith(
           color: isDark
               ? OpenVtsColors.darkTextPrimary
-              : OpenVtsColors.brandInk,
-          fontWeight: FontWeight.w700,
-          fontSize: 12,
+              : OpenVtsColors.textPrimary,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

@@ -40,7 +40,7 @@ class UserVehiclesScreen extends ConsumerWidget {
                     height: 16,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Icon(Icons.refresh_rounded, size: 18),
+                : const Icon(Icons.refresh_rounded, size: 18),
           ),
         ),
       ],
@@ -141,7 +141,7 @@ class _ToolbarCard extends StatelessWidget {
               if (state.hasActiveFilters)
                 TextButton.icon(
                   onPressed: onClearFilters,
-                  icon: Icon(Icons.filter_alt_off_outlined, size: 15),
+                  icon: const Icon(Icons.filter_alt_off_outlined, size: 15),
                   label: Text(
                     'Clear',
                     style: OpenVtsTypography.meta.copyWith(
@@ -203,14 +203,12 @@ class _FilterChip extends StatelessWidget {
       label: Text(label),
       onSelected: (_) => onTap(),
       labelStyle: OpenVtsTypography.meta.copyWith(
-        color: selected
-            ? Theme.of(context).colorScheme.onPrimary
-            : Theme.of(context).colorScheme.onSurface,
+        color: selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
         fontWeight: FontWeight.w800,
       ),
-      selectedColor: Theme.of(context).colorScheme.primary,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+      selectedColor: OpenVtsColors.brandInk,
+      backgroundColor: OpenVtsColors.white,
+      side: const BorderSide(color: OpenVtsColors.border),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       ),
@@ -251,11 +249,9 @@ class _TypeFilterButton extends StatelessWidget {
         height: 34,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-          color: value == null
-              ? Theme.of(context).colorScheme.surface
-              : Theme.of(context).colorScheme.primary,
+          color: value == null ? OpenVtsColors.white : OpenVtsColors.brandInk,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          border: Border.all(color: OpenVtsColors.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -264,16 +260,16 @@ class _TypeFilterButton extends StatelessWidget {
               Icons.category_outlined,
               size: 15,
               color: value == null
-                  ? Theme.of(context).colorScheme.onSurface
-                  : Theme.of(context).colorScheme.onPrimary,
+                  ? OpenVtsColors.textPrimary
+                  : OpenVtsColors.white,
             ),
             const SizedBox(width: 6),
             Text(
               selected?.label ?? 'All Types',
               style: OpenVtsTypography.meta.copyWith(
                 color: value == null
-                    ? Theme.of(context).colorScheme.onSurface
-                    : Theme.of(context).colorScheme.onPrimary,
+                    ? OpenVtsColors.textPrimary
+                    : OpenVtsColors.white,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -282,8 +278,8 @@ class _TypeFilterButton extends StatelessWidget {
               Icons.expand_more_rounded,
               size: 16,
               color: value == null
-                  ? Theme.of(context).colorScheme.onSurface
-                  : Theme.of(context).colorScheme.onPrimary,
+                  ? OpenVtsColors.textPrimary
+                  : OpenVtsColors.white,
             ),
           ],
         ),
@@ -315,7 +311,7 @@ class _InlineError extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline_rounded,
+          const Icon(Icons.error_outline_rounded,
               size: 16, color: OpenVtsColors.error),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(

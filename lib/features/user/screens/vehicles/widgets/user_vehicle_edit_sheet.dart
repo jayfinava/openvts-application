@@ -147,7 +147,7 @@ class _UserVehicleEditSheetState extends ConsumerState<UserVehicleEditSheet> {
             ),
           ),
         ),
-        Divider(height: 1),
+        const Divider(height: 1),
         SafeArea(
           top: false,
           child: Padding(
@@ -273,7 +273,7 @@ class _VehicleTypeField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Vehicle Type', style: OpenVtsTypography.label),
+        const Text('Vehicle Type', style: OpenVtsTypography.label),
         const SizedBox(height: OpenVtsSpacing.xs),
         DropdownButtonFormField<String>(
           initialValue: value,
@@ -309,7 +309,7 @@ class _TimezoneField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('GMT Offset', style: OpenVtsTypography.label),
+        const Text('GMT Offset', style: OpenVtsTypography.label),
         const SizedBox(height: OpenVtsSpacing.xs),
         DropdownButtonFormField<String>(
           initialValue: value,
@@ -355,13 +355,13 @@ class _MetaRowsEditor extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.data_object_rounded, size: 16),
+              const Icon(Icons.data_object_rounded, size: 16),
               const SizedBox(width: OpenVtsSpacing.xs),
               Expanded(
                 child: Text(
                   'Vehicle Meta',
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -369,7 +369,7 @@ class _MetaRowsEditor extends StatelessWidget {
               IconButton(
                 tooltip: 'Add metadata row',
                 onPressed: onAdd,
-                icon: Icon(Icons.add_rounded, size: 18),
+                icon: const Icon(Icons.add_rounded, size: 18),
                 style: IconButton.styleFrom(
                   minimumSize: const Size.square(32),
                   padding: EdgeInsets.zero,
@@ -433,7 +433,7 @@ class _MetaRowFields extends StatelessWidget {
         IconButton(
           tooltip: 'Remove metadata row',
           onPressed: onRemove,
-          icon: Icon(Icons.close_rounded, size: 17),
+          icon: const Icon(Icons.close_rounded, size: 17),
           style: IconButton.styleFrom(
             minimumSize: const Size.square(36),
             padding: EdgeInsets.zero,

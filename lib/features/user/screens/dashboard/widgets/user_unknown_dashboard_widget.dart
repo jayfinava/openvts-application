@@ -25,7 +25,7 @@ class UserUnknownDashboardWidget extends StatelessWidget {
           Text(
             'Unsupported widget',
             style: OpenVtsTypography.label.copyWith(
-              color: context.textPrimary(),
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -33,7 +33,7 @@ class UserUnknownDashboardWidget extends StatelessWidget {
           Text(
             'type: ${config.type}',
             style: OpenVtsTypography.meta.copyWith(
-              color: context.textSecondary(),
+              color: OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w600,
             ),
           ),

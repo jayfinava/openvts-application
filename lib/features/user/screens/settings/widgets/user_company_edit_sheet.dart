@@ -121,9 +121,9 @@ class _UserCompanyEditSheetState extends State<UserCompanyEditSheet> {
     final insets = MediaQuery.viewInsetsOf(context).bottom;
 
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.surface(),
-        borderRadius: const BorderRadius.vertical(
+      decoration: const BoxDecoration(
+        color: OpenVtsColors.surface,
+        borderRadius: BorderRadius.vertical(
           top: Radius.circular(OpenVtsRadius.lg),
         ),
       ),
@@ -146,7 +146,7 @@ class _UserCompanyEditSheetState extends State<UserCompanyEditSheet> {
                 Text(
                   'Edit Company',
                   style: OpenVtsTypography.label.copyWith(
-                    color: context.textPrimary(),
+                    color: OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -154,7 +154,7 @@ class _UserCompanyEditSheetState extends State<UserCompanyEditSheet> {
                 Text(
                   'Update company identity and social links.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: context.textSecondary(),
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: OpenVtsSpacing.sm),
@@ -192,7 +192,7 @@ class _UserCompanyEditSheetState extends State<UserCompanyEditSheet> {
                 Text(
                   'Social Links',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: context.textSecondary(),
+                    color: OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),

@@ -98,9 +98,9 @@ class _PresetChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final foreground =
-        isActive ? OpenVtsColors.white : context.textPrimary();
+        isActive ? OpenVtsColors.white : OpenVtsColors.textPrimary;
     final background =
-        isActive ? OpenVtsColors.brandInk : context.surface();
+        isActive ? OpenVtsColors.brandInk : OpenVtsColors.surface;
 
     return Semantics(
       button: true,
@@ -119,7 +119,7 @@ class _PresetChip extends StatelessWidget {
           decoration: BoxDecoration(
             color: background,
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-            border: Border.all(color: context.border()),
+            border: Border.all(color: OpenVtsColors.border),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

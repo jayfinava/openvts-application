@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/open_vts_colors.dart';
 import '../../../core/theme/open_vts_radius.dart';
 import '../../../core/theme/open_vts_spacing.dart';
 import '../../../core/theme/open_vts_typography.dart';
@@ -31,14 +32,14 @@ class OpenVtsDashboardEmptyState extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainer,
+                color: OpenVtsColors.surface,
                 borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                border: Border.all(color: OpenVtsColors.border),
               ),
               child: Icon(
                 icon,
                 size: 18,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textTertiary,
               ),
             ),
             const SizedBox(height: OpenVtsSpacing.xs),
@@ -46,7 +47,7 @@ class OpenVtsDashboardEmptyState extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: OpenVtsTypography.label.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
+                color: OpenVtsColors.textPrimary,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -57,7 +58,7 @@ class OpenVtsDashboardEmptyState extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textSecondary,
                 fontSize: 10.5,
               ),
             ),

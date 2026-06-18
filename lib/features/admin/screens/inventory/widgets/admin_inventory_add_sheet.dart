@@ -89,12 +89,7 @@ class _AdminInventoryAddSheetState
                             .map((item) => DropdownMenuItem<String>(
                                   value: item.id,
                                   child: Text(item.name,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: Theme.of(context).brightness == Brightness.dark
-                                            ? OpenVtsColors.darkTextPrimary
-                                            : OpenVtsColors.textPrimary,
-                                      )),
+                                      overflow: TextOverflow.ellipsis),
                                 ))
                             .toList(growable: false),
                         decoration:
@@ -139,22 +134,12 @@ class _AdminInventoryAddSheetState
                       DropdownButtonFormField<String>(
                         initialValue: _providerId,
                         items: [
-                          DropdownMenuItem<String>(
-                              value: '', child: Text('No Provider',
-                              style: TextStyle(
-                                color: Theme.of(context).brightness == Brightness.dark
-                                    ? OpenVtsColors.darkTextPrimary
-                                    : OpenVtsColors.textPrimary,
-                              ))),
+                          const DropdownMenuItem<String>(
+                              value: '', child: Text('No Provider')),
                           ..._providers.map((item) => DropdownMenuItem<String>(
                                 value: item.id,
                                 child: Text(item.name,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: Theme.of(context).brightness == Brightness.dark
-                                          ? OpenVtsColors.darkTextPrimary
-                                          : OpenVtsColors.textPrimary,
-                                    )),
+                                    overflow: TextOverflow.ellipsis),
                               )),
                         ],
                         decoration: const InputDecoration(
@@ -372,16 +357,11 @@ class _ModeChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isSelected
-        ? OpenVtsColors.brandInk
-        : (isDark ? OpenVtsColors.darkSurface : OpenVtsColors.white);
-    final fgColor = isSelected
-        ? OpenVtsColors.white
-        : (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary);
-    final borderColor = isSelected
-        ? OpenVtsColors.brandInk
-        : (isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border);
+    final bgColor = isSelected ? OpenVtsColors.brandInk : OpenVtsColors.white;
+    final fgColor =
+        isSelected ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor =
+        isSelected ? OpenVtsColors.brandInk : OpenVtsColors.border;
 
     return Material(
       color: bgColor,

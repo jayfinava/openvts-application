@@ -157,12 +157,10 @@ class _SectionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? OpenVtsColors.darkTextSecondary
-                        : OpenVtsColors.textTertiary,
+                    color: OpenVtsColors.textTertiary,
                     letterSpacing: 0.4,
                   ),
                 ),
@@ -171,12 +169,7 @@ class _SectionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
-          Divider(
-            height: 1,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? OpenVtsColors.darkBorder
-                : OpenVtsColors.border,
-          ),
+          const Divider(height: 1, color: OpenVtsColors.border),
           const SizedBox(height: OpenVtsSpacing.xs),
           ...children,
         ],
@@ -200,20 +193,13 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (icon != null) ...[
-            Icon(
-              icon,
-              size: 14,
-              color: isDark
-                  ? OpenVtsColors.darkTextSecondary
-                  : OpenVtsColors.textTertiary,
-            ),
+            Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
             const SizedBox(width: 8),
           ],
           SizedBox(
@@ -221,9 +207,7 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: isDark
-                    ? OpenVtsColors.darkTextSecondary
-                    : OpenVtsColors.textTertiary,
+                color: OpenVtsColors.textTertiary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -232,10 +216,7 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               value.trim().isEmpty ? '—' : value,
               style: OpenVtsTypography.label.copyWith(
-                color: valueColor ??
-                    (isDark
-                        ? OpenVtsColors.darkTextPrimary
-                        : OpenVtsColors.textPrimary),
+                color: valueColor ?? OpenVtsColors.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -253,19 +234,18 @@ class _DriverAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.brandInk,
+        color: OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       ),
       alignment: Alignment.center,
       child: Text(
         _initials(name),
         style: OpenVtsTypography.label.copyWith(
-          color: isDark ? OpenVtsColors.darkTextPrimary : Colors.white,
+          color: Colors.white,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -413,20 +393,16 @@ class _IdentityCard extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.event_outlined,
                       size: 14,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? OpenVtsColors.darkTextSecondary
-                          : OpenVtsColors.textTertiary,
+                      color: OpenVtsColors.textTertiary,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Created: ',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? OpenVtsColors.darkTextSecondary
-                            : OpenVtsColors.textTertiary,
+                        color: OpenVtsColors.textTertiary,
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                       ),
@@ -435,9 +411,7 @@ class _IdentityCard extends StatelessWidget {
                       child: Text(
                         created,
                         style: OpenVtsTypography.label.copyWith(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? OpenVtsColors.darkTextSecondary
-                              : OpenVtsColors.textSecondary,
+                          color: OpenVtsColors.textSecondary,
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                         ),
@@ -452,20 +426,16 @@ class _IdentityCard extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.update_outlined,
                       size: 14,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? OpenVtsColors.darkTextSecondary
-                          : OpenVtsColors.textTertiary,
+                      color: OpenVtsColors.textTertiary,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Updated: ',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? OpenVtsColors.darkTextSecondary
-                            : OpenVtsColors.textTertiary,
+                        color: OpenVtsColors.textTertiary,
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                       ),
@@ -474,9 +444,7 @@ class _IdentityCard extends StatelessWidget {
                       child: Text(
                         updated,
                         style: OpenVtsTypography.label.copyWith(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? OpenVtsColors.darkTextSecondary
-                              : OpenVtsColors.textSecondary,
+                          color: OpenVtsColors.textSecondary,
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                         ),

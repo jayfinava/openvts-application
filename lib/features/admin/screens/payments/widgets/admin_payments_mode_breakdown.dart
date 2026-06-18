@@ -21,7 +21,6 @@ class AdminPaymentsModeBreakdown extends StatelessWidget {
     final ranked = [...items]..sort((a, b) => b.count.compareTo(a.count));
     final total = ranked.fold<int>(0, (p, c) => p + c.count);
     final max = ranked.fold<int>(0, (p, c) => math.max(p, c.count));
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return OpenVtsCard(
       child: Column(
@@ -32,7 +31,7 @@ class AdminPaymentsModeBreakdown extends StatelessWidget {
           const SizedBox(height: OpenVtsSpacing.xxs),
           Text('Ranked by transaction count',
               style: OpenVtsTypography.meta
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                  .copyWith(color: OpenVtsColors.textSecondary)),
           const SizedBox(height: OpenVtsSpacing.sm),
           if (ranked.isEmpty)
             const OpenVtsEmptyState(
@@ -45,8 +44,6 @@ class AdminPaymentsModeBreakdown extends StatelessWidget {
               children: ranked.map((e) {
                 final ratio = max == 0 ? 0.0 : e.count / max;
                 final pct = total == 0 ? 0 : ((e.count / total) * 100).round();
-                final barColor = isDark ? Theme.of(context).colorScheme.onSurface : OpenVtsColors.textSecondary;
-                final backgroundColor = isDark ? Theme.of(context).colorScheme.surfaceContainer : OpenVtsColors.surface;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),
                   child: Row(
@@ -64,15 +61,15 @@ class AdminPaymentsModeBreakdown extends StatelessWidget {
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
-                                DecoratedBox(
+                                const DecoratedBox(
                                     decoration: BoxDecoration(
-                                        color: backgroundColor)),
+                                        color: OpenVtsColors.surface)),
                                 FractionallySizedBox(
                                   alignment: Alignment.centerLeft,
                                   widthFactor: ratio,
-                                  child: DecoratedBox(
+                                  child: const DecoratedBox(
                                     decoration: BoxDecoration(
-                                        color: barColor),
+                                        color: OpenVtsColors.textSecondary),
                                   ),
                                 ),
                               ],
@@ -87,7 +84,7 @@ class AdminPaymentsModeBreakdown extends StatelessWidget {
                           '${NumberFormat.compact().format(e.count)} ($pct%)',
                           textAlign: TextAlign.right,
                           style: OpenVtsTypography.meta
-                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                              .copyWith(color: OpenVtsColors.textSecondary),
                         ),
                       ),
                     ],

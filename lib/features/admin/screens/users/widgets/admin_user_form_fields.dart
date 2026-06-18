@@ -146,19 +146,13 @@ class AdminUserDropdownField extends StatelessWidget {
           (option) => DropdownMenuItem<String>(
             value: option.value,
             enabled: !option.isFallback,
-            child: Builder(
-              builder: (context) => Text(
-                option.label,
-                overflow: TextOverflow.ellipsis,
-                style: OpenVtsTypography.body.copyWith(
-                  color: option.isFallback
-                      ? (Theme.of(context).brightness == Brightness.dark
-                          ? OpenVtsColors.darkTextSecondary
-                          : OpenVtsColors.textTertiary)
-                      : (Theme.of(context).brightness == Brightness.dark
-                          ? OpenVtsColors.darkTextPrimary
-                          : OpenVtsColors.textPrimary),
-                ),
+            child: Text(
+              option.label,
+              overflow: TextOverflow.ellipsis,
+              style: OpenVtsTypography.body.copyWith(
+                color: option.isFallback
+                    ? OpenVtsColors.textTertiary
+                    : OpenVtsColors.textPrimary,
               ),
             ),
           ),

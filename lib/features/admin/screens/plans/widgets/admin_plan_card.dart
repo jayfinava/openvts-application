@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
@@ -19,7 +20,6 @@ class AdminPlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formatter = const DateTimeFormatter();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
@@ -34,7 +34,7 @@ class AdminPlanCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -50,13 +50,11 @@ class AdminPlanCard extends StatelessWidget {
           _InfoRow(
             icon: Icons.payments_outlined,
             label: _priceLabel(plan.price, plan.currency),
-            isDark: isDark,
           ),
           _InfoRow(
             icon: Icons.schedule_rounded,
             label:
                 plan.durationDays == null ? '-' : '${plan.durationDays} days',
-            isDark: isDark,
           ),
           _InfoRow(
             icon: Icons.calendar_today_rounded,
@@ -65,7 +63,6 @@ class AdminPlanCard extends StatelessWidget {
               updatedAt: plan.updatedAt,
               formatter: formatter,
             ),
-            isDark: isDark,
           ),
         ],
       ),
@@ -102,25 +99,19 @@ class AdminPlanCard extends StatelessWidget {
 }
 
 class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.isDark,
-  });
+  const _InfoRow({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
-  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
-    final textColor = Theme.of(context).colorScheme.onSurfaceVariant;
     return Padding(
       padding: const EdgeInsets.only(top: OpenVtsSpacing.xxs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 14, color: textColor),
+          Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
@@ -128,7 +119,7 @@ class _InfoRow extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: textColor,
+                color: OpenVtsColors.textSecondary,
               ),
             ),
           ),

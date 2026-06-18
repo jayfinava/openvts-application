@@ -273,6 +273,7 @@ class _VehicleSelector extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+          borderSide: const BorderSide(color: OpenVtsColors.border),
         ),
       ),
       items: [
@@ -319,16 +320,16 @@ class _DayWindowLabel extends StatelessWidget {
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: context.surface(),
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: context.border()),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.wb_twilight_outlined,
             size: 16,
-            color: context.textSecondary(),
+            color: OpenVtsColors.textSecondary,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -337,7 +338,7 @@ class _DayWindowLabel extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textSecondary(),
+                color: OpenVtsColors.textSecondary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -357,20 +358,10 @@ class _DayNightChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDarkMode;
-    final gridColor = context.border();
-    final labelColor = context.textTertiary();
     return SizedBox(
       height: 170,
       child: CustomPaint(
-        painter: _DayNightChartPainter(
-          points: points,
-          metric: metric,
-          unitFormatter: unitFormatter,
-          gridColor: gridColor,
-          labelColor: labelColor,
-          isDark: isDark,
-        ),
+        painter: _DayNightChartPainter(points: points, metric: metric, unitFormatter: unitFormatter),
         size: Size.infinite,
       ),
     );
@@ -378,21 +369,11 @@ class _DayNightChart extends StatelessWidget {
 }
 
 class _DayNightChartPainter extends CustomPainter {
-  const _DayNightChartPainter({
-    required this.points,
-    required this.metric,
-    required this.unitFormatter,
-    required this.gridColor,
-    required this.labelColor,
-    required this.isDark,
-  });
+  const _DayNightChartPainter({required this.points, required this.metric, required this.unitFormatter});
 
   final List<UserDashboardDayNightPoint> points;
   final _DayNightMetric metric;
   final UnitFormatter unitFormatter;
-  final Color gridColor;
-  final Color labelColor;
-  final bool isDark;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -416,7 +397,7 @@ class _DayNightChartPainter extends CustomPainter {
     final scale = math.max(maxValue, 1).toDouble();
 
     final gridPaint = Paint()
-      ..color = gridColor
+      ..color = OpenVtsColors.border
       ..strokeWidth = 1;
     for (var line = 0; line < 4; line++) {
       final y = top + chartHeight * line / 3;
@@ -428,7 +409,7 @@ class _DayNightChartPainter extends CustomPainter {
       ..color = OpenVtsColors.brandInk
       ..style = PaintingStyle.fill;
     final nightPaint = Paint()
-      ..color = labelColor
+      ..color = OpenVtsColors.textTertiary
       ..style = PaintingStyle.fill;
     final slot = chartWidth / visiblePoints.length;
     final barWidth = math.min(12.0, slot * 0.24).toDouble();
@@ -484,7 +465,7 @@ class _DayNightChartPainter extends CustomPainter {
       text: TextSpan(
         text: text,
         style: OpenVtsTypography.meta.copyWith(
-          color: labelColor,
+          color: OpenVtsColors.textTertiary,
           fontSize: 10,
           fontWeight: FontWeight.w600,
         ),
@@ -504,10 +485,7 @@ class _DayNightChartPainter extends CustomPainter {
   bool shouldRepaint(covariant _DayNightChartPainter oldDelegate) {
     return oldDelegate.points != points ||
            oldDelegate.metric != metric ||
-           oldDelegate.unitFormatter.usesMiles != unitFormatter.usesMiles ||
-           oldDelegate.gridColor != gridColor ||
-           oldDelegate.labelColor != labelColor ||
-           oldDelegate.isDark != isDark;
+           oldDelegate.unitFormatter.usesMiles != unitFormatter.usesMiles;
   }
 }
 

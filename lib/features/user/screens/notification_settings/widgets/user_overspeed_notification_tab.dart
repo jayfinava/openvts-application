@@ -107,7 +107,7 @@ class UserOverspeedNotificationTab extends ConsumerWidget {
                       child: Text(
                         'Speed limit must be at least 1 ${uf.speedLabel}.',
                         style: OpenVtsTypography.meta.copyWith(
-                          color: context.isDarkMode ? OpenVtsColors.darkError : OpenVtsColors.error,
+                          color: OpenVtsColors.error,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -164,19 +164,19 @@ class _SpeedLimitField extends StatelessWidget {
           ],
           style: OpenVtsTypography.meta.copyWith(
             color: enabled
-                ? (context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary)
-                : (context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary),
+                ? OpenVtsColors.textPrimary
+                : OpenVtsColors.textTertiary,
             fontWeight: FontWeight.w600,
           ),
           decoration: InputDecoration(
             isDense: true,
             hintText: 'Limit',
             hintStyle: OpenVtsTypography.meta.copyWith(
-              color: context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary,
+              color: OpenVtsColors.textTertiary,
             ),
             suffixText: speedLabel,
             suffixStyle: OpenVtsTypography.meta.copyWith(
-              color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+              color: OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w600,
             ),
             contentPadding: const EdgeInsets.symmetric(
@@ -185,31 +185,31 @@ class _SpeedLimitField extends StatelessWidget {
             ),
             filled: true,
             fillColor:
-                enabled ? (context.isDarkMode ? OpenVtsColors.darkSurfaceElevated : OpenVtsColors.surfaceElevated) : (context.isDarkMode ? OpenVtsColors.darkSurface : OpenVtsColors.surface),
+                enabled ? OpenVtsColors.surfaceElevated : OpenVtsColors.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
               borderSide: BorderSide(
-                color: hasError ? (context.isDarkMode ? OpenVtsColors.darkError : OpenVtsColors.error) : (context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+                color: hasError ? OpenVtsColors.error : OpenVtsColors.border,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
               borderSide: BorderSide(
-                color: hasError ? (context.isDarkMode ? OpenVtsColors.darkError : OpenVtsColors.error) : (context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+                color: hasError ? OpenVtsColors.error : OpenVtsColors.border,
               ),
             ),
             disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
               borderSide: BorderSide(
-                color: hasError ? (context.isDarkMode ? OpenVtsColors.darkError : OpenVtsColors.error) : (context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+                color: hasError ? OpenVtsColors.error : OpenVtsColors.border,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
               borderSide: BorderSide(
                 color: hasError
-                    ? (context.isDarkMode ? OpenVtsColors.darkError : OpenVtsColors.error)
-                    : (context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary),
+                    ? OpenVtsColors.error
+                    : OpenVtsColors.textSecondary,
               ),
             ),
           ),

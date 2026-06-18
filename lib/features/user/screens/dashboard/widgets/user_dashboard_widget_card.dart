@@ -35,7 +35,7 @@ class UserDashboardWidgetCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.xl),
-        border: Border.all(color: context.border()),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(OpenVtsRadius.xl),
@@ -55,14 +55,14 @@ class UserDashboardWidgetCard extends StatelessWidget {
                     width: 28,
                     height: 28,
                     decoration: BoxDecoration(
-                      color: context.surface(),
+                      color: OpenVtsColors.surface,
                       borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                      border: Border.all(color: context.border()),
+                      border: Border.all(color: OpenVtsColors.border),
                     ),
                     child: Icon(
                       icon,
                       size: 17,
-                      color: context.textSecondary(),
+                      color: OpenVtsColors.textSecondary,
                     ),
                   ),
                   const SizedBox(width: OpenVtsSpacing.sm),
@@ -72,7 +72,7 @@ class UserDashboardWidgetCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: context.textPrimary(),
+                        color: OpenVtsColors.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                       ),
@@ -100,15 +100,15 @@ class UserDashboardWidgetCard extends StatelessWidget {
                         minimumSize: const Size.square(32),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         padding: EdgeInsets.zero,
-                        foregroundColor: context.textSecondary(),
-                        disabledForegroundColor: context.textTertiary(),
+                        foregroundColor: OpenVtsColors.textSecondary,
+                        disabledForegroundColor: OpenVtsColors.textTertiary,
                       ),
                       icon: const Icon(Icons.refresh_rounded, size: 17),
                     ),
                 ],
               ),
             ),
-            Divider(height: 1, color: context.border()),
+            const Divider(height: 1, color: OpenVtsColors.border),
             Padding(
               padding: const EdgeInsets.all(OpenVtsSpacing.md),
               child: child,
@@ -132,29 +132,28 @@ class UserDashboardWidgetError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final errorColor = context.error();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: errorColor.withValues(alpha: 0.08),
+        color: OpenVtsColors.error.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: errorColor.withValues(alpha: 0.18)),
+        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.18)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
+          const Icon(
             Icons.error_outline_rounded,
             size: 17,
-            color: errorColor,
+            color: OpenVtsColors.error,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
               userDashboardErrorText(message),
               style: OpenVtsTypography.meta.copyWith(
-                color: errorColor,
+                color: OpenVtsColors.error,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -196,13 +195,13 @@ class UserDashboardWidgetEmpty extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 28, color: context.textTertiary()),
+          Icon(icon, size: 28, color: OpenVtsColors.textTertiary),
           const SizedBox(height: OpenVtsSpacing.xs),
           Text(
             message,
             textAlign: TextAlign.center,
             style: OpenVtsTypography.meta.copyWith(
-              color: context.textSecondary(),
+              color: OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -229,9 +228,9 @@ class UserDashboardMetricTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: context.surface(),
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: context.border()),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,7 +240,7 @@ class UserDashboardMetricTile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.meta.copyWith(
-              color: context.textTertiary(),
+              color: OpenVtsColors.textTertiary,
               fontSize: 10.5,
               fontWeight: FontWeight.w800,
             ),
@@ -254,7 +253,7 @@ class UserDashboardMetricTile extends StatelessWidget {
               value,
               maxLines: 1,
               style: OpenVtsTypography.numeric.copyWith(
-                color: context.textPrimary(),
+                color: OpenVtsColors.textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
               ),
@@ -267,7 +266,7 @@ class UserDashboardMetricTile extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textSecondary(),
+                color: OpenVtsColors.textSecondary,
                 fontSize: 10.5,
                 fontWeight: FontWeight.w600,
               ),
@@ -311,7 +310,7 @@ class UserDashboardMiniBar extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: context.textSecondary(),
+                  color: OpenVtsColors.textSecondary,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -320,7 +319,7 @@ class UserDashboardMiniBar extends StatelessWidget {
             Text(
               trailing ?? userDashboardFormatNumber(value),
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textPrimary(),
+                color: OpenVtsColors.textPrimary,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -333,7 +332,7 @@ class UserDashboardMiniBar extends StatelessWidget {
             value: percent,
             minHeight: 7,
             color: color,
-            backgroundColor: context.surface(),
+            backgroundColor: OpenVtsColors.surface,
           ),
         ),
       ],

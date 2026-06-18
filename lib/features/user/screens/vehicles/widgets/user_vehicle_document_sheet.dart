@@ -189,7 +189,7 @@ class _UserVehicleDocumentSheetState
             ),
           ),
         ),
-        Divider(height: 1),
+        const Divider(height: 1),
         SafeArea(
           top: false,
           child: Padding(
@@ -354,7 +354,7 @@ class _DocumentTypeField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Document type', style: OpenVtsTypography.label),
+        const Text('Document type', style: OpenVtsTypography.label),
         const SizedBox(height: OpenVtsSpacing.xs),
         DropdownButtonFormField<String>(
           initialValue: hasValue ? value : null,
@@ -408,23 +408,23 @@ class _FilePickerField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('File', style: OpenVtsTypography.label),
+        const Text('File', style: OpenVtsTypography.label),
         const SizedBox(height: OpenVtsSpacing.xs),
         Container(
           padding: const EdgeInsets.all(OpenVtsSpacing.sm),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
+            color: OpenVtsColors.surface,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
             border: Border.all(
-              color: showError ? OpenVtsColors.error : Theme.of(context).colorScheme.outlineVariant,
+              color: showError ? OpenVtsColors.error : OpenVtsColors.border,
             ),
           ),
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.attach_file_rounded,
                 size: 18,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textSecondary,
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
               Expanded(
@@ -434,8 +434,8 @@ class _FilePickerField extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
                     color: currentName.isEmpty
-                        ? Theme.of(context).colorScheme.onSurfaceVariant
-                        : Theme.of(context).colorScheme.onSurface,
+                        ? OpenVtsColors.textTertiary
+                        : OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -492,7 +492,7 @@ class _ExpiryField extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Expiry date', style: OpenVtsTypography.label),
+        const Text('Expiry date', style: OpenVtsTypography.label),
         const SizedBox(height: OpenVtsSpacing.xs),
         InkWell(
           borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
@@ -503,16 +503,16 @@ class _ExpiryField extends ConsumerWidget {
               vertical: OpenVtsSpacing.xs,
             ),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
+              color: OpenVtsColors.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              border: Border.all(color: OpenVtsColors.border),
             ),
             child: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.event_outlined,
                   size: 18,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: OpenVtsColors.textSecondary,
                 ),
                 const SizedBox(width: OpenVtsSpacing.xs),
                 Expanded(
@@ -520,8 +520,8 @@ class _ExpiryField extends ConsumerWidget {
                     value == null ? 'No expiry' : _dateText(value, formatter),
                     style: OpenVtsTypography.meta.copyWith(
                       color: value == null
-                          ? Theme.of(context).colorScheme.onSurfaceVariant
-                          : Theme.of(context).colorScheme.onSurface,
+                          ? OpenVtsColors.textTertiary
+                          : OpenVtsColors.textPrimary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -530,7 +530,7 @@ class _ExpiryField extends ConsumerWidget {
                   IconButton(
                     tooltip: 'Clear expiry',
                     onPressed: onClear,
-                    icon: Icon(Icons.close_rounded, size: 17),
+                    icon: const Icon(Icons.close_rounded, size: 17),
                     style: IconButton.styleFrom(
                       minimumSize: const Size.square(30),
                       padding: EdgeInsets.zero,
@@ -538,10 +538,10 @@ class _ExpiryField extends ConsumerWidget {
                     ),
                   )
                 else
-                  Icon(
+                  const Icon(
                     Icons.expand_more_rounded,
                     size: 18,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                   ),
               ],
             ),
@@ -566,16 +566,16 @@ class _VisibilityToggle extends StatelessWidget {
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         children: [
           Icon(
             value ? Icons.visibility_outlined : Icons.visibility_off_outlined,
             size: 18,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: OpenVtsColors.textSecondary,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -585,13 +585,13 @@ class _VisibilityToggle extends StatelessWidget {
                 Text(
                   'Visible',
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.textPrimary,
                   ),
                 ),
                 Text(
                   value ? 'Shown in vehicle documents' : 'Hidden from users',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
               ],
@@ -620,8 +620,8 @@ class _TagChip extends StatelessWidget {
       onDeleted: onDelete,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       visualDensity: VisualDensity.compact,
-      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      side: const BorderSide(color: OpenVtsColors.border),
+      backgroundColor: OpenVtsColors.surface,
     );
   }
 }
@@ -643,7 +643,7 @@ class _InlineError extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
+          const Icon(
             Icons.error_outline_rounded,
             size: 16,
             color: OpenVtsColors.error,

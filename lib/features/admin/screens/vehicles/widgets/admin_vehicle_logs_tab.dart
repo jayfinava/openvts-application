@@ -16,30 +16,6 @@ import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../models/admin_vehicle_model.dart';
 
-Color _textSecondaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextSecondary
-      : Theme.of(context).colorScheme.onSurfaceVariant;
-}
-
-Color _textTertiaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.6)
-      : Theme.of(context).colorScheme.onSurfaceVariant;
-}
-
-Color _borderColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkBorder
-      : Theme.of(context).colorScheme.outlineVariant;
-}
-
-Color _surfaceColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkSurface
-      : Theme.of(context).colorScheme.surface;
-}
-
 class AdminVehicleLogsTab extends ConsumerStatefulWidget {
   const AdminVehicleLogsTab({
     super.key,
@@ -98,11 +74,11 @@ class _AdminVehicleLogsTabState extends ConsumerState<AdminVehicleLogsTab> {
               IconButton(
                 tooltip: 'Date range',
                 onPressed: _pickRange,
-                icon: Icon(Icons.date_range_rounded, size: 18),
+                icon: const Icon(Icons.date_range_rounded, size: 18),
               ),
               TextButton(
                 onPressed: widget.onLoad,
-                child: Text('Reset'),
+                child: const Text('Reset'),
               ),
             ],
           ),
@@ -259,15 +235,13 @@ class _LogCard extends ConsumerWidget {
                     ),
                     if (log.packetType.trim().isNotEmpty) ...[
                       const SizedBox(height: 2),
-                      Builder(
-                        builder: (context) => Text(
-                          log.packetType,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: OpenVtsTypography.meta.copyWith(
-                            color: _textSecondaryColor(context),
-                            fontSize: 12,
-                          ),
+                      Text(
+                        log.packetType,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: OpenVtsTypography.meta.copyWith(
+                          color: OpenVtsColors.textSecondary,
+                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -277,12 +251,7 @@ class _LogCard extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
-          Builder(
-            builder: (context) => Divider(
-              height: 1,
-              color: _borderColor(context),
-            ),
-          ),
+          const Divider(height: 1, color: OpenVtsColors.border),
           const SizedBox(height: OpenVtsSpacing.sm),
           Row(
             children: [
@@ -374,7 +343,7 @@ class _InfoItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: _textTertiaryColor(context)),
+        Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Column(
@@ -384,7 +353,7 @@ class _InfoItem extends StatelessWidget {
               Text(
                 label,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: _textSecondaryColor(context),
+                  color: OpenVtsColors.textSecondary,
                   fontSize: 10,
                 ),
               ),
@@ -417,29 +386,21 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isActive = value;
-    final successColor = context.success();
-    final bgColor = isActive
-        ? successColor.withValues(alpha: 0.08)
-        : _surfaceColor(context);
-    final borderColor = isActive
-        ? successColor.withValues(alpha: 0.25)
-        : _borderColor(context);
-    final iconColor = isActive
-        ? successColor
-        : _textTertiaryColor(context);
-    final textColor = isActive
-        ? successColor
-        : _textTertiaryColor(context);
-
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.xs,
         vertical: 4,
       ),
       decoration: BoxDecoration(
-        color: bgColor,
+        color: isActive
+            ? OpenVtsColors.success.withValues(alpha: 0.08)
+            : OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: borderColor),
+        border: Border.all(
+          color: isActive
+              ? OpenVtsColors.success.withValues(alpha: 0.25)
+              : OpenVtsColors.border,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -447,13 +408,15 @@ class _StatusChip extends StatelessWidget {
           Icon(
             isActive ? Icons.check_circle_rounded : Icons.cancel_rounded,
             size: 12,
-            color: iconColor,
+            color: isActive ? OpenVtsColors.success : OpenVtsColors.textTertiary,
           ),
           const SizedBox(width: 4),
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: textColor,
+              color: isActive
+                  ? OpenVtsColors.success
+                  : OpenVtsColors.textTertiary,
               fontSize: 10,
               fontWeight: FontWeight.w600,
             ),

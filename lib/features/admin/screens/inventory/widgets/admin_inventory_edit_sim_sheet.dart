@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/theme/open_vts_spacing.dart';
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
@@ -87,20 +86,10 @@ class _AdminInventoryEditSimSheetState
                 DropdownButtonFormField<String>(
                   initialValue: _providerId,
                   items: [
-                    DropdownMenuItem(
-                        value: '', child: Text('No Provider',
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? OpenVtsColors.darkTextPrimary
-                              : OpenVtsColors.textPrimary,
-                        ))),
+                    const DropdownMenuItem(
+                        value: '', child: Text('No Provider')),
                     ..._providers.map((item) => DropdownMenuItem<String>(
-                        value: item.id, child: Text(item.name,
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? OpenVtsColors.darkTextPrimary
-                              : OpenVtsColors.textPrimary,
-                        )))),
+                        value: item.id, child: Text(item.name))),
                   ],
                   decoration: const InputDecoration(labelText: 'SIM Provider'),
                   onChanged: isSubmitting
@@ -110,27 +99,12 @@ class _AdminInventoryEditSimSheetState
                 const SizedBox(height: OpenVtsSpacing.sm),
                 DropdownButtonFormField<String>(
                   initialValue: _status,
-                  items: [
+                  items: const [
                     DropdownMenuItem(
-                        value: 'IN_STOCK', child: Text('IN_STOCK',
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? OpenVtsColors.darkTextPrimary
-                              : OpenVtsColors.textPrimary,
-                        ))),
-                    DropdownMenuItem(value: 'IN_USE', child: Text('IN_USE',
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? OpenVtsColors.darkTextPrimary
-                              : OpenVtsColors.textPrimary,
-                        ))),
+                        value: 'IN_STOCK', child: Text('IN_STOCK')),
+                    DropdownMenuItem(value: 'IN_USE', child: Text('IN_USE')),
                     DropdownMenuItem(
-                        value: 'IN_SCRAP', child: Text('IN_SCRAP',
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? OpenVtsColors.darkTextPrimary
-                              : OpenVtsColors.textPrimary,
-                        ))),
+                        value: 'IN_SCRAP', child: Text('IN_SCRAP')),
                   ],
                   decoration: const InputDecoration(labelText: 'Status'),
                   onChanged: isSubmitting
@@ -140,12 +114,7 @@ class _AdminInventoryEditSimSheetState
                 const SizedBox(height: OpenVtsSpacing.sm),
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
-                  title: Text('Active',
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? OpenVtsColors.darkTextPrimary
-                          : OpenVtsColors.textPrimary,
-                    )),
+                  title: const Text('Active'),
                   value: _isActive,
                   onChanged: isSubmitting
                       ? null

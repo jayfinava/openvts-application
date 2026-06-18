@@ -38,9 +38,6 @@ class UserRouteCard extends ConsumerWidget {
     final formatter = ref.watch(appDateFormatterProvider);
     final color = _parseHex(route.color);
     final inactive = !route.isActive;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.brandInk;
-    final titleColor = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
 
     return Stack(
       children: [
@@ -50,7 +47,7 @@ class UserRouteCard extends ConsumerWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
               border: isSelected
-                  ? Border.all(color: borderColor, width: 1.4)
+                  ? Border.all(color: OpenVtsColors.brandInk, width: 1.4)
                   : null,
             ),
             child: OpenVtsCard(
@@ -73,7 +70,7 @@ class UserRouteCard extends ConsumerWidget {
                                   ? 'Untitled route'
                                   : route.name,
                               style: OpenVtsTypography.titleSmall.copyWith(
-                                color: titleColor,
+                                color: OpenVtsColors.textPrimary,
                                 fontWeight: FontWeight.w600,
                               ),
                               maxLines: 1,
@@ -107,7 +104,7 @@ class UserRouteCard extends ConsumerWidget {
                     Text(
                       route.description.trim(),
                       style: OpenVtsTypography.meta.copyWith(
-                        color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                         height: 1.35,
                       ),
                       maxLines: 2,
@@ -121,7 +118,7 @@ class UserRouteCard extends ConsumerWidget {
                         child: Text(
                           _meta(route),
                           style: OpenVtsTypography.meta.copyWith(
-                            color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                            color: OpenVtsColors.textSecondary,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -132,7 +129,7 @@ class UserRouteCard extends ConsumerWidget {
                         Text(
                           formatter.formatDate(route.updatedAt!),
                           style: OpenVtsTypography.meta.copyWith(
-                            color: isDark ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary,
+                            color: OpenVtsColors.textTertiary,
                           ),
                         ),
                       ],
@@ -148,7 +145,7 @@ class UserRouteCard extends ConsumerWidget {
             child: IgnorePointer(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: (isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated).withValues(alpha: 0.6),
+                  color: OpenVtsColors.surfaceElevated.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
                 ),
                 child: const Center(
@@ -220,8 +217,6 @@ class _ColorDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
     return Container(
       width: 12,
       height: 12,
@@ -229,7 +224,7 @@ class _ColorDot extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
-        border: Border.all(color: borderColor),
+        border: Border.all(color: OpenVtsColors.border),
       ),
     );
   }
@@ -251,11 +246,8 @@ class _RowAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final disabled = onTap == null;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final color = destructive
-        ? (isDark ? OpenVtsColors.darkError : OpenVtsColors.error)
-        : (isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary);
-    final disabledColor = isDark ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary;
+    final color =
+        destructive ? OpenVtsColors.error : OpenVtsColors.textSecondary;
     return Tooltip(
       message: tooltip,
       child: InkResponse(
@@ -266,7 +258,7 @@ class _RowAction extends StatelessWidget {
           child: Icon(
             icon,
             size: 18,
-            color: disabled ? disabledColor : color,
+            color: disabled ? OpenVtsColors.textTertiary : color,
           ),
         ),
       ),

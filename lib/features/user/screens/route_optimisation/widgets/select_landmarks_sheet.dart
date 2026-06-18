@@ -140,7 +140,7 @@ class _SelectLandmarksBodyState extends ConsumerState<_SelectLandmarksBody> {
                 decoration: InputDecoration(
                   hintText: 'Search by name',
                   hintStyle: OpenVtsTypography.label.copyWith(
-                    color: context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary,
+                    color: OpenVtsColors.textTertiary,
                   ),
                   prefixIcon: const Icon(Icons.search, size: 16),
                   isDense: true,
@@ -150,11 +150,11 @@ class _SelectLandmarksBodyState extends ConsumerState<_SelectLandmarksBody> {
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                    borderSide: BorderSide(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+                    borderSide: const BorderSide(color: OpenVtsColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                    borderSide: BorderSide(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+                    borderSide: const BorderSide(color: OpenVtsColors.border),
                   ),
                 ),
               ),
@@ -173,7 +173,7 @@ class _SelectLandmarksBodyState extends ConsumerState<_SelectLandmarksBody> {
             scrollController: widget.scrollController,
           ),
         ),
-        Divider(height: 1, color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+        const Divider(height: 1, color: OpenVtsColors.border),
         Padding(
           padding: const EdgeInsets.all(OpenVtsSpacing.sm),
           child: Row(
@@ -183,7 +183,7 @@ class _SelectLandmarksBodyState extends ConsumerState<_SelectLandmarksBody> {
                     ? 'No selection'
                     : '${_selected.length} selected',
                 style: OpenVtsTypography.meta.copyWith(
-                  color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               const Spacer(),
@@ -192,7 +192,7 @@ class _SelectLandmarksBodyState extends ConsumerState<_SelectLandmarksBody> {
                 child: Text(
                   'Cancel',
                   style: OpenVtsTypography.label.copyWith(
-                    color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
               ),
@@ -272,15 +272,15 @@ class _PickerBody extends StatelessWidget {
               errorMessage!,
               textAlign: TextAlign.center,
               style: OpenVtsTypography.meta.copyWith(
-                color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                color: OpenVtsColors.textSecondary,
               ),
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
             OutlinedButton(
               onPressed: onRetry,
               style: OutlinedButton.styleFrom(
-                foregroundColor: context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
-                side: BorderSide(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+                foregroundColor: OpenVtsColors.textPrimary,
+                side: const BorderSide(color: OpenVtsColors.border),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(OpenVtsRadius.button),
                 ),
@@ -344,14 +344,14 @@ class _Tab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bg =
-        selected ? OpenVtsColors.brandInk : (context.isDarkMode ? OpenVtsColors.darkSurfaceElevated : OpenVtsColors.surfaceElevated);
-    final fg = selected ? OpenVtsColors.white : (context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary);
+        selected ? OpenVtsColors.brandInk : OpenVtsColors.surfaceElevated;
+    final fg = selected ? OpenVtsColors.white : OpenVtsColors.textPrimary;
     return Material(
       color: bg,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
         side: BorderSide(
-          color: selected ? OpenVtsColors.brandInk : (context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+          color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
         ),
       ),
       child: InkWell(
@@ -395,7 +395,7 @@ class _LandmarkRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final isGeofence = point.source == RouteOptimisationPointSource.geofence;
     return Material(
-      color: disabled ? (context.isDarkMode ? OpenVtsColors.darkSurface : OpenVtsColors.surface) : (context.isDarkMode ? OpenVtsColors.darkSurfaceElevated : OpenVtsColors.surfaceElevated),
+      color: disabled ? OpenVtsColors.surface : OpenVtsColors.surfaceElevated,
       borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
       child: InkWell(
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
@@ -407,7 +407,7 @@ class _LandmarkRow extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-            border: Border.all(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+            border: Border.all(color: OpenVtsColors.border),
           ),
           child: Row(
             children: [
@@ -427,8 +427,8 @@ class _LandmarkRow extends StatelessWidget {
                 isGeofence ? Icons.fence_outlined : Icons.place_outlined,
                 size: 14,
                 color: disabled
-                    ? (context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary)
-                    : (context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary),
+                    ? OpenVtsColors.textTertiary
+                    : OpenVtsColors.textSecondary,
               ),
               const SizedBox(width: 6),
               Expanded(
@@ -442,15 +442,15 @@ class _LandmarkRow extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
                         color: disabled
-                            ? (context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary)
-                            : (context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary),
+                            ? OpenVtsColors.textTertiary
+                            : OpenVtsColors.textPrimary,
                       ),
                     ),
                     Text(
                       '${point.lat.toStringAsFixed(4)}, '
                       '${point.lon.toStringAsFixed(4)}',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                   ],
@@ -460,7 +460,7 @@ class _LandmarkRow extends StatelessWidget {
                 Text(
                   'Added',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary,
+                    color: OpenVtsColors.textTertiary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

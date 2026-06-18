@@ -31,14 +31,14 @@ class UserNotificationVehicleCard extends StatelessWidget {
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: context.isDarkMode ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
+                  color: OpenVtsColors.surface,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+                  border: Border.all(color: OpenVtsColors.border),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.directions_car_outlined,
                   size: 14,
-                  color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
@@ -49,7 +49,7 @@ class UserNotificationVehicleCard extends StatelessWidget {
                     Text(
                       vehicleName,
                       style: OpenVtsTypography.body.copyWith(
-                        color: context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
+                        color: OpenVtsColors.textPrimary,
                         fontWeight: FontWeight.w600,
                       ),
                       maxLines: 1,
@@ -58,7 +58,7 @@ class UserNotificationVehicleCard extends StatelessWidget {
                     Text(
                       plateNumber,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

@@ -22,16 +22,9 @@ class OpenVtsErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Unable to load',
-              style: OpenVtsTypography.titleSmall.copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
+            const Text('Unable to load', style: OpenVtsTypography.titleSmall),
             const SizedBox(height: OpenVtsSpacing.xs),
-            Text(
-              message,
-              style: OpenVtsTypography.body.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-              textAlign: TextAlign.center,
-            ),
+            Text(message, style: OpenVtsTypography.body, textAlign: TextAlign.center),
             if (onRetry != null) ...[
               const SizedBox(height: OpenVtsSpacing.md),
               OpenVtsButton(

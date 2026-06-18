@@ -92,9 +92,7 @@ class _CardHeader extends StatelessWidget {
                 '@${_displayUsername(team)}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ) ?? OpenVtsTypography.label.copyWith(
+                style: OpenVtsTypography.label.copyWith(
                   color: OpenVtsColors.textSecondary,
                 ),
               ),
@@ -115,7 +113,6 @@ class _AvatarCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       height: 44,
       width: 44,
@@ -129,7 +126,7 @@ class _AvatarCircle extends StatelessWidget {
         _initials(_displayName(team)),
         style: OpenVtsTypography.label.copyWith(
           fontWeight: FontWeight.w700,
-          color: isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk,
+          color: _primaryInkColor(context),
           fontSize: 14,
         ),
       ),
@@ -151,56 +148,56 @@ class _TeamCardMenu extends ConsumerWidget {
     return PopupMenuButton<String>(
       onSelected: (value) => _handleMenuAction(context, ref, value),
       itemBuilder: (context) => [
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'edit',
           child: Row(
             children: [
-              Icon(Icons.edit_outlined, size: 18, color: Theme.of(context).colorScheme.onSurface),
+              Icon(Icons.edit_outlined, size: 18),
               SizedBox(width: OpenVtsSpacing.sm),
-              Text('Edit', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+              Text('Edit'),
             ],
           ),
         ),
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'password',
           child: Row(
             children: [
-              Icon(Icons.lock_outline_rounded, size: 18, color: Theme.of(context).colorScheme.onSurface),
+              Icon(Icons.lock_outline_rounded, size: 18),
               SizedBox(width: OpenVtsSpacing.sm),
-              Text('Change Password', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+              Text('Change Password'),
             ],
           ),
         ),
         if (team.isActive)
-          PopupMenuItem(
+          const PopupMenuItem(
             value: 'setInactive',
             child: Row(
               children: [
-                Icon(Icons.pause_circle_outline_rounded, size: 18, color: Theme.of(context).colorScheme.onSurface),
+                Icon(Icons.pause_circle_outline_rounded, size: 18),
                 SizedBox(width: OpenVtsSpacing.sm),
-                Text('Set Inactive', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                Text('Set Inactive'),
               ],
             ),
           )
         else
-          PopupMenuItem(
+          const PopupMenuItem(
             value: 'setActive',
             child: Row(
               children: [
-                Icon(Icons.check_circle_outline_rounded, size: 18, color: Theme.of(context).colorScheme.onSurface),
+                Icon(Icons.check_circle_outline_rounded, size: 18),
                 SizedBox(width: OpenVtsSpacing.sm),
-                Text('Set Active', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                Text('Set Active'),
               ],
             ),
           ),
         const PopupMenuDivider(),
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'logs',
           child: Row(
             children: [
-              Icon(Icons.history_rounded, size: 18, color: Theme.of(context).colorScheme.onSurface),
+              Icon(Icons.history_rounded, size: 18),
               SizedBox(width: OpenVtsSpacing.sm),
-              Text('Activity Logs', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+              Text('Activity Logs'),
             ],
           ),
         ),
@@ -212,7 +209,7 @@ class _TeamCardMenu extends ConsumerWidget {
           child: Icon(
             Icons.more_horiz_rounded,
             size: 20,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: OpenVtsColors.textSecondary,
           ),
         ),
       ),
@@ -407,7 +404,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Text(
@@ -415,7 +412,7 @@ class _InfoRow extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.label.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
               height: 1.4,
             ),
           ),
@@ -437,7 +434,6 @@ class _CardMetricsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final createdValue = _createdLabel(team.createdAt);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Row(
       children: [
@@ -449,8 +445,8 @@ class _CardMetricsRow extends StatelessWidget {
             label: 'Status',
             value: team.statusLabel,
             color: team.isActive
-                ? (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk)
-                : Theme.of(context).colorScheme.onSurfaceVariant,
+                ? OpenVtsColors.brandInk
+                : OpenVtsColors.textTertiary,
           ),
         ),
         const SizedBox(width: OpenVtsSpacing.xs),
@@ -460,7 +456,7 @@ class _CardMetricsRow extends StatelessWidget {
             icon: Icons.schedule_outlined,
             label: 'Created',
             value: createdValue,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: OpenVtsColors.textSecondary,
           ),
         ),
       ],
@@ -499,7 +495,7 @@ class _MetricCell extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
               const SizedBox(width: OpenVtsSpacing.xxs + 2),
               Flexible(
                 child: Text(
@@ -507,7 +503,7 @@ class _MetricCell extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -573,6 +569,12 @@ Color _softBorderColor(BuildContext context) {
   return Theme.of(context).brightness == Brightness.dark
       ? OpenVtsColors.darkBorder
       : OpenVtsColors.border;
+}
+
+Color _primaryInkColor(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.dark
+      ? OpenVtsColors.darkTextPrimary
+      : OpenVtsColors.brandInk;
 }
 
 // ---------------------------------------------------------------------------

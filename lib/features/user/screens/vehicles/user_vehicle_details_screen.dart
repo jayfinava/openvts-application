@@ -49,7 +49,7 @@ class UserVehicleDetailsScreen extends ConsumerWidget {
       leading: IconButton(
         tooltip: 'Back',
         onPressed: () => _close(context),
-        icon: Icon(Icons.arrow_back_rounded, size: 20),
+        icon: const Icon(Icons.arrow_back_rounded, size: 20),
       ),
       actions: [
         _HeaderIconButton(
@@ -63,7 +63,7 @@ class UserVehicleDetailsScreen extends ConsumerWidget {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : Icon(Icons.refresh_rounded, size: 18),
+              : const Icon(Icons.refresh_rounded, size: 18),
         ),
         const SizedBox(width: OpenVtsSpacing.xs),
       ],
@@ -190,14 +190,14 @@ class _VehicleSummaryCard extends StatelessWidget {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.08),
+                  color: OpenVtsColors.textPrimary.withValues(alpha: 0.04),
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                  border: Border.all(color: OpenVtsColors.border),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.directions_car_filled_outlined,
                   size: 20,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
@@ -218,7 +218,7 @@ class _VehicleSummaryCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: OpenVtsColors.textSecondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -233,7 +233,7 @@ class _VehicleSummaryCard extends StatelessWidget {
                     : Icons.pause_circle_outline_rounded,
                 color: isActive
                     ? OpenVtsColors.success
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
+                    : OpenVtsColors.textSecondary,
               ),
             ],
           ),
@@ -292,12 +292,12 @@ class _TabChips extends StatelessWidget {
               labelStyle: OpenVtsTypography.meta.copyWith(
                 fontWeight: FontWeight.w800,
                 color: isSelected
-                    ? Theme.of(context).colorScheme.onPrimary
-                    : Theme.of(context).colorScheme.onSurface,
+                    ? OpenVtsColors.white
+                    : OpenVtsColors.textPrimary,
               ),
-              selectedColor: Theme.of(context).colorScheme.primary,
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+              selectedColor: OpenVtsColors.brandInk,
+              backgroundColor: OpenVtsColors.white,
+              side: const BorderSide(color: OpenVtsColors.border),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
               ),
@@ -357,7 +357,7 @@ class _MetaPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _Pill(label: label, icon: icon, color: Theme.of(context).colorScheme.onSurfaceVariant);
+    return _Pill(label: label, icon: icon, color: OpenVtsColors.textSecondary);
   }
 }
 
@@ -403,7 +403,7 @@ class _InlineError extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline_rounded,
+          const Icon(Icons.error_outline_rounded,
               size: 16, color: OpenVtsColors.error),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(

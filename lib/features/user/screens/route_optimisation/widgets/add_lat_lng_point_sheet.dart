@@ -186,7 +186,7 @@ class _Field extends StatelessWidget {
         Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+            color: OpenVtsColors.textSecondary,
           ),
         ),
         const SizedBox(height: 4),
@@ -199,7 +199,7 @@ class _Field extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: OpenVtsTypography.label.copyWith(
-              color: context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary,
+              color: OpenVtsColors.textTertiary,
             ),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(
@@ -208,11 +208,11 @@ class _Field extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              borderSide: BorderSide(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+              borderSide: const BorderSide(color: OpenVtsColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              borderSide: BorderSide(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+              borderSide: const BorderSide(color: OpenVtsColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),

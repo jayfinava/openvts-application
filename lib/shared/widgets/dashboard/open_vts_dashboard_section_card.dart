@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/open_vts_colors.dart';
 import '../../../core/theme/open_vts_radius.dart';
 import '../../../core/theme/open_vts_spacing.dart';
 import '../../../core/theme/open_vts_typography.dart';
@@ -43,14 +44,14 @@ class OpenVtsDashboardSectionCard extends StatelessWidget {
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: headerBackgroundColor ?? Theme.of(context).colorScheme.surfaceContainer,
+                    color: headerBackgroundColor ?? OpenVtsColors.surface,
                     borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                    border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                    border: Border.all(color: OpenVtsColors.border),
                   ),
                   child: Icon(
                     icon,
                     size: 16,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                   ),
                 ),
                 const SizedBox(width: OpenVtsSpacing.xs),
@@ -71,7 +72,7 @@ class OpenVtsDashboardSectionCard extends StatelessWidget {
               ],
             ),
           ),
-          Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+          const Divider(height: 1, color: OpenVtsColors.border),
           child,
         ],
       ),

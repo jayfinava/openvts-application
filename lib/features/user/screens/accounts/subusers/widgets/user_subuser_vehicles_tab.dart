@@ -249,7 +249,7 @@ class _CompactActionButton extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: isLoading ? null : onPressed,
         style: OutlinedButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.surface,
+          backgroundColor: OpenVtsColors.white,
           foregroundColor: OpenVtsColors.textPrimary,
           side: const BorderSide(color: OpenVtsColors.border),
           padding: const EdgeInsets.symmetric(horizontal: 10),

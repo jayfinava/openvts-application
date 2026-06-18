@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../core/router/route_paths.dart';
+import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -56,7 +57,7 @@ class AdminVehicleExpiryCard extends StatelessWidget {
             Text(
               'Expiring soon',
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.textSecondary,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -81,8 +82,8 @@ class AdminVehicleExpiryCard extends StatelessWidget {
                   horizontal: OpenVtsSpacing.xs,
                   vertical: 8,
                 ),
-                foregroundColor: Theme.of(context).colorScheme.onSurface,
-                side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+                foregroundColor: OpenVtsColors.textPrimary,
+                side: const BorderSide(color: OpenVtsColors.border),
                 textStyle: OpenVtsTypography.meta.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -112,11 +113,11 @@ class _SectionHeading extends StatelessWidget {
           width: 28,
           height: 28,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
+            color: OpenVtsColors.surface,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+            border: Border.all(color: OpenVtsColors.border),
           ),
-          child: Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          child: Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
         ),
         const SizedBox(width: OpenVtsSpacing.xs),
         Flexible(
@@ -125,7 +126,7 @@ class _SectionHeading extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.label.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -146,9 +147,9 @@ class _MiniMetric extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,7 +157,7 @@ class _MiniMetric extends StatelessWidget {
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.textSecondary,
               fontSize: 10.5,
               fontWeight: FontWeight.w700,
             ),
@@ -165,7 +166,7 @@ class _MiniMetric extends StatelessWidget {
           Text(
             value,
             style: OpenVtsTypography.numeric.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.textPrimary,
               fontSize: 21,
               fontWeight: FontWeight.w700,
             ),
@@ -202,14 +203,14 @@ class _ExpiryPreviewRow extends StatelessWidget {
             width: 30,
             height: 30,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainer,
+              color: OpenVtsColors.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              border: Border.all(color: OpenVtsColors.border),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.directions_car_outlined,
               size: 15,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.textSecondary,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
@@ -223,7 +224,7 @@ class _ExpiryPreviewRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -233,7 +234,7 @@ class _ExpiryPreviewRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.textSecondary,
                     fontSize: 10.5,
                   ),
                 ),
@@ -252,7 +253,7 @@ class _ExpiryPreviewRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -263,7 +264,7 @@ class _ExpiryPreviewRow extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: OpenVtsTypography.meta.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      color: OpenVtsColors.textSecondary,
                       fontSize: 10.5,
                       fontWeight: FontWeight.w600,
                     ),

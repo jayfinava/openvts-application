@@ -429,12 +429,7 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final color = isDestructive
-        ? OpenVtsColors.error
-        : isDark
-            ? OpenVtsColors.darkTextPrimary
-            : OpenVtsColors.textPrimary;
+    final color = isDestructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -462,13 +457,6 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final avatarBgColor = isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface;
-    final primaryTextColor = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-    final secondaryTextColor =
-        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-    final dividerColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -481,16 +469,16 @@ class _SummaryCard extends StatelessWidget {
                 height: 44,
                 width: 44,
                 alignment: Alignment.center,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: avatarBgColor,
+                  color: OpenVtsColors.surface,
                 ),
                 child: Text(
                   user.initials,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: primaryTextColor,
+                    color: OpenVtsColors.textPrimary,
                   ),
                 ),
               ),
@@ -501,10 +489,10 @@ class _SummaryCard extends StatelessWidget {
                   children: [
                     Text(
                       user.displayName,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: primaryTextColor,
+                        color: OpenVtsColors.textPrimary,
                         height: 1.2,
                       ),
                       maxLines: 1,
@@ -514,9 +502,9 @@ class _SummaryCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         '@${user.username}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
-                          color: secondaryTextColor,
+                          color: OpenVtsColors.textSecondary,
                           height: 1.2,
                         ),
                         maxLines: 1,
@@ -556,7 +544,7 @@ class _SummaryCard extends StatelessWidget {
               _CompactInfoLine(icon: Icons.phone_outlined, value: user.phone),
           ],
           const SizedBox(height: OpenVtsSpacing.md),
-          Divider(height: 1, color: dividerColor),
+          const Divider(height: 1, color: OpenVtsColors.border),
           const SizedBox(height: OpenVtsSpacing.md),
           Row(
             children: [
@@ -693,15 +681,11 @@ class _ContactLineWithVerification extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textTertiary;
-    final textColor = isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xxs),
       child: Row(
         children: [
-          Icon(icon, size: 14, color: iconColor),
+          Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
           const SizedBox(width: OpenVtsSpacing.xs),
           Flexible(
             child: Text(
@@ -709,7 +693,7 @@ class _ContactLineWithVerification extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: textColor,
+                color: OpenVtsColors.textSecondary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -737,15 +721,11 @@ class _CompactInfoLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textTertiary;
-    final textColor = isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xxs),
       child: Row(
         children: [
-          Icon(icon, size: 14, color: iconColor),
+          Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
@@ -753,7 +733,7 @@ class _CompactInfoLine extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: textColor,
+                color: OpenVtsColors.textSecondary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -777,26 +757,19 @@ class _MetricTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.darkSurface : OpenVtsColors.background;
-    final borderColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-    final secondaryTextColor =
-        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-    final primaryTextColor = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
         vertical: OpenVtsSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: bgColor,
+        color: OpenVtsColors.background,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: borderColor.withValues(alpha: 0.7)),
+        border: Border.all(color: OpenVtsColors.border.withValues(alpha: 0.7)),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: secondaryTextColor),
+          Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Column(
@@ -806,7 +779,7 @@ class _MetricTile extends StatelessWidget {
                 Text(
                   label,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: secondaryTextColor,
+                        color: OpenVtsColors.textSecondary,
                       ),
                 ),
                 const SizedBox(height: 2),
@@ -816,7 +789,6 @@ class _MetricTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: primaryTextColor,
                       ),
                 ),
               ],
@@ -869,28 +841,15 @@ class _TabChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final background = isSelected
-        ? OpenVtsColors.brandInk
-        : isDark
-            ? OpenVtsColors.darkSurface
-            : OpenVtsColors.white;
-    final foreground = isSelected
-        ? OpenVtsColors.white
-        : isDark
-            ? OpenVtsColors.darkTextPrimary
-            : OpenVtsColors.textPrimary;
-    final borderColor = isSelected
-        ? OpenVtsColors.brandInk
-        : isDark
-            ? OpenVtsColors.darkBorder
-            : OpenVtsColors.border;
-
+    final background = isSelected ? OpenVtsColors.brandInk : OpenVtsColors.white;
+    final foreground = isSelected ? OpenVtsColors.white : OpenVtsColors.textPrimary;
     return Material(
       color: background,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        side: BorderSide(color: borderColor),
+        side: BorderSide(
+          color: isSelected ? OpenVtsColors.brandInk : OpenVtsColors.border,
+        ),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),

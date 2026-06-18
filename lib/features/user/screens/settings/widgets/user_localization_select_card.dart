@@ -36,14 +36,14 @@ class UserLocalizationSelectCard extends StatelessWidget {
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: context.surface(),
+                  color: OpenVtsColors.surface,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: context.border()),
+                  border: Border.all(color: OpenVtsColors.border),
                 ),
                 child: Icon(
                   icon,
                   size: 15,
-                  color: context.textSecondary(),
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
@@ -54,7 +54,7 @@ class UserLocalizationSelectCard extends StatelessWidget {
                     Text(
                       title,
                       style: OpenVtsTypography.label.copyWith(
-                        color: context.textPrimary(),
+                        color: OpenVtsColors.textPrimary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -62,7 +62,7 @@ class UserLocalizationSelectCard extends StatelessWidget {
                     Text(
                       subtitle,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: context.textSecondary(),
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                   ],
@@ -121,7 +121,7 @@ class UserLocalizationPickerTile extends StatelessWidget {
         Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: context.textSecondary(),
+            color: OpenVtsColors.textSecondary,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -141,8 +141,8 @@ class UserLocalizationPickerTile extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                border: Border.all(color: context.border()),
-                color: context.surface(),
+                border: Border.all(color: OpenVtsColors.border),
+                color: OpenVtsColors.surface,
               ),
               child: Row(
                 children: [
@@ -153,16 +153,16 @@ class UserLocalizationPickerTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.body.copyWith(
                         color: hasValue
-                            ? context.textPrimary()
-                            : context.textTertiary(),
+                            ? OpenVtsColors.textPrimary
+                            : OpenVtsColors.textTertiary,
                       ),
                     ),
                   ),
                   const SizedBox(width: OpenVtsSpacing.xxs),
-                  Icon(
+                  const Icon(
                     Icons.expand_more_rounded,
                     size: 18,
-                    color: context.textTertiary(),
+                    color: OpenVtsColors.textTertiary,
                   ),
                 ],
               ),
@@ -206,9 +206,9 @@ class UserLocalizationSegmentedControl<T> extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(3),
         decoration: BoxDecoration(
-          color: context.surface(),
+          color: OpenVtsColors.surface,
           borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-          border: Border.all(color: context.border()),
+          border: Border.all(color: OpenVtsColors.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -259,7 +259,8 @@ class _SegmentButton extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: selected ? OpenVtsColors.white : context.textPrimary(),
+                color:
+                    selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -327,9 +328,9 @@ class _LocalizationOptionPickerSheetState<T>
     final options = _filteredOptions();
 
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.surface(),
-        borderRadius: const BorderRadius.vertical(
+      decoration: const BoxDecoration(
+        color: OpenVtsColors.surface,
+        borderRadius: BorderRadius.vertical(
           top: Radius.circular(OpenVtsRadius.lg),
         ),
       ),
@@ -349,7 +350,7 @@ class _LocalizationOptionPickerSheetState<T>
               Text(
                 widget.title,
                 style: OpenVtsTypography.label.copyWith(
-                  color: context.textPrimary(),
+                  color: OpenVtsColors.textPrimary,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -382,7 +383,7 @@ class _LocalizationOptionPickerSheetState<T>
                             child: Text(
                               'No options found.',
                               style: OpenVtsTypography.meta.copyWith(
-                                color: context.textSecondary(),
+                                color: OpenVtsColors.textSecondary,
                               ),
                             ),
                           ),
@@ -390,9 +391,9 @@ class _LocalizationOptionPickerSheetState<T>
                       : ListView.separated(
                           shrinkWrap: true,
                           itemCount: options.length,
-                          separatorBuilder: (_, __) => Divider(
+                          separatorBuilder: (_, __) => const Divider(
                             height: 1,
-                            color: context.border(),
+                            color: OpenVtsColors.border,
                           ),
                           itemBuilder: (context, index) {
                             final option = options[index];
@@ -406,7 +407,7 @@ class _LocalizationOptionPickerSheetState<T>
                               title: Text(
                                 option.label,
                                 style: OpenVtsTypography.body.copyWith(
-                                  color: context.textPrimary(),
+                                  color: OpenVtsColors.textPrimary,
                                   fontWeight: isSelected
                                       ? FontWeight.w700
                                       : FontWeight.w500,
@@ -417,7 +418,7 @@ class _LocalizationOptionPickerSheetState<T>
                                   : Text(
                                       option.subtitle!,
                                       style: OpenVtsTypography.meta.copyWith(
-                                        color: context.textSecondary(),
+                                        color: OpenVtsColors.textSecondary,
                                       ),
                                     ),
                               trailing: isSelected

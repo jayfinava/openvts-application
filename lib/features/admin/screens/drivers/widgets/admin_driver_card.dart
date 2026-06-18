@@ -82,9 +82,6 @@ class _CardHeader extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                             letterSpacing: -0.2,
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? OpenVtsColors.darkTextPrimary
-                                : null,
                           ),
                     ),
                   ),
@@ -103,9 +100,7 @@ class _CardHeader extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: OpenVtsTypography.label.copyWith(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? OpenVtsColors.darkTextSecondary
-                      : OpenVtsColors.textSecondary,
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
             ],
@@ -301,17 +296,10 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: isDark
-              ? OpenVtsColors.darkTextSecondary
-              : OpenVtsColors.textSecondary,
-        ),
+        Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Text(
@@ -319,9 +307,7 @@ class _InfoRow extends StatelessWidget {
             maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.label.copyWith(
-              color: isDark
-                  ? OpenVtsColors.darkTextPrimary
-                  : OpenVtsColors.textPrimary,
+              color: OpenVtsColors.textPrimary,
               height: 1.4,
             ),
           ),
@@ -428,13 +414,7 @@ class _MetricCell extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                icon,
-                size: 14,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? OpenVtsColors.darkTextSecondary
-                    : OpenVtsColors.textSecondary,
-              ),
+              Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
               const SizedBox(width: OpenVtsSpacing.xxs + 2),
               Flexible(
                 child: Text(
@@ -442,9 +422,7 @@ class _MetricCell extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? OpenVtsColors.darkTextSecondary
-                        : OpenVtsColors.textSecondary,
+                    color: OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

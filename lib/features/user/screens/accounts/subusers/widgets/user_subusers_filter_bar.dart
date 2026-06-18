@@ -181,14 +181,10 @@ class _StatusChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
               ? OpenVtsColors.brandInk.withValues(alpha: 0.9)
-              : Theme.of(context).colorScheme.surface,
+              : OpenVtsColors.surface,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
           border: Border.all(
-            color: selected
-                ? OpenVtsColors.brandInk
-                : context.isDarkMode
-                    ? OpenVtsColors.darkBorder
-                    : OpenVtsColors.border,
+            color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
           ),
         ),
         child: Center(
@@ -196,7 +192,7 @@ class _StatusChip extends StatelessWidget {
             label,
             style: OpenVtsTypography.meta.copyWith(
               color:
-                  selected ? OpenVtsColors.white : context.textSecondary(),
+                  selected ? OpenVtsColors.white : OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w800,
             ),
           ),

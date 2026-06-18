@@ -42,7 +42,7 @@ class UserEmailSubscriptionCard extends StatelessWidget {
                 child: Text(
                   'Email Subscription',
                   style: OpenVtsTypography.label.copyWith(
-                    color: context.textPrimary(),
+                    color: OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -66,7 +66,7 @@ class UserEmailSubscriptionCard extends StatelessWidget {
             Text(
               'Loading subscription status...',
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textSecondary(),
+                color: OpenVtsColors.textSecondary,
               ),
             )
           else ...[
@@ -82,7 +82,7 @@ class UserEmailSubscriptionCard extends StatelessWidget {
                   ? 'You are subscribed to profile email notifications.'
                   : 'Subscribe to receive profile and account email updates.',
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textSecondary(),
+                color: OpenVtsColors.textSecondary,
               ),
             ),
             if (!isSubscribed) ...[

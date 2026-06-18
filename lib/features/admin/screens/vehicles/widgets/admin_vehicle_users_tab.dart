@@ -14,30 +14,6 @@ import '../../../models/admin_vehicle_model.dart';
 
 const DateTimeFormatter _cardDateFormatter = DateTimeFormatter();
 
-Color _textSecondaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextSecondary
-      : Theme.of(context).colorScheme.onSurfaceVariant;
-}
-
-Color _textTertiaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.6)
-      : Theme.of(context).colorScheme.onSurfaceVariant;
-}
-
-Color _surfaceColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkSurface
-      : Theme.of(context).colorScheme.surface;
-}
-
-Color _borderColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkBorder
-      : Theme.of(context).colorScheme.outlineVariant;
-}
-
 class AdminVehicleUsersTab extends StatelessWidget {
   const AdminVehicleUsersTab({
     super.key,
@@ -193,40 +169,34 @@ class _VehicleUserCard extends StatelessWidget {
                     ),
                     const SizedBox(height: OpenVtsSpacing.xs),
                     if (hasEmail)
-                      Builder(
-                        builder: (context) => Text(
-                          user.email,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: OpenVtsTypography.meta.copyWith(
-                            color: _textSecondaryColor(context),
-                            fontSize: 12,
-                          ),
+                      Text(
+                        user.email,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: OpenVtsTypography.meta.copyWith(
+                          color: OpenVtsColors.textSecondary,
+                          fontSize: 12,
                         ),
                       ),
                     if (hasPhone) ...[
                       if (hasEmail) const SizedBox(height: 2),
-                      Builder(
-                        builder: (context) => Text(
-                          user.mobileDisplay,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: OpenVtsTypography.meta.copyWith(
-                            color: _textTertiaryColor(context),
-                            fontSize: 11,
-                          ),
+                      Text(
+                        user.mobileDisplay,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: OpenVtsTypography.meta.copyWith(
+                          color: OpenVtsColors.textTertiary,
+                          fontSize: 11,
                         ),
                       ),
                     ],
                     if (!hasContact) ...[
-                      Builder(
-                        builder: (context) => Text(
-                          'No contact information',
-                          style: OpenVtsTypography.meta.copyWith(
-                            color: _textTertiaryColor(context),
-                            fontSize: 11,
-                            fontStyle: FontStyle.italic,
-                          ),
+                      Text(
+                        'No contact information',
+                        style: OpenVtsTypography.meta.copyWith(
+                          color: OpenVtsColors.textTertiary,
+                          fontSize: 11,
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
                     ],
@@ -252,12 +222,7 @@ class _VehicleUserCard extends StatelessWidget {
           ),
           if (user.assignedAt != null) ...[
             const SizedBox(height: OpenVtsSpacing.sm),
-            Builder(
-              builder: (context) => Divider(
-                height: 1,
-                color: _borderColor(context),
-              ),
-            ),
+            const Divider(height: 1, color: OpenVtsColors.border),
             const SizedBox(height: OpenVtsSpacing.sm),
             _InfoTile(
               icon: Icons.event_outlined,
@@ -274,14 +239,14 @@ class _VehicleUserCard extends StatelessWidget {
     return showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Unassign User?'),
+        title: const Text('Unassign User?'),
         content: Text(
           'Remove ${user.displayName.isNotEmpty ? user.displayName : 'this user'} from this vehicle?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
@@ -291,7 +256,7 @@ class _VehicleUserCard extends StatelessWidget {
             style: TextButton.styleFrom(
               foregroundColor: OpenVtsColors.error,
             ),
-            child: Text('Unassign'),
+            child: const Text('Unassign'),
           ),
         ],
       ),
@@ -317,21 +282,20 @@ class _AvatarCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = _surfaceColor(context);
     return Container(
       height: 40,
       width: 40,
       alignment: Alignment.center,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        color: bgColor,
+        color: OpenVtsColors.surface,
       ),
       child: Text(
         _initials(),
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w700,
-          color: Theme.of(context).colorScheme.onSurface,
+          color: OpenVtsColors.textPrimary,
         ),
       ),
     );
@@ -346,21 +310,21 @@ class _PrimaryBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+        color: OpenVtsColors.brandInk.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.25),
+          color: OpenVtsColors.brandInk.withValues(alpha: 0.25),
         ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.star_rounded, size: 10, color: Theme.of(context).colorScheme.primary),
+          const Icon(Icons.star_rounded, size: 10, color: OpenVtsColors.brandInk),
           const SizedBox(width: 2),
           Text(
             'Primary',
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.primary,
+              color: OpenVtsColors.brandInk,
               fontSize: 10,
               fontWeight: FontWeight.w700,
             ),
@@ -386,7 +350,7 @@ class _InfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Column(
@@ -396,7 +360,7 @@ class _InfoTile extends StatelessWidget {
               Text(
                 label,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: OpenVtsColors.textSecondary,
                   fontSize: 10,
                 ),
               ),

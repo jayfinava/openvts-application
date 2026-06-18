@@ -42,16 +42,16 @@ class UserLocalizationPreviewCard extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.visibility_outlined,
                 size: 14,
-                color: context.textTertiary(),
+                color: OpenVtsColors.textTertiary,
               ),
               const SizedBox(width: 6),
               Text(
                 'Localization Preview',
                 style: OpenVtsTypography.meta.copyWith(
-                  color: context.textTertiary(),
+                  color: OpenVtsColors.textTertiary,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.2,
                 ),
@@ -157,9 +157,9 @@ class _PreviewTile extends StatelessWidget {
         vertical: 7,
       ),
       decoration: BoxDecoration(
-        color: context.surface(),
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: context.border()),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,7 +167,7 @@ class _PreviewTile extends StatelessWidget {
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: context.textTertiary(),
+              color: OpenVtsColors.textTertiary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -177,7 +177,7 @@ class _PreviewTile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.body.copyWith(
-              color: context.textPrimary(),
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w600,
             ),
           ),

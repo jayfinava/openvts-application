@@ -121,11 +121,10 @@ class _SaveOptimisedRouteBodyState
   }
 
   InputDecoration _dense({String? hint}) {
-    final isDark = context.isDarkMode;
     return InputDecoration(
       hintText: hint,
       hintStyle: OpenVtsTypography.body.copyWith(
-        color: isDark ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary,
+        color: OpenVtsColors.textTertiary,
       ),
       isDense: true,
       contentPadding: const EdgeInsets.symmetric(
@@ -133,14 +132,14 @@ class _SaveOptimisedRouteBodyState
         vertical: 10,
       ),
       filled: true,
-      fillColor: isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
+      fillColor: OpenVtsColors.surface,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        borderSide: BorderSide(color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+        borderSide: const BorderSide(color: OpenVtsColors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        borderSide: BorderSide(color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+        borderSide: const BorderSide(color: OpenVtsColors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
@@ -277,22 +276,22 @@ class _SummaryStrip extends StatelessWidget {
         vertical: 8,
       ),
       decoration: BoxDecoration(
-        color: context.isDarkMode ? OpenVtsColors.darkSurfaceElevated : OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.surfaceElevated,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.route_outlined,
             size: 16,
-            color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+            color: OpenVtsColors.textSecondary,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Text(
             '$pointCount points · ${km.toStringAsFixed(2)} km',
             style: OpenVtsTypography.label.copyWith(
-              color: context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -312,7 +311,7 @@ class _Label extends StatelessWidget {
       child: Text(
         text,
         style: OpenVtsTypography.meta.copyWith(
-          color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+          color: OpenVtsColors.textSecondary,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
         ),
@@ -346,7 +345,7 @@ class _ActiveRow extends StatelessWidget {
                   Text(
                     'Active',
                     style: OpenVtsTypography.label.copyWith(
-                      color: context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
+                      color: OpenVtsColors.textPrimary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -354,7 +353,7 @@ class _ActiveRow extends StatelessWidget {
                   Text(
                     'Show this route in maps and reports.',
                     style: OpenVtsTypography.meta.copyWith(
-                      color: context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary,
+                      color: OpenVtsColors.textTertiary,
                     ),
                   ),
                 ],

@@ -330,7 +330,6 @@ class _AccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     const fmt = DateTimeFormatter();
     final lastLogin = profile.updatedAt != null ? fmt.formatDate(profile.updatedAt!) : 'Never';
     final created = profile.createdAt != null ? fmt.formatDate(profile.createdAt!) : '—';
@@ -351,7 +350,7 @@ class _AccountCard extends StatelessWidget {
                     Text(
                       profile.displayName,
                       style: OpenVtsTypography.label.copyWith(
-                        color: isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
+                        color: OpenVtsColors.textPrimary,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -362,7 +361,7 @@ class _AccountCard extends StatelessWidget {
                     Text(
                       profile.usernameLabel,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                         fontSize: 11,
                       ),
                       maxLines: 1,
@@ -423,16 +422,16 @@ class _AccountCard extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.event_outlined,
                       size: 14,
-                      color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textTertiary,
+                      color: OpenVtsColors.textTertiary,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Created: ',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textTertiary,
+                        color: OpenVtsColors.textTertiary,
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                       ),
@@ -441,7 +440,7 @@ class _AccountCard extends StatelessWidget {
                       child: Text(
                         created,
                         style: OpenVtsTypography.label.copyWith(
-                          color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                          color: OpenVtsColors.textSecondary,
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                         ),
@@ -456,16 +455,16 @@ class _AccountCard extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.login_outlined,
                       size: 14,
-                      color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textTertiary,
+                      color: OpenVtsColors.textTertiary,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Last login: ',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textTertiary,
+                        color: OpenVtsColors.textTertiary,
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                       ),
@@ -474,7 +473,7 @@ class _AccountCard extends StatelessWidget {
                       child: Text(
                         lastLogin,
                         style: OpenVtsTypography.label.copyWith(
-                          color: isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                          color: OpenVtsColors.textSecondary,
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                         ),
@@ -658,10 +657,6 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final titleColor = isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textTertiary;
-    final dividerColor = isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-
     return OpenVtsCard(
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.md,
@@ -677,10 +672,10 @@ class _SectionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: titleColor,
+                    color: OpenVtsColors.textTertiary,
                     letterSpacing: 0.4,
                   ),
                 ),
@@ -689,7 +684,7 @@ class _SectionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
-          Divider(height: 1, color: dividerColor),
+          const Divider(height: 1, color: OpenVtsColors.border),
           const SizedBox(height: OpenVtsSpacing.xs),
           ...children,
         ],
@@ -749,17 +744,13 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final labelColor = isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textTertiary;
-    final valueColor = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 14, color: labelColor),
+            Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
             const SizedBox(width: 8),
           ],
           SizedBox(
@@ -767,7 +758,7 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: labelColor,
+                color: OpenVtsColors.textTertiary,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
               ),
@@ -779,7 +770,7 @@ class _InfoRow extends StatelessWidget {
                 Text(
                   _displayValue(value ?? ''),
                   style: OpenVtsTypography.label.copyWith(
-                    color: valueColor,
+                    color: OpenVtsColors.textPrimary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),

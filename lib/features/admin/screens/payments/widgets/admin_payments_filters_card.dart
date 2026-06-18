@@ -34,8 +34,6 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -52,10 +50,10 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(OpenVtsRadius.md),
                   border: Border.all(color: OpenVtsColors.border),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.filter_list_rounded,
                   size: 18,
-                  color: iconColor,
+                  color: OpenVtsColors.textPrimary,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
@@ -68,7 +66,7 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
                     Text(
                       'Refine payments by user, status, mode, and date.',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                   ],
@@ -128,18 +126,18 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: _buildUserDropdown(context)),
+                  Expanded(child: _buildUserDropdown()),
                   const SizedBox(width: OpenVtsSpacing.sm),
-                  Expanded(child: _buildStatusDropdown(context)),
+                  Expanded(child: _buildStatusDropdown()),
                 ],
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: _buildPaymentModeDropdown(context)),
+                  Expanded(child: _buildPaymentModeDropdown()),
                   const SizedBox(width: OpenVtsSpacing.sm),
-                  Expanded(child: _buildDateRangeDropdown(context)),
+                  Expanded(child: _buildDateRangeDropdown()),
                 ],
               ),
               if (state.rangePreset == AdminPaymentsRangePreset.custom) ...[
@@ -151,13 +149,13 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
         } else {
           return Column(
             children: [
-              _buildUserDropdown(context),
+              _buildUserDropdown(),
               const SizedBox(height: OpenVtsSpacing.sm),
-              _buildStatusDropdown(context),
+              _buildStatusDropdown(),
               const SizedBox(height: OpenVtsSpacing.sm),
-              _buildPaymentModeDropdown(context),
+              _buildPaymentModeDropdown(),
               const SizedBox(height: OpenVtsSpacing.sm),
-              _buildDateRangeDropdown(context),
+              _buildDateRangeDropdown(),
               if (state.rangePreset == AdminPaymentsRangePreset.custom) ...[
                 const SizedBox(height: OpenVtsSpacing.sm),
                 _buildCustomDateRangeField(),
@@ -169,9 +167,8 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
     );
   }
 
-  Widget _buildUserDropdown(BuildContext context) {
+  Widget _buildUserDropdown() {
     return _buildDropdownField<String?>(
-      context: context,
       label: 'User',
       value: state.selectedUserId,
       options: [
@@ -185,7 +182,7 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusDropdown(BuildContext context) {
+  Widget _buildStatusDropdown() {
     const options = [
       _DropdownOption<AdminPaymentStatus?>(value: null, label: 'All'),
       _DropdownOption(
@@ -203,7 +200,6 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
     ];
 
     return _buildDropdownField<AdminPaymentStatus?>(
-      context: context,
       label: 'Status',
       value: state.selectedStatus,
       options: options,
@@ -211,7 +207,7 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentModeDropdown(BuildContext context) {
+  Widget _buildPaymentModeDropdown() {
     final options = <_DropdownOption<AdminPaymentMode?>>[
       const _DropdownOption<AdminPaymentMode?>(value: null, label: 'All'),
       ...AdminPaymentMode.values.map((mode) => _DropdownOption(
@@ -221,7 +217,6 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
     ];
 
     return _buildDropdownField<AdminPaymentMode?>(
-      context: context,
       label: 'Payment Mode',
       value: state.selectedMode,
       options: options,
@@ -229,7 +224,7 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDateRangeDropdown(BuildContext context) {
+  Widget _buildDateRangeDropdown() {
     const options = [
       _DropdownOption(
         value: AdminPaymentsRangePreset.today,
@@ -270,7 +265,6 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
     ];
 
     return _buildDropdownField<AdminPaymentsRangePreset>(
-      context: context,
       label: 'Date Range',
       value: state.rangePreset,
       options: options,
@@ -297,7 +291,6 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
   }
 
   Widget _buildDropdownField<T>({
-    required BuildContext context,
     required String label,
     required T value,
     required List<_DropdownOption<T>> options,
@@ -309,7 +302,7 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
         Text(
           label,
           style: OpenVtsTypography.label.copyWith(
-            color: Theme.of(context).colorScheme.onSurface,
+            color: OpenVtsColors.textPrimary,
           ),
         ),
         const SizedBox(height: OpenVtsSpacing.xs),

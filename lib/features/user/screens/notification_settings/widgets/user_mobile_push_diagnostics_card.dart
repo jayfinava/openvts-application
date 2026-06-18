@@ -47,20 +47,20 @@ class UserMobilePushDiagnosticsCard extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: context.isDarkMode ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
+              color: OpenVtsColors.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+              border: Border.all(color: OpenVtsColors.border),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.phone_android_rounded,
               size: 15,
-              color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+              color: OpenVtsColors.textSecondary,
             ),
           ),
           title: Text(
             'Mobile Push Diagnostics',
             style: OpenVtsTypography.meta.copyWith(
-              color: context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -69,7 +69,7 @@ class UserMobilePushDiagnosticsCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.meta.copyWith(
-              color: context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary,
+              color: OpenVtsColors.textTertiary,
             ),
           ),
           children: [
@@ -136,7 +136,7 @@ class UserMobilePushDiagnosticsCard extends StatelessWidget {
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: context.isDarkMode ? OpenVtsColors.darkError : OpenVtsColors.error,
+                    color: OpenVtsColors.error,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -315,21 +315,21 @@ class _DiagnosticPill extends StatelessWidget {
         vertical: 7,
       ),
       decoration: BoxDecoration(
-        color: context.isDarkMode ? OpenVtsColors.darkSurfaceElevated : OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.surfaceElevated,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: RichText(
         text: TextSpan(
           style: OpenVtsTypography.meta.copyWith(
-            color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+            color: OpenVtsColors.textSecondary,
           ),
           children: [
             TextSpan(text: '$label: '),
             TextSpan(
               text: value,
-              style: TextStyle(
-                color: context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
+              style: const TextStyle(
+                color: OpenVtsColors.textPrimary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -359,7 +359,7 @@ class _CompactDiagnosticButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final disabled = onTap == null && !isLoading;
     final foregroundColor =
-      disabled ? (context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary) : (context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary);
+      disabled ? OpenVtsColors.textTertiary : OpenVtsColors.textSecondary;
 
     final child = InkWell(
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -369,9 +369,9 @@ class _CompactDiagnosticButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.xs),
         decoration: BoxDecoration(
             color:
-              disabled ? (context.isDarkMode ? OpenVtsColors.darkSurface : OpenVtsColors.surface) : (context.isDarkMode ? OpenVtsColors.darkSurfaceElevated : OpenVtsColors.surfaceElevated),
+              disabled ? OpenVtsColors.surface : OpenVtsColors.surfaceElevated,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-          border: Border.all(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+          border: Border.all(color: OpenVtsColors.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -392,8 +392,8 @@ class _CompactDiagnosticButton extends StatelessWidget {
               label,
               style: OpenVtsTypography.meta.copyWith(
                 color: disabled
-                    ? (context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary)
-                    : (context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary),
+                    ? OpenVtsColors.textTertiary
+                    : OpenVtsColors.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
             ),

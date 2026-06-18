@@ -296,7 +296,7 @@ class _TabChips extends StatelessWidget {
                     : OpenVtsColors.textPrimary,
               ),
               selectedColor: OpenVtsColors.brandInk,
-              backgroundColor: Theme.of(context).colorScheme.surface,
+              backgroundColor: OpenVtsColors.white,
               side: const BorderSide(color: OpenVtsColors.border),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),

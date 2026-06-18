@@ -16,23 +16,13 @@ class OpenVtsStatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    final color = isDark
-        ? switch (type) {
-            OpenVtsStatusType.success => OpenVtsColors.darkSuccess,
-            OpenVtsStatusType.warning => OpenVtsColors.darkWarning,
-            OpenVtsStatusType.error => OpenVtsColors.darkError,
-            OpenVtsStatusType.info => OpenVtsColors.darkInfo,
-            OpenVtsStatusType.neutral => OpenVtsColors.darkTextSecondary,
-          }
-        : switch (type) {
-            OpenVtsStatusType.success => OpenVtsColors.success,
-            OpenVtsStatusType.warning => OpenVtsColors.warning,
-            OpenVtsStatusType.error => OpenVtsColors.error,
-            OpenVtsStatusType.info => OpenVtsColors.info,
-            OpenVtsStatusType.neutral => OpenVtsColors.textSecondary,
-          };
+    final color = switch (type) {
+      OpenVtsStatusType.success => OpenVtsColors.success,
+      OpenVtsStatusType.warning => OpenVtsColors.warning,
+      OpenVtsStatusType.error => OpenVtsColors.error,
+      OpenVtsStatusType.info => OpenVtsColors.info,
+      OpenVtsStatusType.neutral => OpenVtsColors.textSecondary,
+    };
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

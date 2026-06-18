@@ -46,7 +46,7 @@ class AdminVehiclesScreen extends ConsumerWidget {
                   dimension: 18,
                   child: CircularProgressIndicator(strokeWidth: 2.2),
                 )
-              : Icon(Icons.refresh_rounded, size: 20),
+              : const Icon(Icons.refresh_rounded, size: 20),
         ),
       ],
       padding: const EdgeInsetsDirectional.fromSTEB(
@@ -288,14 +288,14 @@ class _PrimaryCreateButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final background =
-        isDark ? _softSurfaceColor(context) : Theme.of(context).colorScheme.primary;
+        isDark ? OpenVtsColors.surfaceElevated : OpenVtsColors.brandInk;
     final foreground =
-        isDark ? _primaryInkColor(context) : Theme.of(context).colorScheme.surface;
+        isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
 
     return ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(Icons.add_rounded, size: 18),
-      label: Text('New Vehicle'),
+      icon: const Icon(Icons.add_rounded, size: 18),
+      label: const Text('New Vehicle'),
       style: ElevatedButton.styleFrom(
         backgroundColor: background,
         foregroundColor: foreground,
@@ -431,7 +431,7 @@ class _SearchInput extends StatelessWidget {
             textAlignVertical: TextAlignVertical.center,
             cursorColor: _primaryInkColor(context),
             cursorWidth: 1.4,
-            style: _baseStyle.copyWith(color: _textPrimaryColor(context)),
+            style: _baseStyle.copyWith(color: OpenVtsColors.textPrimary),
             strutStyle: const StrutStyle(
               fontFamily: OpenVtsTypography.primaryFontFamily,
               fontFamilyFallback: OpenVtsTypography.fontFallback,
@@ -447,18 +447,18 @@ class _SearchInput extends StatelessWidget {
               isCollapsed: false,
               hintText: 'Search vehicle, plate, VIN, IMEI, SIM, user\u2026',
               hintStyle: _baseStyle.copyWith(
-                color: _textSecondaryColor(context),
+                color: OpenVtsColors.textTertiary,
                 fontWeight: FontWeight.w400,
               ),
-              prefixIcon: Padding(
-                padding: const EdgeInsetsDirectional.only(
+              prefixIcon: const Padding(
+                padding: EdgeInsetsDirectional.only(
                   start: OpenVtsSpacing.sm,
                   end: OpenVtsSpacing.xs,
                 ),
                 child: Icon(
                   Icons.search_rounded,
                   size: 18,
-                  color: _textSecondaryColor(context),
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               prefixIconConstraints: const BoxConstraints(
@@ -483,10 +483,10 @@ class _SearchInput extends StatelessWidget {
                           minHeight: 28,
                         ),
                         splashRadius: 16,
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.close_rounded,
                           size: 16,
-                          color: _textSecondaryColor(context),
+                          color: OpenVtsColors.textSecondary,
                         ),
                       ),
                     ),
@@ -556,7 +556,7 @@ class _SquareIconButton extends StatelessWidget {
                     height: 10,
                     width: 10,
                     decoration: BoxDecoration(
-                      color: _primaryInkColor(context),
+                      color: OpenVtsColors.brandInk,
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: Theme.of(context).colorScheme.surface,
@@ -610,7 +610,7 @@ class _OptionsSheet extends StatelessWidget {
                 width: 40,
                 margin: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
                 decoration: BoxDecoration(
-                  color: _softBorderColor(context),
+                  color: OpenVtsColors.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -627,7 +627,7 @@ class _OptionsSheet extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () => Navigator.of(context).maybePop(),
-                  icon: Icon(Icons.close_rounded, size: 20),
+                  icon: const Icon(Icons.close_rounded, size: 20),
                   tooltip: 'Close',
                 ),
               ],
@@ -637,7 +637,7 @@ class _OptionsSheet extends StatelessWidget {
               Text(
                 section.label,
                 style: OpenVtsTypography.label.copyWith(
-                  color: _textSecondaryColor(context),
+                  color: OpenVtsColors.textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -650,7 +650,7 @@ class _OptionsSheet extends StatelessWidget {
                 onPressed: onPrimaryAction,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primaryInkColor(context),
-                  foregroundColor: Theme.of(context).colorScheme.surface,
+                  foregroundColor: OpenVtsColors.white,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(
                     vertical: OpenVtsSpacing.sm,
@@ -702,12 +702,12 @@ class _ChoiceChip extends StatelessWidget {
     return ChoiceChip(
       label: Text(label),
       selected: selected,
-      checkmarkColor: Theme.of(context).colorScheme.surface,
+      checkmarkColor: OpenVtsColors.white,
       selectedColor: _primaryInkColor(context),
       backgroundColor: _softSurfaceColor(context),
       side: BorderSide(color: _softBorderColor(context)),
       labelStyle: OpenVtsTypography.label.copyWith(
-        color: selected ? Theme.of(context).colorScheme.surface : _textSecondaryColor(context),
+        color: selected ? OpenVtsColors.white : OpenVtsColors.textSecondary,
         fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
       ),
       onSelected: (_) => onSelected(),
@@ -748,23 +748,11 @@ Color _softSurfaceColor(BuildContext context) {
 Color _softBorderColor(BuildContext context) {
   return Theme.of(context).brightness == Brightness.dark
       ? OpenVtsColors.darkBorder
-      : Theme.of(context).colorScheme.outlineVariant;
+      : OpenVtsColors.border;
 }
 
 Color _primaryInkColor(BuildContext context) {
   return Theme.of(context).brightness == Brightness.dark
       ? OpenVtsColors.darkTextPrimary
-      : Theme.of(context).colorScheme.primary;
-}
-
-Color _textPrimaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextPrimary
-      : Theme.of(context).colorScheme.onSurface;
-}
-
-Color _textSecondaryColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextSecondary
-      : Theme.of(context).colorScheme.onSurfaceVariant;
+      : OpenVtsColors.brandInk;
 }

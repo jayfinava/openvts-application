@@ -24,28 +24,7 @@ class OpenVtsColors {
 
   static const darkBackground = Color(0xFF0F0D12);
   static const darkSurface = Color(0xFF18141D);
-  static const darkSurfaceElevated = Color(0xFF211D26);
   static const darkBorder = Color(0xFF2A2430);
   static const darkTextPrimary = Color(0xFFFFFFFF);
   static const darkTextSecondary = Color(0xFFC8C2CD);
-  static const darkTextTertiary = Color(0xFF9E98A4);
-
-  static const darkSuccess = Color(0xFF4A9E6E);
-  static const darkWarning = Color(0xFFC9A33A);
-  static const darkError = Color(0xFFC24D4D);
-  static const darkInfo = Color(0xFF5A7FA4);
-}
-
-extension ThemeAwareColors on BuildContext {
-  bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
-
-  Color textPrimary() => isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
-  Color textSecondary() => isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
-  Color textTertiary() => isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary;
-  Color surface() => isDarkMode ? OpenVtsColors.darkSurface : OpenVtsColors.surface;
-  Color border() => isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border;
-  Color error() => isDarkMode ? OpenVtsColors.darkError : OpenVtsColors.error;
-  Color success() => isDarkMode ? OpenVtsColors.darkSuccess : OpenVtsColors.success;
-  Color warning() => isDarkMode ? OpenVtsColors.darkWarning : OpenVtsColors.warning;
-  Color info() => isDarkMode ? OpenVtsColors.darkInfo : OpenVtsColors.info;
 }

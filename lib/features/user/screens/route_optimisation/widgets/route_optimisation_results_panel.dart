@@ -87,15 +87,9 @@ class _OptimisedOrderList extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: context.isDarkMode
-            ? OpenVtsColors.darkSurface
-            : OpenVtsColors.surface,
+        color: OpenVtsColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(
-          color: context.isDarkMode
-              ? OpenVtsColors.darkBorder
-              : OpenVtsColors.border,
-        ),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -113,9 +107,7 @@ class _OptimisedOrderList extends StatelessWidget {
                 Text(
                   'Optimised order',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: context.isDarkMode
-                        ? OpenVtsColors.darkTextSecondary
-                        : OpenVtsColors.textSecondary,
+                    color: OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.4,
                   ),
@@ -128,22 +120,14 @@ class _OptimisedOrderList extends StatelessWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: context.isDarkMode
-                          ? OpenVtsColors.darkSurfaceElevated
-                          : OpenVtsColors.surfaceElevated,
+                      color: OpenVtsColors.surfaceElevated,
                       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                      border: Border.all(
-                        color: context.isDarkMode
-                            ? OpenVtsColors.darkBorder
-                            : OpenVtsColors.border,
-                      ),
+                      border: Border.all(color: OpenVtsColors.border),
                     ),
                     child: Text(
                       'Round trip',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: context.isDarkMode
-                            ? OpenVtsColors.darkTextSecondary
-                            : OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.textSecondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -267,22 +251,14 @@ class _IndexBadge extends StatelessWidget {
       height: 22,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: context.isDarkMode
-            ? OpenVtsColors.darkSurfaceElevated
-            : OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.surfaceElevated,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(
-          color: context.isDarkMode
-              ? OpenVtsColors.darkBorder
-              : OpenVtsColors.border,
-        ),
+        border: Border.all(color: OpenVtsColors.border),
       ),
       child: Text(
         '$index',
         style: OpenVtsTypography.meta.copyWith(
-          color: context.isDarkMode
-              ? OpenVtsColors.darkTextPrimary
-              : OpenVtsColors.textPrimary,
+          color: OpenVtsColors.textPrimary,
           fontWeight: FontWeight.w700,
           fontSize: 11,
         ),
@@ -451,17 +427,17 @@ class _ActionButton extends StatelessWidget {
     final Color fg;
     final Color border;
     if (primary) {
-      bg = enabled ? OpenVtsColors.brandInk : (context.isDarkMode ? OpenVtsColors.darkSurface : OpenVtsColors.surface);
-      fg = enabled ? OpenVtsColors.white : (context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary);
+      bg = enabled ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+      fg = enabled ? OpenVtsColors.white : OpenVtsColors.textTertiary;
       border = bg;
     } else if (subtle) {
       bg = Colors.transparent;
-      fg = enabled ? (context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary) : (context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary);
+      fg = enabled ? OpenVtsColors.textSecondary : OpenVtsColors.textTertiary;
       border = Colors.transparent;
     } else {
-      bg = context.isDarkMode ? OpenVtsColors.darkSurface : OpenVtsColors.surface;
-      fg = enabled ? (context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary) : (context.isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary);
-      border = context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border;
+      bg = OpenVtsColors.surface;
+      fg = enabled ? OpenVtsColors.textPrimary : OpenVtsColors.textTertiary;
+      border = OpenVtsColors.border;
     }
 
     return SizedBox(

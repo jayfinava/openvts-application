@@ -54,24 +54,24 @@ class _ConfirmBody extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(OpenVtsSpacing.sm),
             decoration: BoxDecoration(
-              color: context.isDarkMode ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
+              color: OpenVtsColors.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+              border: Border.all(color: OpenVtsColors.border),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
+                const Icon(
                   Icons.delete_sweep_outlined,
                   size: 16,
-                  color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+                  color: OpenVtsColors.textSecondary,
                 ),
                 const SizedBox(width: OpenVtsSpacing.xs),
                 Expanded(
                   child: Text(
                     summary.toString(),
                     style: OpenVtsTypography.label.copyWith(
-                      color: context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
+                      color: OpenVtsColors.textPrimary,
                     ),
                   ),
                 ),
@@ -85,8 +85,8 @@ class _ConfirmBody extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () => Navigator.of(context).pop(false),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
-                    side: BorderSide(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+                    foregroundColor: OpenVtsColors.textPrimary,
+                    side: const BorderSide(color: OpenVtsColors.border),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(OpenVtsRadius.button),
                     ),

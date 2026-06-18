@@ -38,14 +38,14 @@ class UserVehicleCard extends ConsumerWidget {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.08),
+                  color: OpenVtsColors.textPrimary.withValues(alpha: 0.04),
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                  border: Border.all(color: OpenVtsColors.border),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.directions_car_filled_outlined,
                   size: 19,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
@@ -58,7 +58,7 @@ class UserVehicleCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: OpenVtsColors.textPrimary,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -71,7 +71,7 @@ class UserVehicleCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: OpenVtsColors.textSecondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -142,7 +142,7 @@ class _MetaPill extends StatelessWidget {
     final content = _StatusPill(
       icon: icon,
       label: label,
-      color: Theme.of(context).colorScheme.onSurfaceVariant,
+      color: OpenVtsColors.textSecondary,
     );
 
     if (normalizedCopyValue.isEmpty) return content;

@@ -18,37 +18,21 @@ class AdminFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = selected
-        ? OpenVtsColors.brandInk
-        : isDark
-            ? OpenVtsColors.darkSurface
-            : OpenVtsColors.white;
-    final borderColor = selected
-        ? OpenVtsColors.brandInk
-        : isDark
-            ? OpenVtsColors.darkBorder
-            : OpenVtsColors.border;
-    final textColor = selected
-        ? OpenVtsColors.white
-        : isDark
-            ? OpenVtsColors.darkTextSecondary
-            : OpenVtsColors.textSecondary;
-
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: selected ? OpenVtsColors.brandInk : OpenVtsColors.white,
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          border: Border.all(color: borderColor),
+          border: Border.all(
+              color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border),
         ),
         child: Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: textColor,
+            color: selected ? OpenVtsColors.white : OpenVtsColors.textSecondary,
             fontWeight: FontWeight.w600,
           ),
         ),

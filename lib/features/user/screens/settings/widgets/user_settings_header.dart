@@ -54,18 +54,18 @@ class UserSettingsHeader extends ConsumerWidget {
                 width: 30,
                 height: 30,
                 decoration: BoxDecoration(
-                  color: context.surface(),
+                  color: OpenVtsColors.surface,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: context.border()),
+                  border: Border.all(color: OpenVtsColors.border),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.settings_outlined,
                   size: 16,
-                  color: context.textSecondary(),
+                  color: OpenVtsColors.textSecondary,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
-              Expanded(
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -76,17 +76,17 @@ class UserSettingsHeader extends ConsumerWidget {
                         fontSize: 14,
                         height: 1.25,
                         fontWeight: FontWeight.w600,
-                        color: context.textPrimary(),
+                        color: OpenVtsColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       'Manage profile, security, and localization preferences.',
                       style: TextStyle(
                         fontFamily: OpenVtsTypography.primaryFontFamily,
                         fontSize: 11.5,
                         height: 1.35,
-                        color: context.textSecondary(),
+                        color: OpenVtsColors.textSecondary,
                       ),
                     ),
                   ],
@@ -111,7 +111,7 @@ class UserSettingsHeader extends ConsumerWidget {
             Text(
               'Profile updated ${settingsDateFormatter.formatDateTime(lastUpdatedAt!.toLocal())}',
               style: OpenVtsTypography.meta.copyWith(
-                color: context.textTertiary(),
+                color: OpenVtsColors.textTertiary,
               ),
             ),
           ],

@@ -181,7 +181,7 @@ class _SourceRow extends StatelessWidget {
         Text(
           'Source',
           style: OpenVtsTypography.meta.copyWith(
-            color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+            color: OpenVtsColors.textSecondary,
           ),
         ),
         const Spacer(),
@@ -191,14 +191,14 @@ class _SourceRow extends StatelessWidget {
             vertical: 4,
           ),
           decoration: BoxDecoration(
-            color: context.isDarkMode ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
+            color: OpenVtsColors.surface,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-            border: Border.all(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+            border: Border.all(color: OpenVtsColors.border),
           ),
           child: Text(
             source.label,
             style: OpenVtsTypography.meta.copyWith(
-              color: context.isDarkMode ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
+              color: OpenVtsColors.textPrimary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -231,7 +231,7 @@ class _Field extends StatelessWidget {
         Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: context.isDarkMode ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary,
+            color: OpenVtsColors.textSecondary,
           ),
         ),
         const SizedBox(height: 4),
@@ -249,11 +249,11 @@ class _Field extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              borderSide: BorderSide(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+              borderSide: const BorderSide(color: OpenVtsColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              borderSide: BorderSide(color: context.isDarkMode ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+              borderSide: const BorderSide(color: OpenVtsColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
