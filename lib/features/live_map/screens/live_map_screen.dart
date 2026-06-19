@@ -5850,7 +5850,10 @@ class _VehicleReplaySetupTabState extends State<_VehicleReplaySetupTab> {
   Widget build(BuildContext context) {
     final imei = widget.vehicle.imei.trim();
     final now = DateTime.now();
+<<<<<<< HEAD
     final scheme = Theme.of(context).colorScheme;
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
 
     return ListView(
       controller: widget.scrollController,
@@ -5864,6 +5867,7 @@ class _VehicleReplaySetupTabState extends State<_VehicleReplaySetupTab> {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
+<<<<<<< HEAD
                   color: scheme.onSurface,
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -5871,6 +5875,15 @@ class _VehicleReplaySetupTabState extends State<_VehicleReplaySetupTab> {
                   Icons.route_rounded,
                   size: 18,
                   color: scheme.surface,
+=======
+                  color: const Color(0xFF141118),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.route_rounded,
+                  size: 18,
+                  color: Colors.white,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 ),
               ),
               const SizedBox(width: 10),
@@ -5882,10 +5895,17 @@ class _VehicleReplaySetupTabState extends State<_VehicleReplaySetupTab> {
                       _vehicleDisplayName(widget.vehicle),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+<<<<<<< HEAD
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
                         color: scheme.onSurface,
+=======
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF141118),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -5896,7 +5916,11 @@ class _VehicleReplaySetupTabState extends State<_VehicleReplaySetupTab> {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
+<<<<<<< HEAD
                         color: scheme.onSurfaceVariant,
+=======
+                        color: Colors.black.withValues(alpha: 0.48),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                       ),
                     ),
                   ],
@@ -6020,6 +6044,7 @@ class _ReplaySetupMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -6030,6 +6055,13 @@ class _ReplaySetupMessage extends StatelessWidget {
         border: Border.all(
           color: isDark ? scheme.outlineVariant : const Color(0xFFE5E7EB),
         ),
+=======
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F7F8),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
@@ -6038,7 +6070,11 @@ class _ReplaySetupMessage extends StatelessWidget {
             Icon(
               Icons.info_outline_rounded,
               size: 14,
+<<<<<<< HEAD
               color: scheme.onSurfaceVariant,
+=======
+              color: Colors.black.withValues(alpha: 0.54),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -6047,7 +6083,11 @@ class _ReplaySetupMessage extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
+<<<<<<< HEAD
                   color: scheme.onSurfaceVariant,
+=======
+                  color: Colors.black.withValues(alpha: 0.58),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   height: 1.3,
                 ),
               ),
@@ -7396,14 +7436,18 @@ class _HistoryQueryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     final history = state.history;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
       child: DecoratedBox(
         decoration: BoxDecoration(
+<<<<<<< HEAD
           color: isDark ? scheme.surfaceContainer : const Color(0xFFF7F7F9),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
@@ -7411,11 +7455,20 @@ class _HistoryQueryHeader extends StatelessWidget {
                 ? scheme.outlineVariant
                 : Colors.black.withValues(alpha: 0.06),
           ),
+=======
+          color: const Color(0xFFF7F7F9),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         ),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: LayoutBuilder(
+<<<<<<< HEAD
             builder: (layoutContext, constraints) {
+=======
+            builder: (context, constraints) {
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               final actionButton = SizedBox(
                 width: constraints.maxWidth < 360 ? double.infinity : 132,
                 child: OpenVtsButton(
@@ -7486,7 +7539,10 @@ class _HistoryQueryHeaderText extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+<<<<<<< HEAD
     final scheme = Theme.of(context).colorScheme;
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     final formatter = ref.watch(appDateFormatterProvider);
     final request = state.request;
     final title = request?.vehicleLabel ?? 'Vehicle History';
@@ -7503,10 +7559,17 @@ class _HistoryQueryHeaderText extends ConsumerWidget {
           title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+<<<<<<< HEAD
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w800,
             color: scheme.onSurface,
+=======
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF141118),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           ),
         ),
         const SizedBox(height: 4),
@@ -7517,7 +7580,11 @@ class _HistoryQueryHeaderText extends ConsumerWidget {
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w600,
+<<<<<<< HEAD
             color: scheme.onSurfaceVariant,
+=======
+            color: Colors.black.withValues(alpha: 0.5),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             height: 1.25,
           ),
         ),
@@ -7628,12 +7695,16 @@ class _HistoryLoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final scheme = Theme.of(context).colorScheme;
 
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+<<<<<<< HEAD
           SizedBox(
             width: 22,
             height: 22,
@@ -7641,6 +7712,12 @@ class _HistoryLoadingState extends StatelessWidget {
               strokeWidth: 2,
               color: scheme.onSurface,
             ),
+=======
+          const SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(strokeWidth: 2),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           ),
           const SizedBox(height: 10),
           Text(
@@ -7648,7 +7725,11 @@ class _HistoryLoadingState extends StatelessWidget {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,
+<<<<<<< HEAD
               color: scheme.onSurfaceVariant,
+=======
+              color: Colors.black.withValues(alpha: 0.56),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
           ),
         ],
@@ -7665,8 +7746,11 @@ class _HistoryErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final scheme = Theme.of(context).colorScheme;
 
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(18),
@@ -7676,16 +7760,27 @@ class _HistoryErrorState extends StatelessWidget {
             Icon(
               Icons.error_outline_rounded,
               size: 18,
+<<<<<<< HEAD
               color: scheme.error.withValues(alpha: 0.9),
             ),
             const SizedBox(height: 8),
             Text(
+=======
+              color: const Color(0xFFB42318).withValues(alpha: 0.9),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               'Unable to load history',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
+<<<<<<< HEAD
                 color: scheme.onSurface,
+=======
+                color: Color(0xFF141118),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               ),
             ),
             const SizedBox(height: 4),
@@ -7695,7 +7790,11 @@ class _HistoryErrorState extends StatelessWidget {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
+<<<<<<< HEAD
                 color: scheme.onSurfaceVariant,
+=======
+                color: Colors.black.withValues(alpha: 0.52),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 height: 1.3,
               ),
             ),
@@ -7769,8 +7868,11 @@ class _HistoryTimelineHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final scheme = Theme.of(context).colorScheme;
 
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 9),
       child: Text(
@@ -7779,7 +7881,11 @@ class _HistoryTimelineHeader extends StatelessWidget {
           fontSize: 10,
           fontWeight: FontWeight.w800,
           letterSpacing: 0,
+<<<<<<< HEAD
           color: scheme.onSurfaceVariant,
+=======
+          color: Colors.black.withValues(alpha: 0.48),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         ),
       ),
     );
@@ -7805,7 +7911,10 @@ class _HistoryTimelineTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final scheme = Theme.of(context).colorScheme;
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     final visuals = _historyTimelineVisuals(entry.kind);
 
     return Padding(
@@ -7816,9 +7925,15 @@ class _HistoryTimelineTile extends StatelessWidget {
             left: 12,
             top: isFirst ? 24 : 0,
             bottom: isLast ? 24 : 0,
+<<<<<<< HEAD
             child: CustomPaint(
               painter: _HistoryTimelineRailPainter(color: scheme.outlineVariant),
               child: const SizedBox(width: 1),
+=======
+            child: const CustomPaint(
+              painter: _HistoryTimelineRailPainter(),
+              child: SizedBox(width: 1),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
           ),
           Row(
@@ -7858,15 +7973,24 @@ class _HistoryTimelineRailIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final scheme = Theme.of(context).colorScheme;
 
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Container(
       width: 18,
       height: 18,
       decoration: BoxDecoration(
+<<<<<<< HEAD
         color: scheme.surface,
         shape: BoxShape.circle,
         border: Border.all(color: scheme.outlineVariant),
+=======
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
       child: Center(
         child: visuals.textIcon == null
@@ -7885,14 +8009,22 @@ class _HistoryTimelineRailIcon extends StatelessWidget {
 }
 
 class _HistoryTimelineRailPainter extends CustomPainter {
+<<<<<<< HEAD
   const _HistoryTimelineRailPainter({required this.color});
 
   final Color color;
+=======
+  const _HistoryTimelineRailPainter();
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
+<<<<<<< HEAD
       ..color = color
+=======
+      ..color = const Color(0xFFE5E7EB)
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ..strokeWidth = 1;
     const startY = 0.0;
     final endY = size.height;
@@ -7912,7 +8044,11 @@ class _HistoryTimelineRailPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _HistoryTimelineRailPainter oldDelegate) =>
+<<<<<<< HEAD
       oldDelegate.color != color;
+=======
+      false;
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
 }
 
 class _HistoryTimelineCard extends StatelessWidget {
@@ -7930,18 +8066,26 @@ class _HistoryTimelineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final reasonLabel = _historyStopReasonLabel(entry.primarySegment);
 
     return Material(
       color: scheme.surface,
+=======
+    final reasonLabel = _historyStopReasonLabel(entry.primarySegment);
+
+    return Material(
+      color: Colors.white,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(10),
         child: Ink(
           decoration: BoxDecoration(
+<<<<<<< HEAD
             color: isSelected ? scheme.surfaceContainer : scheme.surface,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
@@ -7950,6 +8094,14 @@ class _HistoryTimelineCard extends StatelessWidget {
                   : isDark
                       ? scheme.outlineVariant
                       : Colors.black.withValues(alpha: 0.1),
+=======
+            color: isSelected ? const Color(0xFFF7F7F8) : Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: isSelected
+                  ? const Color(0xFF3F3F46).withValues(alpha: 0.36)
+                  : Colors.black.withValues(alpha: 0.1),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
             boxShadow: [
               BoxShadow(
@@ -7972,10 +8124,17 @@ class _HistoryTimelineCard extends StatelessWidget {
                         '$number. ${_historyTimelineTitle(entry)}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+<<<<<<< HEAD
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: scheme.onSurface,
+=======
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF141118),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         ),
                       ),
                     ),
@@ -8128,13 +8287,17 @@ class _HistoryMetricBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Container(
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
       decoration: BoxDecoration(
+<<<<<<< HEAD
         color: scheme.surface,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
@@ -8142,6 +8305,11 @@ class _HistoryMetricBox extends StatelessWidget {
               ? scheme.outlineVariant
               : Colors.black.withValues(alpha: 0.12),
         ),
+=======
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.12)),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -8154,7 +8322,11 @@ class _HistoryMetricBox extends StatelessWidget {
             style: TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w600,
+<<<<<<< HEAD
               color: scheme.onSurfaceVariant,
+=======
+              color: Colors.black.withValues(alpha: 0.52),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
           ),
           const SizedBox(height: 2),
@@ -8164,10 +8336,17 @@ class _HistoryMetricBox extends StatelessWidget {
             child: Text(
               value,
               maxLines: 1,
+<<<<<<< HEAD
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w800,
                 color: scheme.onSurface,
+=======
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF141118),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               ),
             ),
           ),
@@ -8184,14 +8363,21 @@ class _HistoryTimeLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final scheme = Theme.of(context).colorScheme;
 
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Row(
       children: [
         Icon(
           Icons.timer_outlined,
           size: 12,
+<<<<<<< HEAD
           color: scheme.onSurfaceVariant,
+=======
+          color: Colors.black.withValues(alpha: 0.45),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         ),
         const SizedBox(width: 4),
         Expanded(
@@ -8202,7 +8388,11 @@ class _HistoryTimeLine extends StatelessWidget {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w600,
+<<<<<<< HEAD
               color: scheme.onSurfaceVariant,
+=======
+              color: Colors.black.withValues(alpha: 0.56),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
           ),
         ),
@@ -8218,8 +8408,11 @@ class _HistoryMutedLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final scheme = Theme.of(context).colorScheme;
 
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Text(
       text,
       maxLines: 1,
@@ -8227,7 +8420,11 @@ class _HistoryMutedLine extends StatelessWidget {
       style: TextStyle(
         fontSize: 10,
         fontWeight: FontWeight.w500,
+<<<<<<< HEAD
         color: scheme.onSurfaceVariant,
+=======
+        color: Colors.black.withValues(alpha: 0.52),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         height: 1.2,
       ),
     );
@@ -9368,14 +9565,21 @@ String _formatReplayNumber(double value, int fractionDigits) {
 }
 
 TextStyle _replayControlMetaStyle({
+<<<<<<< HEAD
   required ColorScheme scheme,
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
   FontWeight weight = FontWeight.w700,
   Color? color,
 }) {
   return TextStyle(
     fontSize: 10,
     fontWeight: weight,
+<<<<<<< HEAD
     color: color ?? scheme.onSurfaceVariant,
+=======
+    color: color ?? Colors.black.withValues(alpha: 0.54),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
   );
 }
 

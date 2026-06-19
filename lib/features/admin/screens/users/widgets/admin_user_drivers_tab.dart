@@ -279,6 +279,7 @@ class _SummaryTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+<<<<<<< HEAD
           Icon(
             icon,
             size: 14,
@@ -291,14 +292,30 @@ class _SummaryTile extends StatelessWidget {
               fontSize: 15,
               fontWeight: FontWeight.w700,
               color: Theme.of(context).colorScheme.onSurface,
+=======
+          Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: OpenVtsColors.textPrimary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
           ),
           const SizedBox(height: 2),
           Text(
             label,
+<<<<<<< HEAD
             style: TextStyle(
               fontSize: 10,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
+=======
+            style: const TextStyle(
+              fontSize: 10,
+              color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -336,16 +353,27 @@ class _SummaryCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
+<<<<<<< HEAD
                     Icon(
                       Icons.badge_outlined,
                       size: 17,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
+=======
+                    const Icon(
+                      Icons.badge_outlined,
+                      size: 17,
+                      color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     ),
                     const SizedBox(width: OpenVtsSpacing.xs),
                     Text(
                       'Drivers',
                       style: OpenVtsTypography.label.copyWith(
+<<<<<<< HEAD
                         color: Theme.of(context).colorScheme.onSurface,
+=======
+                        color: OpenVtsColors.textPrimary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -363,7 +391,11 @@ class _SummaryCard extends StatelessWidget {
                 Text(
                   '$assignedCount assigned - $availableCount available',
                   style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
+=======
+                    color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -399,25 +431,37 @@ class _SearchField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
+<<<<<<< HEAD
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
         border: Border.all(
           color: Theme.of(context).colorScheme.outlineVariant,
         ),
+=======
+        color: OpenVtsColors.surface,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+        border: Border.all(color: OpenVtsColors.border),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
       padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.sm),
       child: Row(
         children: [
+<<<<<<< HEAD
           Icon(
             Icons.search,
             size: 16,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
+=======
+          const Icon(Icons.search,
+              size: 16, color: OpenVtsColors.textSecondary),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: TextField(
               controller: controller,
               onChanged: onChanged,
+<<<<<<< HEAD
               style: TextStyle(
                 fontSize: 13,
                 color: Theme.of(context).colorScheme.onSurface,
@@ -431,6 +475,17 @@ class _SearchField extends StatelessWidget {
                 ),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
+=======
+              style: const TextStyle(
+                  fontSize: 13, color: OpenVtsColors.textPrimary),
+              decoration: const InputDecoration(
+                isDense: true,
+                hintText: 'Search assigned drivers',
+                hintStyle:
+                    TextStyle(fontSize: 12, color: OpenVtsColors.textTertiary),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(vertical: 12),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               ),
             ),
           ),
@@ -440,11 +495,16 @@ class _SearchField extends StatelessWidget {
                 controller.clear();
                 onChanged('');
               },
+<<<<<<< HEAD
               child: Icon(
                 Icons.close,
                 size: 16,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
+=======
+              child: const Icon(Icons.close,
+                  size: 16, color: OpenVtsColors.textSecondary),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
         ],
       ),
@@ -497,6 +557,7 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final backgroundColor = selected
         ? OpenVtsColors.brandInk
         : Theme.of(context).colorScheme.surfaceContainerHigh;
@@ -526,6 +587,26 @@ class _FilterChip extends StatelessWidget {
               fontWeight: FontWeight.w700,
               color: foregroundColor,
             ),
+=======
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? OpenVtsColors.brandInk : OpenVtsColors.surface,
+          borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+          border: Border.all(
+            color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: selected ? OpenVtsColors.white : OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           ),
         ),
       ),
@@ -564,18 +645,31 @@ class _DriverCard extends StatelessWidget {
                       _driverTitle(driver),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+<<<<<<< HEAD
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: Theme.of(context).colorScheme.onSurface,
+=======
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: OpenVtsColors.textPrimary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       _driverSubtitle(driver),
+<<<<<<< HEAD
                       style: TextStyle(
                         fontSize: 11,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
+=======
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -836,6 +930,7 @@ class _SelectableDriverTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
+<<<<<<< HEAD
       color: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
@@ -843,6 +938,13 @@ class _SelectableDriverTile extends StatelessWidget {
           color: isSelected
               ? OpenVtsColors.brandInk
               : Theme.of(context).colorScheme.outlineVariant,
+=======
+      color: OpenVtsColors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+        side: BorderSide(
+          color: isSelected ? OpenVtsColors.brandInk : OpenVtsColors.border,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         ),
       ),
       child: InkWell(
@@ -859,7 +961,11 @@ class _SelectableDriverTile extends StatelessWidget {
                 size: 18,
                 color: isSelected
                     ? OpenVtsColors.brandInk
+<<<<<<< HEAD
                     : Theme.of(context).colorScheme.outline,
+=======
+                    : OpenVtsColors.textTertiary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
               Expanded(
@@ -871,7 +977,11 @@ class _SelectableDriverTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
+<<<<<<< HEAD
                         color: Theme.of(context).colorScheme.onSurface,
+=======
+                        color: OpenVtsColors.textPrimary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
                       ),
@@ -882,7 +992,11 @@ class _SelectableDriverTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
+=======
+                        color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                       ),
                     ),
                   ],
@@ -1033,7 +1147,11 @@ class _SectionLoader extends StatelessWidget {
           Text(
             'Loading $title',
             style: OpenVtsTypography.label.copyWith(
+<<<<<<< HEAD
               color: Theme.of(context).colorScheme.onSurfaceVariant,
+=======
+              color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -1074,7 +1192,11 @@ class _EmptyCard extends StatelessWidget {
         child: Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
             color: Theme.of(context).colorScheme.onSurfaceVariant,
+=======
+            color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             fontWeight: FontWeight.w700,
           ),
         ),

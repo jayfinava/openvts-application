@@ -1057,7 +1057,11 @@ class _MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUserMessage = _isFromUser(ticket, message);
+<<<<<<< HEAD
     final color = isUserMessage ? Theme.of(context).colorScheme.surfaceContainerHighest : Theme.of(context).colorScheme.surface;
+=======
+    final color = isUserMessage ? OpenVtsColors.surface : OpenVtsColors.white;
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     final sender = _senderLabel(message, isUserMessage: isUserMessage);
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
@@ -1385,9 +1389,15 @@ class _InlineError extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
+<<<<<<< HEAD
         color: Theme.of(context).colorScheme.error.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
         border: Border.all(color: Theme.of(context).colorScheme.error.withValues(alpha: 0.2)),
+=======
+        color: OpenVtsColors.error.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.2)),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

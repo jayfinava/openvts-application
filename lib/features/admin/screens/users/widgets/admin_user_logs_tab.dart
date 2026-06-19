@@ -264,6 +264,7 @@ class _ActionGroupChips extends StatelessWidget {
         itemBuilder: (context, index) {
           final group = _actionGroups[index];
           final isSelected = group.prefix == selected;
+<<<<<<< HEAD
           final backgroundColor = isSelected
               ? OpenVtsColors.brandInk
               : Theme.of(context).colorScheme.surfaceContainerHigh;
@@ -278,6 +279,16 @@ class _ActionGroupChips extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
               side: BorderSide(color: borderColor, width: 1),
+=======
+          return Material(
+            color: isSelected ? OpenVtsColors.brandInk : OpenVtsColors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+              side: BorderSide(
+                color:
+                    isSelected ? OpenVtsColors.brandInk : OpenVtsColors.border,
+              ),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
             child: InkWell(
               borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -288,7 +299,13 @@ class _ActionGroupChips extends StatelessWidget {
                 child: Text(
                   group.label,
                   style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
                     color: foregroundColor,
+=======
+                    color: isSelected
+                        ? OpenVtsColors.white
+                        : OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                   ),

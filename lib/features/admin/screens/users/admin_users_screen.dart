@@ -581,7 +581,11 @@ class _PrimaryCreateButton extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final background =
         isDark ? OpenVtsColors.surfaceElevated : OpenVtsColors.brandInk;
+<<<<<<< HEAD
     final foreground = isDark ? OpenVtsColors.brandInk : Theme.of(context).colorScheme.onPrimary;
+=======
+    final foreground = isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
 
     return ElevatedButton.icon(
       onPressed: onPressed,
@@ -1026,6 +1030,7 @@ class _PageButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final enabled = onPressed != null;
+<<<<<<< HEAD
     final baseColor = _softSurfaceColor(context);
     return Material(
       color: enabled
@@ -1034,6 +1039,12 @@ class _PageButton extends StatelessWidget {
               Theme.of(context).colorScheme.surface.withValues(alpha: 0.4),
               baseColor,
             ),
+=======
+    return Material(
+      color: enabled
+          ? _softSurfaceColor(context)
+          : _softSurfaceColor(context).withValues(alpha: 0.6),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       child: InkWell(
         onTap: onPressed,

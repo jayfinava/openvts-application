@@ -633,10 +633,17 @@ packages:
     dependency: transitive
     description:
       name: meta
+<<<<<<< HEAD
       sha256: "1741988757a65eb6b36abe716829688cf01910bbf91c34354ff7ec1c3de2b349"
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+=======
+      sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.17.0"
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
   mgrs_dart:
     dependency: transitive
     description:
@@ -1006,10 +1013,17 @@ packages:
     dependency: transitive
     description:
       name: test_api
+<<<<<<< HEAD
       sha256: "949a932224383300f01be9221c39180316445ecb8e7547f70a41a35bf421fb9e"
       url: "https://pub.dev"
     source: hosted
     version: "0.7.11"
+=======
+      sha256: "8161c84903fd860b26bfdefb7963b3f0b68fee7adea0f59ef805ecca346f0c7a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.10"
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
   timezone:
     dependency: transitive
     description:
@@ -1195,5 +1209,9 @@ packages:
     source: hosted
     version: "6.6.1"
 sdks:
+<<<<<<< HEAD
   dart: ">=3.10.0-0 <4.0.0"
+=======
+  dart: ">=3.9.0 <4.0.0"
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
   flutter: ">=3.35.0"

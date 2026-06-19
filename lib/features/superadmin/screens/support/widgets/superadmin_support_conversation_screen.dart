@@ -517,7 +517,10 @@ class _SupportStatusActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return PopupMenuButton<SuperadminSupportTicketStatus>(
       enabled: !isLoading,
       tooltip: 'Change status',
@@ -534,11 +537,15 @@ class _SupportStatusActionButton extends StatelessWidget {
       },
       child: _MetaChip(
         label: isLoading ? 'Updating' : 'Update status',
+<<<<<<< HEAD
         color: isLoading
             ? (isDark
                 ? OpenVtsColors.darkTextSecondary
                 : OpenVtsColors.textSecondary)
             : (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk),
+=======
+        color: isLoading ? OpenVtsColors.textSecondary : OpenVtsColors.brandInk,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         trailing: isLoading
             ? const SizedBox.square(
                 dimension: 14,
@@ -651,6 +658,7 @@ class SuperadminSupportMessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final alignment = isMine ? Alignment.centerRight : Alignment.centerLeft;
+<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final colorScheme = Theme.of(context).colorScheme;
     final borderColor = isMine
@@ -662,6 +670,14 @@ class SuperadminSupportMessageBubble extends StatelessWidget {
         ? (isDark
             ? OpenVtsColors.white.withValues(alpha: 0.08)
             : OpenVtsColors.brandInk.withValues(alpha: 0.045))
+=======
+    final colorScheme = Theme.of(context).colorScheme;
+    final borderColor = isMine
+        ? OpenVtsColors.brandInk.withValues(alpha: 0.18)
+        : colorScheme.outline;
+    final backgroundColor = isMine
+        ? OpenVtsColors.brandInk.withValues(alpha: 0.045)
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         : colorScheme.surface;
 
     final senderLabel = message.sender?.displayName.trim().isNotEmpty == true
@@ -861,7 +877,10 @@ class SuperadminSupportDraftAttachmentWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Wrap(
       spacing: OpenVtsSpacing.xs,
       runSpacing: OpenVtsSpacing.xs,
@@ -873,21 +892,34 @@ class SuperadminSupportDraftAttachmentWrap extends StatelessWidget {
                 end: OpenVtsSpacing.xxs,
               ),
               decoration: BoxDecoration(
+<<<<<<< HEAD
                 border: Border.all(
                   color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
                 ),
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                 color: isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
+=======
+                border: Border.all(color: OpenVtsColors.border),
+                borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+                color: OpenVtsColors.surface,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+<<<<<<< HEAD
                   Icon(
                     Icons.insert_drive_file_outlined,
                     size: 14,
                     color: isDark
                         ? OpenVtsColors.darkTextSecondary
                         : OpenVtsColors.textTertiary,
+=======
+                  const Icon(
+                    Icons.insert_drive_file_outlined,
+                    size: 14,
+                    color: OpenVtsColors.textTertiary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   ),
                   const SizedBox(width: OpenVtsSpacing.xxs),
                   ConstrainedBox(

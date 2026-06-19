@@ -187,7 +187,10 @@ class _SupportHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     final countLabel = _countLabel(
       visibleCount: visibleCount,
       totalCount: totalCount,
@@ -202,9 +205,13 @@ class _SupportHeader extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
               color: isDark
                   ? OpenVtsColors.darkTextSecondary
                   : OpenVtsColors.textSecondary,
+=======
+              color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -346,7 +353,10 @@ class _SupportEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(OpenVtsSpacing.lg),
@@ -357,6 +367,7 @@ class _SupportEmptyState extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
+<<<<<<< HEAD
                 color: isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
                 border: Border.all(
                   color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
@@ -369,6 +380,16 @@ class _SupportEmptyState extends StatelessWidget {
                 color: isDark
                     ? OpenVtsColors.darkTextSecondary
                     : OpenVtsColors.textSecondary,
+=======
+                color: OpenVtsColors.surface,
+                border: Border.all(color: OpenVtsColors.border),
+                borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+              ),
+              child: const Icon(
+                Icons.support_agent_rounded,
+                size: 20,
+                color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               ),
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
@@ -384,9 +405,13 @@ class _SupportEmptyState extends StatelessWidget {
                   : 'Create a ticket to start a support conversation.',
               textAlign: TextAlign.center,
               style: OpenVtsTypography.body.copyWith(
+<<<<<<< HEAD
                 color: isDark
                     ? OpenVtsColors.darkTextSecondary
                     : OpenVtsColors.textSecondary,
+=======
+                color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               ),
             ),
             if (!hasActiveFilters) ...[
@@ -461,7 +486,11 @@ class _SkeletonLine extends StatelessWidget {
       child: Container(
         height: height,
         decoration: BoxDecoration(
+<<<<<<< HEAD
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
+=======
+          color: OpenVtsColors.surface,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         ),
       ),

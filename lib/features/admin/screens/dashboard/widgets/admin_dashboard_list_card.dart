@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+<<<<<<< HEAD
+=======
+import '../../../../../core/theme/open_vts_colors.dart';
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -98,11 +102,19 @@ class AdminDashboardListHeading extends StatelessWidget {
           width: 28,
           height: 28,
           decoration: BoxDecoration(
+<<<<<<< HEAD
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
             border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
           ),
           child: Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+=======
+            color: OpenVtsColors.surface,
+            borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+            border: Border.all(color: OpenVtsColors.border),
+          ),
+          child: Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         ),
         const SizedBox(width: OpenVtsSpacing.xs),
         Flexible(
@@ -111,7 +123,11 @@ class AdminDashboardListHeading extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.label.copyWith(
+<<<<<<< HEAD
               color: Theme.of(context).colorScheme.onSurface,
+=======
+              color: OpenVtsColors.textPrimary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -137,8 +153,13 @@ class AdminDashboardInitialsAvatar extends StatelessWidget {
       width: size,
       height: size,
       alignment: Alignment.center,
+<<<<<<< HEAD
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary,
+=======
+      decoration: const BoxDecoration(
+        color: OpenVtsColors.brandInk,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         shape: BoxShape.circle,
       ),
       child: Text(
@@ -146,7 +167,11 @@ class AdminDashboardInitialsAvatar extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.clip,
         style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
           color: Theme.of(context).colorScheme.onPrimary,
+=======
+          color: OpenVtsColors.white,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           fontSize: 11,
           fontWeight: FontWeight.w900,
         ),
@@ -166,11 +191,19 @@ class AdminDashboardLeadingIcon extends StatelessWidget {
       width: 36,
       height: 36,
       decoration: BoxDecoration(
+<<<<<<< HEAD
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Icon(icon, size: 17, color: Theme.of(context).colorScheme.onSurfaceVariant),
+=======
+        color: OpenVtsColors.surface,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+        border: Border.all(color: OpenVtsColors.border),
+      ),
+      child: Icon(icon, size: 17, color: OpenVtsColors.textSecondary),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     );
   }
 }
@@ -179,12 +212,17 @@ class AdminDashboardStatusChip extends StatelessWidget {
   const AdminDashboardStatusChip({
     required this.label,
     this.icon,
+<<<<<<< HEAD
     this.color,
+=======
+    this.color = OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     super.key,
   });
 
   final String label;
   final IconData? icon;
+<<<<<<< HEAD
   final Color? color;
 
   @override
@@ -196,12 +234,28 @@ class AdminDashboardStatusChip extends StatelessWidget {
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+=======
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: OpenVtsColors.surface,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+        border: Border.all(color: OpenVtsColors.border),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
+<<<<<<< HEAD
             Icon(icon, size: 12, color: iconColor),
+=======
+            Icon(icon, size: 12, color: color),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             const SizedBox(width: 4),
           ],
           Flexible(
@@ -210,7 +264,11 @@ class AdminDashboardStatusChip extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
+=======
+                color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 fontSize: 10.5,
                 fontWeight: FontWeight.w800,
               ),
@@ -246,18 +304,30 @@ class AdminDashboardCompactEmpty extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
+<<<<<<< HEAD
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(OpenVtsRadius.md),
                 border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
               ),
               child: Icon(icon, size: 18, color: Theme.of(context).colorScheme.outline),
+=======
+                color: OpenVtsColors.surface,
+                borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+                border: Border.all(color: OpenVtsColors.border),
+              ),
+              child: Icon(icon, size: 18, color: OpenVtsColors.textTertiary),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
             const SizedBox(height: OpenVtsSpacing.xs),
             Text(
               title,
               textAlign: TextAlign.center,
               style: OpenVtsTypography.label.copyWith(
+<<<<<<< HEAD
                 color: Theme.of(context).colorScheme.onSurface,
+=======
+                color: OpenVtsColors.textPrimary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -268,7 +338,11 @@ class AdminDashboardCompactEmpty extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
+=======
+                color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 fontSize: 10.5,
               ),
             ),
@@ -342,7 +416,11 @@ class _ViewAllButton extends StatelessWidget {
         visualDensity: VisualDensity.compact,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+<<<<<<< HEAD
         foregroundColor: Theme.of(context).colorScheme.onSurface,
+=======
+        foregroundColor: OpenVtsColors.textPrimary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         textStyle: OpenVtsTypography.meta.copyWith(
           fontSize: 10.5,
           fontWeight: FontWeight.w800,

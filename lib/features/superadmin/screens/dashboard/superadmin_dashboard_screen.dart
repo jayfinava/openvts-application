@@ -1895,7 +1895,10 @@ class _TransactionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final theme = Theme.of(context);
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     final amountText = '${transaction.amount.toStringAsFixed(0)} ${transaction.currency}';
 
     return Padding(
@@ -1909,6 +1912,7 @@ class _TransactionRow extends StatelessWidget {
           Container(
             width: 34,
             height: 34,
+<<<<<<< HEAD
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceContainer,
               shape: BoxShape.circle,
@@ -1917,6 +1921,16 @@ class _TransactionRow extends StatelessWidget {
               Icons.receipt_long_outlined,
               size: 16,
               color: theme.colorScheme.onSurfaceVariant,
+=======
+            decoration: const BoxDecoration(
+              color: OpenVtsColors.surface,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.receipt_long_outlined,
+              size: 16,
+              color: OpenVtsColors.textTertiary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -1929,7 +1943,10 @@ class _TransactionRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.body.copyWith(
+<<<<<<< HEAD
                     color: theme.colorScheme.onSurface,
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1937,7 +1954,11 @@ class _TransactionRow extends StatelessWidget {
                 Text(
                   transaction.subtitle,
                   style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
                     color: theme.colorScheme.onSurfaceVariant,
+=======
+                    color: OpenVtsColors.textTertiary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   ),
                 ),
               ],
@@ -1950,7 +1971,11 @@ class _TransactionRow extends StatelessWidget {
               Text(
                 amountText,
                 style: OpenVtsTypography.body.copyWith(
+<<<<<<< HEAD
                   color: theme.colorScheme.onSurface,
+=======
+                  color: OpenVtsColors.textPrimary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   fontWeight: FontWeight.w700,
                 ),
               ),

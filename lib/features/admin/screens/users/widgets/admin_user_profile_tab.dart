@@ -350,7 +350,11 @@ class _AccountCard extends StatelessWidget {
                     Text(
                       profile.displayName,
                       style: OpenVtsTypography.label.copyWith(
+<<<<<<< HEAD
                         color: Theme.of(context).colorScheme.onSurface,
+=======
+                        color: OpenVtsColors.textPrimary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -361,7 +365,11 @@ class _AccountCard extends StatelessWidget {
                     Text(
                       profile.usernameLabel,
                       style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
+=======
+                        color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         fontSize: 11,
                       ),
                       maxLines: 1,
@@ -422,16 +430,27 @@ class _AccountCard extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
+<<<<<<< HEAD
                     Icon(
                       Icons.event_outlined,
                       size: 14,
                       color: Theme.of(context).colorScheme.outline,
+=======
+                    const Icon(
+                      Icons.event_outlined,
+                      size: 14,
+                      color: OpenVtsColors.textTertiary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Created: ',
                       style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
                         color: Theme.of(context).colorScheme.outline,
+=======
+                        color: OpenVtsColors.textTertiary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                       ),
@@ -440,7 +459,11 @@ class _AccountCard extends StatelessWidget {
                       child: Text(
                         created,
                         style: OpenVtsTypography.label.copyWith(
+<<<<<<< HEAD
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
+=======
+                          color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                         ),
@@ -455,16 +478,27 @@ class _AccountCard extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
+<<<<<<< HEAD
                     Icon(
                       Icons.login_outlined,
                       size: 14,
                       color: Theme.of(context).colorScheme.outline,
+=======
+                    const Icon(
+                      Icons.login_outlined,
+                      size: 14,
+                      color: OpenVtsColors.textTertiary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Last login: ',
                       style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
                         color: Theme.of(context).colorScheme.outline,
+=======
+                        color: OpenVtsColors.textTertiary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                       ),
@@ -473,7 +507,11 @@ class _AccountCard extends StatelessWidget {
                       child: Text(
                         lastLogin,
                         style: OpenVtsTypography.label.copyWith(
+<<<<<<< HEAD
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
+=======
+                          color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                         ),
@@ -526,10 +564,17 @@ class _CompanyCard extends StatelessWidget {
         child: IconButton(
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+<<<<<<< HEAD
           icon: Icon(
             Icons.edit_outlined,
             size: 16,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
+=======
+          icon: const Icon(
+            Icons.edit_outlined,
+            size: 16,
+            color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           ),
           tooltip: 'Edit company',
           onPressed: isBusy ? null : onEditCompany,
@@ -564,9 +609,13 @@ class _CompanyCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: _colorFromName(profile.primaryColor),
                       shape: BoxShape.circle,
+<<<<<<< HEAD
                       border: Border.all(
                         color: Theme.of(context).colorScheme.outlineVariant,
                       ),
+=======
+                      border: Border.all(color: OpenVtsColors.border),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     ),
                   ),
                 )
@@ -674,10 +723,17 @@ class _SectionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
+<<<<<<< HEAD
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: Theme.of(context).colorScheme.outline,
+=======
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: OpenVtsColors.textTertiary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     letterSpacing: 0.4,
                   ),
                 ),
@@ -760,7 +816,11 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
                 color: Theme.of(context).colorScheme.outline,
+=======
+                color: OpenVtsColors.textTertiary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
               ),
@@ -772,7 +832,11 @@ class _InfoRow extends StatelessWidget {
                 Text(
                   _displayValue(value ?? ''),
                   style: OpenVtsTypography.label.copyWith(
+<<<<<<< HEAD
                     color: Theme.of(context).colorScheme.onSurface,
+=======
+                    color: OpenVtsColors.textPrimary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -847,7 +911,11 @@ class _SectionErrorCard extends StatelessWidget {
               Text(
                 'Unable to load profile',
                 style: OpenVtsTypography.label.copyWith(
+<<<<<<< HEAD
                   color: Theme.of(context).colorScheme.onSurface,
+=======
+                  color: OpenVtsColors.textPrimary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   fontWeight: FontWeight.w800,
                 ),
               ),

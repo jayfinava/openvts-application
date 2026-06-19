@@ -40,16 +40,23 @@ class OpenVtsSupportPlainChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.xs,
         vertical: OpenVtsSpacing.xxs,
       ),
       decoration: BoxDecoration(
+<<<<<<< HEAD
         border: Border.all(
           color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
         ),
+=======
+        border: Border.all(color: OpenVtsColors.border),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       ),
       child: Text(
@@ -57,9 +64,13 @@ class OpenVtsSupportPlainChip extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: OpenVtsTypography.meta.copyWith(
+<<<<<<< HEAD
           color: isDark
               ? OpenVtsColors.darkTextSecondary
               : OpenVtsColors.textSecondary,
+=======
+          color: OpenVtsColors.textSecondary,
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           fontWeight: FontWeight.w600,
         ),
       ),

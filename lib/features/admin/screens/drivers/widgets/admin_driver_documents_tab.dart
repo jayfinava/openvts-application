@@ -342,9 +342,15 @@ class _MetaPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
+<<<<<<< HEAD
         color: color.withOpacity(0.06),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         border: Border.all(color: color.withOpacity(0.22)),
+=======
+        color: color.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+        border: Border.all(color: color.withValues(alpha: 0.22)),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

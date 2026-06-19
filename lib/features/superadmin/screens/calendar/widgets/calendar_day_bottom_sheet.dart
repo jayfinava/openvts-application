@@ -173,7 +173,10 @@ class _EventTypeIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
+=======
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     late final IconData icon;
     late final Color color;
 
@@ -187,14 +190,22 @@ class _EventTypeIcon extends StatelessWidget {
       case 'users':
       default:
         icon = Icons.person_outline_rounded;
+<<<<<<< HEAD
         color = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk;
+=======
+        color = OpenVtsColors.brandInk;
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     }
 
     return Container(
       width: 40,
       height: 40,
       decoration: BoxDecoration(
+<<<<<<< HEAD
         color: color.withValues(alpha: isDark ? 0.15 : 0.08),
+=======
+        color: color.withValues(alpha: 0.08),
+>>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         borderRadius: BorderRadius.circular(14),
       ),
       child: Icon(icon, size: 18, color: color),

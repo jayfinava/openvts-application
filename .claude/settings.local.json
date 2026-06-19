@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat > *)",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(flutter --version)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
+    ]
+  }
+}
