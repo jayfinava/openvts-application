@@ -67,8 +67,7 @@ class _UserUsageLast7DaysWidgetState
         UserDashboardVehicleScopedArgs(
           widgetId: widget.config.id,
           refreshKey: _refreshKey,
-          vehicleId:
-              _selectedVehicleId == 'all' ? null : _selectedVehicleId,
+          vehicleId: _selectedVehicleId == 'all' ? null : _selectedVehicleId,
         ),
       ),
     );
@@ -186,7 +185,8 @@ class _VehicleSelector extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          borderSide: const BorderSide(color: OpenVtsColors.border),
+          borderSide:
+              BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
         ),
       ),
       items: [
@@ -262,7 +262,7 @@ class _UsageChartPainter extends CustomPainter {
     final hourScale = math.max(maxHours, 1);
 
     final gridPaint = Paint()
-      ..color = OpenVtsColors.border
+      ..color = OpenVtsColors.border // Keep as constant in CustomPainter
       ..strokeWidth = 1;
     for (var line = 0; line < 4; line++) {
       final y = top + chartHeight * line / 3;
@@ -274,7 +274,7 @@ class _UsageChartPainter extends CustomPainter {
       ..color = OpenVtsColors.brandInk
       ..style = PaintingStyle.fill;
     final barTrackPaint = Paint()
-      ..color = OpenVtsColors.surface
+      ..color = OpenVtsColors.surface // Keep as constant in CustomPainter
       ..style = PaintingStyle.fill;
     final slot = chartWidth / points.length;
     final barWidth = math.min(18.0, slot * 0.42).toDouble();
@@ -415,9 +415,9 @@ class _SkeletonBlock extends StatelessWidget {
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
     );
   }

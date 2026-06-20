@@ -75,8 +75,7 @@ class _UserWeeklyComparisonWidgetState
         UserDashboardVehicleScopedArgs(
           widgetId: widget.config.id,
           refreshKey: _refreshKey,
-          vehicleId:
-              _selectedVehicleId == 'all' ? null : _selectedVehicleId,
+          vehicleId: _selectedVehicleId == 'all' ? null : _selectedVehicleId,
         ),
       ),
     );
@@ -128,7 +127,8 @@ class _UserWeeklyComparisonWidgetState
           segments: [
             ButtonSegment(
               value: _WeeklyMetric.drivenKm,
-              label: Text('Driven ${unitFormatter.distanceLabel.toUpperCase()}'),
+              label:
+                  Text('Driven ${unitFormatter.distanceLabel.toUpperCase()}'),
             ),
             const ButtonSegment(
               value: _WeeklyMetric.engineHours,
@@ -228,7 +228,8 @@ class _VehicleSelector extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          borderSide: const BorderSide(color: OpenVtsColors.border),
+          borderSide:
+              BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
         ),
       ),
       items: [
@@ -449,9 +450,9 @@ class _SkeletonBlock extends StatelessWidget {
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
     );
   }

@@ -220,7 +220,10 @@ class _UserDayNightComparisonWidgetState
             icon: Icons.dark_mode_outlined,
           )
         else
-          _DayNightChart(points: comparison.points, metric: _metric, unitFormatter: unitFormatter),
+          _DayNightChart(
+              points: comparison.points,
+              metric: _metric,
+              unitFormatter: unitFormatter),
       ],
     );
   }
@@ -273,7 +276,8 @@ class _VehicleSelector extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          borderSide: const BorderSide(color: OpenVtsColors.border),
+          borderSide:
+              BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
         ),
       ),
       items: [
@@ -320,16 +324,16 @@ class _DayWindowLabel extends StatelessWidget {
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.wb_twilight_outlined,
             size: 16,
-            color: OpenVtsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -338,7 +342,7 @@ class _DayWindowLabel extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -350,7 +354,10 @@ class _DayWindowLabel extends StatelessWidget {
 }
 
 class _DayNightChart extends StatelessWidget {
-  const _DayNightChart({required this.points, required this.metric, required this.unitFormatter});
+  const _DayNightChart(
+      {required this.points,
+      required this.metric,
+      required this.unitFormatter});
 
   final List<UserDashboardDayNightPoint> points;
   final _DayNightMetric metric;
@@ -361,7 +368,8 @@ class _DayNightChart extends StatelessWidget {
     return SizedBox(
       height: 170,
       child: CustomPaint(
-        painter: _DayNightChartPainter(points: points, metric: metric, unitFormatter: unitFormatter),
+        painter: _DayNightChartPainter(
+            points: points, metric: metric, unitFormatter: unitFormatter),
         size: Size.infinite,
       ),
     );
@@ -369,7 +377,10 @@ class _DayNightChart extends StatelessWidget {
 }
 
 class _DayNightChartPainter extends CustomPainter {
-  const _DayNightChartPainter({required this.points, required this.metric, required this.unitFormatter});
+  const _DayNightChartPainter(
+      {required this.points,
+      required this.metric,
+      required this.unitFormatter});
 
   final List<UserDashboardDayNightPoint> points;
   final _DayNightMetric metric;
@@ -484,8 +495,8 @@ class _DayNightChartPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _DayNightChartPainter oldDelegate) {
     return oldDelegate.points != points ||
-           oldDelegate.metric != metric ||
-           oldDelegate.unitFormatter.usesMiles != unitFormatter.usesMiles;
+        oldDelegate.metric != metric ||
+        oldDelegate.unitFormatter.usesMiles != unitFormatter.usesMiles;
   }
 }
 

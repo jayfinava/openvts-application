@@ -274,7 +274,8 @@ class _VehicleSelector extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          borderSide: const BorderSide(color: OpenVtsColors.border),
+          borderSide:
+              BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
         ),
       ),
       items: [
@@ -327,7 +328,8 @@ class _SensorSelector extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          borderSide: const BorderSide(color: OpenVtsColors.border),
+          borderSide:
+              BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
         ),
       ),
       items: [
@@ -370,9 +372,9 @@ class _SensorSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Row(
         children: [
@@ -380,14 +382,15 @@ class _SensorSummary extends StatelessWidget {
             width: 30,
             height: 30,
             decoration: BoxDecoration(
-              color: OpenVtsColors.surfaceElevated,
+              color: Theme.of(context).colorScheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: OpenVtsColors.border),
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.sensors_rounded,
               size: 16,
-              color: OpenVtsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -400,7 +403,7 @@ class _SensorSummary extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -410,7 +413,7 @@ class _SensorSummary extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -476,7 +479,12 @@ class _SensorHistoryChart extends ConsumerWidget {
     return SizedBox(
       height: 172,
       child: CustomPaint(
-        painter: _SensorHistoryChartPainter(points: points, unit: unit, formatter: formatter),
+        painter: _SensorHistoryChartPainter(
+          points: points,
+          unit: unit,
+          formatter: formatter,
+          gridColor: Theme.of(context).colorScheme.outlineVariant,
+        ),
         size: Size.infinite,
       ),
     );
@@ -484,11 +492,17 @@ class _SensorHistoryChart extends ConsumerWidget {
 }
 
 class _SensorHistoryChartPainter extends CustomPainter {
-  const _SensorHistoryChartPainter({required this.points, required this.unit, required this.formatter});
+  const _SensorHistoryChartPainter({
+    required this.points,
+    required this.unit,
+    required this.formatter,
+    required this.gridColor,
+  });
 
   final List<UserDashboardSensorHistoryPoint> points;
   final String unit;
   final AppDateFormatter formatter;
+  final Color gridColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -518,7 +532,7 @@ class _SensorHistoryChartPainter extends CustomPainter {
         : 1;
 
     final gridPaint = Paint()
-      ..color = OpenVtsColors.border
+      ..color = gridColor
       ..strokeWidth = 1;
     for (var line = 0; line < 4; line++) {
       final y = top + chartHeight * line / 3;
@@ -660,7 +674,9 @@ class _SensorHistoryChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _SensorHistoryChartPainter oldDelegate) {
-    return oldDelegate.points != points || oldDelegate.unit != unit || oldDelegate.formatter != formatter;
+    return oldDelegate.points != points ||
+        oldDelegate.unit != unit ||
+        oldDelegate.formatter != formatter;
   }
 }
 
