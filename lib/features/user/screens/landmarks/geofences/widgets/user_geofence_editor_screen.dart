@@ -591,9 +591,9 @@ class _ModeToggleBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.white),
         boxShadow: const <BoxShadow>[
           BoxShadow(
             color: Color(0x14000000),
@@ -715,9 +715,9 @@ class _EditorMapControls extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.white),
         boxShadow: const <BoxShadow>[
           BoxShadow(
             color: Color(0x14000000),
@@ -811,7 +811,7 @@ class _ControlButton extends StatelessWidget {
             icon,
             size: 16,
             color: disabled
-                ? OpenVtsColors.textTertiary
+                ? Theme.of(context).colorScheme.outline
                 : Theme.of(context).colorScheme.onSurface,
           ),
         ),
@@ -1157,12 +1157,11 @@ class _NudgeBtn extends StatelessWidget {
           width: 30,
           height: 30,
           decoration: BoxDecoration(
-            color: OpenVtsColors.surface,
+            color: OpenVtsColors.brandInk,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-            border: Border.all(color: OpenVtsColors.border),
+            border: Border.all(color: OpenVtsColors.white),
           ),
-          child: Icon(icon,
-              size: 14, color: Theme.of(context).colorScheme.onSurface),
+          child: Icon(icon, size: 14, color: OpenVtsColors.white),
         ),
       ),
     );
@@ -1200,9 +1199,9 @@ class _SearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.white),
         boxShadow: const [
           BoxShadow(
             color: Color(0x14000000),
@@ -1219,12 +1218,14 @@ class _SearchBar extends StatelessWidget {
             child: TextField(
               controller: controller,
               onChanged: (_) => onSearch(),
-              style: OpenVtsTypography.body,
+              style: OpenVtsTypography.body.copyWith(
+                color: OpenVtsColors.white,
+              ),
               decoration: InputDecoration(
                 isDense: true,
                 hintText: 'Search place...',
                 hintStyle: OpenVtsTypography.body.copyWith(
-                  color: OpenVtsColors.textTertiary,
+                  color: OpenVtsColors.white.withValues(alpha: 0.6),
                 ),
                 prefixIcon: Icon(
                   Icons.search,
@@ -1247,7 +1248,8 @@ class _SearchBar extends StatelessWidget {
                       )
                     : controller.text.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.close, size: 18),
+                            icon: const Icon(Icons.close,
+                                size: 18, color: OpenVtsColors.white),
                             onPressed: () {
                               controller.clear();
                               onSearch();
@@ -1256,6 +1258,7 @@ class _SearchBar extends StatelessWidget {
                         : null,
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                suffixIconColor: OpenVtsColors.white,
               ),
             ),
           ),
@@ -1264,7 +1267,8 @@ class _SearchBar extends StatelessWidget {
               constraints: const BoxConstraints(maxHeight: 200),
               decoration: BoxDecoration(
                 border: Border(
-                  top: BorderSide(color: OpenVtsColors.border),
+                  top: BorderSide(
+                      color: OpenVtsColors.white.withValues(alpha: 0.2)),
                 ),
               ),
               child: ListView.builder(
@@ -1284,7 +1288,7 @@ class _SearchBar extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.body.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
+                          color: OpenVtsColors.white,
                         ),
                       ),
                     ),
