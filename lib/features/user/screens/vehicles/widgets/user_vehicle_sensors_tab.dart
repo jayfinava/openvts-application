@@ -400,8 +400,7 @@ class _SensorCard extends StatelessWidget {
                 icon: Icons.schedule_rounded,
                 label: sensor.lastUpdated == null
                     ? 'Not updated'
-                    : formatter
-                        .formatDateTime(sensor.lastUpdated!.toLocal()),
+                    : formatter.formatDateTime(sensor.lastUpdated!.toLocal()),
               ),
               if (sensor.code.trim().isNotEmpty)
                 _MetaPill(icon: Icons.code_rounded, label: sensor.code.trim()),

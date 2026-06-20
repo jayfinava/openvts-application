@@ -59,7 +59,9 @@ class UserVehicleDetailsTabView extends ConsumerWidget {
               value: _display(vehicle.vehicleType?.name),
             ),
             _InfoRow(label: 'GMT Offset', value: _display(vehicle.gmtOffset)),
-            _InfoRow(label: 'Created At', value: _dateText(vehicle.createdAt, formatter)),
+            _InfoRow(
+                label: 'Created At',
+                value: _dateText(vehicle.createdAt, formatter)),
           ],
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
@@ -192,7 +194,7 @@ class _MetadataCard extends StatelessWidget {
             Text(
               'No metadata',
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
               ),
             )
@@ -218,13 +220,14 @@ class _CardHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
+        Icon(icon,
+            size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Text(
             title,
             style: OpenVtsTypography.label.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -251,7 +254,7 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textTertiary,
+                color: Theme.of(context).colorScheme.outline,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -265,7 +268,7 @@ class _InfoRow extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -296,9 +299,9 @@ class _CompactActionButton extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: isLoading ? null : onPressed,
         style: OutlinedButton.styleFrom(
-          backgroundColor: OpenVtsColors.white,
-          foregroundColor: OpenVtsColors.textPrimary,
-          side: const BorderSide(color: OpenVtsColors.border),
+          backgroundColor: _softSurfaceColor(context),
+          foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+          side: BorderSide(color: _softBorderColor(context)),
           padding: const EdgeInsets.symmetric(horizontal: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -351,7 +354,7 @@ class _SectionStateCard extends StatelessWidget {
                 Text(
                   'Loading $title',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -409,4 +412,16 @@ String _titleCase(String value) {
           ? part
           : '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}')
       .join(' ');
+}
+
+Color _softSurfaceColor(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.dark
+      ? OpenVtsColors.darkSurface
+      : OpenVtsColors.background;
+}
+
+Color _softBorderColor(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.dark
+      ? OpenVtsColors.darkBorder
+      : OpenVtsColors.border;
 }

@@ -203,12 +203,14 @@ class _FilterChip extends StatelessWidget {
       label: Text(label),
       onSelected: (_) => onTap(),
       labelStyle: OpenVtsTypography.meta.copyWith(
-        color: selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
+        color: selected
+            ? OpenVtsColors.white
+            : Theme.of(context).colorScheme.onSurfaceVariant,
         fontWeight: FontWeight.w800,
       ),
-      selectedColor: OpenVtsColors.brandInk,
-      backgroundColor: OpenVtsColors.white,
-      side: const BorderSide(color: OpenVtsColors.border),
+      selectedColor: _primaryInkColor(context),
+      backgroundColor: _softSurfaceColor(context),
+      side: BorderSide(color: _softBorderColor(context)),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       ),
@@ -230,6 +232,13 @@ class _TypeFilterButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selected = _selectedOption;
+    final isSelected = value != null;
+    final backgroundColor =
+        isSelected ? _primaryInkColor(context) : _softSurfaceColor(context);
+    final textColor = isSelected
+        ? OpenVtsColors.white
+        : Theme.of(context).colorScheme.onSurfaceVariant;
+
     return PopupMenuButton<String?>(
       tooltip: 'Vehicle type filter',
       enabled: options.isNotEmpty,
@@ -249,9 +258,9 @@ class _TypeFilterButton extends StatelessWidget {
         height: 34,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-          color: value == null ? OpenVtsColors.white : OpenVtsColors.brandInk,
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-          border: Border.all(color: OpenVtsColors.border),
+          border: Border.all(color: _softBorderColor(context)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -259,17 +268,13 @@ class _TypeFilterButton extends StatelessWidget {
             Icon(
               Icons.category_outlined,
               size: 15,
-              color: value == null
-                  ? OpenVtsColors.textPrimary
-                  : OpenVtsColors.white,
+              color: textColor,
             ),
             const SizedBox(width: 6),
             Text(
               selected?.label ?? 'All Types',
               style: OpenVtsTypography.meta.copyWith(
-                color: value == null
-                    ? OpenVtsColors.textPrimary
-                    : OpenVtsColors.white,
+                color: textColor,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -277,9 +282,7 @@ class _TypeFilterButton extends StatelessWidget {
             Icon(
               Icons.expand_more_rounded,
               size: 16,
-              color: value == null
-                  ? OpenVtsColors.textPrimary
-                  : OpenVtsColors.white,
+              color: textColor,
             ),
           ],
         ),
@@ -366,4 +369,22 @@ String _statusFilterLabel(UserVehicleStatusFilter filter) {
     UserVehicleStatusFilter.inactive => 'Inactive',
     UserVehicleStatusFilter.licenseBlocked => 'License Blocked',
   };
+}
+
+Color _softSurfaceColor(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.dark
+      ? OpenVtsColors.darkSurface
+      : OpenVtsColors.background;
+}
+
+Color _softBorderColor(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.dark
+      ? OpenVtsColors.darkBorder
+      : OpenVtsColors.border;
+}
+
+Color _primaryInkColor(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.dark
+      ? OpenVtsColors.darkTextPrimary
+      : OpenVtsColors.brandInk;
 }

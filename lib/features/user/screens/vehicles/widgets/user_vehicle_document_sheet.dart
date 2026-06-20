@@ -14,6 +14,7 @@ import '../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../controllers/user_vehicle_details_controller.dart';
 import '../../../models/user_vehicle_model.dart';
 import '../../../models/user_vehicle_state.dart';
+
 const int _maxDocumentBytes = 10 * 1024 * 1024;
 const List<String> _blockedDocumentExtensions = <String>[
   'exe',
