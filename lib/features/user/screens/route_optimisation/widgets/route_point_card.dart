@@ -53,9 +53,9 @@ class RoutePointCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor =
-        isSelected ? OpenVtsColors.brandInk : OpenVtsColors.border;
+        isSelected ? OpenVtsColors.brandInk : Colors.white;
     return Material(
-      color: OpenVtsColors.surfaceElevated,
+      color: Colors.black,
       borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       child: InkWell(
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
@@ -92,7 +92,9 @@ class RoutePointCard extends StatelessWidget {
                                 point.name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: OpenVtsTypography.label,
+                                style: OpenVtsTypography.label.copyWith(
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 6),
@@ -106,7 +108,7 @@ class RoutePointCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: OpenVtsTypography.meta.copyWith(
-                            color: OpenVtsColors.textSecondary,
+                            color: Colors.white,
                           ),
                         ),
                       ],
@@ -230,15 +232,15 @@ class _SourceChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: Colors.white),
       ),
       child: Text(
         source.label,
         style: OpenVtsTypography.meta.copyWith(
           fontSize: 10,
-          color: OpenVtsColors.textSecondary,
+          color: Colors.white,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -338,14 +340,15 @@ class _MoveButton extends StatelessWidget {
         height: 18,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: enabled ? OpenVtsColors.surface : Colors.transparent,
+          color: enabled ? Colors.black : Colors.transparent,
           borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+          border: enabled ? Border.all(color: Colors.white) : null,
         ),
         child: Icon(
           icon,
           size: 14,
           color:
-              enabled ? OpenVtsColors.textPrimary : OpenVtsColors.textTertiary,
+              enabled ? Colors.white : OpenVtsColors.textTertiary,
         ),
       ),
     );
@@ -372,7 +375,7 @@ class _RowAction extends StatelessWidget {
         ? OpenVtsColors.textTertiary
         : danger
             ? OpenVtsColors.error
-            : OpenVtsColors.textSecondary;
+            : Colors.white;
     return InkWell(
       borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
       onTap: onTap,
@@ -386,7 +389,7 @@ class _RowAction extends StatelessWidget {
               color: enabled
                   ? (danger
                       ? OpenVtsColors.error.withValues(alpha: 0.4)
-                      : OpenVtsColors.border)
+                      : Colors.white)
                   : OpenVtsColors.border,
             ),
           ),

@@ -192,9 +192,9 @@ class _PanelShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: Colors.white),
       ),
       clipBehavior: Clip.antiAlias,
       child: child,

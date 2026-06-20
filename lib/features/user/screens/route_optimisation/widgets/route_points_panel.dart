@@ -157,14 +157,14 @@ class _Header extends StatelessWidget {
               vertical: 2,
             ),
             decoration: BoxDecoration(
-              color: OpenVtsColors.surface,
+              color: Colors.black,
               borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-              border: Border.all(color: OpenVtsColors.border),
+              border: Border.all(color: Colors.white),
             ),
             child: Text(
               '$count',
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textPrimary,
+                color: Colors.white,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -188,8 +188,8 @@ class _RoundTripPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = active ? OpenVtsColors.brandInk : OpenVtsColors.surfaceElevated;
-    final fg = active ? OpenVtsColors.white : OpenVtsColors.textSecondary;
+    final bg = active ? OpenVtsColors.brandInk : Colors.black;
+    final fg = active ? Colors.black : Colors.white;
     return Material(
       color: bg,
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -201,7 +201,7 @@ class _RoundTripPill extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
             border: Border.all(
-              color: active ? OpenVtsColors.brandInk : OpenVtsColors.border,
+              color: active ? OpenVtsColors.brandInk : Colors.white,
             ),
           ),
           child: Row(
@@ -299,12 +299,13 @@ class _PrimaryAction extends StatelessWidget {
       icon: Icon(icon, size: 14),
       label: Text(label, style: OpenVtsTypography.label),
       style: ElevatedButton.styleFrom(
-        backgroundColor: OpenVtsColors.brandInk,
-        foregroundColor: OpenVtsColors.white,
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
         minimumSize: const Size(0, 36),
         padding: const EdgeInsets.symmetric(horizontal: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.button),
+          side: const BorderSide(color: Colors.white),
         ),
       ),
     );
@@ -328,8 +329,8 @@ class _SecondaryAction extends StatelessWidget {
       icon: Icon(icon, size: 14),
       label: Text(label, style: OpenVtsTypography.label),
       style: OutlinedButton.styleFrom(
-        foregroundColor: OpenVtsColors.textPrimary,
-        side: const BorderSide(color: OpenVtsColors.border),
+        foregroundColor: Colors.white,
+        side: const BorderSide(color: Colors.white),
         minimumSize: const Size(0, 36),
         padding: const EdgeInsets.symmetric(horizontal: 12),
         shape: RoundedRectangleBorder(
@@ -357,7 +358,7 @@ class _SubtleAction extends StatelessWidget {
       icon: Icon(icon, size: 14),
       label: Text(label, style: OpenVtsTypography.label),
       style: TextButton.styleFrom(
-        foregroundColor: OpenVtsColors.textSecondary,
+        foregroundColor: Colors.white,
         minimumSize: const Size(0, 36),
         padding: const EdgeInsets.symmetric(horizontal: 8),
       ),

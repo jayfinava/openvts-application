@@ -55,9 +55,9 @@ class RouteOptimisationMobileTabs extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: Colors.white),
       ),
       child: Row(
         children: [
@@ -97,7 +97,7 @@ class _Segment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bg = selected ? OpenVtsColors.brandInk : Colors.transparent;
-    final fg = selected ? OpenVtsColors.white : OpenVtsColors.textSecondary;
+    final fg = selected ? Colors.black : Colors.white;
 
     return Material(
       color: bg,
@@ -147,10 +147,10 @@ class _Badge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDot = text == '•';
-    final fg = selected ? OpenVtsColors.white : OpenVtsColors.textSecondary;
+    final fg = selected ? Colors.black : Colors.white;
     final bg = selected
-        ? OpenVtsColors.white.withValues(alpha: 0.18)
-        : OpenVtsColors.surface;
+        ? Colors.black.withValues(alpha: 0.18)
+        : Colors.transparent;
     return Container(
       padding: isDot
           ? const EdgeInsets.all(0)

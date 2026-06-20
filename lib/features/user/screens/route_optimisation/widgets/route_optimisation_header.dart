@@ -30,9 +30,9 @@ class RouteOptimisationHeader extends StatelessWidget {
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: Colors.white),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -45,14 +45,14 @@ class RouteOptimisationHeader extends StatelessWidget {
                 Text(
                   'Plan multi-stop routes',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   stopsSummary,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Colors.white,
                   ),
                 ),
               ],

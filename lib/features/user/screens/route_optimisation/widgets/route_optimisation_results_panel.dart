@@ -87,9 +87,9 @@ class _OptimisedOrderList extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: Colors.white),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -107,7 +107,7 @@ class _OptimisedOrderList extends StatelessWidget {
                 Text(
                   'Optimised order',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Colors.white,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.4,
                   ),
@@ -120,14 +120,14 @@ class _OptimisedOrderList extends StatelessWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: OpenVtsColors.surfaceElevated,
+                      color: Colors.black,
                       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                      border: Border.all(color: OpenVtsColors.border),
+                      border: Border.all(color: Colors.white),
                     ),
                     child: Text(
                       'Round trip',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -202,7 +202,7 @@ class _OrderRow extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.label.copyWith(
-                          color: OpenVtsColors.textPrimary,
+                          color: Colors.white,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -229,7 +229,7 @@ class _OrderRow extends StatelessWidget {
                   '${point.lat.toStringAsFixed(5)}, '
                   '${point.lon.toStringAsFixed(5)}',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textTertiary,
+                    color: Colors.white,
                   ),
                 ),
               ],
@@ -251,14 +251,14 @@ class _IndexBadge extends StatelessWidget {
       height: 22,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: Colors.white),
       ),
       child: Text(
         '$index',
         style: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.textPrimary,
+          color: Colors.white,
           fontWeight: FontWeight.w700,
           fontSize: 11,
         ),
@@ -427,17 +427,17 @@ class _ActionButton extends StatelessWidget {
     final Color fg;
     final Color border;
     if (primary) {
-      bg = enabled ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-      fg = enabled ? OpenVtsColors.white : OpenVtsColors.textTertiary;
-      border = bg;
+      bg = enabled ? OpenVtsColors.brandInk : Colors.black;
+      fg = enabled ? Colors.black : Colors.white;
+      border = enabled ? OpenVtsColors.brandInk : Colors.white;
     } else if (subtle) {
       bg = Colors.transparent;
-      fg = enabled ? OpenVtsColors.textSecondary : OpenVtsColors.textTertiary;
+      fg = enabled ? Colors.white : OpenVtsColors.textTertiary;
       border = Colors.transparent;
     } else {
-      bg = OpenVtsColors.surface;
-      fg = enabled ? OpenVtsColors.textPrimary : OpenVtsColors.textTertiary;
-      border = OpenVtsColors.border;
+      bg = Colors.black;
+      fg = enabled ? Colors.white : OpenVtsColors.textTertiary;
+      border = Colors.white;
     }
 
     return SizedBox(
