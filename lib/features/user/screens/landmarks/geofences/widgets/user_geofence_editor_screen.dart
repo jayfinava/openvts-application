@@ -830,8 +830,8 @@ class _BottomEditorPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
-        border: Border(top: BorderSide(color: OpenVtsColors.border)),
+        color: OpenVtsColors.brandInk,
+        border: Border(top: BorderSide(color: OpenVtsColors.white)),
       ),
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.md,
@@ -846,7 +846,7 @@ class _BottomEditorPanel extends StatelessWidget {
           Text(
             _hintFor(state.editorMode),
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.white,
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
@@ -947,10 +947,15 @@ class _CircleControlsState extends State<_CircleControls> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                style: OpenVtsTypography.body,
+                style: OpenVtsTypography.body.copyWith(
+                  color: OpenVtsColors.white,
+                ),
                 decoration: InputDecoration(
                   isDense: true,
                   suffixText: 'm',
+                  suffixStyle: OpenVtsTypography.body.copyWith(
+                    color: OpenVtsColors.white,
+                  ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 8,
                     vertical: 8,
@@ -958,7 +963,22 @@ class _CircleControlsState extends State<_CircleControls> {
                   enabled: widget.state.circleCenter != null,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                    borderSide: const BorderSide(color: OpenVtsColors.border),
+                    borderSide: const BorderSide(
+                      color: OpenVtsColors.white,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(OpenVtsRadius.button),
+                    borderSide: const BorderSide(
+                      color: OpenVtsColors.white,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(OpenVtsRadius.button),
+                    borderSide: const BorderSide(
+                      color: OpenVtsColors.white,
+                      width: 1.4,
+                    ),
                   ),
                 ),
                 onSubmitted: (text) {
@@ -1030,16 +1050,35 @@ class _LineControlsState extends State<_LineControls> {
           child: TextField(
             controller: _tolerance,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            style: OpenVtsTypography.body,
+            style: OpenVtsTypography.body.copyWith(
+              color: OpenVtsColors.white,
+            ),
             decoration: InputDecoration(
               isDense: true,
               labelText: 'Tolerance',
+              labelStyle: OpenVtsTypography.body.copyWith(
+                color: OpenVtsColors.white,
+              ),
               suffixText: 'm',
+              suffixStyle: OpenVtsTypography.body.copyWith(
+                color: OpenVtsColors.white,
+              ),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(color: OpenVtsColors.border),
+                borderSide: const BorderSide(color: OpenVtsColors.white),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(OpenVtsRadius.button),
+                borderSide: const BorderSide(color: OpenVtsColors.white),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(OpenVtsRadius.button),
+                borderSide: const BorderSide(
+                  color: OpenVtsColors.white,
+                  width: 1.4,
+                ),
               ),
             ),
             onSubmitted: (text) {
@@ -1074,7 +1113,7 @@ class _VertexControls extends StatelessWidget {
             Text(
               '$count point${count == 1 ? '' : 's'}',
               style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: OpenVtsColors.white,
               ),
             ),
             const Spacer(),
@@ -1087,6 +1126,9 @@ class _VertexControls extends StatelessWidget {
                     vertical: 0,
                   ),
                   minimumSize: const Size(0, 32),
+                  side: const BorderSide(
+                    color: OpenVtsColors.error,
+                  ),
                 ),
                 onPressed: () => controller.removePoint(selected),
                 icon: const Icon(Icons.delete_outline, size: 14),
@@ -1126,7 +1168,7 @@ class _NudgeRow extends StatelessWidget {
           Text(
             'Nudge (${_stepM.toInt()} m)',
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.white,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
