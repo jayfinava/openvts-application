@@ -323,12 +323,12 @@ class _UserPoiFormBodyState extends ConsumerState<_UserPoiFormBody> {
           TextButton(
             onPressed: _submitting ? null : () => Navigator.of(context).pop(),
             style: TextButton.styleFrom(
-              foregroundColor: OpenVtsColors.textSecondary,
+              foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             child: Text(
               'Cancel',
               style: OpenVtsTypography.label.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -343,7 +343,7 @@ class _UserPoiFormBodyState extends ConsumerState<_UserPoiFormBody> {
       hintText: hint,
       suffixText: suffix,
       hintStyle: OpenVtsTypography.body.copyWith(
-        color: OpenVtsColors.textTertiary,
+        color: Theme.of(context).colorScheme.outline,
       ),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
@@ -400,7 +400,7 @@ class _Field extends StatelessWidget {
             Text(
               label,
               style: OpenVtsTypography.label.copyWith(
-                color: OpenVtsColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             if (required) ...[
@@ -465,7 +465,7 @@ class _LocationCard extends StatelessWidget {
                 Text(
                   'Location',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -477,8 +477,8 @@ class _LocationCard extends StatelessWidget {
                           '${tolerance != null && tolerance! > 0 ? ' • ±${tolerance!.toStringAsFixed(0)} m' : ''}',
                   style: OpenVtsTypography.meta.copyWith(
                     color: coordinates == null
-                        ? OpenVtsColors.textTertiary
-                        : OpenVtsColors.textSecondary,
+                        ? Theme.of(context).colorScheme.outline
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -487,7 +487,7 @@ class _LocationCard extends StatelessWidget {
           TextButton(
             onPressed: onPick,
             style: TextButton.styleFrom(
-              foregroundColor: OpenVtsColors.brandInk,
+              foregroundColor: Theme.of(context).colorScheme.primary,
               padding: const EdgeInsets.symmetric(
                 horizontal: OpenVtsSpacing.sm,
               ),
@@ -495,7 +495,7 @@ class _LocationCard extends StatelessWidget {
             child: Text(
               coordinates == null ? 'Pick on map' : 'Edit on map',
               style: OpenVtsTypography.label.copyWith(
-                color: OpenVtsColors.brandInk,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -533,7 +533,7 @@ class _ActiveToggle extends StatelessWidget {
                 Text(
                   'Active',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 Text(
@@ -541,7 +541,7 @@ class _ActiveToggle extends StatelessWidget {
                       ? 'Visible on live map and proximity alerts.'
                       : 'Hidden from alerts; stays in the list.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],

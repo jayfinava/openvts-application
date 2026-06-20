@@ -348,7 +348,7 @@ class _FieldLabel extends StatelessWidget {
       child: Text(
         text,
         style: OpenVtsTypography.label.copyWith(
-          color: OpenVtsColors.textPrimary,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );
@@ -409,7 +409,9 @@ class _TypePill extends StatelessWidget {
         child: Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
+            color: selected
+                ? OpenVtsColors.white
+                : Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -454,7 +456,7 @@ class _GeometrySummaryCard extends StatelessWidget {
             child: Icon(
               _iconFor(type),
               size: 14,
-              color: OpenVtsColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -465,7 +467,7 @@ class _GeometrySummaryCard extends StatelessWidget {
                 Text(
                   geodata == null ? 'No geometry yet' : 'Geometry ready',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -580,7 +582,7 @@ class _ActiveToggle extends StatelessWidget {
                 Text(
                   'Active',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
