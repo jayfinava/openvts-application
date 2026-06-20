@@ -445,13 +445,44 @@ class _ActiveToggle extends StatelessWidget {
               ],
             ),
           ),
-          Switch.adaptive(
-            value: value,
-            onChanged: onChanged,
-            activeThumbColor: OpenVtsColors.white,
-            activeTrackColor: OpenVtsColors.brandInk.withValues(alpha: 0.5),
-            inactiveThumbColor: OpenVtsColors.white,
-            inactiveTrackColor: const Color(0xFF555555),
+          GestureDetector(
+            onTap: () => onChanged(!value),
+            child: Container(
+              width: 50,
+              height: 28,
+              decoration: BoxDecoration(
+                color: value ? OpenVtsColors.white : const Color(0xFF555555),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: OpenVtsColors.white, width: 1),
+              ),
+              child: Row(
+                children: [
+                  if (!value)
+                    Expanded(
+                      child: Container(),
+                    ),
+                  Container(
+                    width: 24,
+                    height: 24,
+                    margin: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: OpenVtsColors.brandInk,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: OpenVtsColors.white, width: 1),
+                    ),
+                    child: const Icon(
+                      Icons.check,
+                      size: 14,
+                      color: OpenVtsColors.white,
+                    ),
+                  ),
+                  if (value)
+                    Expanded(
+                      child: Container(),
+                    ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
