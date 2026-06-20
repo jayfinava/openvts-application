@@ -248,7 +248,7 @@ class _DriverAvatar extends StatelessWidget {
       child: Text(
         _initials(name),
         style: OpenVtsTypography.label.copyWith(
-          color: _primaryInkColor(context),
+          color: Theme.of(context).colorScheme.onSurface,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -314,7 +314,7 @@ class _IdentityCard extends StatelessWidget {
                     Text(
                       driver.name,
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -513,10 +513,4 @@ Color _softBorderColor(BuildContext context) {
   return Theme.of(context).brightness == Brightness.dark
       ? OpenVtsColors.darkBorder
       : OpenVtsColors.border;
-}
-
-Color _primaryInkColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextPrimary
-      : OpenVtsColors.brandInk;
 }

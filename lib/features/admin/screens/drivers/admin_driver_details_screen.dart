@@ -292,14 +292,21 @@ class _SummaryCard extends StatelessWidget {
                 height: 56,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: OpenVtsColors.background,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? OpenVtsColors.darkSurface
+                      : OpenVtsColors.background,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                  border: Border.all(color: OpenVtsColors.border),
+                  border: Border.all(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? OpenVtsColors.darkBorder
+                        : OpenVtsColors.border,
+                  ),
                 ),
                 child: Text(
                   _initials(name),
                   style: OpenVtsTypography.label.copyWith(
                     fontWeight: FontWeight.w700,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -340,7 +347,12 @@ class _SummaryCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
-          const Divider(height: 1, color: OpenVtsColors.border),
+          Divider(
+            height: 1,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? OpenVtsColors.darkBorder
+                : OpenVtsColors.border,
+          ),
           const SizedBox(height: OpenVtsSpacing.sm),
           _SummaryEmailRow(
             email: email,
@@ -449,7 +461,7 @@ class _SummaryEmailRow extends StatelessWidget {
               child: Text(
                 displayEmail,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w500,
                   height: 1.3,
                 ),
@@ -505,7 +517,7 @@ class _SummaryRow extends StatelessWidget {
           child: Text(
             value.trim().isEmpty ? '—' : value,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w500,
               height: 1.3,
             ),
