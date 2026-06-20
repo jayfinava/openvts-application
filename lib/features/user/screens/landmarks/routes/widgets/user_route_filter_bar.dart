@@ -104,10 +104,10 @@ class _SearchFieldState extends State<_SearchField> {
           hintStyle: OpenVtsTypography.body.copyWith(
             color: OpenVtsColors.textTertiary,
           ),
-          prefixIcon: const Icon(
+          prefixIcon: Icon(
             Icons.search,
             size: 18,
-            color: OpenVtsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           suffixIcon: widget.value.isEmpty
               ? null
@@ -118,9 +118,9 @@ class _SearchFieldState extends State<_SearchField> {
                     _controller.clear();
                     widget.onChanged('');
                   },
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.close,
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
           contentPadding: const EdgeInsets.symmetric(
@@ -154,11 +154,14 @@ class _FilterGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(
+          color: isDark ? OpenVtsColors.white : OpenVtsColors.brandInk,
+        ),
       ),
       padding: const EdgeInsets.all(2),
       child: Row(
@@ -197,13 +200,17 @@ class _FilterChip extends StatelessWidget {
           vertical: 6,
         ),
         decoration: BoxDecoration(
-          color: selected ? OpenVtsColors.brandInk : Colors.transparent,
+          color: selected
+              ? Theme.of(context).colorScheme.surface
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         ),
         child: Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
+            color: selected
+                ? Theme.of(context).colorScheme.onSurface
+                : OpenVtsColors.white,
             fontWeight: FontWeight.w600,
           ),
         ),
