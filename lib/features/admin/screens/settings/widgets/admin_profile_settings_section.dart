@@ -412,11 +412,11 @@ class _ProfileHeaderCard extends ConsumerWidget {
                   children: [
                     Text(
                       name.isNotEmpty ? name : 'Admin',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: OpenVtsTypography.primaryFontFamily,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: OpenVtsColors.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                         height: 1.2,
                       ),
                       maxLines: 1,
@@ -490,7 +490,8 @@ class _ProfileHeaderCard extends ConsumerWidget {
           ],
           if (profile.credits != null) ...[
             const SizedBox(height: OpenVtsSpacing.md),
-            const Divider(height: 1, color: OpenVtsColors.border),
+            Divider(
+                height: 1, color: Theme.of(context).colorScheme.outlineVariant),
             const SizedBox(height: OpenVtsSpacing.md),
             Container(
               padding: const EdgeInsets.symmetric(
@@ -498,9 +499,10 @@ class _ProfileHeaderCard extends ConsumerWidget {
                 vertical: OpenVtsSpacing.sm,
               ),
               decoration: BoxDecoration(
-                color: OpenVtsColors.surface,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                border: Border.all(color: OpenVtsColors.border),
+                border: Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant),
               ),
               child: Row(
                 children: [
@@ -513,23 +515,24 @@ class _ProfileHeaderCard extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
+                        Text(
                           'Credits',
                           style: TextStyle(
                             fontFamily: OpenVtsTypography.primaryFontFamily,
                             fontSize: 11,
-                            color: OpenVtsColors.textTertiary,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                             height: 1.1,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           profile.credits!.toStringAsFixed(0),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: OpenVtsTypography.primaryFontFamily,
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: OpenVtsColors.textPrimary,
+                            color: Theme.of(context).colorScheme.onSurface,
                             height: 1.1,
                           ),
                           maxLines: 1,
@@ -632,16 +635,16 @@ class _AvatarWithEdit extends StatelessWidget {
                   width: 22,
                   height: 22,
                   decoration: BoxDecoration(
-                    color: OpenVtsColors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     border: Border.all(
-                      color: OpenVtsColors.border,
+                      color: Theme.of(context).colorScheme.outlineVariant,
                     ),
                     borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.camera_alt_rounded,
                     size: 12,
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -686,9 +689,9 @@ class _VerificationCard extends StatelessWidget {
             busy: isRequestingEmailOtp,
             onVerify: onVerifyEmail,
           ),
-          const Divider(
+          Divider(
             height: OpenVtsSpacing.md,
-            color: OpenVtsColors.border,
+            color: Theme.of(context).colorScheme.outlineVariant,
           ),
           _VerificationRow(
             icon: Icons.chat_outlined,
@@ -748,10 +751,10 @@ class _VerificationRow extends StatelessWidget {
               const SizedBox(height: 1),
               Text(
                 value.isNotEmpty ? value : '—',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: OpenVtsTypography.primaryFontFamily,
                   fontSize: 12.5,
-                  color: OpenVtsColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -899,10 +902,10 @@ class _CompanyCard extends StatelessWidget {
         child: IconButton(
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-          icon: const Icon(
+          icon: Icon(
             Icons.edit_outlined,
             size: 16,
-            color: OpenVtsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           tooltip: 'Edit company',
           onPressed: onEditCompany,
@@ -1001,10 +1004,10 @@ class _SectionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: OpenVtsColors.textTertiary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     letterSpacing: 0.4,
                   ),
                 ),
@@ -1013,7 +1016,8 @@ class _SectionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
-          const Divider(height: 1, color: OpenVtsColors.border),
+          Divider(
+              height: 1, color: Theme.of(context).colorScheme.outlineVariant),
           const SizedBox(height: OpenVtsSpacing.xs),
           ...children,
         ],
@@ -1044,16 +1048,17 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
+          Icon(icon,
+              size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
           const SizedBox(width: 8),
           SizedBox(
             width: 100,
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: OpenVtsColors.textTertiary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -1061,10 +1066,10 @@ class _InfoRow extends StatelessWidget {
           Expanded(
             child: Text(
               value.trim().isEmpty ? '—' : value.trim(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: OpenVtsColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -1109,14 +1114,15 @@ class _EmailSubscriptionCard extends StatelessWidget {
             width: 30,
             height: 30,
             decoration: BoxDecoration(
-              color: OpenVtsColors.surface,
-              border: Border.all(color: OpenVtsColors.border),
+              color: Theme.of(context).colorScheme.surface,
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant),
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.notifications_none_rounded,
               size: 16,
-              color: OpenVtsColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -1196,14 +1202,15 @@ class _LogoutCard extends StatelessWidget {
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: OpenVtsColors.surface,
-                  border: Border.all(color: OpenVtsColors.border),
+                  color: Theme.of(context).colorScheme.surface,
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant),
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.logout_rounded,
                   size: 16,
-                  color: OpenVtsColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
@@ -1265,9 +1272,10 @@ class _BottomSheetShell extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.all(OpenVtsSpacing.sm),
           decoration: BoxDecoration(
-            color: OpenVtsColors.surfaceElevated,
+            color: Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-            border: Border.all(color: OpenVtsColors.border),
+            border:
+                Border.all(color: Theme.of(context).colorScheme.outlineVariant),
           ),
           child: ConstrainedBox(
             constraints: BoxConstraints(
@@ -1788,11 +1796,11 @@ class _DropdownField<T> extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: OpenVtsTypography.primaryFontFamily,
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: OpenVtsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             letterSpacing: 0.3,
           ),
         ),
@@ -1805,14 +1813,16 @@ class _DropdownField<T> extends StatelessWidget {
               vertical: 10,
             ),
             filled: true,
-            fillColor: OpenVtsColors.surface,
+            fillColor: Theme.of(context).colorScheme.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              borderSide: const BorderSide(color: OpenVtsColors.border),
+              borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.outlineVariant),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              borderSide: const BorderSide(color: OpenVtsColors.border),
+              borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.outlineVariant),
             ),
             suffixIcon: busy
                 ? const Padding(
@@ -1841,7 +1851,9 @@ class _DropdownField<T> extends StatelessWidget {
                               style: TextStyle(
                                 fontFamily: OpenVtsTypography.primaryFontFamily,
                                 fontSize: 12.5,
-                                color: Theme.of(context).colorScheme.outline,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -1853,18 +1865,18 @@ class _DropdownField<T> extends StatelessWidget {
                   isDense: true,
                   onChanged: enabled ? onChanged : null,
                   items: safeItems,
-                  hint: const Text(
+                  hint: Text(
                     'Select',
                     style: TextStyle(
                       fontFamily: OpenVtsTypography.primaryFontFamily,
                       fontSize: 12.5,
-                      color: OpenVtsColors.textTertiary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 12.5,
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 );
               },
@@ -2417,18 +2429,20 @@ class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
                 decoration: InputDecoration(
                   counterText: '',
                   filled: true,
-                  fillColor: OpenVtsColors.surface,
+                  fillColor: Theme.of(context).colorScheme.surface,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 14,
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                    borderSide: const BorderSide(color: OpenVtsColors.border),
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.outlineVariant),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                    borderSide: const BorderSide(color: OpenVtsColors.border),
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.outlineVariant),
                   ),
                 ),
               ),

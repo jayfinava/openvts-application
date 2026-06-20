@@ -215,6 +215,11 @@ class _HeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headingColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
+    final subheadingColor =
+        isDark ? Colors.grey[300] : OpenVtsColors.textSecondary;
+
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       child: Column(
@@ -230,21 +235,21 @@ class _HeaderCard extends StatelessWidget {
                     Text(
                       'Transactions',
                       style: OpenVtsTypography.titleSmall.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: headingColor,
                       ),
                     ),
                     const SizedBox(height: OpenVtsSpacing.xxs),
                     Text(
                       'Admin payments made to platform account.',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: subheadingColor,
                       ),
                     ),
                     const SizedBox(height: OpenVtsSpacing.xxs),
                     Text(
                       '$loaded of $total transactions',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: subheadingColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -255,14 +260,25 @@ class _HeaderCard extends StatelessWidget {
                 const SizedBox(width: OpenVtsSpacing.sm),
                 FilledButton.icon(
                   onPressed: onPurchaseCredits,
-                  icon: const Icon(Icons.add_circle_outline_rounded, size: 16),
-                  label: const Text('Purchase Credits'),
+                  icon: Icon(
+                    Icons.add_circle_outline_rounded,
+                    size: 16,
+                    color: isDark ? Colors.white : Colors.white,
+                  ),
+                  label: Text(
+                    'Purchase Credits',
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.white,
+                    ),
+                  ),
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: OpenVtsSpacing.sm,
                       vertical: OpenVtsSpacing.xs,
                     ),
-                    backgroundColor: OpenVtsColors.brandInk,
+                    backgroundColor:
+                        isDark ? Colors.black : OpenVtsColors.brandInk,
+                    foregroundColor: isDark ? Colors.white : Colors.white,
                   ),
                 ),
               ],

@@ -167,43 +167,69 @@ class _AdminPaymentsScreenState extends ConsumerState<AdminPaymentsScreen> {
 
   Widget _header(
       int loaded, int total, VoidCallback onRenew, VoidCallback onRefresh) {
-    return OpenVtsCard(
-      padding: const EdgeInsets.all(OpenVtsSpacing.sm),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Payments', style: OpenVtsTypography.titleSmall),
-                const SizedBox(height: OpenVtsSpacing.xxs),
-                Text(
-                  'Manage transactions and renew vehicle subscriptions',
-                  style: OpenVtsTypography.meta
-                      .copyWith(color: OpenVtsColors.textSecondary),
-                ),
-                const SizedBox(height: OpenVtsSpacing.xxs),
-                Text(
-                  '$loaded of $total transactions',
-                  style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
-                    fontWeight: FontWeight.w600,
+    return Builder(builder: (context) {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      final headingColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
+      final subheadingColor =
+          isDark ? Colors.grey[300] : OpenVtsColors.textSecondary;
+
+      return OpenVtsCard(
+        padding: const EdgeInsets.all(OpenVtsSpacing.sm),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Payments',
+                      style: OpenVtsTypography.titleSmall
+                          .copyWith(color: headingColor)),
+                  const SizedBox(height: OpenVtsSpacing.xxs),
+                  Text(
+                    'Manage transactions and renew vehicle subscriptions',
+                    style:
+                        OpenVtsTypography.meta.copyWith(color: subheadingColor),
                   ),
-                ),
-              ],
+                  const SizedBox(height: OpenVtsSpacing.xxs),
+                  Text(
+                    '$loaded of $total transactions',
+                    style: OpenVtsTypography.meta.copyWith(
+                      color: subheadingColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          IconButton(
-              onPressed: onRefresh,
-              icon: const Icon(Icons.refresh_rounded, size: 18)),
-          FilledButton.icon(
-            onPressed: onRenew,
-            icon: const Icon(Icons.autorenew_rounded, size: 16),
-            label: const Text('Renew Vehicle'),
-          ),
-        ],
-      ),
-    );
+            IconButton(
+                onPressed: onRefresh,
+                icon: const Icon(Icons.refresh_rounded, size: 18)),
+            FilledButton.icon(
+              onPressed: onRenew,
+              icon: Icon(
+                Icons.autorenew_rounded,
+                size: 16,
+                color: isDark ? Colors.white : Colors.white,
+              ),
+              label: Text(
+                'Renew Vehicle',
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.white,
+                ),
+              ),
+              style: FilledButton.styleFrom(
+                backgroundColor: isDark ? Colors.black : OpenVtsColors.brandInk,
+                side: BorderSide(
+                  color: isDark ? Colors.white : Colors.transparent,
+                  width: isDark ? 1 : 0,
+                ),
+                foregroundColor: isDark ? Colors.white : Colors.white,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Future<void> _showRenewSheet(BuildContext context) {

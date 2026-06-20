@@ -4,7 +4,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -34,12 +33,10 @@ class AdminSupportTicketForm extends ConsumerStatefulWidget {
   final double maxContentWidth;
 
   @override
-  ConsumerState<AdminSupportTicketForm> createState() =>
-      _AdminSupportTicketFormState();
+  ConsumerState<AdminSupportTicketForm> createState() => _AdminSupportTicketFormState();
 }
 
-class _AdminSupportTicketFormState
-    extends ConsumerState<AdminSupportTicketForm> {
+class _AdminSupportTicketFormState extends ConsumerState<AdminSupportTicketForm> {
   final TextEditingController _userSearchController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
@@ -114,9 +111,7 @@ class _AdminSupportTicketFormState
   Future<void> _submit() async {
     final title = _titleController.text.trim();
     final message = _messageController.text.trim();
-    if (!_validateUser() ||
-        !_validateTitle(title) ||
-        !_validateMessage(message)) {
+    if (!_validateUser() || !_validateTitle(title) || !_validateMessage(message)) {
       return;
     }
 
@@ -154,8 +149,8 @@ class _AdminSupportTicketFormState
       if (!mounted) {
         return;
       }
-      final error = ref.read(adminSupportControllerProvider).errorMessage ??
-          'Unable to create ticket.';
+      final error =
+          ref.read(adminSupportControllerProvider).errorMessage ?? 'Unable to create ticket.';
       ToastHelper.showError(error, context: context);
     }
   }
@@ -163,8 +158,7 @@ class _AdminSupportTicketFormState
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(adminSupportControllerProvider);
-    final isCreating =
-        _isUserMode ? state.isCreatingUserTicket : state.isCreatingMyTicket;
+    final isCreating = _isUserMode ? state.isCreatingUserTicket : state.isCreatingMyTicket;
     final users = state.users;
     final filteredUsers = _filterUsers(users, _userSearchController.text);
     final dropdownUsers = _buildDropdownUsers(
@@ -172,8 +166,7 @@ class _AdminSupportTicketFormState
       filteredUsers: filteredUsers,
       selectedId: _userId,
     );
-    final selectedUserId =
-        dropdownUsers.any((user) => user.id == _userId) ? _userId : null;
+    final selectedUserId = dropdownUsers.any((user) => user.id == _userId) ? _userId : null;
 
     return Column(
       children: [
@@ -239,8 +232,7 @@ class _AdminSupportTicketFormState
       _attachments = _attachments
           .where(
             (item) =>
-                _adminSupportAttachmentIdentity(item) !=
-                _adminSupportAttachmentIdentity(file),
+                _adminSupportAttachmentIdentity(item) != _adminSupportAttachmentIdentity(file),
           )
           .toList(growable: false);
     });
@@ -341,8 +333,7 @@ class _AdminSupportTicketFormState
     }
 
     final selectedUser = selected;
-    if (selectedUser != null &&
-        !resolved.any((user) => user.id == selectedUser.id)) {
+    if (selectedUser != null && !resolved.any((user) => user.id == selectedUser.id)) {
       resolved.insert(0, selectedUser);
     }
 
@@ -373,7 +364,7 @@ class _CreateTicketHelperCard extends StatelessWidget {
           Text(
             'New support ticket',
             style: OpenVtsTypography.titleSmall.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w800,
               fontSize: 16,
             ),
@@ -382,7 +373,7 @@ class _CreateTicketHelperCard extends StatelessWidget {
           Text(
             detail,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -468,7 +459,7 @@ class _TicketFields extends StatelessWidget {
                   ? 'No users found.'
                   : 'No users match this search.',
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -485,8 +476,7 @@ class _TicketFields extends StatelessWidget {
         LayoutBuilder(
           builder: (context, constraints) {
             final stackFields = constraints.maxWidth < 460;
-            final categoryField =
-                DropdownButtonFormField<AdminSupportTicketCategory>(
+            final categoryField = DropdownButtonFormField<AdminSupportTicketCategory>(
               initialValue: category,
               isDense: true,
               isExpanded: true,
@@ -501,8 +491,7 @@ class _TicketFields extends StatelessWidget {
                   .toList(growable: false),
               onChanged: isCreating ? null : onCategoryChanged,
             );
-            final priorityField =
-                DropdownButtonFormField<AdminSupportTicketPriority>(
+            final priorityField = DropdownButtonFormField<AdminSupportTicketPriority>(
               initialValue: priority,
               isDense: true,
               isExpanded: true,
@@ -596,9 +585,9 @@ class _TicketFormActionBar extends StatelessWidget {
           OpenVtsSpacing.md,
           OpenVtsSpacing.md,
         ),
-        decoration: const BoxDecoration(
-          color: OpenVtsColors.surface,
-          border: Border(top: BorderSide(color: OpenVtsColors.border)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outline)),
         ),
         child: Align(
           alignment: Alignment.center,
@@ -652,17 +641,17 @@ class _DraftAttachmentWrap extends StatelessWidget {
                 end: OpenVtsSpacing.xxs,
               ),
               decoration: BoxDecoration(
-                border: Border.all(color: OpenVtsColors.border),
+                border: Border.all(color: Theme.of(context).colorScheme.outline),
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                color: OpenVtsColors.surface,
+                color: Theme.of(context).colorScheme.surface,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.insert_drive_file_outlined,
                     size: 14,
-                    color: OpenVtsColors.textTertiary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: OpenVtsSpacing.xxs),
                   ConstrainedBox(
@@ -712,8 +701,7 @@ Future<List<PlatformFile>?> _pickAdminSupportAttachments(
     allowMultiple: true,
     withData: true,
     type: FileType.custom,
-    allowedExtensions:
-        AdminSupportService.allowedExtensions.toList(growable: false),
+    allowedExtensions: AdminSupportService.allowedExtensions.toList(growable: false),
   );
 
   if (!context.mounted || result == null || result.files.isEmpty) {
@@ -791,10 +779,8 @@ String _extensionFromFileName(String fileName) {
 }
 
 String _compactFileList(List<String> names) {
-  final cleaned = names
-      .map((name) => name.trim())
-      .where((name) => name.isNotEmpty)
-      .toList(growable: false);
+  final cleaned =
+      names.map((name) => name.trim()).where((name) => name.isNotEmpty).toList(growable: false);
 
   if (cleaned.isEmpty) {
     return 'Unknown file';

@@ -34,6 +34,13 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headingColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
+    final subheadingColor =
+        isDark ? Colors.grey[300] : OpenVtsColors.textSecondary;
+    final iconColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
+    final iconBgColor = isDark ? Colors.black : OpenVtsColors.surfaceElevated;
+
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -46,14 +53,14 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: OpenVtsColors.surfaceElevated,
+                  color: iconBgColor,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.md),
                   border: Border.all(color: OpenVtsColors.border),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.filter_list_rounded,
                   size: 18,
-                  color: OpenVtsColors.textPrimary,
+                  color: iconColor,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
@@ -61,12 +68,14 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Filters', style: OpenVtsTypography.titleSmall),
+                    Text('Filters',
+                        style: OpenVtsTypography.titleSmall
+                            .copyWith(color: headingColor)),
                     const SizedBox(height: OpenVtsSpacing.xxs),
                     Text(
                       'Refine payments by user, status, mode, and date.',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: subheadingColor,
                       ),
                     ),
                   ],
@@ -97,15 +106,29 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
               Expanded(
                 child: FilledButton.icon(
                   onPressed: onApply,
-                  icon:
-                      const Icon(Icons.check_circle_outline_rounded, size: 16),
-                  label: const Text('Apply Filters'),
+                  icon: Icon(
+                    Icons.check_circle_outline_rounded,
+                    size: 16,
+                    color: isDark ? Colors.white : Colors.white,
+                  ),
+                  label: Text(
+                    'Apply Filters',
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.white,
+                    ),
+                  ),
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(44),
-                    backgroundColor: OpenVtsColors.brandInk,
+                    backgroundColor:
+                        isDark ? Colors.black : OpenVtsColors.brandInk,
+                    side: BorderSide(
+                      color: isDark ? Colors.white : Colors.transparent,
+                      width: isDark ? 1 : 0,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(OpenVtsRadius.md),
                     ),
+                    foregroundColor: isDark ? Colors.white : Colors.white,
                   ),
                 ),
               ),
@@ -297,43 +320,59 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
     required List<_DropdownOption<T>> options,
     required ValueChanged<T?> onChanged,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: OpenVtsTypography.label.copyWith(
-            color: OpenVtsColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: OpenVtsSpacing.xs),
-        DropdownButtonFormField<T>(
-          initialValue: value,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 13,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-              borderSide: const BorderSide(color: OpenVtsColors.border),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-              borderSide: const BorderSide(color: OpenVtsColors.border),
+    return Builder(builder: (context) {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      final fillColor = isDark ? Colors.black : OpenVtsColors.surfaceElevated;
+      final textColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: OpenVtsTypography.label.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          items: options
-              .map((opt) => DropdownMenuItem<T>(
-                    value: opt.value,
-                    child: Text(opt.label),
-                  ))
-              .toList(growable: false),
-          onChanged: onChanged,
-          isExpanded: true,
-        ),
-      ],
-    );
+          const SizedBox(height: OpenVtsSpacing.xs),
+          DropdownButtonFormField<T>(
+            initialValue: value,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 13,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+                borderSide: const BorderSide(color: OpenVtsColors.border),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+                borderSide: const BorderSide(color: OpenVtsColors.border),
+              ),
+              filled: true,
+              fillColor: fillColor,
+            ),
+            style: OpenVtsTypography.body.copyWith(
+              color: textColor,
+            ),
+            dropdownColor: fillColor,
+            items: options
+                .map((opt) => DropdownMenuItem<T>(
+                      value: opt.value,
+                      child: Text(
+                        opt.label,
+                        style: TextStyle(color: textColor),
+                      ),
+                    ))
+                .toList(growable: false),
+            onChanged: onChanged,
+            isExpanded: true,
+          ),
+        ],
+      );
+    });
   }
 
   String _getUserLabel(AdminUserListItem user) {

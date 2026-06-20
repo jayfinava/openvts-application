@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:open_vts/core/theme/open_vts_colors.dart';
 import 'package:open_vts/core/theme/open_vts_radius.dart';
 import 'package:open_vts/core/theme/open_vts_spacing.dart';
 import 'package:open_vts/core/theme/open_vts_typography.dart';
@@ -20,19 +19,12 @@ class OpenVtsSupportFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final colorScheme = Theme.of(context).colorScheme;
 
-    final selectedBg = OpenVtsColors.brandInk;
-    final unselectedBg = isDark
-        ? colorScheme.surfaceContainerHigh
-        : colorScheme.surfaceContainerHigh;
-    final borderColor = selected
-        ? OpenVtsColors.brandInk
-        : (isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border);
-    final labelColor = selected
-        ? colorScheme.onPrimary
-        : (isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary);
+    final selectedBg = colorScheme.primary;
+    final unselectedBg = colorScheme.surfaceContainerHigh;
+    final borderColor = selected ? colorScheme.primary : colorScheme.outline;
+    final labelColor = selected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant;
 
     return ChoiceChip(
       label: Text('$label $count'),

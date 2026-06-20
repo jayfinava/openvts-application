@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:open_vts/shared/widgets/support/open_vts_support_filter_chip.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -56,8 +55,7 @@ class AdminSupportTicketListView extends StatelessWidget {
               visibleCount: filteredTickets.length,
               totalCount: sourceTickets.length,
               hasActiveFilters: hasActiveFilters,
-              isCreating:
-                  state.isCreatingUserTicket || state.isCreatingMyTicket,
+              isCreating: state.isCreatingUserTicket || state.isCreatingMyTicket,
               onCreatePressed: onCreatePressed,
             ),
           ),
@@ -123,8 +121,7 @@ class AdminSupportTicketListView extends StatelessWidget {
           else
             SliverList.separated(
               itemCount: visibleTickets.length + (state.hasMoreVisible ? 1 : 0),
-              separatorBuilder: (_, __) =>
-                  const SizedBox(height: OpenVtsSpacing.xs),
+              separatorBuilder: (_, __) => const SizedBox(height: OpenVtsSpacing.xs),
               itemBuilder: (context, index) {
                 if (index >= visibleTickets.length) {
                   return Center(
@@ -151,9 +148,7 @@ class AdminSupportTicketListView extends StatelessWidget {
   }
 
   List<AdminSupportTicketListItem> _sourceTickets(AdminSupportState state) {
-    return state.selectedTab == AdminSupportTab.userTickets
-        ? state.userTickets
-        : state.myTickets;
+    return state.selectedTab == AdminSupportTab.userTickets ? state.userTickets : state.myTickets;
   }
 
   AdminSupportTicketStatus? _selectedStatus(AdminSupportState state) {
@@ -163,9 +158,8 @@ class AdminSupportTicketListView extends StatelessWidget {
   }
 
   bool _hasActiveFilters(AdminSupportState state) {
-    final search = state.selectedTab == AdminSupportTab.userTickets
-        ? state.userSearch
-        : state.mySearch;
+    final search =
+        state.selectedTab == AdminSupportTab.userTickets ? state.userSearch : state.mySearch;
     return _selectedStatus(state) != null || search.trim().isNotEmpty;
   }
 }
@@ -187,7 +181,7 @@ class _SupportHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
     final countLabel = _countLabel(
       visibleCount: visibleCount,
       totalCount: totalCount,
@@ -202,9 +196,7 @@ class _SupportHeader extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.meta.copyWith(
-              color: isDark
-                  ? OpenVtsColors.darkTextSecondary
-                  : OpenVtsColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -214,8 +206,6 @@ class _SupportHeader extends StatelessWidget {
           onPressed: isCreating ? null : onCreatePressed,
           style: FilledButton.styleFrom(
             minimumSize: const Size(0, 34),
-            backgroundColor: OpenVtsColors.brandInk,
-            foregroundColor: OpenVtsColors.white,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             visualDensity: VisualDensity.compact,
             padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.sm),
@@ -344,7 +334,7 @@ class _SupportEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(OpenVtsSpacing.lg),
@@ -355,20 +345,14 @@ class _SupportEmptyState extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color:
-                    isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
-                border: Border.all(
-                  color:
-                      isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
-                ),
+                color: colorScheme.surface,
+                border: Border.all(color: colorScheme.outline),
                 borderRadius: BorderRadius.circular(OpenVtsRadius.md),
               ),
               child: Icon(
                 Icons.support_agent_rounded,
                 size: 20,
-                color: isDark
-                    ? OpenVtsColors.darkTextSecondary
-                    : OpenVtsColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
@@ -384,9 +368,7 @@ class _SupportEmptyState extends StatelessWidget {
                   : 'Create a ticket to start a support conversation.',
               textAlign: TextAlign.center,
               style: OpenVtsTypography.body.copyWith(
-                color: isDark
-                    ? OpenVtsColors.darkTextSecondary
-                    : OpenVtsColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             if (!hasActiveFilters) ...[
@@ -476,6 +458,7 @@ class _InlineErrorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
@@ -484,12 +467,12 @@ class _InlineErrorBanner extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.35)),
-        color: OpenVtsColors.error.withValues(alpha: 0.15),
+        border: Border.all(color: colorScheme.error.withValues(alpha: 0.35)),
+        color: colorScheme.error.withValues(alpha: 0.15),
       ),
       child: Text(
         message,
-        style: OpenVtsTypography.body.copyWith(color: OpenVtsColors.error),
+        style: OpenVtsTypography.body.copyWith(color: colorScheme.error),
       ),
     );
   }

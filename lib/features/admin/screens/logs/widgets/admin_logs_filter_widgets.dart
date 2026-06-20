@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 
@@ -18,15 +17,12 @@ class AdminFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = selected
-        ? OpenVtsColors.brandInk
-        : Theme.of(context).colorScheme.surfaceContainerHigh;
-    final foregroundColor = selected
-        ? Theme.of(context).colorScheme.onPrimary
-        : Theme.of(context).colorScheme.onSurface;
-    final borderColor = selected
-        ? OpenVtsColors.brandInk
-        : Theme.of(context).colorScheme.outline;
+    final colorScheme = Theme.of(context).colorScheme;
+    final backgroundColor =
+        selected ? colorScheme.primary : colorScheme.surfaceContainerHigh;
+    final foregroundColor =
+        selected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant;
+    final borderColor = selected ? colorScheme.primary : colorScheme.outline;
 
     return Material(
       color: backgroundColor,
@@ -44,7 +40,7 @@ class AdminFilterChip extends StatelessWidget {
             label,
             style: OpenVtsTypography.meta.copyWith(
               color: foregroundColor,
-              fontWeight: FontWeight.w600,
+              fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
             ),
           ),
         ),

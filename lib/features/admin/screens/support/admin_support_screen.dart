@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/route_paths.dart';
-import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
@@ -25,9 +24,8 @@ class AdminSupportScreen extends ConsumerWidget {
     final state = ref.watch(adminSupportControllerProvider);
     final controller = ref.read(adminSupportControllerProvider.notifier);
     final useSplitLayout = _usesSplitLayout(context);
-    final activeTicketId = state.selectedTicketTab == state.selectedTab
-        ? state.selectedTicketId
-        : null;
+    final activeTicketId =
+        state.selectedTicketTab == state.selectedTab ? state.selectedTicketId : null;
 
     return OpenVtsPageScaffold(
       title: 'Support',
@@ -41,9 +39,8 @@ class AdminSupportScreen extends ConsumerWidget {
       actions: [
         IconButton(
           tooltip: 'Refresh tickets',
-          onPressed: state.isLoadingCurrentTab
-              ? null
-              : () => unawaited(controller.refreshCurrentTab()),
+          onPressed:
+              state.isLoadingCurrentTab ? null : () => unawaited(controller.refreshCurrentTab()),
           icon: state.isLoadingCurrentTab
               ? const SizedBox.square(
                   dimension: 18,
@@ -57,8 +54,7 @@ class AdminSupportScreen extends ConsumerWidget {
               state: state,
               controller: controller,
               activeTicketId: activeTicketId,
-              onCreatePressed: () =>
-                  unawaited(_openCreatePage(context, ref, state.selectedTab)),
+              onCreatePressed: () => unawaited(_openCreatePage(context, ref, state.selectedTab)),
               onOpenTicket: (ticket) => unawaited(
                 _openTicket(
                   context,
@@ -71,11 +67,9 @@ class AdminSupportScreen extends ConsumerWidget {
           : AdminSupportTicketListView(
               state: state,
               activeTicketId: activeTicketId,
-              onCreatePressed: () =>
-                  unawaited(_openCreatePage(context, ref, state.selectedTab)),
+              onCreatePressed: () => unawaited(_openCreatePage(context, ref, state.selectedTab)),
               onTabChanged: (tab) => unawaited(controller.selectTab(tab)),
-              onSearchChanged: (value) =>
-                  controller.setSearchQuery(state.selectedTab, value),
+              onSearchChanged: (value) => controller.setSearchQuery(state.selectedTab, value),
               onStatusChanged: (status) => unawaited(
                 controller.setStatusFilter(state.selectedTab, status),
               ),
@@ -132,8 +126,7 @@ class AdminSupportScreen extends ConsumerWidget {
 
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) =>
-            AdminSupportConversationScreen(tab: tab, ticketId: ticketId),
+        builder: (_) => AdminSupportConversationScreen(tab: tab, ticketId: ticketId),
       ),
     );
   }
@@ -174,8 +167,7 @@ class _SplitSupportLayout extends StatelessWidget {
                 activeTicketId: activeTicketId,
                 onCreatePressed: onCreatePressed,
                 onTabChanged: (tab) => unawaited(controller.selectTab(tab)),
-                onSearchChanged: (value) =>
-                    controller.setSearchQuery(state.selectedTab, value),
+                onSearchChanged: (value) => controller.setSearchQuery(state.selectedTab, value),
                 onStatusChanged: (status) => unawaited(
                   controller.setStatusFilter(state.selectedTab, status),
                 ),
@@ -209,10 +201,11 @@ class _ConversationSplitPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
-        border: Border.all(color: OpenVtsColors.border),
+        color: colorScheme.surface,
+        border: Border.all(color: colorScheme.outline),
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       ),
       clipBehavior: Clip.antiAlias,
@@ -228,6 +221,7 @@ class _SelectTicketPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(OpenVtsSpacing.lg),
@@ -238,14 +232,14 @@ class _SelectTicketPlaceholder extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: OpenVtsColors.surface,
-                border: Border.all(color: OpenVtsColors.border),
+                color: colorScheme.surface,
+                border: Border.all(color: colorScheme.outline),
                 borderRadius: BorderRadius.circular(OpenVtsRadius.md),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.forum_outlined,
                 size: 22,
-                color: OpenVtsColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
@@ -258,7 +252,7 @@ class _SelectTicketPlaceholder extends StatelessWidget {
               'Open a support ticket to review the full conversation.',
               textAlign: TextAlign.center,
               style: OpenVtsTypography.body.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
           ],

@@ -23,8 +23,7 @@ class AdminSupportTicketCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activityDate =
-        ticket.lastMessageAt ?? ticket.updatedAt ?? ticket.createdAt;
+    final activityDate = ticket.lastMessageAt ?? ticket.updatedAt ?? ticket.createdAt;
     final statusColor = switch (ticket.status) {
       AdminSupportTicketStatus.open => OpenVtsColors.success,
       AdminSupportTicketStatus.inProgress => OpenVtsColors.info,
@@ -48,9 +47,8 @@ class AdminSupportTicketCard extends StatelessWidget {
       priorityColor: priorityColor,
       categoryLabel: ticket.category.label,
       extraMetaLabels: roleMeta == null ? const <String>[] : <String>[roleMeta],
-      dateLabel: activityDate == null
-          ? 'No activity yet'
-          : _dateFormatter.formatDateTime(activityDate),
+      dateLabel:
+          activityDate == null ? 'No activity yet' : _dateFormatter.formatDateTime(activityDate),
       messageCountLabel: null,
       preview: null,
       isSelected: isSelected,
@@ -59,8 +57,7 @@ class AdminSupportTicketCard extends StatelessWidget {
   }
 
   String? get _roleMetaLabel {
-    final source =
-        tab == AdminSupportTab.userTickets ? ticket.fromUser : ticket.toUser;
+    final source = tab == AdminSupportTab.userTickets ? ticket.fromUser : ticket.toUser;
     final name = source?.displayName.trim() ?? '';
     if (name.isEmpty || name == '-') {
       return null;
@@ -69,5 +66,3 @@ class AdminSupportTicketCard extends StatelessWidget {
     return tab == AdminSupportTab.userTickets ? 'User $name' : 'To $name';
   }
 }
-
-
