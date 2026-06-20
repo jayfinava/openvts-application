@@ -437,9 +437,9 @@ class _LocationCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.white),
       ),
       child: Row(
         children: [
@@ -447,14 +447,15 @@ class _LocationCard extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: OpenVtsColors.brandInk.withValues(alpha: 0.08),
+              color: OpenVtsColors.brandInk,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+              border: Border.all(color: OpenVtsColors.white),
             ),
             alignment: Alignment.center,
             child: const Icon(
               Icons.place_outlined,
               size: 18,
-              color: OpenVtsColors.brandInk,
+              color: OpenVtsColors.white,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -465,7 +466,7 @@ class _LocationCard extends StatelessWidget {
                 Text(
                   'Location',
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.white,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -476,9 +477,7 @@ class _LocationCard extends StatelessWidget {
                           '${coordinates!.lon.toStringAsFixed(6)}'
                           '${tolerance != null && tolerance! > 0 ? ' • ±${tolerance!.toStringAsFixed(0)} m' : ''}',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: coordinates == null
-                        ? Theme.of(context).colorScheme.outline
-                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.white,
                   ),
                 ),
               ],
@@ -487,7 +486,7 @@ class _LocationCard extends StatelessWidget {
           TextButton(
             onPressed: onPick,
             style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: OpenVtsColors.white,
               padding: const EdgeInsets.symmetric(
                 horizontal: OpenVtsSpacing.sm,
               ),
@@ -495,7 +494,7 @@ class _LocationCard extends StatelessWidget {
             child: Text(
               coordinates == null ? 'Pick on map' : 'Edit on map',
               style: OpenVtsTypography.label.copyWith(
-                color: Theme.of(context).colorScheme.primary,
+                color: OpenVtsColors.white,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -520,9 +519,9 @@ class _ActiveToggle extends StatelessWidget {
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.white),
       ),
       child: Row(
         children: [
@@ -533,7 +532,7 @@ class _ActiveToggle extends StatelessWidget {
                 Text(
                   'Active',
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.white,
                   ),
                 ),
                 Text(
@@ -541,7 +540,7 @@ class _ActiveToggle extends StatelessWidget {
                       ? 'Visible on live map and proximity alerts.'
                       : 'Hidden from alerts; stays in the list.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.white,
                   ),
                 ),
               ],
