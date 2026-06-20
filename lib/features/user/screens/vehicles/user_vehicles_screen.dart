@@ -199,22 +199,19 @@ class _FilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChoiceChip(
-      selected: selected,
-      showCheckmark: false,
       label: Text(label),
-      onSelected: (_) => onTap(),
-      labelStyle: OpenVtsTypography.meta.copyWith(
-        color: selected
-            ? OpenVtsColors.white
-            : Theme.of(context).colorScheme.onSurfaceVariant,
-        fontWeight: FontWeight.w800,
-      ),
+      selected: selected,
+      checkmarkColor: OpenVtsColors.white,
       selectedColor: _primaryInkColor(context),
       backgroundColor: _softSurfaceColor(context),
       side: BorderSide(color: _softBorderColor(context)),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+      labelStyle: OpenVtsTypography.label.copyWith(
+        color: selected
+            ? OpenVtsColors.white
+            : Theme.of(context).colorScheme.onSurfaceVariant,
+        fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
       ),
+      onSelected: (_) => onTap(),
     );
   }
 }
