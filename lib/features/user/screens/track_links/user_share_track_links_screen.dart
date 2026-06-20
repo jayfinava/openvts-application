@@ -281,7 +281,7 @@ class _HeaderCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.titleSmall.copyWith(
                         fontSize: 17,
-                        color: OpenVtsColors.textPrimary,
+                        color: OpenVtsColors.white,
                         fontWeight: FontWeight.w800,
                       ),
                     ),

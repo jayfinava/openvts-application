@@ -75,14 +75,14 @@ class UserShareTrackLinkQrSheet extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(OpenVtsSpacing.sm),
           decoration: BoxDecoration(
-            color: OpenVtsColors.surfaceElevated,
+            color: Colors.black,
             borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-            border: Border.all(color: OpenVtsColors.border),
+            border: Border.all(color: OpenVtsColors.white),
           ),
           child: Text(
             publicUrl,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: OpenVtsColors.white,
               fontFamily: 'monospace',
               fontWeight: FontWeight.w700,
             ),

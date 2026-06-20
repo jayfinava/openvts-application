@@ -70,7 +70,7 @@ class UserShareTrackLinkCard extends ConsumerWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: OpenVtsColors.white,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -82,7 +82,7 @@ class UserShareTrackLinkCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: OpenVtsColors.white,
                         fontFamily: 'monospace',
                         fontWeight: FontWeight.w700,
                       ),
@@ -229,7 +229,7 @@ class _ActionIconButton extends StatelessWidget {
         child: IconButton(
           onPressed: onPressed,
           icon: Icon(icon, size: 17),
-          color: color ?? OpenVtsColors.textSecondary,
+          color: color ?? OpenVtsColors.white,
           disabledColor: OpenVtsColors.textTertiary.withValues(alpha: 0.58),
           padding: EdgeInsets.zero,
           visualDensity: VisualDensity.compact,
@@ -237,7 +237,7 @@ class _ActionIconButton extends StatelessWidget {
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              side: const BorderSide(color: OpenVtsColors.border),
+              side: const BorderSide(color: OpenVtsColors.white),
             ),
           ),
         ),
@@ -270,7 +270,7 @@ class _InfoPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: OpenVtsColors.textSecondary),
+          Icon(icon, size: 12, color: OpenVtsColors.white),
           const SizedBox(width: 4),
           Flexible(
             child: Text(
@@ -278,7 +278,7 @@ class _InfoPill extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: OpenVtsColors.white,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
               ),

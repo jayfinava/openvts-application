@@ -96,24 +96,26 @@ class _Segment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = selected ? OpenVtsColors.brandInk : Colors.transparent;
-    final fg = selected ? Colors.black : Colors.white;
-
     return Material(
-      color: bg,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       child: InkWell(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         onTap: onTap,
-        child: Padding(
+        child: Container(
           padding: const EdgeInsets.symmetric(
             horizontal: OpenVtsSpacing.xs,
             vertical: 6,
           ),
+          decoration: BoxDecoration(
+            color: selected ? Colors.black : Colors.transparent,
+            borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+            border: selected ? Border.all(color: Colors.white) : null,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(tab.icon, size: 14, color: fg),
+              Icon(tab.icon, size: 14, color: Colors.white),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
@@ -121,7 +123,7 @@ class _Segment extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-                    color: fg,
+                    color: Colors.white,
                     fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                   ),
                 ),
@@ -147,10 +149,6 @@ class _Badge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDot = text == '•';
-    final fg = selected ? Colors.black : Colors.white;
-    final bg = selected
-        ? Colors.black.withValues(alpha: 0.18)
-        : Colors.transparent;
     return Container(
       padding: isDot
           ? const EdgeInsets.all(0)
@@ -158,13 +156,14 @@ class _Badge extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 18, minHeight: 14),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: isDot ? Colors.transparent : bg,
+        color: isDot ? Colors.transparent : Colors.black,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+        border: isDot ? null : Border.all(color: Colors.white),
       ),
       child: Text(
         text,
         style: OpenVtsTypography.meta.copyWith(
-          color: fg,
+          color: Colors.white,
           fontWeight: FontWeight.w600,
           fontSize: isDot ? 16 : 11,
           height: 1,

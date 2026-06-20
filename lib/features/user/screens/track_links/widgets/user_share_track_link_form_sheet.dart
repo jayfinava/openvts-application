@@ -12,7 +12,6 @@ import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_bottom_sheet.dart';
-import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../../shared/widgets/open_vts_search_field.dart';
 import '../../../controllers/user_providers.dart';
@@ -517,7 +516,7 @@ class _SectionLabel extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: OpenVtsTypography.titleSmall.copyWith(
                   fontSize: compact ? 14 : 16,
-                  color: OpenVtsColors.textPrimary,
+                  color: OpenVtsColors.white,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -527,7 +526,7 @@ class _SectionLabel extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: OpenVtsColors.white,
                   fontSize: 12,
                 ),
               ),
@@ -549,9 +548,9 @@ class _VehicleListFrame extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(minHeight: 112),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.white),
       ),
       child: child,
     );
@@ -574,7 +573,7 @@ class _VehicleSelectRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final titleColor =
-        disabled ? OpenVtsColors.textTertiary : OpenVtsColors.textPrimary;
+        disabled ? OpenVtsColors.textTertiary : OpenVtsColors.white;
 
     return InkWell(
       onTap: onChanged,
@@ -623,7 +622,7 @@ class _VehicleSelectRow extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.textTertiary,
+                      color: OpenVtsColors.white,
                       fontSize: 11,
                     ),
                   ),
@@ -682,16 +681,16 @@ class _PickerTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(OpenVtsSpacing.sm),
         decoration: BoxDecoration(
-          color: OpenVtsColors.surfaceElevated,
+          color: Colors.black,
           borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-          border: Border.all(color: OpenVtsColors.border),
+          border: Border.all(color: OpenVtsColors.white),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(icon, size: 15, color: OpenVtsColors.textSecondary),
+                Icon(icon, size: 15, color: OpenVtsColors.white),
                 const SizedBox(width: 5),
                 Expanded(
                   child: Text(
@@ -699,7 +698,7 @@ class _PickerTile extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.textSecondary,
+                      color: OpenVtsColors.white,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),
@@ -713,7 +712,7 @@ class _PickerTile extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.label.copyWith(
-                color: OpenVtsColors.textPrimary,
+                color: OpenVtsColors.white,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -745,9 +744,9 @@ class _ToggleRow extends StatelessWidget {
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.white),
       ),
       child: Row(
         children: [
@@ -758,7 +757,7 @@ class _ToggleRow extends StatelessWidget {
                 Text(
                   title,
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: OpenVtsColors.white,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -768,7 +767,7 @@ class _ToggleRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textTertiary,
+                    color: OpenVtsColors.white,
                     fontSize: 11,
                   ),
                 ),
@@ -778,9 +777,60 @@ class _ToggleRow extends StatelessWidget {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeThumbColor: OpenVtsColors.brandInk,
+            activeThumbColor: OpenVtsColors.white,
+            activeTrackColor: OpenVtsColors.brandInk,
+            inactiveThumbColor: OpenVtsColors.textSecondary,
+            inactiveTrackColor: OpenVtsColors.textTertiary.withValues(alpha: 0.3),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({
+    required this.label,
+    required this.onPressed,
+    this.isLoading = false,
+    this.isSecondary = false,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final bool isSecondary;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 42,
+      child: FilledButton(
+        onPressed: onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: Colors.black,
+          foregroundColor: OpenVtsColors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(OpenVtsRadius.button),
+            side: const BorderSide(color: OpenVtsColors.white),
+          ),
+        ),
+        child: isLoading
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(OpenVtsColors.white),
+                ),
+              )
+            : Text(
+                label,
+                style: OpenVtsTypography.label.copyWith(
+                  color: OpenVtsColors.white,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
       ),
     );
   }
@@ -811,22 +861,21 @@ class _ActionBar extends StatelessWidget {
           OpenVtsSpacing.md,
         ),
         decoration: const BoxDecoration(
-          color: OpenVtsColors.surfaceElevated,
-          border: Border(top: BorderSide(color: OpenVtsColors.divider)),
+          color: Colors.black,
+          border: Border(top: BorderSide(color: OpenVtsColors.white)),
         ),
         child: Row(
           children: [
             Expanded(
-              child: OpenVtsButton(
+              child: _ActionButton(
                 label: 'Cancel',
                 onPressed: onCancel,
-                variant: OpenVtsButtonVariant.secondary,
-                height: 42,
+                isSecondary: true,
               ),
             ),
             const SizedBox(width: OpenVtsSpacing.sm),
             Expanded(
-              child: OpenVtsButton(
+              child: _ActionButton(
                 label: isSaving
                     ? 'Saving...'
                     : isEditing
@@ -834,7 +883,6 @@ class _ActionBar extends StatelessWidget {
                         : 'Create',
                 onPressed: onSave,
                 isLoading: isSaving,
-                height: 42,
               ),
             ),
           ],
@@ -863,13 +911,13 @@ class _MutedPanel extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 22, color: OpenVtsColors.textTertiary),
+          Icon(icon, size: 22, color: OpenVtsColors.white),
           const SizedBox(height: OpenVtsSpacing.xs),
           Text(
             title,
             textAlign: TextAlign.center,
             style: OpenVtsTypography.label.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: OpenVtsColors.white,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -878,7 +926,7 @@ class _MutedPanel extends StatelessWidget {
             message,
             textAlign: TextAlign.center,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: OpenVtsColors.white,
               fontSize: 11,
             ),
           ),
