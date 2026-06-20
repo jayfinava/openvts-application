@@ -134,6 +134,7 @@ class _ToolbarCard extends StatelessWidget {
                 child: Text(
                   '${state.filteredVehicles.length} of ${state.vehicles.length} vehicles',
                   style: OpenVtsTypography.label.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w800,
                   ),
                 ),

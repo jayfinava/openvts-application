@@ -38,14 +38,17 @@ class UserVehicleCard extends ConsumerWidget {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: OpenVtsColors.textPrimary.withValues(alpha: 0.04),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.04),
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: OpenVtsColors.border),
+                  border: Border.all(color: _softBorderColor(context)),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.directions_car_filled_outlined,
                   size: 19,
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
@@ -58,7 +61,7 @@ class UserVehicleCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -71,7 +74,7 @@ class UserVehicleCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -142,7 +145,7 @@ class _MetaPill extends StatelessWidget {
     final content = _StatusPill(
       icon: icon,
       label: label,
-      color: OpenVtsColors.textSecondary,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
     );
 
     if (normalizedCopyValue.isEmpty) return content;
@@ -223,4 +226,10 @@ String _joinParts(List<String?> parts) {
       .where((item) => item.isNotEmpty && item != '-')
       .toList(growable: false);
   return normalized.isEmpty ? '-' : normalized.join(' - ');
+}
+
+Color _softBorderColor(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.dark
+      ? OpenVtsColors.darkBorder
+      : OpenVtsColors.border;
 }
