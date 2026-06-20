@@ -259,7 +259,7 @@ class _UserRouteFormBodyState extends ConsumerState<_UserRouteFormBody> {
               child: Text(
                 'Cancel',
                 style: OpenVtsTypography.label.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
@@ -274,7 +274,7 @@ class _UserRouteFormBodyState extends ConsumerState<_UserRouteFormBody> {
       isDense: true,
       hintText: hint,
       hintStyle: OpenVtsTypography.body.copyWith(
-        color: OpenVtsColors.textTertiary,
+        color: Theme.of(context).colorScheme.outline,
       ),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
@@ -306,7 +306,7 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       label.toUpperCase(),
       style: OpenVtsTypography.meta.copyWith(
-        color: OpenVtsColors.textTertiary,
+        color: Theme.of(context).colorScheme.outline,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.6,
       ),
@@ -326,7 +326,7 @@ class _FieldLabel extends StatelessWidget {
       child: Text(
         label,
         style: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.textSecondary,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -357,10 +357,10 @@ class _GeometryCard extends StatelessWidget {
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.timeline,
             size: 18,
-            color: OpenVtsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
           Expanded(
@@ -370,7 +370,7 @@ class _GeometryCard extends StatelessWidget {
                 Text(
                   hasGeometry ? '${points.length} points' : 'No geometry yet',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -380,7 +380,7 @@ class _GeometryCard extends StatelessWidget {
                       ? 'Tolerance ±${toleranceM.toStringAsFixed(0)} m'
                       : 'Draw at least 2 points on the map.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -429,14 +429,14 @@ class _ActiveToggle extends StatelessWidget {
                 Text(
                   'Active',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 Text(
                   'Inactive routes stay archived but visible.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],

@@ -396,14 +396,15 @@ class _TopBar extends StatelessWidget {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.close, color: OpenVtsColors.textPrimary),
+            icon: Icon(Icons.close,
+                color: Theme.of(context).colorScheme.onSurface),
             onPressed: onCancel,
           ),
           Expanded(
             child: Text(
               title,
               style: OpenVtsTypography.titleSmall.copyWith(
-                color: OpenVtsColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -413,7 +414,7 @@ class _TopBar extends StatelessWidget {
             child: Text(
               'Save',
               style: OpenVtsTypography.label.copyWith(
-                color: OpenVtsColors.brandInk,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -498,15 +499,17 @@ class _ModeChip extends StatelessWidget {
             Icon(
               icon,
               size: 14,
-              color:
-                  selected ? OpenVtsColors.white : OpenVtsColors.textSecondary,
+              color: selected
+                  ? OpenVtsColors.white
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             const SizedBox(width: 4),
             Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color:
-                    selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
+                color: selected
+                    ? OpenVtsColors.white
+                    : Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -578,7 +581,9 @@ class _ControlButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final disabled = onTap == null;
-    final color = destructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
+    final color = destructive
+        ? OpenVtsColors.error
+        : Theme.of(context).colorScheme.onSurface;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
@@ -587,7 +592,7 @@ class _ControlButton extends StatelessWidget {
         child: Icon(
           icon,
           size: 18,
-          color: disabled ? OpenVtsColors.textTertiary : color,
+          color: disabled ? Theme.of(context).colorScheme.outline : color,
         ),
       ),
     );
@@ -716,7 +721,7 @@ class _BottomPanel extends StatelessWidget {
               Text(
                 'Tolerance',
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
@@ -798,12 +803,13 @@ class _MetaChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: OpenVtsColors.textSecondary),
+          Icon(icon,
+              size: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
           const SizedBox(width: 4),
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -905,7 +911,7 @@ class _VertexEditorSheetState extends State<_VertexEditorSheet> {
                 Text(
                   'Vertex ${widget.index + 1}',
                   style: OpenVtsTypography.titleSmall.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -979,7 +985,7 @@ class _CoordField extends StatelessWidget {
         Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: OpenVtsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 4),
@@ -1026,7 +1032,8 @@ class _NudgeBtn extends StatelessWidget {
           borderRadius: BorderRadius.circular(OpenVtsRadius.button),
           border: Border.all(color: OpenVtsColors.border),
         ),
-        child: Icon(icon, size: 16, color: OpenVtsColors.textPrimary),
+        child: Icon(icon,
+            size: 16, color: Theme.of(context).colorScheme.onSurface),
       ),
     );
   }
