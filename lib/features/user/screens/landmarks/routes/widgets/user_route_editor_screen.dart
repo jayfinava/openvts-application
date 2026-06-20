@@ -391,30 +391,37 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: OpenVtsColors.surfaceElevated,
+      decoration: const BoxDecoration(
+        color: OpenVtsColors.brandInk,
+        border: Border(bottom: BorderSide(color: OpenVtsColors.white, width: 1)),
+      ),
       padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
       child: Row(
         children: [
           IconButton(
-            icon: Icon(Icons.close,
-                color: Theme.of(context).colorScheme.onSurface),
+            icon: const Icon(Icons.close, color: OpenVtsColors.white),
             onPressed: onCancel,
           ),
           Expanded(
             child: Text(
               title,
               style: OpenVtsTypography.titleSmall.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
+                color: OpenVtsColors.white,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed: onSave,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: OpenVtsColors.brandInk,
+              foregroundColor: OpenVtsColors.white,
+              side: const BorderSide(color: OpenVtsColors.white, width: 1),
+            ),
             child: Text(
               'Save',
               style: OpenVtsTypography.label.copyWith(
-                color: Theme.of(context).colorScheme.primary,
+                color: OpenVtsColors.white,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -439,9 +446,9 @@ class _ModeToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.white),
       ),
       padding: const EdgeInsets.all(2),
       child: Row(
@@ -491,6 +498,10 @@ class _ModeChip extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: selected ? OpenVtsColors.brandInk : Colors.transparent,
+          border: Border.all(
+            color: selected ? OpenVtsColors.white : Colors.transparent,
+            width: 1,
+          ),
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         ),
         child: Row(
@@ -499,17 +510,13 @@ class _ModeChip extends StatelessWidget {
             Icon(
               icon,
               size: 14,
-              color: selected
-                  ? OpenVtsColors.white
-                  : Theme.of(context).colorScheme.onSurfaceVariant,
+              color: OpenVtsColors.white,
             ),
             const SizedBox(width: 4),
             Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: selected
-                    ? OpenVtsColors.white
-                    : Theme.of(context).colorScheme.onSurface,
+                color: OpenVtsColors.white,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -684,8 +691,8 @@ class _BottomPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
-        border: Border(top: BorderSide(color: OpenVtsColors.border)),
+        color: OpenVtsColors.brandInk,
+        border: Border(top: BorderSide(color: OpenVtsColors.white, width: 1)),
       ),
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.md,
@@ -721,7 +728,8 @@ class _BottomPanel extends StatelessWidget {
               Text(
                 'Tolerance',
                 style: OpenVtsTypography.meta.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: OpenVtsColors.white,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
@@ -736,35 +744,64 @@ class _BottomPanel extends StatelessWidget {
                     min: 1,
                     max: 1000,
                     onChanged: onToleranceChanged,
-                    activeColor: OpenVtsColors.brandInk,
-                    inactiveColor: OpenVtsColors.divider,
+                    activeColor: OpenVtsColors.white,
+                    inactiveColor: const Color(0xFF666666),
                   ),
                 ),
               ),
-              SizedBox(
-                width: 80,
-                child: TextField(
-                  controller: TextEditingController(
-                    text: tolerance.toStringAsFixed(0),
-                  ),
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+              const SizedBox(width: OpenVtsSpacing.sm),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: OpenVtsColors.brandInk,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: OpenVtsColors.white, width: 1),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 40,
+                      child: TextField(
+                        controller: TextEditingController(
+                          text: tolerance.toStringAsFixed(0),
+                        ),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                        ],
+                        textAlign: TextAlign.center,
+                        style: OpenVtsTypography.numeric.copyWith(
+                          color: OpenVtsColors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          hintText: '0',
+                          hintStyle: TextStyle(color: OpenVtsColors.white),
+                          contentPadding: EdgeInsets.zero,
+                          border: InputBorder.none,
+                        ),
+                        onSubmitted: (v) {
+                          final parsed = double.tryParse(v);
+                          if (parsed != null) onToleranceChanged(parsed);
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'm',
+                      style: OpenVtsTypography.label.copyWith(
+                        color: OpenVtsColors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ],
-                  textAlign: TextAlign.center,
-                  style: OpenVtsTypography.numeric,
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    suffixText: 'm',
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-                  ),
-                  onSubmitted: (v) {
-                    final parsed = double.tryParse(v);
-                    if (parsed != null) onToleranceChanged(parsed);
-                  },
                 ),
               ),
             ],
@@ -792,9 +829,9 @@ class _MetaChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.white),
       ),
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
@@ -804,12 +841,12 @@ class _MetaChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon,
-              size: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              size: 12, color: OpenVtsColors.white),
           const SizedBox(width: 4),
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: OpenVtsColors.white,
               fontWeight: FontWeight.w600,
             ),
           ),
