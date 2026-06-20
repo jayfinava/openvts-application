@@ -260,8 +260,7 @@ class _UserDriverCreateSheetState extends ConsumerState<UserDriverCreateSheet> {
                       if (_citiesLoadFailed && _stateCode != null)
                         _RetryRow(
                           message: 'Failed to load cities',
-                          onRetry: () =>
-                              _loadCities(_countryCode, _stateCode),
+                          onRetry: () => _loadCities(_countryCode, _stateCode),
                         ),
                       const SizedBox(height: OpenVtsSpacing.sm),
                       OpenVtsTextField(
@@ -342,8 +341,7 @@ class _UserDriverCreateSheetState extends ConsumerState<UserDriverCreateSheet> {
             value: item.value,
             label: item.value,
             subtitle: item.countryCode.isNotEmpty ? item.countryCode : null,
-            searchText:
-                '${item.value} ${item.countryCode} ${item.label}',
+            searchText: '${item.value} ${item.countryCode} ${item.label}',
           ),
         )
         .toList(growable: false);
@@ -669,7 +667,7 @@ class _SectionHeader extends StatelessWidget {
         Text(
           title,
           style: OpenVtsTypography.label.copyWith(
-            color: OpenVtsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -677,7 +675,7 @@ class _SectionHeader extends StatelessWidget {
         Text(
           subtitle,
           style: OpenVtsTypography.meta.copyWith(
-            color: OpenVtsColors.textTertiary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
       ],
@@ -702,8 +700,8 @@ class _RetryRow extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: OpenVtsTypography.meta
-                  .copyWith(color: OpenVtsColors.error),
+              style:
+                  OpenVtsTypography.meta.copyWith(color: OpenVtsColors.error),
             ),
           ),
           GestureDetector(

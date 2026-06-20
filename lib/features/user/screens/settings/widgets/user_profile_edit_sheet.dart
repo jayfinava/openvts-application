@@ -189,9 +189,9 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
     final cityOptions = state.cities;
 
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: OpenVtsColors.surface,
-        borderRadius: BorderRadius.vertical(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        borderRadius: const BorderRadius.vertical(
           top: Radius.circular(OpenVtsRadius.lg),
         ),
       ),
@@ -214,7 +214,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                 Text(
                   'Edit Profile',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -222,7 +222,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                 Text(
                   'Update personal and address details. Changes are saved only when you confirm.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: OpenVtsSpacing.sm),

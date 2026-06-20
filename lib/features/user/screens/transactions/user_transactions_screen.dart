@@ -191,6 +191,10 @@ class _TransactionsHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final resolvedTotal = totalCount <= 0 ? loadedCount : totalCount;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headingColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
+    final subheadingColor =
+        isDark ? Colors.grey[300] : OpenVtsColors.textSecondary;
 
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
@@ -201,14 +205,14 @@ class _TransactionsHeaderCard extends StatelessWidget {
             'Transactions',
             style: OpenVtsTypography.label.copyWith(
               fontWeight: FontWeight.w700,
-              color: OpenVtsColors.textPrimary,
+              color: headingColor,
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.xxs),
           Text(
             'View payments, credits, debits, and billing records.',
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: subheadingColor,
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
@@ -241,20 +245,29 @@ class _HeaderValueChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor =
+        isDark ? Colors.black : OpenVtsColors.surfaceElevated;
+    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
+    final textColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.xs,
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(
+          color: borderColor,
+          width: isDark ? 1 : 1,
+        ),
       ),
       child: Text(
         '$label: $value',
         style: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.textPrimary,
+          color: textColor,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -269,20 +282,28 @@ class _HeaderTagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDark ? Colors.black : OpenVtsColors.surface;
+    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
+    final textColor = isDark ? Colors.grey[300] : OpenVtsColors.textSecondary;
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.xs,
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(
+          color: borderColor,
+          width: isDark ? 1 : 1,
+        ),
       ),
       child: Text(
         text,
         style: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.textSecondary,
+          color: textColor,
           fontWeight: FontWeight.w600,
         ),
       ),

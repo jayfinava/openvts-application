@@ -58,7 +58,7 @@ class UserSettingsSaveBar extends StatelessWidget {
                     Text(
                       helperText,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -95,7 +95,7 @@ class UserSettingsSaveBar extends StatelessWidget {
                     child: Text(
                       helperText,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

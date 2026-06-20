@@ -60,10 +60,9 @@ class _SettingsTabChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor =
-        selected ? OpenVtsColors.brandInk : OpenVtsColors.surfaceElevated;
-    final foregroundColor =
-        selected ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final scheme = Theme.of(context).colorScheme;
+    final backgroundColor = selected ? scheme.primary : scheme.surfaceContainer;
+    final foregroundColor = selected ? scheme.onPrimary : scheme.onSurface;
 
     return SizedBox(
       height: 44,
@@ -85,8 +84,7 @@ class _SettingsTabChip extends StatelessWidget {
                 color: backgroundColor,
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                 border: Border.all(
-                  color:
-                      selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
+                  color: selected ? scheme.primary : scheme.outlineVariant,
                 ),
               ),
               child: Row(

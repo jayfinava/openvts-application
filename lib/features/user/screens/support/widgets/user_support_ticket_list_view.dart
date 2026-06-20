@@ -11,8 +11,8 @@ import 'package:open_vts/shared/widgets/open_vts_card.dart';
 import 'package:open_vts/shared/widgets/open_vts_error_view.dart';
 import 'package:open_vts/shared/widgets/open_vts_search_field.dart';
 
-typedef UserSupportTicketPreviewBuilder =
-    String? Function(UserSupportTicketListItem ticket, UserSupportState state);
+typedef UserSupportTicketPreviewBuilder = String? Function(
+    UserSupportTicketListItem ticket, UserSupportState state);
 
 class UserSupportTicketListView extends StatelessWidget {
   const UserSupportTicketListView({
@@ -169,6 +169,7 @@ class _SupportHeader extends StatelessWidget {
           label: const Text('Create'),
         );
 
+        final colorScheme = Theme.of(context).colorScheme;
         return Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -178,7 +179,7 @@ class _SupportHeader extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -266,6 +267,13 @@ class _SupportFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final selectedBg = colorScheme.primary;
+    final unselectedBg = colorScheme.surfaceContainerHigh;
+    final borderColor = selected ? colorScheme.primary : colorScheme.outline;
+    final labelColor =
+        selected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant;
+
     return ChoiceChip(
       label: Text('$label $count'),
       selected: selected,
@@ -273,13 +281,11 @@ class _SupportFilterChip extends StatelessWidget {
       visualDensity: VisualDensity.compact,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       labelPadding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.xs),
-      selectedColor: OpenVtsColors.brandInk.withValues(alpha: 0.08),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      side: BorderSide(
-        color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
-      ),
+      selectedColor: selectedBg,
+      backgroundColor: unselectedBg,
+      side: BorderSide(color: borderColor),
       labelStyle: OpenVtsTypography.meta.copyWith(
-        color: selected ? OpenVtsColors.brandInk : OpenVtsColors.textSecondary,
+        color: labelColor,
         fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
       ),
       shape: RoundedRectangleBorder(
@@ -300,6 +306,7 @@ class _SupportEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(OpenVtsSpacing.lg),
@@ -310,14 +317,14 @@ class _SupportEmptyState extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: OpenVtsColors.surface,
-                border: Border.all(color: OpenVtsColors.border),
+                color: colorScheme.surface,
+                border: Border.all(color: colorScheme.outline),
                 borderRadius: BorderRadius.circular(OpenVtsRadius.md),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.support_agent_rounded,
                 size: 20,
-                color: OpenVtsColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
@@ -333,7 +340,7 @@ class _SupportEmptyState extends StatelessWidget {
                   : 'Create a ticket and the team will follow up here.',
               textAlign: TextAlign.center,
               style: OpenVtsTypography.body.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             if (!hasActiveFilters) ...[
@@ -403,12 +410,13 @@ class _SkeletonLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return FractionallySizedBox(
       widthFactor: widthFactor,
       child: Container(
         height: height,
         decoration: BoxDecoration(
-          color: OpenVtsColors.surface,
+          color: colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         ),
       ),
@@ -423,6 +431,7 @@ class _InlineErrorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
@@ -431,12 +440,12 @@ class _InlineErrorBanner extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.28)),
-        color: OpenVtsColors.error.withValues(alpha: 0.07),
+        border: Border.all(color: colorScheme.error.withValues(alpha: 0.35)),
+        color: colorScheme.error.withValues(alpha: 0.15),
       ),
       child: Text(
         message,
-        style: OpenVtsTypography.body.copyWith(color: OpenVtsColors.error),
+        style: OpenVtsTypography.body.copyWith(color: colorScheme.error),
       ),
     );
   }

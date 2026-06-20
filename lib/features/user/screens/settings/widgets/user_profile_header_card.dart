@@ -62,7 +62,7 @@ class UserProfileHeaderCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -73,7 +73,7 @@ class UserProfileHeaderCard extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.meta.copyWith(
-                          color: OpenVtsColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -84,7 +84,7 @@ class UserProfileHeaderCard extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.meta.copyWith(
-                          color: OpenVtsColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -95,7 +95,7 @@ class UserProfileHeaderCard extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.meta.copyWith(
-                          color: OpenVtsColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -141,14 +141,14 @@ class UserProfileHeaderCard extends ConsumerWidget {
                 Text(
                   'Joined ${profileHeaderDateFormatter.formatDate(profile.createdAt!.toLocal())}',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textTertiary,
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                 ),
               if (profile.updatedAt != null)
                 Text(
                   'Updated ${profileHeaderDateFormatter.formatDateTime(profile.updatedAt!.toLocal())}',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textTertiary,
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                 ),
             ],
@@ -274,7 +274,7 @@ class _AvatarInitial extends StatelessWidget {
     final initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'U';
 
     return Container(
-      color: OpenVtsColors.brandInk,
+      color: Theme.of(context).colorScheme.primary,
       alignment: Alignment.center,
       child: Text(
         initial,

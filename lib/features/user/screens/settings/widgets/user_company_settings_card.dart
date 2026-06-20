@@ -31,7 +31,7 @@ class UserCompanySettingsCard extends StatelessWidget {
                 child: Text(
                   'Company Settings',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -51,7 +51,7 @@ class UserCompanySettingsCard extends StatelessWidget {
             Text(
               'No company details are available for this account.',
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             )
           else ...[
@@ -66,7 +66,7 @@ class UserCompanySettingsCard extends StatelessWidget {
             Text(
               'Social Links',
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -115,8 +115,8 @@ class _KV extends StatelessWidget {
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
-        border: Border.all(color: OpenVtsColors.border),
+        color: Theme.of(context).colorScheme.surface,
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
       ),
       child: Row(
@@ -127,7 +127,7 @@ class _KV extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -137,7 +137,7 @@ class _KV extends StatelessWidget {
             child: Text(
               value,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),

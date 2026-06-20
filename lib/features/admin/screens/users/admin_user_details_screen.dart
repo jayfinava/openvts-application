@@ -37,15 +37,18 @@ class AdminUserDetailsScreen extends ConsumerStatefulWidget {
   final AdminUserListItem? initialUser;
 
   @override
-  ConsumerState<AdminUserDetailsScreen> createState() => _AdminUserDetailsScreenState();
+  ConsumerState<AdminUserDetailsScreen> createState() =>
+      _AdminUserDetailsScreenState();
 }
 
-class _AdminUserDetailsScreenState extends ConsumerState<AdminUserDetailsScreen> {
+class _AdminUserDetailsScreenState
+    extends ConsumerState<AdminUserDetailsScreen> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final controller = ref.read(adminUserDetailsControllerProvider(widget.userId).notifier);
+      final controller =
+          ref.read(adminUserDetailsControllerProvider(widget.userId).notifier);
       // Seed initial data if available
       if (widget.initialUser != null) {
         controller.seedInitialData(lastLogin: widget.initialUser!.updatedAt);
@@ -84,7 +87,9 @@ class _AdminUserDetailsScreenState extends ConsumerState<AdminUserDetailsScreen>
         ),
         _HeaderMenu(
           isActive: user.isActive,
-          isBusy: state.isUpdatingStatus || state.isChangingPassword || state.isLoadingProfile,
+          isBusy: state.isUpdatingStatus ||
+              state.isChangingPassword ||
+              state.isLoadingProfile,
           onRefresh: () => controller.refreshCurrentTab(),
           onEditProfile: () => _showEditProfileSheet(),
           onEditCompany: () => _showEditCompanySheet(),
@@ -198,7 +203,8 @@ class _AdminUserDetailsScreenState extends ConsumerState<AdminUserDetailsScreen>
                 );
               } else {
                 ToastHelper.showError(
-                  ref.read(provider).sectionErrorMessage ?? 'Unable to update password.',
+                  ref.read(provider).sectionErrorMessage ??
+                      'Unable to update password.',
                   context: sheetContext,
                 );
               }
@@ -239,7 +245,9 @@ class _AdminUserDetailsScreenState extends ConsumerState<AdminUserDetailsScreen>
 
   Future<void> _loginAsUser(_UserSnapshot user) async {
     try {
-      await ref.read(adminUsersControllerProvider.notifier).loginAsUser(user.id);
+      await ref
+          .read(adminUsersControllerProvider.notifier)
+          .loginAsUser(user.id);
       if (!mounted) {
         return;
       }
@@ -253,7 +261,8 @@ class _AdminUserDetailsScreenState extends ConsumerState<AdminUserDetailsScreen>
         return;
       }
       ToastHelper.showError(
-        ref.read(adminUsersControllerProvider).errorMessage ?? 'Unable to login as user.',
+        ref.read(adminUsersControllerProvider).errorMessage ??
+            'Unable to login as user.',
         context: context,
       );
     }
@@ -299,7 +308,8 @@ class _AdminUserDetailsScreenState extends ConsumerState<AdminUserDetailsScreen>
         return;
       }
       ToastHelper.showError(
-        ref.read(adminUsersControllerProvider).errorMessage ?? 'Unable to delete user.',
+        ref.read(adminUsersControllerProvider).errorMessage ??
+            'Unable to delete user.',
         context: context,
       );
     }
@@ -381,13 +391,15 @@ class _HeaderMenu extends StatelessWidget {
         const PopupMenuItem(
           value: _HeaderMenuAction.editCompany,
           height: 40,
-          child: _MenuRow(icon: Icons.apartment_outlined, label: 'Edit Company'),
+          child:
+              _MenuRow(icon: Icons.apartment_outlined, label: 'Edit Company'),
         ),
         PopupMenuItem(
           value: _HeaderMenuAction.toggleStatus,
           height: 40,
           child: _MenuRow(
-            icon: isActive ? Icons.toggle_off_outlined : Icons.toggle_on_outlined,
+            icon:
+                isActive ? Icons.toggle_off_outlined : Icons.toggle_on_outlined,
             label: isActive ? 'Deactivate' : 'Activate',
           ),
         ),
@@ -429,7 +441,10 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isDestructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = isDestructive
+        ? OpenVtsColors.error
+        : (isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -539,7 +554,8 @@ class _SummaryCard extends StatelessWidget {
                 text: user.email,
                 isVerified: user.isEmailVerified,
               ),
-            if (user.email.isNotEmpty && user.phone.isNotEmpty) const SizedBox(height: 4),
+            if (user.email.isNotEmpty && user.phone.isNotEmpty)
+              const SizedBox(height: 4),
             if (user.phone.isNotEmpty)
               _CompactInfoLine(icon: Icons.phone_outlined, value: user.phone),
           ],
@@ -555,7 +571,9 @@ class _SummaryCard extends StatelessWidget {
                 child: _MetricTile(
                   icon: Icons.directions_car_outlined,
                   label: 'Vehicles',
-                  value: resolvedVehicleCount == null ? '—' : resolvedVehicleCount.toString(),
+                  value: resolvedVehicleCount == null
+                      ? '—'
+                      : resolvedVehicleCount.toString(),
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
@@ -623,12 +641,15 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final color = isActive
-        ? OpenVtsColors.brandInk
+        ? (isDark ? OpenVtsColors.white : OpenVtsColors.brandInk)
         : Theme.of(context).colorScheme.outline;
     return _MicroChip(
       label: isActive ? 'Active' : 'Inactive',
-      icon: isActive ? Icons.check_circle_outline_rounded : Icons.pause_circle_outline_rounded,
+      icon: isActive
+          ? Icons.check_circle_outline_rounded
+          : Icons.pause_circle_outline_rounded,
       color: color,
     );
   }
@@ -653,7 +674,8 @@ class _MicroChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withValues(alpha: isDark ? 0.15 : 0.06),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: color.withValues(alpha: isDark ? 0.35 : 0.22)),
+        border:
+            Border.all(color: color.withValues(alpha: isDark ? 0.35 : 0.22)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -712,7 +734,9 @@ class _ContactLineWithVerification extends StatelessWidget {
           Tooltip(
             message: isVerified ? 'Email verified' : 'Email unverified',
             child: Icon(
-              isVerified ? Icons.check_circle_rounded : Icons.error_outline_rounded,
+              isVerified
+                  ? Icons.check_circle_rounded
+                  : Icons.error_outline_rounded,
               size: 15,
               color: isVerified ? OpenVtsColors.success : OpenVtsColors.warning,
             ),
@@ -780,7 +804,10 @@ class _MetricTile extends StatelessWidget {
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.7),
+          color: Theme.of(context)
+              .colorScheme
+              .outlineVariant
+              .withValues(alpha: 0.7),
         ),
       ),
       child: Row(
@@ -835,7 +862,8 @@ class _TabChips extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: tabs.length,
-        separatorBuilder: (context, index) => const SizedBox(width: OpenVtsSpacing.xs),
+        separatorBuilder: (context, index) =>
+            const SizedBox(width: OpenVtsSpacing.xs),
         itemBuilder: (context, index) {
           final tab = tabs[index];
           return _TabChip(
@@ -863,7 +891,9 @@ class _TabChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final background = isSelected ? OpenVtsColors.brandInk : Theme.of(context).colorScheme.surface;
+    final background = isSelected
+        ? OpenVtsColors.brandInk
+        : Theme.of(context).colorScheme.surface;
     final foreground = isSelected
         ? (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.white)
         : Theme.of(context).colorScheme.onSurface;
@@ -1063,7 +1093,9 @@ class _PasswordSheetState extends State<_PasswordSheet> {
                 setState(() => _obscurePassword = !_obscurePassword);
               },
               icon: Icon(
-                _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                _obscurePassword
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
                 size: 18,
               ),
             ),
@@ -1082,7 +1114,9 @@ class _PasswordSheetState extends State<_PasswordSheet> {
                 setState(() => _obscureConfirm = !_obscureConfirm);
               },
               icon: Icon(
-                _obscureConfirm ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                _obscureConfirm
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
                 size: 18,
               ),
             ),
@@ -1178,7 +1212,8 @@ class _UserSnapshot {
   final DateTime? updatedAt;
   final int? vehicleCount;
 
-  bool get hasKnownData => name.isNotEmpty || username.isNotEmpty || email.isNotEmpty;
+  bool get hasKnownData =>
+      name.isNotEmpty || username.isNotEmpty || email.isNotEmpty;
 
   String get displayName {
     if (name.trim().isNotEmpty) {
@@ -1222,7 +1257,8 @@ class _UserSnapshot {
     if (words.length == 1) {
       return words.first.characters.take(2).toString().toUpperCase();
     }
-    return '${words.first.characters.first}${words.last.characters.first}'.toUpperCase();
+    return '${words.first.characters.first}${words.last.characters.first}'
+        .toUpperCase();
   }
 
   static _UserSnapshot resolve({
@@ -1233,8 +1269,9 @@ class _UserSnapshot {
   }) {
     if (details != null) {
       final address = details.address;
-      final company =
-          details.companies.isNotEmpty ? details.companies.first.name : details.organization;
+      final company = details.companies.isNotEmpty
+          ? details.companies.first.name
+          : details.organization;
       return _UserSnapshot(
         id: details.id.isNotEmpty ? details.id : userId,
         name: details.name,

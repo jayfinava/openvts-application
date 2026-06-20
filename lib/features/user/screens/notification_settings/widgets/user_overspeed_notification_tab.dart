@@ -143,6 +143,9 @@ class _SpeedLimitField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     final key = ValueKey<String>(
       'speed-limit-$vehicleId-${value ?? 'null'}-$enabled',
     );
@@ -164,19 +167,25 @@ class _SpeedLimitField extends StatelessWidget {
           ],
           style: OpenVtsTypography.meta.copyWith(
             color: enabled
-                ? OpenVtsColors.textPrimary
-                : OpenVtsColors.textTertiary,
+                ? (isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary)
+                : (isDark
+                    ? OpenVtsColors.white.withValues(alpha: 0.5)
+                    : OpenVtsColors.textTertiary),
             fontWeight: FontWeight.w600,
           ),
           decoration: InputDecoration(
             isDense: true,
             hintText: 'Limit',
             hintStyle: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textTertiary,
+              color: isDark
+                  ? OpenVtsColors.white.withValues(alpha: 0.5)
+                  : OpenVtsColors.textTertiary,
             ),
             suffixText: speedLabel,
             suffixStyle: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: isDark
+                  ? OpenVtsColors.white.withValues(alpha: 0.7)
+                  : OpenVtsColors.textSecondary,
               fontWeight: FontWeight.w600,
             ),
             contentPadding: const EdgeInsets.symmetric(
@@ -184,24 +193,31 @@ class _SpeedLimitField extends StatelessWidget {
               vertical: 10,
             ),
             filled: true,
-            fillColor:
-                enabled ? OpenVtsColors.surfaceElevated : OpenVtsColors.surface,
+            fillColor: enabled
+                ? (isDark ? Colors.black : OpenVtsColors.surfaceElevated)
+                : (isDark ? Colors.black : OpenVtsColors.surface),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
               borderSide: BorderSide(
-                color: hasError ? OpenVtsColors.error : OpenVtsColors.border,
+                color: hasError
+                    ? OpenVtsColors.error
+                    : (isDark ? OpenVtsColors.white : OpenVtsColors.border),
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
               borderSide: BorderSide(
-                color: hasError ? OpenVtsColors.error : OpenVtsColors.border,
+                color: hasError
+                    ? OpenVtsColors.error
+                    : (isDark ? OpenVtsColors.white : OpenVtsColors.border),
               ),
             ),
             disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
               borderSide: BorderSide(
-                color: hasError ? OpenVtsColors.error : OpenVtsColors.border,
+                color: hasError
+                    ? OpenVtsColors.error
+                    : (isDark ? OpenVtsColors.white : OpenVtsColors.border),
               ),
             ),
             focusedBorder: OutlineInputBorder(
@@ -209,7 +225,9 @@ class _SpeedLimitField extends StatelessWidget {
               borderSide: BorderSide(
                 color: hasError
                     ? OpenVtsColors.error
-                    : OpenVtsColors.textSecondary,
+                    : (isDark
+                        ? OpenVtsColors.white
+                        : OpenVtsColors.textSecondary),
               ),
             ),
           ),

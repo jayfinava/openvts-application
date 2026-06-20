@@ -111,14 +111,15 @@ class _AccountsHeaderCard extends StatelessWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: OpenVtsColors.surface,
-              border: Border.all(color: OpenVtsColors.border),
+              color: Theme.of(context).colorScheme.surface,
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant),
               borderRadius: BorderRadius.circular(OpenVtsRadius.md),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.manage_accounts_outlined,
               size: 18,
-              color: OpenVtsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -130,14 +131,14 @@ class _AccountsHeaderCard extends StatelessWidget {
                   'Accounts',
                   style: OpenVtsTypography.body.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: OpenVtsSpacing.xxs),
                 Text(
                   'Manage drivers and sub users linked to your fleet.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -180,14 +181,15 @@ class _AccountsOptionCard extends StatelessWidget {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: OpenVtsColors.surface,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                  border: Border.all(color: OpenVtsColors.border),
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant),
                 ),
                 child: Icon(
                   icon,
                   size: 18,
-                  color: OpenVtsColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
@@ -196,14 +198,14 @@ class _AccountsOptionCard extends StatelessWidget {
                   title,
                   style: OpenVtsTypography.label.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
                 size: 18,
-                color: OpenVtsColors.textTertiary,
+                color: Theme.of(context).colorScheme.outline,
               ),
             ],
           ),
@@ -211,7 +213,7 @@ class _AccountsOptionCard extends StatelessWidget {
           Text(
             description,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.sm),

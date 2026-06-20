@@ -355,14 +355,14 @@ class _PasswordActionCard extends StatelessWidget {
             'Security',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: OpenVtsColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
           ),
           const SizedBox(height: OpenVtsSpacing.xxs),
           Text(
             'Change your password to secure account access.',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
@@ -407,7 +407,7 @@ class _ProfileReferenceWarningCard extends StatelessWidget {
                   ? message!.trim()
                   : 'Country and mobile prefix references are unavailable. You can still edit manually.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
           ),

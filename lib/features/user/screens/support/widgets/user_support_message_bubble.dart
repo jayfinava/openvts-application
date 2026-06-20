@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:open_vts/core/theme/open_vts_colors.dart';
 import 'package:open_vts/core/theme/open_vts_radius.dart';
 import 'package:open_vts/core/theme/open_vts_spacing.dart';
 import 'package:open_vts/core/theme/open_vts_typography.dart';
@@ -23,6 +22,7 @@ class UserSupportMessageBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dateFormatter = ref.watch(appDateFormatterProvider);
+    final colorScheme = Theme.of(context).colorScheme;
     if (_isSystemMessage) {
       return _SystemMessageBubble(message: message, baseUrl: baseUrl);
     }
@@ -30,11 +30,11 @@ class UserSupportMessageBubble extends ConsumerWidget {
     final alignment =
         isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
     final borderColor = isCurrentUser
-        ? OpenVtsColors.brandInk.withValues(alpha: 0.18)
-        : OpenVtsColors.border;
+        ? colorScheme.primary.withValues(alpha: 0.18)
+        : colorScheme.outlineVariant;
     final backgroundColor = isCurrentUser
-        ? OpenVtsColors.brandInk.withValues(alpha: 0.045)
-        : Theme.of(context).colorScheme.surface;
+        ? colorScheme.primary.withValues(alpha: 0.045)
+        : colorScheme.surface;
     final senderLabel = _senderLabel;
 
     return Align(
@@ -61,7 +61,7 @@ class UserSupportMessageBubble extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -71,7 +71,7 @@ class UserSupportMessageBubble extends ConsumerWidget {
                     Text(
                       dateFormatter.formatDateTime(message.createdAt!),
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textTertiary,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -82,7 +82,7 @@ class UserSupportMessageBubble extends ConsumerWidget {
                 Text(
                   message.message.trim(),
                   style: OpenVtsTypography.body.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: colorScheme.onSurface,
                     height: 1.38,
                   ),
                 ),
@@ -132,6 +132,7 @@ class _SystemMessageBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dateFormatter = ref.watch(appDateFormatterProvider);
+    final colorScheme = Theme.of(context).colorScheme;
     final text = message.message.trim();
     final timestamp = message.createdAt;
 
@@ -144,8 +145,8 @@ class _SystemMessageBubble extends ConsumerWidget {
           vertical: OpenVtsSpacing.xs,
         ),
         decoration: BoxDecoration(
-          color: OpenVtsColors.surface,
-          border: Border.all(color: OpenVtsColors.border),
+          color: colorScheme.surface,
+          border: Border.all(color: colorScheme.outline),
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
         ),
         child: Column(
@@ -156,7 +157,7 @@ class _SystemMessageBubble extends ConsumerWidget {
                 text,
                 textAlign: TextAlign.center,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -166,7 +167,7 @@ class _SystemMessageBubble extends ConsumerWidget {
                 dateFormatter.formatDateTime(timestamp),
                 textAlign: TextAlign.center,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textTertiary,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],

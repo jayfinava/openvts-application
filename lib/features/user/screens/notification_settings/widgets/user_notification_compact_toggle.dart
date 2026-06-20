@@ -23,11 +23,16 @@ class UserNotificationCompactToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: isDark ? Colors.black : OpenVtsColors.surfaceElevated,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(
+          color: isDark ? OpenVtsColors.white : OpenVtsColors.border,
+        ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.xs),
       child: SizedBox(
@@ -38,14 +43,18 @@ class UserNotificationCompactToggle extends StatelessWidget {
               Icon(
                 icon,
                 size: 14,
-                color: OpenVtsColors.textSecondary,
+                color: isDark
+                    ? OpenVtsColors.white.withValues(alpha: 0.7)
+                    : OpenVtsColors.textSecondary,
               ),
             if (icon != null) const SizedBox(width: OpenVtsSpacing.xxs),
             Expanded(
               child: Text(
                 label,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: isDark
+                      ? OpenVtsColors.white.withValues(alpha: 0.7)
+                      : OpenVtsColors.textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
                 maxLines: 1,

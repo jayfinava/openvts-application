@@ -60,7 +60,7 @@ class UserSupportTicketCard extends ConsumerWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.body.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w800,
                         height: 1.25,
                       ),
@@ -91,7 +91,7 @@ class UserSupportTicketCard extends ConsumerWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     height: 1.35,
                   ),
                 ),
@@ -107,7 +107,7 @@ class UserSupportTicketCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textTertiary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -115,7 +115,7 @@ class UserSupportTicketCard extends ConsumerWidget {
                   Text(
                     '${ticket.messageCount} ${ticket.messageCount == 1 ? 'msg' : 'msgs'}',
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.textTertiary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -199,13 +199,14 @@ class _PlainMeta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.xs,
         vertical: OpenVtsSpacing.xxs,
       ),
       decoration: BoxDecoration(
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: colorScheme.outline),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       ),
       child: Text(
@@ -213,7 +214,7 @@ class _PlainMeta extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.textSecondary,
+          color: colorScheme.onSurfaceVariant,
           fontWeight: FontWeight.w600,
         ),
       ),

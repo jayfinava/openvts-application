@@ -91,6 +91,12 @@ class _GroupChoiceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final selectedForeground =
+        isDark ? OpenVtsColors.white : OpenVtsColors.brandInk;
+
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 44),
       child: ChoiceChip(
@@ -99,23 +105,35 @@ class _GroupChoiceChip extends StatelessWidget {
         avatar: Icon(
           item.icon,
           size: 15,
-          color:
-              selected ? OpenVtsColors.brandInk : OpenVtsColors.textSecondary,
+          color: selected
+              ? selectedForeground
+              : isDark
+                  ? OpenVtsColors.white.withValues(alpha: 0.7)
+                  : OpenVtsColors.textSecondary,
         ),
         label: Text(item.label),
         onSelected: (_) => onTap(),
         materialTapTargetSize: MaterialTapTargetSize.padded,
-        selectedColor: OpenVtsColors.brandInk.withValues(alpha: 0.10),
-        backgroundColor: OpenVtsColors.surfaceElevated,
+        selectedColor: isDark
+            ? OpenVtsColors.white.withValues(alpha: 0.15)
+            : OpenVtsColors.brandInk.withValues(alpha: 0.10),
+        backgroundColor: isDark ? Colors.black : OpenVtsColors.surfaceElevated,
         side: BorderSide(
-          color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
+          color: selected
+              ? (isDark ? OpenVtsColors.white : OpenVtsColors.brandInk)
+              : isDark
+                  ? OpenVtsColors.white
+                  : OpenVtsColors.border,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         ),
         labelStyle: OpenVtsTypography.meta.copyWith(
-          color:
-              selected ? OpenVtsColors.brandInk : OpenVtsColors.textSecondary,
+          color: selected
+              ? selectedForeground
+              : isDark
+                  ? OpenVtsColors.white.withValues(alpha: 0.7)
+                  : OpenVtsColors.textSecondary,
           fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
         ),
       ),

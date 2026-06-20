@@ -25,6 +25,8 @@ class UserNotificationSaveBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return AnimatedPadding(
       duration: const Duration(milliseconds: 180),
@@ -51,7 +53,7 @@ class UserNotificationSaveBar extends StatelessWidget {
                           ? 'Saving changes...'
                           : 'You have unsaved changes.',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: isDark ? OpenVtsColors.white.withValues(alpha: 0.7) : OpenVtsColors.textSecondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -90,7 +92,7 @@ class UserNotificationSaveBar extends StatelessWidget {
                           ? 'Saving changes...'
                           : 'You have unsaved changes.',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: isDark ? OpenVtsColors.white.withValues(alpha: 0.7) : OpenVtsColors.textSecondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

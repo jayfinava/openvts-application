@@ -52,8 +52,10 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
       );
     }
 
-    final profileFailureMessage = _firstMeaningful(state.profileErrorMessage, state.errorMessage);
-    final didProfileLoadFail = !state.hasProfile && profileFailureMessage != null;
+    final profileFailureMessage =
+        _firstMeaningful(state.profileErrorMessage, state.errorMessage);
+    final didProfileLoadFail =
+        !state.hasProfile && profileFailureMessage != null;
     if (didProfileLoadFail) {
       return OpenVtsPageScaffold(
         title: 'Settings',
@@ -67,10 +69,13 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
 
     final selectedTab = state.selectedTab;
     final isProfileTab = selectedTab == UserSettingsTab.profile;
-    final currentTabDirty = isProfileTab ? state.isProfileDirty : state.isLocalizationDirty;
-    final currentTabSaving = isProfileTab ? state.isSavingProfile : state.isSavingLocalization;
+    final currentTabDirty =
+        isProfileTab ? state.isProfileDirty : state.isLocalizationDirty;
+    final currentTabSaving =
+        isProfileTab ? state.isSavingProfile : state.isSavingLocalization;
     final canResetCurrentTab = currentTabDirty && !currentTabSaving;
-    final canSaveCurrentTab = isProfileTab ? state.canSaveProfile : state.canSaveLocalization;
+    final canSaveCurrentTab =
+        isProfileTab ? state.canSaveProfile : state.canSaveLocalization;
 
     final listBottomPadding = currentTabDirty || currentTabSaving
         ? 116.0 + MediaQuery.paddingOf(context).bottom
@@ -98,8 +103,9 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
     }
 
     Future<void> onSaveCurrentTab() async {
-      final saved =
-          isProfileTab ? await controller.saveProfile() : await controller.saveLocalization();
+      final saved = isProfileTab
+          ? await controller.saveProfile()
+          : await controller.saveLocalization();
       if (!mounted || !saved) {
         return;
       }
@@ -107,7 +113,9 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
       if (!isProfileTab) {
         final loc = ref.read(userSettingsControllerProvider).localization;
         if (loc != null) {
-          await ref.read(appLocalizationPreferencesProvider.notifier).applyFromUserSettings(
+          await ref
+              .read(appLocalizationPreferencesProvider.notifier)
+              .applyFromUserSettings(
                 languageCode: loc.language,
                 dateFormat: loc.dateFormat,
                 timeFormat: loc.use24Hour ? '24H' : '12H',
@@ -121,7 +129,9 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
       }
 
       ToastHelper.showSuccess(
-        isProfileTab ? 'Profile settings updated.' : 'Localization settings updated.',
+        isProfileTab
+            ? 'Profile settings updated.'
+            : 'Localization settings updated.',
       );
     }
 
@@ -185,9 +195,11 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
                           onChanged: controller.selectTab,
                         ),
                         const SizedBox(height: OpenVtsSpacing.sm),
-                        if (state.errorMessage != null && state.errorMessage!.trim().isNotEmpty)
+                        if (state.errorMessage != null &&
+                            state.errorMessage!.trim().isNotEmpty)
                           Padding(
-                            padding: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
+                            padding: const EdgeInsets.only(
+                                bottom: OpenVtsSpacing.sm),
                             child: _InlineNoticeBanner(
                               message: state.errorMessage!,
                               tone: _NoticeTone.error,
@@ -198,18 +210,22 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
                             state.localizationErrorMessage != null &&
                             state.localizationErrorMessage!.trim().isNotEmpty)
                           Padding(
-                            padding: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
+                            padding: const EdgeInsets.only(
+                                bottom: OpenVtsSpacing.sm),
                             child: _InlineNoticeBanner(
-                              message: 'Using safe defaults. ${state.localizationErrorMessage!}',
+                              message:
+                                  'Using safe defaults. ${state.localizationErrorMessage!}',
                               tone: _NoticeTone.warning,
-                              onDismiss: controller.clearLocalizationErrorMessage,
+                              onDismiss:
+                                  controller.clearLocalizationErrorMessage,
                             ),
                           ),
                         if (isProfileTab &&
                             state.profileErrorMessage != null &&
                             state.profileErrorMessage!.trim().isNotEmpty)
                           Padding(
-                            padding: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
+                            padding: const EdgeInsets.only(
+                                bottom: OpenVtsSpacing.sm),
                             child: _InlineNoticeBanner(
                               message: state.profileErrorMessage!,
                               tone: _NoticeTone.error,
@@ -259,7 +275,9 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
   ) {
     final previousError = previous?.errorMessage?.trim();
     final currentError = next.errorMessage?.trim();
-    if (currentError != null && currentError.isNotEmpty && currentError != previousError) {
+    if (currentError != null &&
+        currentError.isNotEmpty &&
+        currentError != previousError) {
       ToastHelper.showError(currentError);
     }
 
@@ -271,7 +289,8 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
       ToastHelper.showError(currentProfileError);
     }
 
-    final previousLocalizationError = previous?.localizationErrorMessage?.trim();
+    final previousLocalizationError =
+        previous?.localizationErrorMessage?.trim();
     final currentLocalizationError = next.localizationErrorMessage?.trim();
     if (currentLocalizationError != null &&
         currentLocalizationError.isNotEmpty &&
@@ -304,9 +323,9 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
         final insets = MediaQuery.viewInsetsOf(sheetContext).bottom;
 
         return DecoratedBox(
-          decoration: const BoxDecoration(
-            color: OpenVtsColors.surface,
-            borderRadius: BorderRadius.vertical(
+          decoration: BoxDecoration(
+            color: Theme.of(sheetContext).colorScheme.surfaceContainer,
+            borderRadius: const BorderRadius.vertical(
               top: Radius.circular(OpenVtsRadius.lg),
             ),
           ),
@@ -326,7 +345,7 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
                   Text(
                     'Discard unsaved changes?',
                     style: OpenVtsTypography.label.copyWith(
-                      color: OpenVtsColors.textPrimary,
+                      color: Theme.of(sheetContext).colorScheme.onSurface,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -334,7 +353,8 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
                   Text(
                     '$tabLabel has unsaved edits. Refreshing now will discard them.',
                     style: OpenVtsTypography.body.copyWith(
-                      color: OpenVtsColors.textSecondary,
+                      color:
+                          Theme.of(sheetContext).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
@@ -408,7 +428,9 @@ class _InlineNoticeBanner extends StatelessWidget {
         child: Row(
           children: [
             Icon(
-              isWarning ? Icons.warning_amber_rounded : Icons.error_outline_rounded,
+              isWarning
+                  ? Icons.warning_amber_rounded
+                  : Icons.error_outline_rounded,
               size: 17,
               color: foreground,
             ),

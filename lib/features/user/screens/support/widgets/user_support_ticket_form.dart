@@ -1,7 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:open_vts/core/theme/open_vts_colors.dart';
 import 'package:open_vts/core/theme/open_vts_spacing.dart';
 import 'package:open_vts/core/theme/open_vts_typography.dart';
 import 'package:open_vts/features/user/controllers/user_providers.dart';
@@ -77,8 +76,7 @@ class _UserSupportTicketFormState extends ConsumerState<UserSupportTicketForm> {
     }
 
     if (detail == null) {
-      final error =
-          ref.read(userSupportControllerProvider).errorMessage ??
+      final error = ref.read(userSupportControllerProvider).errorMessage ??
           'Unable to create ticket right now.';
       ToastHelper.showError(error, context: context);
       return;
@@ -207,6 +205,7 @@ class _CreateTicketHelperCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       child: Column(
@@ -215,7 +214,7 @@ class _CreateTicketHelperCard extends StatelessWidget {
           Text(
             'New support ticket',
             style: OpenVtsTypography.titleSmall.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: colorScheme.onSurface,
               fontWeight: FontWeight.w800,
               fontSize: 16,
             ),
@@ -224,7 +223,7 @@ class _CreateTicketHelperCard extends StatelessWidget {
           Text(
             'Briefly describe the issue and attach files if needed.',
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -274,36 +273,36 @@ class _TicketFields extends StatelessWidget {
             final stackFields = constraints.maxWidth < 460;
             final categoryField =
                 DropdownButtonFormField<UserSupportTicketCategory>(
-                  initialValue: category,
-                  isDense: true,
-                  isExpanded: true,
-                  decoration: _fieldDecoration('Category'),
-                  items: UserSupportTicketCategory.values
-                      .map(
-                        (value) => DropdownMenuItem(
-                          value: value,
-                          child: Text(value.label),
-                        ),
-                      )
-                      .toList(growable: false),
-                  onChanged: isCreating ? null : onCategoryChanged,
-                );
+              initialValue: category,
+              isDense: true,
+              isExpanded: true,
+              decoration: _fieldDecoration('Category'),
+              items: UserSupportTicketCategory.values
+                  .map(
+                    (value) => DropdownMenuItem(
+                      value: value,
+                      child: Text(value.label),
+                    ),
+                  )
+                  .toList(growable: false),
+              onChanged: isCreating ? null : onCategoryChanged,
+            );
             final priorityField =
                 DropdownButtonFormField<UserSupportTicketPriority>(
-                  initialValue: priority,
-                  isDense: true,
-                  isExpanded: true,
-                  decoration: _fieldDecoration('Priority'),
-                  items: UserSupportTicketPriority.values
-                      .map(
-                        (value) => DropdownMenuItem(
-                          value: value,
-                          child: Text(value.label),
-                        ),
-                      )
-                      .toList(growable: false),
-                  onChanged: isCreating ? null : onPriorityChanged,
-                );
+              initialValue: priority,
+              isDense: true,
+              isExpanded: true,
+              decoration: _fieldDecoration('Priority'),
+              items: UserSupportTicketPriority.values
+                  .map(
+                    (value) => DropdownMenuItem(
+                      value: value,
+                      child: Text(value.label),
+                    ),
+                  )
+                  .toList(growable: false),
+              onChanged: isCreating ? null : onPriorityChanged,
+            );
 
             if (stackFields) {
               return Column(
@@ -374,6 +373,7 @@ class _TicketFormActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return SafeArea(
       top: false,
       child: Container(
@@ -383,9 +383,9 @@ class _TicketFormActionBar extends StatelessWidget {
           OpenVtsSpacing.md,
           OpenVtsSpacing.md,
         ),
-        decoration: const BoxDecoration(
-          color: OpenVtsColors.surface,
-          border: Border(top: BorderSide(color: OpenVtsColors.border)),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          border: Border(top: BorderSide(color: colorScheme.outline)),
         ),
         child: Align(
           alignment: Alignment.center,

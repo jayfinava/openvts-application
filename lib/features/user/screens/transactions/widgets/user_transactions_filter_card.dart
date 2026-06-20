@@ -74,6 +74,8 @@ class _UserTransactionsFilterCardState
     final hasAdvancedSelection = widget.selectedPaymentMode != null ||
         (selectedPaymentType != null && selectedPaymentType.isNotEmpty);
     final showAdvancedFilters = _showAdvancedFilters || hasAdvancedSelection;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headingColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
 
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
@@ -86,6 +88,7 @@ class _UserTransactionsFilterCardState
                 'Filters',
                 style: OpenVtsTypography.label.copyWith(
                   fontWeight: FontWeight.w700,
+                  color: headingColor,
                 ),
               ),
               const Spacer(),
@@ -344,10 +347,13 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.grey[300] : OpenVtsColors.textSecondary;
+
     return Text(
       text,
       style: OpenVtsTypography.meta.copyWith(
-        color: OpenVtsColors.textSecondary,
+        color: textColor,
         fontWeight: FontWeight.w700,
       ),
     );
@@ -367,16 +373,26 @@ class _CompactChoiceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor =
+        isDark ? Colors.black : OpenVtsColors.surfaceElevated;
+    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
+    final unselectedTextColor =
+        isDark ? Colors.white : OpenVtsColors.textPrimary;
+
     return ChoiceChip(
       selected: selected,
       showCheckmark: false,
       onSelected: (_) => onTap(),
       labelPadding: const EdgeInsets.symmetric(horizontal: 2),
       materialTapTargetSize: MaterialTapTargetSize.padded,
-      selectedColor: OpenVtsColors.brandInk,
-      backgroundColor: OpenVtsColors.surfaceElevated,
+      selectedColor: isDark ? Colors.white : OpenVtsColors.brandInk,
+      backgroundColor: backgroundColor,
       side: BorderSide(
-        color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
+        color: selected
+            ? (isDark ? Colors.white : Colors.transparent)
+            : borderColor,
+        width: 1,
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -384,7 +400,9 @@ class _CompactChoiceChip extends StatelessWidget {
       label: Text(
         label,
         style: OpenVtsTypography.meta.copyWith(
-          color: selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
+          color: selected
+              ? (isDark ? Colors.black : Colors.white)
+              : unselectedTextColor,
           fontWeight: FontWeight.w600,
         ),
       ),

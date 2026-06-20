@@ -41,14 +41,15 @@ class UserSubUserCard extends ConsumerWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: OpenVtsColors.surface,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: OpenVtsColors.border),
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.person_outline_rounded,
                   size: 17,
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
@@ -61,7 +62,7 @@ class UserSubUserCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -71,24 +72,25 @@ class UserSubUserCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
                 size: 18,
-                color: OpenVtsColors.textTertiary,
+                color: Theme.of(context).colorScheme.outline,
               ),
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
           _InfoRow(label: 'Email', value: _displayEmail(subUser)),
           _InfoRow(label: 'Mobile', value: _displayMobile(subUser)),
-          _InfoRow(label: 'Created', value: _displayCreated(subUser, dateFormatter)),
+          _InfoRow(
+              label: 'Created', value: _displayCreated(subUser, dateFormatter)),
           const SizedBox(height: OpenVtsSpacing.xs),
           Row(
             children: [
@@ -101,8 +103,8 @@ class UserSubUserCard extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                   border: Border.all(
                     color: (isActive
-                            ? OpenVtsColors.textSecondary
-                            : OpenVtsColors.textTertiary)
+                            ? Theme.of(context).colorScheme.onSurfaceVariant
+                            : Theme.of(context).colorScheme.outline)
                         .withValues(alpha: 0.35),
                   ),
                 ),
@@ -110,8 +112,8 @@ class UserSubUserCard extends ConsumerWidget {
                   isActive ? 'Active' : 'Inactive',
                   style: OpenVtsTypography.meta.copyWith(
                     color: isActive
-                        ? OpenVtsColors.textSecondary
-                        : OpenVtsColors.textTertiary,
+                        ? Theme.of(context).colorScheme.onSurfaceVariant
+                        : Theme.of(context).colorScheme.outline,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -120,7 +122,7 @@ class UserSubUserCard extends ConsumerWidget {
               Text(
                 'Status',
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -173,7 +175,7 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textTertiary,
+                color: Theme.of(context).colorScheme.outline,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -185,7 +187,7 @@ class _InfoRow extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w700,
               ),
             ),

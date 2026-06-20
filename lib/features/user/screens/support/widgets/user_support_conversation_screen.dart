@@ -300,6 +300,7 @@ class _ConversationHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dateFormatter = ref.watch(appDateFormatterProvider);
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(
@@ -308,9 +309,9 @@ class _ConversationHeader extends ConsumerWidget {
         OpenVtsSpacing.md,
         OpenVtsSpacing.sm,
       ),
-      decoration: const BoxDecoration(
-        color: OpenVtsColors.surface,
-        border: Border(bottom: BorderSide(color: OpenVtsColors.border)),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        border: Border(bottom: BorderSide(color: colorScheme.outline)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -340,7 +341,7 @@ class _ConversationHeader extends ConsumerWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.titleSmall.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: colorScheme.onSurface,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -350,7 +351,7 @@ class _ConversationHeader extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textTertiary,
+                        color: colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -400,8 +401,7 @@ class _ConversationHeader extends ConsumerWidget {
                 ),
               if (ticket.closedAt != null)
                 _MetaChip(
-                  label:
-                      'Closed ${dateFormatter.formatDate(ticket.closedAt!)}',
+                  label: 'Closed ${dateFormatter.formatDate(ticket.closedAt!)}',
                 ),
             ],
           ),
@@ -495,14 +495,15 @@ class _ReplyComposer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return SafeArea(
       top: false,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(OpenVtsSpacing.md),
-        decoration: const BoxDecoration(
-          color: OpenVtsColors.surface,
-          border: Border(top: BorderSide(color: OpenVtsColors.border)),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          border: Border(top: BorderSide(color: colorScheme.outline)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -569,14 +570,15 @@ class _ClosedTicketNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return SafeArea(
       top: false,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(OpenVtsSpacing.md),
-        decoration: const BoxDecoration(
-          color: OpenVtsColors.surface,
-          border: Border(top: BorderSide(color: OpenVtsColors.border)),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          border: Border(top: BorderSide(color: colorScheme.outline)),
         ),
         child: Container(
           padding: const EdgeInsets.symmetric(
@@ -584,14 +586,14 @@ class _ClosedTicketNotice extends StatelessWidget {
             vertical: OpenVtsSpacing.xs,
           ),
           decoration: BoxDecoration(
-            color: OpenVtsColors.surface,
-            border: Border.all(color: OpenVtsColors.border),
+            color: colorScheme.surface,
+            border: Border.all(color: colorScheme.outline),
             borderRadius: BorderRadius.circular(OpenVtsRadius.md),
           ),
           child: Text(
             'This ticket is closed or resolved. Replies are disabled.',
             style: OpenVtsTypography.body.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -609,23 +611,24 @@ class _MetaChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chipColor = color ?? OpenVtsColors.textSecondary;
+    final colorScheme = Theme.of(context).colorScheme;
+    final chipColor = color ?? colorScheme.onSurfaceVariant;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
         vertical: OpenVtsSpacing.xxs,
       ),
       decoration: BoxDecoration(
-        color: chipColor.withValues(alpha: 0.08),
+        color: chipColor.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: chipColor.withValues(alpha: 0.18)),
+        border: Border.all(color: chipColor.withValues(alpha: 0.28)),
       ),
       child: Text(
         label,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: OpenVtsTypography.meta.copyWith(
-          color: chipColor,
+          color: colorScheme.onSurfaceVariant,
           fontWeight: FontWeight.w800,
         ),
       ),
@@ -640,6 +643,7 @@ class _InlineConversationError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
@@ -647,13 +651,13 @@ class _InlineConversationError extends StatelessWidget {
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.error.withValues(alpha: 0.07),
-        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.28)),
+        color: colorScheme.error.withValues(alpha: 0.15),
+        border: Border.all(color: colorScheme.error.withValues(alpha: 0.35)),
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       ),
       child: Text(
         message,
-        style: OpenVtsTypography.body.copyWith(color: OpenVtsColors.error),
+        style: OpenVtsTypography.body.copyWith(color: colorScheme.error),
       ),
     );
   }

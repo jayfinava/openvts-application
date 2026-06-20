@@ -579,6 +579,9 @@ class _ActionMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     final child = Row(
       children: [
         if (isLoading)
@@ -590,13 +593,15 @@ class _ActionMenuItem extends StatelessWidget {
           Icon(
             icon,
             size: 16,
-            color: OpenVtsColors.textSecondary,
+            color: isDark
+                ? OpenVtsColors.white.withValues(alpha: 0.7)
+                : OpenVtsColors.textSecondary,
           ),
         const SizedBox(width: OpenVtsSpacing.xs),
         Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: OpenVtsColors.textPrimary,
+            color: isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -676,9 +681,14 @@ class _CompactActionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final disabled = onTap == null && !isLoading;
-    final foregroundColor =
-        disabled ? OpenVtsColors.textTertiary : OpenVtsColors.textSecondary;
+    final foregroundColor = isDark
+        ? (disabled
+            ? OpenVtsColors.white.withValues(alpha: 0.5)
+            : OpenVtsColors.white.withValues(alpha: 0.7))
+        : (disabled ? OpenVtsColors.textTertiary : OpenVtsColors.textSecondary);
     final child = InkWell(
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       onTap: isLoading ? null : onTap,
@@ -686,10 +696,15 @@ class _CompactActionChip extends StatelessWidget {
         height: 44,
         padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.xs),
         decoration: BoxDecoration(
-          color:
-              disabled ? OpenVtsColors.surface : OpenVtsColors.surfaceElevated,
+          color: isDark
+              ? Colors.black
+              : (disabled
+                  ? OpenVtsColors.surface
+                  : OpenVtsColors.surfaceElevated),
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-          border: Border.all(color: OpenVtsColors.border),
+          border: Border.all(
+            color: isDark ? OpenVtsColors.white : OpenVtsColors.border,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -709,9 +724,13 @@ class _CompactActionChip extends StatelessWidget {
             Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: disabled
-                    ? OpenVtsColors.textTertiary
-                    : OpenVtsColors.textPrimary,
+                color: isDark
+                    ? (disabled
+                        ? OpenVtsColors.white.withValues(alpha: 0.5)
+                        : OpenVtsColors.white)
+                    : (disabled
+                        ? OpenVtsColors.textTertiary
+                        : OpenVtsColors.textPrimary),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -787,6 +806,9 @@ class _InlineErrorBanner extends StatelessWidget {
 }
 
 Future<bool> _showRefreshDiscardSheet(BuildContext context) async {
+  final theme = Theme.of(context);
+  final isDark = theme.brightness == Brightness.dark;
+
   final shouldDiscard = await showModalBottomSheet<bool>(
     context: context,
     backgroundColor: Colors.transparent,
@@ -805,7 +827,9 @@ Future<bool> _showRefreshDiscardSheet(BuildContext context) async {
                 Text(
                   'Discard unsaved changes?',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: isDark
+                        ? OpenVtsColors.white
+                        : OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -813,7 +837,9 @@ Future<bool> _showRefreshDiscardSheet(BuildContext context) async {
                 Text(
                   'Refreshing will replace your current unsaved notification edits with the latest server settings.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: isDark
+                        ? OpenVtsColors.white.withValues(alpha: 0.7)
+                        : OpenVtsColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: OpenVtsSpacing.sm),
