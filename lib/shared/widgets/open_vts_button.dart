@@ -33,10 +33,12 @@ class OpenVtsButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           elevation: 0,
-          backgroundColor:
-              isPrimary ? OpenVtsColors.brandInk : OpenVtsColors.white,
-          foregroundColor:
-              isPrimary ? OpenVtsColors.white : OpenVtsColors.brandInk,
+          backgroundColor: isPrimary
+              ? OpenVtsColors.brandInk
+              : (isDark ? OpenVtsColors.brandInk : OpenVtsColors.white),
+          foregroundColor: isPrimary
+              ? OpenVtsColors.white
+              : (isDark ? OpenVtsColors.white : OpenVtsColors.brandInk),
           disabledBackgroundColor:
               isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
           disabledForegroundColor: isDark
@@ -47,7 +49,7 @@ class OpenVtsButton extends StatelessWidget {
             side: BorderSide(
               color: isPrimary
                   ? OpenVtsColors.brandInk
-                  : (isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+                  : (isDark ? OpenVtsColors.white : OpenVtsColors.border),
             ),
           ),
         ),
