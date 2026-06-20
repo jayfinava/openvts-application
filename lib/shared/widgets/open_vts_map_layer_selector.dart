@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/open_vts_colors.dart' as open_vts_colors;
+
 // ---------------------------------------------------------------------------
 // Layer option and selector button
 // ---------------------------------------------------------------------------
@@ -197,9 +199,10 @@ class OpenVtsMapLayerSelectorButton extends StatelessWidget {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.94),
+            color: open_vts_colors.OpenVtsColors.brandInk,
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
+            border: Border.all(
+                color: open_vts_colors.OpenVtsColors.white, width: 2),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.1),
@@ -208,10 +211,10 @@ class OpenVtsMapLayerSelectorButton extends StatelessWidget {
               ),
             ],
           ),
-          child: Icon(
+          child: const Icon(
             Icons.layers_rounded,
             size: 22,
-            color: Colors.black.withValues(alpha: 0.78),
+            color: open_vts_colors.OpenVtsColors.white,
           ),
         ),
       ),
@@ -260,7 +263,8 @@ class _MapLayerDrawerSheetState extends State<_MapLayerDrawerSheet> {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: ConstrainedBox(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.74,
@@ -315,9 +319,10 @@ class _MapLayerDrawerSheetState extends State<_MapLayerDrawerSheet> {
                               Expanded(
                                 child: _MapLayerCard(
                                   option: primaryOptions[index],
-                                  isSelected:
-                                      _selectedLayerId == primaryOptions[index].id,
-                                  onTap: () => _selectLayer(primaryOptions[index]),
+                                  isSelected: _selectedLayerId ==
+                                      primaryOptions[index].id,
+                                  onTap: () =>
+                                      _selectLayer(primaryOptions[index]),
                                   large: true,
                                 ),
                               ),
