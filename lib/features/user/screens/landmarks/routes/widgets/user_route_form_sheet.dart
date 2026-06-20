@@ -350,17 +350,17 @@ class _GeometryCard extends StatelessWidget {
     final hasGeometry = points.length >= 2;
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.white),
       ),
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.timeline,
             size: 18,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: OpenVtsColors.white,
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
           Expanded(
@@ -370,7 +370,7 @@ class _GeometryCard extends StatelessWidget {
                 Text(
                   hasGeometry ? '${points.length} points' : 'No geometry yet',
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.white,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -380,7 +380,7 @@ class _GeometryCard extends StatelessWidget {
                       ? 'Tolerance ±${toleranceM.toStringAsFixed(0)} m'
                       : 'Draw at least 2 points on the map.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.white,
                   ),
                 ),
               ],
@@ -388,10 +388,13 @@ class _GeometryCard extends StatelessWidget {
           ),
           TextButton(
             onPressed: onOpenEditor,
+            style: TextButton.styleFrom(
+              foregroundColor: OpenVtsColors.white,
+            ),
             child: Text(
               hasGeometry ? 'Edit on map' : 'Draw on map',
               style: OpenVtsTypography.label.copyWith(
-                color: OpenVtsColors.brandInk,
+                color: OpenVtsColors.white,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -412,13 +415,13 @@ class _ActiveToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.white),
       ),
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
-        vertical: 4,
+        vertical: 6,
       ),
       child: Row(
         children: [
@@ -429,14 +432,14 @@ class _ActiveToggle extends StatelessWidget {
                 Text(
                   'Active',
                   style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: OpenVtsColors.white,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 Text(
                   'Inactive routes stay archived but visible.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: OpenVtsColors.white,
                   ),
                 ),
               ],
@@ -445,7 +448,10 @@ class _ActiveToggle extends StatelessWidget {
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeThumbColor: OpenVtsColors.brandInk,
+            activeThumbColor: OpenVtsColors.white,
+            activeTrackColor: OpenVtsColors.brandInk.withValues(alpha: 0.5),
+            inactiveThumbColor: OpenVtsColors.white,
+            inactiveTrackColor: const Color(0xFF555555),
           ),
         ],
       ),
