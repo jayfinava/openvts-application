@@ -293,7 +293,8 @@ class _UserPoiPickerMapState extends State<UserPoiPickerMap> {
                               point: _point!,
                               useRadiusInMeter: true,
                               radius: _tolerance,
-                              color: OpenVtsColors.brandInk.withValues(alpha: 0.10),
+                              color: OpenVtsColors.brandInk
+                                  .withValues(alpha: 0.10),
                               borderStrokeWidth: 1.2,
                               borderColor: OpenVtsColors.brandInk.withValues(
                                 alpha: 0.6,
@@ -792,4 +793,3 @@ class _SearchBar extends StatelessWidget {
     );
   }
 }
-

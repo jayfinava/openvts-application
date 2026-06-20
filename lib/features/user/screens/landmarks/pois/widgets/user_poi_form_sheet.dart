@@ -214,7 +214,8 @@ class _UserPoiFormBodyState extends ConsumerState<_UserPoiFormBody> {
         _submitting = false;
         _error = userLandmarkErrorMessage(
           error,
-          fallback: 'Could not save POI. Please check the details and try again.',
+          fallback:
+              'Could not save POI. Please check the details and try again.',
         );
       });
     }
