@@ -315,7 +315,7 @@ class _DocumentCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
                       ),
@@ -326,7 +326,7 @@ class _DocumentCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -343,7 +343,11 @@ class _DocumentCard extends StatelessWidget {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Icon(Icons.more_vert_rounded, size: 18),
+                    : Icon(
+                        Icons.more_vert_rounded,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                 onSelected: (action) {
                   switch (action) {
                     case _DocumentAction.view:
@@ -1004,7 +1008,8 @@ class _InfoLine extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
+        Icon(icon,
+            size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Text(
@@ -1012,7 +1017,7 @@ class _InfoLine extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -1026,31 +1031,32 @@ class _MetaPill extends StatelessWidget {
   const _MetaPill({
     required this.icon,
     required this.label,
-    this.color = OpenVtsColors.textSecondary,
+    this.color,
   });
 
   final IconData icon;
   final String label;
-  final Color color;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
+    final pillColor = color ?? Theme.of(context).colorScheme.onSurfaceVariant;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.06),
+        color: pillColor.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: color.withValues(alpha: 0.18)),
+        border: Border.all(color: pillColor.withValues(alpha: 0.28)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: color),
+          Icon(icon, size: 12, color: pillColor),
           const SizedBox(width: 4),
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: color,
+              color: pillColor,
               fontSize: 11,
               fontWeight: FontWeight.w700,
             ),
@@ -1074,8 +1080,9 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        isDestructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
+    final color = isDestructive
+        ? OpenVtsColors.error
+        : Theme.of(context).colorScheme.onSurface;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -1103,9 +1110,9 @@ class _InlineError extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: OpenVtsColors.error.withValues(alpha: 0.05),
+        color: OpenVtsColors.error.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.2)),
+        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

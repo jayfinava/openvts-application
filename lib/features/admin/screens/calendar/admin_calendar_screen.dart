@@ -129,8 +129,8 @@ class AdminCalendarScreen extends ConsumerWidget {
                                 headerVisible: false,
                                 daysOfWeekHeight: 20,
                                 startingDayOfWeek: StartingDayOfWeek.sunday,
-                                availableCalendarFormats:
-                                    const <CalendarFormat, String>{
+                                availableCalendarFormats: const <CalendarFormat,
+                                    String>{
                                   CalendarFormat.month: 'Month',
                                 },
                                 selectedDayPredicate: (day) =>
@@ -150,7 +150,8 @@ class AdminCalendarScreen extends ConsumerWidget {
                                       .read(adminCalendarFocusedDateProvider
                                           .notifier)
                                       .state = focusedDay;
-                                  _showDayDetailsSheet(context, selectedDay, formatter);
+                                  _showDayDetailsSheet(
+                                      context, selectedDay, formatter);
                                 },
                                 onPageChanged: (focusedDay) {
                                   ref
@@ -314,7 +315,8 @@ class AdminCalendarScreen extends ConsumerWidget {
         .toList(growable: false);
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: horizontalGap, vertical: verticalGap),
+      padding: EdgeInsets.symmetric(
+          horizontal: horizontalGap, vertical: verticalGap),
       child: Center(
         child: AspectRatio(
           aspectRatio: 1,
@@ -327,7 +329,7 @@ class AdminCalendarScreen extends ConsumerWidget {
               boxShadow: isSelected
                   ? <BoxShadow>[
                       BoxShadow(
-                        color: OpenVtsColors.brandInk.withValues(alpha: 0.06),
+                        color: OpenVtsColors.brandInk.withValues(alpha: 0.15),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -343,8 +345,9 @@ class AdminCalendarScreen extends ConsumerWidget {
                     color: foregroundColor,
                     fontSize: 13,
                     height: 1.0,
-                    fontWeight:
-                        isSelected || isToday ? FontWeight.w700 : FontWeight.w600,
+                    fontWeight: isSelected || isToday
+                        ? FontWeight.w700
+                        : FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -354,7 +357,8 @@ class AdminCalendarScreen extends ConsumerWidget {
                     children: [
                       ...visibleMetricRows,
                       const Spacer(),
-                      if (isToday && !isOutside) _TodayBadge(inverted: isSelected),
+                      if (isToday && !isOutside)
+                        _TodayBadge(inverted: isSelected),
                     ],
                   ),
                 ),
@@ -372,7 +376,8 @@ class AdminCalendarScreen extends ConsumerWidget {
     required double verticalGap,
   }) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: horizontalGap, vertical: verticalGap),
+      padding: EdgeInsets.symmetric(
+          horizontal: horizontalGap, vertical: verticalGap),
       child: Align(
         alignment: Alignment.topCenter,
         child: Padding(
@@ -380,7 +385,7 @@ class AdminCalendarScreen extends ConsumerWidget {
           child: Text(
             '${day.day}',
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textTertiary.withValues(alpha: 0.72),
+              color: OpenVtsColors.textTertiary.withValues(alpha: 0.85),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -661,7 +666,8 @@ class _DayMetricRow extends StatelessWidget {
     final labelColor = inverted
         ? OpenVtsColors.white.withValues(alpha: 0.88)
         : OpenVtsColors.textSecondary;
-    final valueColor = inverted ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final valueColor =
+        inverted ? OpenVtsColors.white : OpenVtsColors.textPrimary;
 
     return Padding(
       padding: const EdgeInsets.only(top: 1),
@@ -730,7 +736,7 @@ class _TodayBadge extends StatelessWidget {
         fontSize: inverted ? 6.5 : 7,
         height: 1.0,
         color: inverted
-            ? OpenVtsColors.white.withValues(alpha: 0.86)
+            ? Theme.of(context).colorScheme.onSurfaceVariant
             : OpenVtsColors.white,
         fontWeight: FontWeight.w700,
         letterSpacing: inverted ? 0.25 : 0.3,
@@ -748,7 +754,7 @@ class _TodayBadge extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: inverted
-            ? OpenVtsColors.white.withValues(alpha: 0.16)
+            ? Theme.of(context).colorScheme.surfaceContainerHighest
             : OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       ),

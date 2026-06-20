@@ -646,17 +646,10 @@ class _AdminSupportMessageBubble extends StatelessWidget {
     final alignment =
         isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
     final borderColor = isCurrentUser
-<<<<<<< HEAD
         ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.18)
         : Theme.of(context).colorScheme.outlineVariant;
     final backgroundColor = isCurrentUser
         ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.045)
-=======
-        ? OpenVtsColors.brandInk.withValues(alpha: 0.18)
-        : OpenVtsColors.border;
-    final backgroundColor = isCurrentUser
-        ? OpenVtsColors.brandInk.withValues(alpha: 0.045)
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         : Theme.of(context).colorScheme.surface;
 
     return Align(
@@ -873,9 +866,9 @@ class _MetaChip extends StatelessWidget {
         vertical: OpenVtsSpacing.xxs,
       ),
       decoration: BoxDecoration(
-        color: chipColor.withValues(alpha: 0.08),
+        color: chipColor.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: chipColor.withValues(alpha: 0.18)),
+        border: Border.all(color: chipColor.withValues(alpha: 0.28)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -913,13 +906,9 @@ class _InlineConversationError extends StatelessWidget {
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-<<<<<<< HEAD
-        color: Theme.of(context).colorScheme.error.withValues(alpha: 0.07),
-        border: Border.all(color: Theme.of(context).colorScheme.error.withValues(alpha: 0.28)),
-=======
-        color: OpenVtsColors.error.withValues(alpha: 0.07),
-        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.28)),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
+        color: Theme.of(context).colorScheme.error.withValues(alpha: 0.15),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.error.withValues(alpha: 0.35)),
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       ),
       child: Text(

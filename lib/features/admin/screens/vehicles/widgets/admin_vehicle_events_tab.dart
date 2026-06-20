@@ -79,8 +79,8 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
               Text(
                 'Date Range',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: OpenVtsColors.textSecondary,
-                ),
+                      color: OpenVtsColors.textSecondary,
+                    ),
               ),
               const SizedBox(height: OpenVtsSpacing.xs),
               GestureDetector(
@@ -130,8 +130,8 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
               Text(
                 'Event Filters',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               Row(
@@ -149,16 +149,25 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
                       ),
                       items: const [
                         DropdownMenuItem(value: '', child: Text('All sources')),
-                        DropdownMenuItem(value: 'SYSTEM', child: Text('SYSTEM')),
-                        DropdownMenuItem(value: 'GEOFENCE', child: Text('GEOFENCE')),
-                        DropdownMenuItem(value: 'OVERSPEED', child: Text('OVERSPEED')),
-                        DropdownMenuItem(value: 'IGNITION', child: Text('IGNITION')),
-                        DropdownMenuItem(value: 'REMINDER', child: Text('REMINDER')),
-                        DropdownMenuItem(value: 'SENSOR', child: Text('SENSOR')),
-                        DropdownMenuItem(value: 'DRIVER', child: Text('DRIVER')),
-                        DropdownMenuItem(value: 'COMMAND', child: Text('COMMAND')),
+                        DropdownMenuItem(
+                            value: 'SYSTEM', child: Text('SYSTEM')),
+                        DropdownMenuItem(
+                            value: 'GEOFENCE', child: Text('GEOFENCE')),
+                        DropdownMenuItem(
+                            value: 'OVERSPEED', child: Text('OVERSPEED')),
+                        DropdownMenuItem(
+                            value: 'IGNITION', child: Text('IGNITION')),
+                        DropdownMenuItem(
+                            value: 'REMINDER', child: Text('REMINDER')),
+                        DropdownMenuItem(
+                            value: 'SENSOR', child: Text('SENSOR')),
+                        DropdownMenuItem(
+                            value: 'DRIVER', child: Text('DRIVER')),
+                        DropdownMenuItem(
+                            value: 'COMMAND', child: Text('COMMAND')),
                       ],
-                      onChanged: (value) => setState(() => _source = value ?? ''),
+                      onChanged: (value) =>
+                          setState(() => _source = value ?? ''),
                     ),
                   ),
                   const SizedBox(width: OpenVtsSpacing.sm),
@@ -176,11 +185,13 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
                       items: const [
                         DropdownMenuItem(value: '', child: Text('All')),
                         DropdownMenuItem(value: 'INFO', child: Text('INFO')),
-                        DropdownMenuItem(value: 'WARNING', child: Text('WARNING')),
-                        DropdownMenuItem(value: 'CRITICAL', child: Text('CRITICAL')),
+                        DropdownMenuItem(
+                            value: 'WARNING', child: Text('WARNING')),
+                        DropdownMenuItem(
+                            value: 'CRITICAL', child: Text('CRITICAL')),
                       ],
                       onChanged: (value) =>
-                        setState(() => _severity = value ?? ''),
+                          setState(() => _severity = value ?? ''),
                     ),
                   ),
                 ],
@@ -304,9 +315,9 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
   }
 
   Widget _line(String label, String value) => Padding(
-    padding: const EdgeInsets.only(bottom: 4),
-    child: Text('$label: ${_safe(value)}'),
-  );
+        padding: const EdgeInsets.only(bottom: 4),
+        child: Text('$label: ${_safe(value)}'),
+      );
 
   String _json(Map<String, dynamic> value) {
     if (value.isEmpty) return '{}';
@@ -385,7 +396,11 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Dialog(
+      backgroundColor: colorScheme.surface,
+      surfaceTintColor: Colors.transparent,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(OpenVtsSpacing.md),
@@ -396,8 +411,9 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
               Text(
                 'Select Date Range',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                      fontWeight: FontWeight.w700,
+                      color: colorScheme.onSurface,
+                    ),
               ),
               const SizedBox(height: OpenVtsSpacing.md),
               _buildCalendar(),
@@ -407,14 +423,20 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
                   Expanded(
                     child: TextButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Cancel'),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(color: colorScheme.onSurface),
+                      ),
                     ),
                   ),
                   const SizedBox(width: OpenVtsSpacing.sm),
                   Expanded(
                     child: TextButton(
                       onPressed: _setToday,
-                      child: const Text('Today'),
+                      child: Text(
+                        'Today',
+                        style: TextStyle(color: colorScheme.primary),
+                      ),
                     ),
                   ),
                 ],
@@ -448,6 +470,7 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
   }
 
   Widget _buildCalendar() {
+    final colorScheme = Theme.of(context).colorScheme;
     final year = _displayMonth.year;
     final month = _displayMonth.month;
     final firstDay = DateTime(year, month, 1);
@@ -462,21 +485,24 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
             Text(
               _monthYear(_displayMonth),
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.onSurface,
+                  ),
             ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.chevron_left_rounded, size: 20),
+                  icon: Icon(Icons.chevron_left_rounded,
+                      size: 20, color: colorScheme.onSurface),
                   onPressed: _previousMonth,
                   padding: EdgeInsets.zero,
                   constraints:
                       const BoxConstraints(minWidth: 32, minHeight: 32),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.chevron_right_rounded, size: 20),
+                  icon: Icon(Icons.chevron_right_rounded,
+                      size: 20, color: colorScheme.onSurface),
                   onPressed: _nextMonth,
                   padding: EdgeInsets.zero,
                   constraints:
@@ -487,17 +513,17 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
           ],
         ),
         const SizedBox(height: OpenVtsSpacing.md),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: OpenVtsSpacing.xs),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.xs),
           child: Row(
             children: [
-              _WeekdayLabel('S'),
-              _WeekdayLabel('M'),
-              _WeekdayLabel('T'),
-              _WeekdayLabel('W'),
-              _WeekdayLabel('T'),
-              _WeekdayLabel('F'),
-              _WeekdayLabel('S'),
+              _WeekdayLabel('S', colorScheme: colorScheme),
+              _WeekdayLabel('M', colorScheme: colorScheme),
+              _WeekdayLabel('T', colorScheme: colorScheme),
+              _WeekdayLabel('W', colorScheme: colorScheme),
+              _WeekdayLabel('T', colorScheme: colorScheme),
+              _WeekdayLabel('F', colorScheme: colorScheme),
+              _WeekdayLabel('S', colorScheme: colorScheme),
             ],
           ),
         ),
@@ -530,6 +556,7 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
               inRange: inRange,
               isToday: isToday,
               onTap: () => _selectDate(date),
+              colorScheme: colorScheme,
             );
           },
         ),
@@ -607,9 +634,10 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
 }
 
 class _WeekdayLabel extends StatelessWidget {
-  const _WeekdayLabel(this.label);
+  const _WeekdayLabel(this.label, {required this.colorScheme});
 
   final String label;
+  final ColorScheme colorScheme;
 
   @override
   Widget build(BuildContext context) {
@@ -618,7 +646,7 @@ class _WeekdayLabel extends StatelessWidget {
         child: Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: OpenVtsColors.textSecondary,
+            color: colorScheme.onSurfaceVariant,
             fontSize: 11,
             fontWeight: FontWeight.w600,
           ),
@@ -636,6 +664,7 @@ class _DateCell extends StatelessWidget {
     required this.inRange,
     required this.isToday,
     required this.onTap,
+    required this.colorScheme,
   });
 
   final int dayNumber;
@@ -644,6 +673,7 @@ class _DateCell extends StatelessWidget {
   final bool inRange;
   final bool isToday;
   final VoidCallback onTap;
+  final ColorScheme colorScheme;
 
   @override
   Widget build(BuildContext context) {
@@ -652,13 +682,13 @@ class _DateCell extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: isStart || isEnd
-              ? OpenVtsColors.brandInk
+              ? colorScheme.primary
               : inRange
-                  ? OpenVtsColors.brandInk.withValues(alpha: 0.1)
+                  ? colorScheme.primary.withValues(alpha: 0.15)
                   : Colors.transparent,
           border: Border.all(
             color: isToday && !isStart && !isEnd
-                ? OpenVtsColors.brandInk.withValues(alpha: 0.3)
+                ? colorScheme.primary.withValues(alpha: 0.5)
                 : Colors.transparent,
             width: 1,
           ),
@@ -671,10 +701,10 @@ class _DateCell extends StatelessWidget {
             fontSize: 12,
             fontWeight: FontWeight.w600,
             color: isStart || isEnd
-                ? Colors.white
+                ? colorScheme.onPrimary
                 : isToday
-                    ? OpenVtsColors.brandInk
-                    : OpenVtsColors.textPrimary,
+                    ? colorScheme.primary
+                    : colorScheme.onSurface,
           ),
         ),
       ),
@@ -707,9 +737,9 @@ class _EventCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.2,
-                  ),
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.2,
+                      ),
                 ),
               ),
               if (event.severity != null) ...[
@@ -844,9 +874,9 @@ class _SeverityChip extends StatelessWidget {
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: color.withValues(alpha: 0.25)),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
       child: Text(
         severity.toUpperCase(),

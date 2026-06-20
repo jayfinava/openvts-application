@@ -366,7 +366,8 @@ class _TargetVehicleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = vehicle.name.trim().isEmpty ? vehicle.plateNumber : vehicle.name;
+    final name =
+        vehicle.name.trim().isEmpty ? vehicle.plateNumber : vehicle.name;
     final hasType = vehicle.vehicleType != null;
 
     return OpenVtsCard(
@@ -377,8 +378,8 @@ class _TargetVehicleCard extends StatelessWidget {
           Text(
             'Target Vehicle',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+                  fontWeight: FontWeight.w700,
+                ),
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
           Text(
@@ -386,9 +387,9 @@ class _TargetVehicleCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.2,
-            ),
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.2,
+                ),
           ),
           if (vehicle.plateNumber.trim().isNotEmpty) ...[
             const SizedBox(height: 2),
@@ -528,9 +529,9 @@ class _CommandHistoryCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.2,
-                  ),
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.2,
+                      ),
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
@@ -613,9 +614,9 @@ class _StatusChip extends StatelessWidget {
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: color.withValues(alpha: 0.25)),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
       child: Text(
         status.toUpperCase(),

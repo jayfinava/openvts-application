@@ -62,10 +62,7 @@ class _CalendarDayEventTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     final linkedDetailAsync = detail.isUser
         ? ref.watch(adminCalendarUserDetailsProvider(detail.userId!))
         : detail.isVehicle
@@ -94,13 +91,9 @@ class _CalendarDayEventTile extends ConsumerWidget {
                       child: Text(
                         title,
                         style: OpenVtsTypography.label.copyWith(
-<<<<<<< HEAD
                           color: isDark
                               ? OpenVtsColors.darkTextPrimary
                               : OpenVtsColors.textPrimary,
-=======
-                          color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         ),
                       ),
                     ),
@@ -112,13 +105,9 @@ class _CalendarDayEventTile extends ConsumerWidget {
                   Text(
                     subtitle,
                     style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                       color: isDark
                           ? OpenVtsColors.darkTextSecondary
                           : OpenVtsColors.textSecondary,
-=======
-                      color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     ),
                   ),
                 ],
@@ -130,13 +119,10 @@ class _CalendarDayEventTile extends ConsumerWidget {
                       child: Text(
                         item,
                         style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                           color: isDark
-                              ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.7)
+                              ? OpenVtsColors.darkTextSecondary
+                                  .withValues(alpha: 0.7)
                               : OpenVtsColors.textTertiary,
-=======
-                          color: OpenVtsColors.textTertiary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         ),
                       ),
                     ),
@@ -191,10 +177,7 @@ class _EventTypeIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     late final IconData icon;
     late final Color color;
 
@@ -208,22 +191,14 @@ class _EventTypeIcon extends StatelessWidget {
       case 'users':
       default:
         icon = Icons.person_outline_rounded;
-<<<<<<< HEAD
         color = isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk;
-=======
-        color = OpenVtsColors.brandInk;
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     }
 
     return Container(
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-<<<<<<< HEAD
         color: color.withValues(alpha: isDark ? 0.15 : 0.08),
-=======
-        color: color.withValues(alpha: 0.08),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         borderRadius: BorderRadius.circular(14),
       ),
       child: Icon(icon, size: 18, color: color),
@@ -238,35 +213,24 @@ class _CountBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
         vertical: 4,
       ),
       decoration: BoxDecoration(
-<<<<<<< HEAD
         color: isDark
-            ? OpenVtsColors.white.withValues(alpha: 0.1)
-            : OpenVtsColors.brandInk.withValues(alpha: 0.08),
-=======
-        color: OpenVtsColors.brandInk.withValues(alpha: 0.08),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
+            ? OpenVtsColors.white.withValues(alpha: 0.18)
+            : OpenVtsColors.brandInk.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         '$count',
         style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
           color: isDark
               ? OpenVtsColors.darkTextPrimary
               : OpenVtsColors.textPrimary,
-=======
-          color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           fontWeight: FontWeight.w600,
         ),
       ),

@@ -236,10 +236,10 @@ class _UserAvatar extends StatelessWidget {
       width: 40,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk.withValues(alpha: 0.08),
+        color: OpenVtsColors.brandInk.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
         border: Border.all(
-          color: OpenVtsColors.brandInk.withValues(alpha: 0.22),
+          color: OpenVtsColors.brandInk.withValues(alpha: 0.3),
         ),
       ),
       child: Text(
@@ -327,9 +327,9 @@ class _MetaPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.06),
+        color: color.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: color.withValues(alpha: 0.22)),
+        border: Border.all(color: color.withValues(alpha: 0.28)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

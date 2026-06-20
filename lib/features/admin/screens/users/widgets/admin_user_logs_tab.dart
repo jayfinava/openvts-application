@@ -100,7 +100,7 @@ class _AdminUserLogsTabState extends ConsumerState<AdminUserLogsTab> {
               icon: const Icon(Icons.refresh_rounded, size: 14),
               label: const Text('Reset filters'),
               style: TextButton.styleFrom(
-                foregroundColor: OpenVtsColors.textSecondary,
+                foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
                 minimumSize: const Size(0, 30),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -223,13 +223,20 @@ class _SearchField extends StatelessWidget {
       controller: controller,
       onChanged: onChanged,
       textInputAction: TextInputAction.search,
-      style: OpenVtsTypography.body.copyWith(fontSize: 13),
+      cursorColor: Theme.of(context).colorScheme.primary,
+      style: OpenVtsTypography.body.copyWith(
+        fontSize: 13,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
       decoration: InputDecoration(
         hintText: 'Search logs',
-        prefixIcon: const Icon(
+        hintStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+        prefixIcon: Icon(
           Icons.search_rounded,
           size: 18,
-          color: OpenVtsColors.textSecondary,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
         suffixIcon: controller.text.isEmpty
             ? null
@@ -239,7 +246,9 @@ class _SearchField extends StatelessWidget {
                   controller.clear();
                   onChanged('');
                 },
-                icon: const Icon(Icons.close_rounded, size: 17),
+                icon: Icon(Icons.close_rounded,
+                    size: 17,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
       ),
     );
@@ -264,12 +273,12 @@ class _ActionGroupChips extends StatelessWidget {
         itemBuilder: (context, index) {
           final group = _actionGroups[index];
           final isSelected = group.prefix == selected;
-<<<<<<< HEAD
+          final isDark = Theme.of(context).brightness == Brightness.dark;
           final backgroundColor = isSelected
               ? OpenVtsColors.brandInk
               : Theme.of(context).colorScheme.surfaceContainerHigh;
           final foregroundColor = isSelected
-              ? Theme.of(context).colorScheme.onPrimary
+              ? (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.white)
               : Theme.of(context).colorScheme.onSurface;
           final borderColor = isSelected
               ? OpenVtsColors.brandInk
@@ -279,16 +288,6 @@ class _ActionGroupChips extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
               side: BorderSide(color: borderColor, width: 1),
-=======
-          return Material(
-            color: isSelected ? OpenVtsColors.brandInk : OpenVtsColors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-              side: BorderSide(
-                color:
-                    isSelected ? OpenVtsColors.brandInk : OpenVtsColors.border,
-              ),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
             child: InkWell(
               borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -299,13 +298,7 @@ class _ActionGroupChips extends StatelessWidget {
                 child: Text(
                   group.label,
                   style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                     color: foregroundColor,
-=======
-                    color: isSelected
-                        ? OpenVtsColors.white
-                        : OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                   ),
@@ -327,6 +320,7 @@ class _LogCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     final formatter = ref.watch(appDateFormatterProvider);
     final entity = _entityLabel(log.entity, log.entityId);
     final platform = _platformLine(log);
@@ -341,14 +335,14 @@ class _LogCard extends ConsumerWidget {
             height: 34,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: OpenVtsColors.surface,
+              color: colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: OpenVtsColors.border),
+              border: Border.all(color: colorScheme.outlineVariant),
             ),
             child: Icon(
               _iconForAction(log.action),
               size: 16,
-              color: OpenVtsColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -365,7 +359,7 @@ class _LogCard extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.label.copyWith(
-                          color: OpenVtsColors.textPrimary,
+                          color: colorScheme.onSurface,
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
                         ),
@@ -375,7 +369,7 @@ class _LogCard extends ConsumerWidget {
                     Text(
                       _relativeTime(log.createdAt, formatter: formatter),
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textTertiary,
+                        color: colorScheme.onSurfaceVariant,
                         fontSize: 10,
                       ),
                     ),
@@ -388,7 +382,7 @@ class _LogCard extends ConsumerWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.textSecondary,
+                      color: colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -400,7 +394,7 @@ class _LogCard extends ConsumerWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.textTertiary,
+                      color: colorScheme.onSurfaceVariant,
                       fontSize: 11,
                     ),
                   ),
@@ -421,6 +415,7 @@ class _LogDetailSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final userLabel = _userLabel(log.user);
     final metaJson = log.meta.isEmpty
         ? '-'
@@ -439,14 +434,14 @@ class _LogDetailSheet extends StatelessWidget {
                 height: 38,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: OpenVtsColors.surface,
+                  color: colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: OpenVtsColors.border),
+                  border: Border.all(color: colorScheme.outlineVariant),
                 ),
                 child: Icon(
                   _iconForAction(log.action),
                   size: 18,
-                  color: OpenVtsColors.textSecondary,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
@@ -459,7 +454,7 @@ class _LogDetailSheet extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: colorScheme.onSurface,
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                       ),
@@ -468,7 +463,7 @@ class _LogDetailSheet extends StatelessWidget {
                     Text(
                       _dateTimeText(log.createdAt),
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -501,7 +496,7 @@ class _LogDetailSheet extends StatelessWidget {
               Text(
                 'Meta',
                 style: OpenVtsTypography.label.copyWith(
-                  color: OpenVtsColors.textPrimary,
+                  color: colorScheme.onSurface,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -510,14 +505,14 @@ class _LogDetailSheet extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(OpenVtsSpacing.sm),
                 decoration: BoxDecoration(
-                  color: OpenVtsColors.surface,
+                  color: colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: OpenVtsColors.border),
+                  border: Border.all(color: colorScheme.outlineVariant),
                 ),
                 child: SelectableText(
                   metaJson,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: colorScheme.onSurface,
                     height: 1.35,
                   ),
                 ),
@@ -538,6 +533,7 @@ class _DetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -546,7 +542,7 @@ class _DetailsCard extends StatelessWidget {
           Text(
             title,
             style: OpenVtsTypography.label.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: colorScheme.onSurface,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -565,6 +561,7 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),
       child: Row(
@@ -575,7 +572,7 @@ class _DetailRow extends StatelessWidget {
             child: Text(
               row.label,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textTertiary,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -583,7 +580,7 @@ class _DetailRow extends StatelessWidget {
             child: Text(
               row.value,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textPrimary,
+                color: colorScheme.onSurface,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -611,9 +608,9 @@ class _InlineError extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: OpenVtsColors.error.withValues(alpha: 0.05),
+        color: OpenVtsColors.error.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.2)),
+        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -659,7 +656,7 @@ class _SectionLoader extends StatelessWidget {
           Text(
             'Loading $title',
             style: OpenVtsTypography.label.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -677,6 +674,7 @@ class _SectionErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -694,7 +692,7 @@ class _SectionErrorCard extends StatelessWidget {
                 child: Text(
                   'Unable to load logs',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: colorScheme.onSurface,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -705,7 +703,7 @@ class _SectionErrorCard extends StatelessWidget {
           Text(
             message,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
@@ -728,18 +726,19 @@ class _EmptyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: colorScheme.outlineVariant),
       ),
       child: Text(
         label,
         style: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.textSecondary,
+          color: colorScheme.onSurfaceVariant,
           fontWeight: FontWeight.w700,
         ),
       ),

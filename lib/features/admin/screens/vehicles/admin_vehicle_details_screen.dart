@@ -50,8 +50,8 @@ class _AdminVehicleDetailsScreenState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final controller =
-          ref.read(adminVehicleDetailsControllerProvider(widget.vehicleId).notifier);
+      final controller = ref.read(
+          adminVehicleDetailsControllerProvider(widget.vehicleId).notifier);
       controller.loadInitial();
     });
   }
@@ -89,7 +89,9 @@ class _AdminVehicleDetailsScreenState
         Padding(
           padding: const EdgeInsets.only(right: OpenVtsSpacing.xxs),
           child: Center(
-            child: _StatusChip(isActive: displayVehicle?.isActive ?? vehicle?.isActive ?? true),
+            child: _StatusChip(
+                isActive:
+                    displayVehicle?.isActive ?? vehicle?.isActive ?? true),
           ),
         ),
         _HeaderMenu(
@@ -98,8 +100,7 @@ class _AdminVehicleDetailsScreenState
               state.isUpdatingVehicle,
           onRefresh: () => controller.refreshCurrentTab(),
           onEdit: () => _onAction(context, ref, _Action.edit),
-          onToggleStatus: () =>
-              _onAction(context, ref, _Action.toggleStatus),
+          onToggleStatus: () => _onAction(context, ref, _Action.toggleStatus),
           onDelete: () => _onAction(context, ref, _Action.delete),
         ),
         const SizedBox(width: OpenVtsSpacing.xs),
@@ -296,7 +297,8 @@ class _AdminVehicleDetailsScreenState
 
     if (confirmed != true) return;
 
-    final detailsProvider = adminVehicleDetailsControllerProvider(widget.vehicleId);
+    final detailsProvider =
+        adminVehicleDetailsControllerProvider(widget.vehicleId);
     await ref.read(detailsProvider.notifier).deleteVehicle();
     final next = ref.read(detailsProvider);
     if (!context.mounted) return;
@@ -343,10 +345,10 @@ class _HeaderMenu extends StatelessWidget {
     return PopupMenuButton<_HeaderMenuAction>(
       tooltip: 'Vehicle actions',
       enabled: !isBusy,
-      icon: const Icon(
+      icon: Icon(
         Icons.more_vert_rounded,
         size: 20,
-        color: OpenVtsColors.textSecondary,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
       onSelected: (action) {
         switch (action) {
@@ -407,7 +409,9 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isDestructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
+    final color = isDestructive
+        ? OpenVtsColors.error
+        : Theme.of(context).colorScheme.onSurface;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -429,10 +433,15 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? OpenVtsColors.brandInk : OpenVtsColors.textTertiary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = isActive
+        ? (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk)
+        : Theme.of(context).colorScheme.onSurfaceVariant;
     return _MicroChip(
       label: isActive ? 'Active' : 'Inactive',
-      icon: isActive ? Icons.check_circle_outline_rounded : Icons.pause_circle_outline_rounded,
+      icon: isActive
+          ? Icons.check_circle_outline_rounded
+          : Icons.pause_circle_outline_rounded,
       color: color,
     );
   }
@@ -454,9 +463,9 @@ class _MicroChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.06),
+        color: color.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: color.withValues(alpha: 0.22)),
+        border: Border.all(color: color.withValues(alpha: 0.28)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -488,6 +497,8 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -500,14 +511,14 @@ class _SummaryCard extends StatelessWidget {
                 height: 44,
                 width: 44,
                 alignment: Alignment.center,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: OpenVtsColors.surface,
+                  color: colorScheme.surfaceContainerHighest,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.directions_car_filled_rounded,
                   size: 24,
-                  color: OpenVtsColors.textPrimary,
+                  color: colorScheme.onSurface,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
@@ -517,10 +528,10 @@ class _SummaryCard extends StatelessWidget {
                   children: [
                     Text(
                       vehicle.name.isEmpty ? 'Untitled Vehicle' : vehicle.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: OpenVtsColors.textPrimary,
+                        color: colorScheme.onSurface,
                         height: 1.2,
                       ),
                       maxLines: 1,
@@ -530,9 +541,9 @@ class _SummaryCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         vehicle.plateNumber,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: OpenVtsColors.textSecondary,
+                          color: colorScheme.onSurfaceVariant,
                           height: 1.2,
                         ),
                         maxLines: 1,
@@ -562,14 +573,16 @@ class _SummaryCard extends StatelessWidget {
           if (vehicle.imei.isNotEmpty || vehicle.simNumber.isNotEmpty) ...[
             const SizedBox(height: OpenVtsSpacing.sm),
             if (vehicle.imei.isNotEmpty)
-              _CompactInfoLine(icon: Icons.device_hub_outlined, value: vehicle.imei),
+              _CompactInfoLine(
+                  icon: Icons.device_hub_outlined, value: vehicle.imei),
             if (vehicle.imei.isNotEmpty && vehicle.simNumber.isNotEmpty)
               const SizedBox(height: 4),
             if (vehicle.simNumber.isNotEmpty)
-              _CompactInfoLine(icon: Icons.sim_card_outlined, value: vehicle.simNumber),
+              _CompactInfoLine(
+                  icon: Icons.sim_card_outlined, value: vehicle.simNumber),
           ],
           const SizedBox(height: OpenVtsSpacing.md),
-          const Divider(height: 1, color: OpenVtsColors.border),
+          Divider(height: 1, color: colorScheme.outlineVariant),
           const SizedBox(height: OpenVtsSpacing.md),
           Row(
             children: [
@@ -625,11 +638,12 @@ class _CompactInfoLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xxs),
       child: Row(
         children: [
-          Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
+          Icon(icon, size: 14, color: colorScheme.onSurfaceVariant),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
@@ -637,7 +651,7 @@ class _CompactInfoLine extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -669,19 +683,21 @@ class _MetricTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
         vertical: OpenVtsSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.background,
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border.withValues(alpha: 0.7)),
+        border: Border.all(color: colorScheme.outlineVariant),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
+          Icon(icon, size: 16, color: colorScheme.onSurfaceVariant),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Column(
@@ -691,7 +707,7 @@ class _MetricTile extends StatelessWidget {
                 Text(
                   label,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                 ),
                 const SizedBox(height: 2),
@@ -701,6 +717,7 @@ class _MetricTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
+                        color: colorScheme.onSurface,
                       ),
                 ),
               ],
