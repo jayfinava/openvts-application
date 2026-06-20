@@ -9,7 +9,6 @@ import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../../shared/helpers/toast_helper.dart';
-import '../../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../../shared/widgets/open_vts_map_layer_selector.dart';
 import '../../../../controllers/user_landmark_geometry_editor_controller.dart';
 import '../../../../controllers/user_providers.dart';
@@ -539,22 +538,22 @@ class _EditorTopBar extends StatelessWidget {
         OpenVtsSpacing.xs,
       ),
       decoration: const BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
-        border: Border(bottom: BorderSide(color: OpenVtsColors.border)),
+        color: OpenVtsColors.brandInk,
+        border: Border(bottom: BorderSide(color: OpenVtsColors.white, width: 1)),
       ),
       child: Row(
         children: [
           IconButton(
             iconSize: 18,
             onPressed: onCancel,
-            icon: const Icon(Icons.close),
+            icon: const Icon(Icons.close, color: OpenVtsColors.white),
             tooltip: 'Cancel',
           ),
           Expanded(
             child: Text(
               title,
               style: OpenVtsTypography.titleSmall.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
+                color: OpenVtsColors.white,
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
@@ -562,10 +561,21 @@ class _EditorTopBar extends StatelessWidget {
           ),
           SizedBox(
             height: 36,
-            child: OpenVtsButton(
-              label: 'Save',
+            child: ElevatedButton(
               onPressed: onSave,
-              height: 36,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: OpenVtsColors.brandInk,
+                foregroundColor: OpenVtsColors.white,
+                side: const BorderSide(color: OpenVtsColors.white, width: 1),
+                padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.sm),
+              ),
+              child: Text(
+                'Save',
+                style: OpenVtsTypography.label.copyWith(
+                  color: OpenVtsColors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ),
         ],
