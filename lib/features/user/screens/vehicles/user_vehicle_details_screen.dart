@@ -295,10 +295,10 @@ class _TabChips extends StatelessWidget {
               labelStyle: OpenVtsTypography.meta.copyWith(
                 fontWeight: FontWeight.w800,
                 color: isSelected
-                    ? OpenVtsColors.white
+                    ? OpenVtsColors.brandInk
                     : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
-              selectedColor: _primaryInkColor(context),
+              selectedColor: OpenVtsColors.white,
               backgroundColor: _softSurfaceColor(context),
               side: BorderSide(color: _softBorderColor(context)),
               shape: RoundedRectangleBorder(
@@ -464,10 +464,4 @@ Color _softBorderColor(BuildContext context) {
   return Theme.of(context).brightness == Brightness.dark
       ? OpenVtsColors.darkBorder
       : OpenVtsColors.border;
-}
-
-Color _primaryInkColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? OpenVtsColors.darkTextPrimary
-      : OpenVtsColors.brandInk;
 }
