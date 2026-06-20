@@ -547,14 +547,15 @@ class _Panel extends StatelessWidget {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: OpenVtsColors.white,
+                        color: OpenVtsColors.brandInk,
                         borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: OpenVtsColors.white, width: 1),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SizedBox(
-                            width: 35,
+                            width: 40,
                             child: TextField(
                               controller: tolCtrl,
                               keyboardType: const TextInputType.numberWithOptions(
@@ -564,23 +565,25 @@ class _Panel extends StatelessWidget {
                                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                               ],
                               style: OpenVtsTypography.numeric.copyWith(
-                                color: OpenVtsColors.brandInk,
+                                color: OpenVtsColors.white,
                                 fontWeight: FontWeight.w700,
                               ),
                               textAlign: TextAlign.center,
                               decoration: const InputDecoration(
                                 isDense: true,
                                 hintText: '0',
+                                hintStyle: TextStyle(color: OpenVtsColors.white),
                                 contentPadding: EdgeInsets.zero,
                                 border: InputBorder.none,
                               ),
                               onChanged: (_) => onApplyTolerance(),
                             ),
                           ),
+                          const SizedBox(width: 4),
                           Text(
                             'm',
                             style: OpenVtsTypography.label.copyWith(
-                              color: OpenVtsColors.brandInk,
+                              color: OpenVtsColors.white,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
