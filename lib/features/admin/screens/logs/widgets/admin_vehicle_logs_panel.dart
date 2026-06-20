@@ -49,7 +49,8 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
       );
     }
 
-    final filteredLogs = _applyVehicleReadFilter(state.vehicleLogs, state.vehicleReadFilter);
+    final filteredLogs =
+        _applyVehicleReadFilter(state.vehicleLogs, state.vehicleReadFilter);
 
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),

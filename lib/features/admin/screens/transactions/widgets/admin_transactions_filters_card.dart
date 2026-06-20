@@ -101,7 +101,8 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
               Expanded(
                 child: FilledButton.icon(
                   onPressed: onApplyFilters,
-                  icon: const Icon(Icons.check_circle_outline_rounded, size: 16),
+                  icon:
+                      const Icon(Icons.check_circle_outline_rounded, size: 16),
                   label: const Text('Apply Filters'),
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(44),
@@ -307,6 +308,7 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
           label,
           style: OpenVtsTypography.label.copyWith(
             color: OpenVtsColors.textPrimary,
+            fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: OpenVtsSpacing.xs),
@@ -325,11 +327,20 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(OpenVtsRadius.md),
               borderSide: const BorderSide(color: OpenVtsColors.border),
             ),
+            filled: true,
+            fillColor: OpenVtsColors.surfaceElevated,
           ),
+          style: OpenVtsTypography.body.copyWith(
+            color: OpenVtsColors.textPrimary,
+          ),
+          dropdownColor: OpenVtsColors.surfaceElevated,
           items: options
               .map((opt) => DropdownMenuItem<T>(
                     value: opt.value,
-                    child: Text(opt.label),
+                    child: Text(
+                      opt.label,
+                      style: const TextStyle(color: OpenVtsColors.textPrimary),
+                    ),
                   ))
               .toList(growable: false),
           onChanged: onChanged,

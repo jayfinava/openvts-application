@@ -97,7 +97,8 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
               Expanded(
                 child: FilledButton.icon(
                   onPressed: onApply,
-                  icon: const Icon(Icons.check_circle_outline_rounded, size: 16),
+                  icon:
+                      const Icon(Icons.check_circle_outline_rounded, size: 16),
                   label: const Text('Apply Filters'),
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(44),

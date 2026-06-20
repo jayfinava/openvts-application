@@ -53,7 +53,8 @@ class _AdminTelemetryLogsPanelState
       );
     }
 
-    final filteredLogs = _applyTelemetryReadFilter(state.telemetryLogs, state.telemetryReadFilter);
+    final filteredLogs = _applyTelemetryReadFilter(
+        state.telemetryLogs, state.telemetryReadFilter);
 
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -64,7 +65,8 @@ class _AdminTelemetryLogsPanelState
             initialValue: state.telemetryVehicleId,
             decoration: const InputDecoration(
               labelText: 'Vehicle',
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             ),
             isExpanded: true,
             items: [
@@ -126,16 +128,20 @@ class _AdminTelemetryLogsPanelState
           spacing: OpenVtsSpacing.xs,
           runSpacing: OpenVtsSpacing.xs,
           children: [
-            _chip('All read states', state.telemetryReadFilter == AdminReadFilter.all, () {
+            _chip('All read states',
+                state.telemetryReadFilter == AdminReadFilter.all, () {
               controller.setTelemetryFilters(readFilter: AdminReadFilter.all);
               unawaited(controller.loadTelemetryLogs());
             }),
-            _chip('Read', state.telemetryReadFilter == AdminReadFilter.read, () {
+            _chip('Read', state.telemetryReadFilter == AdminReadFilter.read,
+                () {
               controller.setTelemetryFilters(readFilter: AdminReadFilter.read);
               unawaited(controller.loadTelemetryLogs());
             }),
-            _chip('Unread', state.telemetryReadFilter == AdminReadFilter.unread, () {
-              controller.setTelemetryFilters(readFilter: AdminReadFilter.unread);
+            _chip('Unread', state.telemetryReadFilter == AdminReadFilter.unread,
+                () {
+              controller.setTelemetryFilters(
+                  readFilter: AdminReadFilter.unread);
               unawaited(controller.loadTelemetryLogs());
             }),
           ],

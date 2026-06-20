@@ -40,7 +40,9 @@ class AdminTransactionCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.numeric.copyWith(
                     fontSize: 22,
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? OpenVtsColors.darkTextPrimary
+                        : OpenVtsColors.textPrimary,
                   ),
                 ),
               ),
@@ -88,23 +90,37 @@ class AdminTransactionCard extends StatelessWidget {
   }
 
   Widget _row({required IconData icon, required String label}) {
-    return Padding(
-      padding: const EdgeInsets.only(top: OpenVtsSpacing.xxs),
-      child: Row(
-        children: [
-          Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
-          const SizedBox(width: OpenVtsSpacing.xs),
-          Expanded(
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: OpenVtsTypography.meta
-                  .copyWith(color: OpenVtsColors.textSecondary),
-            ),
+    return Builder(
+      builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Padding(
+          padding: const EdgeInsets.only(top: OpenVtsSpacing.xxs),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 14,
+                color: isDark
+                    ? OpenVtsColors.darkTextSecondary
+                    : OpenVtsColors.textSecondary,
+              ),
+              const SizedBox(width: OpenVtsSpacing.xs),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: OpenVtsTypography.meta.copyWith(
+                    color: isDark
+                        ? OpenVtsColors.darkTextSecondary
+                        : OpenVtsColors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -116,21 +132,31 @@ class AdminTransactionCard extends StatelessWidget {
   }) {
     final normalized = value.trim();
     final display = normalized.isEmpty || normalized == '—' ? '-' : normalized;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.only(top: OpenVtsSpacing.xxs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
+          Icon(
+            icon,
+            size: 14,
+            color: isDark
+                ? OpenVtsColors.darkTextSecondary
+                : OpenVtsColors.textSecondary,
+          ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
               '$label: $display',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: OpenVtsTypography.meta
-                  .copyWith(color: OpenVtsColors.textSecondary),
+              style: OpenVtsTypography.meta.copyWith(
+                color: isDark
+                    ? OpenVtsColors.darkTextSecondary
+                    : OpenVtsColors.textSecondary,
+              ),
             ),
           ),
           if (display != '-')
@@ -139,10 +165,15 @@ class AdminTransactionCard extends StatelessWidget {
                 Clipboard.setData(ClipboardData(text: display));
                 ToastHelper.showSuccess('$label copied', context: context);
               },
-              child: const Padding(
-                padding: EdgeInsets.all(2),
-                child: Icon(Icons.copy_rounded,
-                    size: 14, color: OpenVtsColors.textSecondary),
+              child: Padding(
+                padding: const EdgeInsets.all(2),
+                child: Icon(
+                  Icons.copy_rounded,
+                  size: 14,
+                  color: isDark
+                      ? OpenVtsColors.darkTextSecondary
+                      : OpenVtsColors.textSecondary,
+                ),
               ),
             ),
         ],

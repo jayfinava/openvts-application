@@ -27,10 +27,12 @@ class LocalizationSettingsSection extends ConsumerStatefulWidget {
   final AdminSettingsState state;
 
   @override
-  ConsumerState<LocalizationSettingsSection> createState() => _LocalizationSettingsSectionState();
+  ConsumerState<LocalizationSettingsSection> createState() =>
+      _LocalizationSettingsSectionState();
 }
 
-class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettingsSection> {
+class _LocalizationSettingsSectionState
+    extends ConsumerState<LocalizationSettingsSection> {
   final _formKey = GlobalKey<FormState>();
   final _latCtrl = TextEditingController();
   final _lonCtrl = TextEditingController();
@@ -82,7 +84,8 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
     super.dispose();
   }
 
-  AdminSettingsController get _controller => ref.read(adminSettingsControllerProvider.notifier);
+  AdminSettingsController get _controller =>
+      ref.read(adminSettingsControllerProvider.notifier);
 
   // -----------------------------------------------------------------
   // Save
@@ -129,14 +132,17 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
         _theme = request.theme;
         _timezone = request.timezoneOffset;
         _units = request.units;
-        _latCtrl.text = request.defaultLat == 0 ? '' : request.defaultLat.toString();
-        _lonCtrl.text = request.defaultLon == 0 ? '' : request.defaultLon.toString();
+        _latCtrl.text =
+            request.defaultLat == 0 ? '' : request.defaultLat.toString();
+        _lonCtrl.text =
+            request.defaultLon == 0 ? '' : request.defaultLon.toString();
         _zoomCtrl.text = request.mapZoom.toString();
       });
 
       ToastHelper.showSuccess('Localization saved');
 
-      final prefNotifier = ref.read(appLocalizationPreferencesProvider.notifier);
+      final prefNotifier =
+          ref.read(appLocalizationPreferencesProvider.notifier);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         prefNotifier.applyFromAdminSettings(
           language: request.language,
@@ -224,7 +230,9 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
             icon: Icons.public_rounded,
             trailing: IconButton(
               tooltip: 'Refresh',
-              onPressed: state.isLoadingLocalization ? null : _controller.loadLocalization,
+              onPressed: state.isLoadingLocalization
+                  ? null
+                  : _controller.loadLocalization,
               iconSize: 18,
               visualDensity: VisualDensity.compact,
               icon: const Icon(Icons.refresh_rounded),
@@ -609,7 +617,8 @@ class _LanguageDropdown extends StatelessWidget {
     final items = <DropdownMenuItem<String>>[
       if (!hasValue && value.isNotEmpty)
         DropdownMenuItem(value: value, child: Text(value.toUpperCase())),
-      for (final o in options) DropdownMenuItem(value: o.code, child: Text(o.label)),
+      for (final o in options)
+        DropdownMenuItem(value: o.code, child: Text(o.label)),
     ];
     return _DropdownShell(
       label: 'Language',
@@ -644,8 +653,10 @@ class _DateFormatDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasValue = options.any((o) => o.value == value);
     final items = <DropdownMenuItem<String>>[
-      if (!hasValue && value.isNotEmpty) DropdownMenuItem(value: value, child: Text(value)),
-      for (final o in options) DropdownMenuItem(value: o.value, child: Text(o.label)),
+      if (!hasValue && value.isNotEmpty)
+        DropdownMenuItem(value: value, child: Text(value)),
+      for (final o in options)
+        DropdownMenuItem(value: o.value, child: Text(o.label)),
     ];
     return _DropdownShell(
       label: 'Date format',
@@ -680,7 +691,8 @@ class _TimezoneDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasValue = options.contains(value);
     final items = <DropdownMenuItem<String>>[
-      if (!hasValue && value.isNotEmpty) DropdownMenuItem(value: value, child: Text(value)),
+      if (!hasValue && value.isNotEmpty)
+        DropdownMenuItem(value: value, child: Text(value)),
       for (final o in options) DropdownMenuItem(value: o, child: Text(o)),
     ];
     return _DropdownShell(
@@ -882,7 +894,8 @@ class _PresetsRow extends StatelessWidget {
           spacing: 6,
           runSpacing: 6,
           children: [
-            for (final p in _kMapPresets) _PresetChip(label: p.label, onTap: () => onPick(p)),
+            for (final p in _kMapPresets)
+              _PresetChip(label: p.label, onTap: () => onPick(p)),
           ],
         ),
       ],

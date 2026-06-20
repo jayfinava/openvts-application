@@ -68,14 +68,19 @@ class AdminPaymentTransactionCard extends StatelessWidget {
 
   Widget _row(String label, String value) {
     final text = value.trim().isEmpty ? '-' : value.trim();
-    return Padding(
-      padding: const EdgeInsets.only(top: OpenVtsSpacing.xxs),
-      child: Text(
-        '$label: $text',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style:
-            OpenVtsTypography.meta.copyWith(color: OpenVtsColors.textSecondary),
+    return Builder(
+      builder: (context) => Padding(
+        padding: const EdgeInsets.only(top: OpenVtsSpacing.xxs),
+        child: Text(
+          '$label: $text',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: OpenVtsTypography.meta.copyWith(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? OpenVtsColors.darkTextSecondary
+                : OpenVtsColors.textSecondary,
+          ),
+        ),
       ),
     );
   }

@@ -176,7 +176,7 @@ class AdminInventoryInfoField extends StatelessWidget {
         Icon(
           icon,
           size: 16,
-          color: OpenVtsColors.textSecondary,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
@@ -185,7 +185,7 @@ class AdminInventoryInfoField extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             text: TextSpan(
               style: OpenVtsTypography.label.copyWith(
-                color: OpenVtsColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
                 height: 1.4,
               ),
               children: [
@@ -285,7 +285,8 @@ class AdminInventoryCardFooter extends ConsumerWidget {
       use24Hour: prefs.use24Hour,
       timezone: prefs.timezone,
     );
-    final createdValue = createdAt != null ? formatter.formatDateTime(createdAt) : '-';
+    final createdValue =
+        createdAt != null ? formatter.formatDateTime(createdAt) : '-';
 
     return Row(
       children: [
@@ -318,10 +319,10 @@ class _CreatedPill extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.schedule_outlined,
             size: 16,
-            color: OpenVtsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -330,7 +331,7 @@ class _CreatedPill extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               text: TextSpan(
                 style: OpenVtsTypography.label.copyWith(
-                  color: OpenVtsColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                   height: 1.4,
                 ),
                 children: [
@@ -376,7 +377,7 @@ class _StockStatusPill extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: OpenVtsTypography.label.copyWith(
-          color: OpenVtsColors.textPrimary,
+          color: Theme.of(context).colorScheme.onSurface,
           fontWeight: FontWeight.w600,
         ),
       ),

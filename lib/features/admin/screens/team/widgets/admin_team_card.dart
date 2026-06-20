@@ -93,7 +93,9 @@ class _CardHeader extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: OpenVtsTypography.label.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? OpenVtsColors.darkTextSecondary
+                      : OpenVtsColors.textSecondary,
                 ),
               ),
             ],
@@ -209,7 +211,9 @@ class _TeamCardMenu extends ConsumerWidget {
           child: Icon(
             Icons.more_horiz_rounded,
             size: 20,
-            color: OpenVtsColors.textSecondary,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? OpenVtsColors.darkTextSecondary
+                : OpenVtsColors.textSecondary,
           ),
         ),
       ),
@@ -404,7 +408,13 @@ class _InfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
+        Icon(
+          icon,
+          size: 16,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? OpenVtsColors.darkTextSecondary
+              : OpenVtsColors.textSecondary,
+        ),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Text(
@@ -412,7 +422,9 @@ class _InfoRow extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.label.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? OpenVtsColors.darkTextPrimary
+                  : OpenVtsColors.textPrimary,
               height: 1.4,
             ),
           ),
@@ -495,7 +507,13 @@ class _MetricCell extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
+              Icon(
+                icon,
+                size: 14,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? OpenVtsColors.darkTextSecondary
+                    : OpenVtsColors.textSecondary,
+              ),
               const SizedBox(width: OpenVtsSpacing.xxs + 2),
               Flexible(
                 child: Text(
@@ -503,7 +521,9 @@ class _MetricCell extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? OpenVtsColors.darkTextSecondary
+                        : OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

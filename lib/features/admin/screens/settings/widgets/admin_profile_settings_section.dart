@@ -446,7 +446,8 @@ class _ProfileHeaderCard extends ConsumerWidget {
             if (email.isNotEmpty)
               Row(
                 children: [
-                  Icon(Icons.mail_outline_rounded, size: 14, color: Theme.of(context).colorScheme.outline),
+                  Icon(Icons.mail_outline_rounded,
+                      size: 14, color: Theme.of(context).colorScheme.outline),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
@@ -463,11 +464,13 @@ class _ProfileHeaderCard extends ConsumerWidget {
                   ),
                 ],
               ),
-            if (email.isNotEmpty && mobile.isNotEmpty) const SizedBox(height: 4),
+            if (email.isNotEmpty && mobile.isNotEmpty)
+              const SizedBox(height: 4),
             if (mobile.isNotEmpty)
               Row(
                 children: [
-                  Icon(Icons.phone_outlined, size: 14, color: Theme.of(context).colorScheme.outline),
+                  Icon(Icons.phone_outlined,
+                      size: 14, color: Theme.of(context).colorScheme.outline),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
@@ -501,7 +504,9 @@ class _ProfileHeaderCard extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.credit_card_outlined, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  Icon(Icons.credit_card_outlined,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Column(
@@ -723,7 +728,8 @@ class _VerificationRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        Icon(icon,
+            size: 18, color: Theme.of(context).colorScheme.onSurfaceVariant),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Column(
@@ -1436,8 +1442,9 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       _states = [];
     });
     try {
-      final states =
-          await ref.read(adminUsersControllerProvider.notifier).getStates(countryCode);
+      final states = await ref
+          .read(adminUsersControllerProvider.notifier)
+          .getStates(countryCode);
       if (!mounted) return;
       setState(() {
         _states = states;
@@ -1470,17 +1477,21 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       if (_initialCityValue != null && _initialCityValue!.isNotEmpty) {
         // Try exact match on value (id or code)
         try {
-          matchedOption = _cities.firstWhere((c) => c.value == _initialCityValue);
+          matchedOption =
+              _cities.firstWhere((c) => c.value == _initialCityValue);
         } catch (_) {
           matchedOption = null;
         }
       }
 
-      if (matchedOption == null && _initialCityDisplayName != null && _initialCityDisplayName!.isNotEmpty) {
+      if (matchedOption == null &&
+          _initialCityDisplayName != null &&
+          _initialCityDisplayName!.isNotEmpty) {
         // Try case-insensitive match on label/name
         try {
           matchedOption = _cities.firstWhere(
-            (c) => c.label.toLowerCase() == _initialCityDisplayName!.toLowerCase(),
+            (c) =>
+                c.label.toLowerCase() == _initialCityDisplayName!.toLowerCase(),
           );
         } catch (_) {
           matchedOption = null;
@@ -1498,7 +1509,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
           (_initialCityValue != null || _initialCityDisplayName != null)) {
         // Not found, inject synthetic option for backward compatibility
         final displayLabel = _initialCityDisplayName ?? _initialCityValue ?? '';
-        final syntheticValue = _initialCityValue ?? _initialCityDisplayName ?? '';
+        final syntheticValue =
+            _initialCityValue ?? _initialCityDisplayName ?? '';
         setState(() {
           _cities = [
             AdminUserCityOption(
@@ -1626,7 +1638,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                           keyboardType: TextInputType.phone,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(Validators.maxMobileNumberLength),
+                            LengthLimitingTextInputFormatter(
+                                Validators.maxMobileNumberLength),
                           ],
                           validator: Validators.mobileNumberOptional,
                         ),
@@ -1698,7 +1711,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                   _DropdownField<String>(
                     label: 'City',
                     value: _cityValue,
-                    enabled: !_loadingCities && (_cities.isNotEmpty || _cityValue != null),
+                    enabled: !_loadingCities &&
+                        (_cities.isNotEmpty || _cityValue != null),
                     busy: _loadingCities,
                     items: _cities
                         .map(
@@ -1709,12 +1723,11 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                         )
                         .toList(),
                     onChanged: (v) {
-                      final selected = _cities
-                          .cast<AdminUserCityOption?>()
-                          .firstWhere(
-                            (c) => c?.value == v,
-                            orElse: () => null,
-                          );
+                      final selected =
+                          _cities.cast<AdminUserCityOption?>().firstWhere(
+                                (c) => c?.value == v,
+                                orElse: () => null,
+                              );
                       setState(() {
                         _cityValue = v;
                         _cityLabel = selected?.label;
@@ -1730,7 +1743,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(Validators.maxPincodeLength),
+                      LengthLimitingTextInputFormatter(
+                          Validators.maxPincodeLength),
                     ],
                     validator: Validators.pincodeOptional,
                   ),
@@ -2053,9 +2067,9 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
     if (c.primaryColor != null) {
       final normalized = _normalizeHexColor(c.primaryColor!);
       selectedColor = _colorOptions.cast<Map<String, String>?>().firstWhere(
-        (opt) => opt?['hex']?.toUpperCase() == normalized.toUpperCase(),
-        orElse: () => null,
-      )?['name'];
+            (opt) => opt?['hex']?.toUpperCase() == normalized.toUpperCase(),
+            orElse: () => null,
+          )?['name'];
     }
     _primaryColor = TextEditingController(text: selectedColor ?? '');
 
@@ -2088,9 +2102,7 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
     final colorName = _primaryColor.text.trim();
     String? normalizedColor;
     if (colorName.isNotEmpty) {
-      normalizedColor = _colorOptions
-          .cast<Map<String, String>?>()
-          .firstWhere(
+      normalizedColor = _colorOptions.cast<Map<String, String>?>().firstWhere(
             (opt) => opt?['name'] == colorName,
             orElse: () => null,
           )?['hex'];
@@ -2179,7 +2191,8 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
                   const SizedBox(height: OpenVtsSpacing.sm),
                   _DropdownField<String>(
                     label: 'Primary color',
-                    value: _primaryColor.text.isEmpty ? null : _primaryColor.text,
+                    value:
+                        _primaryColor.text.isEmpty ? null : _primaryColor.text,
                     items: _colorOptions
                         .map(
                           (opt) => DropdownMenuItem(
