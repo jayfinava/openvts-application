@@ -69,7 +69,7 @@ class UserGeofenceCard extends ConsumerWidget {
                                   ? 'Untitled geofence'
                                   : geofence.name,
                               style: OpenVtsTypography.titleSmall.copyWith(
-                                color: OpenVtsColors.textPrimary,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 fontWeight: FontWeight.w600,
                               ),
                               maxLines: 1,
@@ -115,7 +115,7 @@ class UserGeofenceCard extends ConsumerWidget {
                     Text(
                       geofence.description.trim(),
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         height: 1.35,
                       ),
                       maxLines: 2,
@@ -129,7 +129,8 @@ class UserGeofenceCard extends ConsumerWidget {
                         child: Text(
                           _geometrySummary(geofence),
                           style: OpenVtsTypography.meta.copyWith(
-                            color: OpenVtsColors.textSecondary,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -140,7 +141,7 @@ class UserGeofenceCard extends ConsumerWidget {
                         Text(
                           formatter.formatDate(geofence.updatedAt!),
                           style: OpenVtsTypography.meta.copyWith(
-                            color: OpenVtsColors.textTertiary,
+                            color: Theme.of(context).colorScheme.outline,
                           ),
                         ),
                       ],
@@ -211,9 +212,9 @@ class UserGeofenceCard extends ConsumerWidget {
 
   static Color _parseHex(String value) {
     final cleaned = value.replaceAll('#', '').trim();
-    if (cleaned.length != 6) return OpenVtsColors.textTertiary;
+    if (cleaned.length != 6) return OpenVtsColors.brandInk;
     final parsed = int.tryParse('FF$cleaned', radix: 16);
-    if (parsed == null) return OpenVtsColors.textTertiary;
+    if (parsed == null) return OpenVtsColors.brandInk;
     return Color(parsed);
   }
 }
@@ -254,8 +255,9 @@ class _RowAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final disabled = onTap == null;
-    final color =
-        destructive ? OpenVtsColors.error : OpenVtsColors.textSecondary;
+    final color = destructive
+        ? OpenVtsColors.error
+        : Theme.of(context).colorScheme.onSurfaceVariant;
     return Tooltip(
       message: tooltip,
       child: InkResponse(
@@ -266,7 +268,7 @@ class _RowAction extends StatelessWidget {
           child: Icon(
             icon,
             size: 18,
-            color: disabled ? OpenVtsColors.textTertiary : color,
+            color: disabled ? Theme.of(context).colorScheme.outline : color,
           ),
         ),
       ),

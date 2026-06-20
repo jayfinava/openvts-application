@@ -296,7 +296,7 @@ class _UserGeofenceFormBodyState extends ConsumerState<_UserGeofenceFormBody> {
       isDense: true,
       hintText: hint,
       hintStyle: OpenVtsTypography.body.copyWith(
-        color: OpenVtsColors.textTertiary,
+        color: Theme.of(context).colorScheme.outline,
       ),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
@@ -328,7 +328,7 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       text.toUpperCase(),
       style: OpenVtsTypography.meta.copyWith(
-        color: OpenVtsColors.textSecondary,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.6,
       ),
@@ -473,18 +473,23 @@ class _GeometrySummaryCard extends StatelessWidget {
                 Text(
                   summary,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
           ),
-          TextButton.icon(
-            style: TextButton.styleFrom(
-              foregroundColor: OpenVtsColors.brandInk,
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: OpenVtsColors.brandInk,
+              foregroundColor: OpenVtsColors.white,
               minimumSize: const Size(0, 32),
               padding: const EdgeInsets.symmetric(
                 horizontal: OpenVtsSpacing.sm,
+              ),
+              side: const BorderSide(
+                color: OpenVtsColors.white,
+                width: 1,
               ),
             ),
             onPressed: onDraw,
@@ -493,7 +498,7 @@ class _GeometrySummaryCard extends StatelessWidget {
               geodata == null ? 'Draw' : 'Edit',
               style: OpenVtsTypography.meta.copyWith(
                 fontWeight: FontWeight.w700,
-                color: OpenVtsColors.brandInk,
+                color: OpenVtsColors.white,
               ),
             ),
           ),
@@ -584,7 +589,7 @@ class _ActiveToggle extends StatelessWidget {
                       ? 'Events will trigger for this geofence.'
                       : 'Geofence is paused.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],

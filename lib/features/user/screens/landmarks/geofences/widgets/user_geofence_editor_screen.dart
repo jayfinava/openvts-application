@@ -181,12 +181,12 @@ class _UserGeofenceEditorScreenState
     final controller = ref.read(
       userLandmarkGeometryEditorControllerProvider(_args).notifier,
     );
-    final state =
-        ref.read(userLandmarkGeometryEditorControllerProvider(_args));
+    final state = ref.read(userLandmarkGeometryEditorControllerProvider(_args));
 
     if (state.editorMode == UserGeofenceEditorMode.circle &&
         state.circleCenter == null) {
-      controller.tapMap(UserGeoPoint(lat: point.latitude, lon: point.longitude));
+      controller
+          .tapMap(UserGeoPoint(lat: point.latitude, lon: point.longitude));
     }
 
     _searchCtrl.clear();
@@ -554,7 +554,7 @@ class _EditorTopBar extends StatelessWidget {
             child: Text(
               title,
               style: OpenVtsTypography.titleSmall.copyWith(
-                color: OpenVtsColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
@@ -665,14 +665,17 @@ class _ModeChip extends StatelessWidget {
             Icon(
               icon,
               size: 14,
-              color: selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
+              color: selected
+                  ? OpenVtsColors.white
+                  : Theme.of(context).colorScheme.onSurface,
             ),
             const SizedBox(width: 4),
             Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color:
-                    selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
+                color: selected
+                    ? OpenVtsColors.white
+                    : Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -809,7 +812,7 @@ class _ControlButton extends StatelessWidget {
             size: 16,
             color: disabled
                 ? OpenVtsColors.textTertiary
-                : OpenVtsColors.textPrimary,
+                : Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ),
@@ -843,7 +846,7 @@ class _BottomEditorPanel extends StatelessWidget {
           Text(
             _hintFor(state.editorMode),
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
@@ -1071,7 +1074,7 @@ class _VertexControls extends StatelessWidget {
             Text(
               '$count point${count == 1 ? '' : 's'}',
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
             const Spacer(),
@@ -1123,7 +1126,7 @@ class _NudgeRow extends StatelessWidget {
           Text(
             'Nudge (${_stepM.toInt()} m)',
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -1158,7 +1161,8 @@ class _NudgeBtn extends StatelessWidget {
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
             border: Border.all(color: OpenVtsColors.border),
           ),
-          child: Icon(icon, size: 14, color: OpenVtsColors.textPrimary),
+          child: Icon(icon,
+              size: 14, color: Theme.of(context).colorScheme.onSurface),
         ),
       ),
     );
@@ -1225,7 +1229,7 @@ class _SearchBar extends StatelessWidget {
                 prefixIcon: Icon(
                   Icons.search,
                   size: 18,
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 suffixIcon: isLoading
                     ? Padding(
@@ -1280,7 +1284,7 @@ class _SearchBar extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.body.copyWith(
-                          color: OpenVtsColors.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -1293,4 +1297,3 @@ class _SearchBar extends StatelessWidget {
     );
   }
 }
-
