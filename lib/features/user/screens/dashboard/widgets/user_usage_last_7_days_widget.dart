@@ -227,7 +227,10 @@ class _UsageChart extends StatelessWidget {
     return SizedBox(
       height: 168,
       child: CustomPaint(
-        painter: _UsageChartPainter(points),
+        painter: _UsageChartPainter(
+          points,
+          textColor: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
         size: Size.infinite,
       ),
     );
@@ -235,9 +238,13 @@ class _UsageChart extends StatelessWidget {
 }
 
 class _UsageChartPainter extends CustomPainter {
-  _UsageChartPainter(this.points);
+  _UsageChartPainter(
+    this.points, {
+    required this.textColor,
+  });
 
   final List<UserDashboardUsagePoint> points;
+  final Color textColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -341,7 +348,7 @@ class _UsageChartPainter extends CustomPainter {
         text: TextSpan(
           text: label.length > 3 ? label.substring(0, 3) : label,
           style: OpenVtsTypography.meta.copyWith(
-            color: OpenVtsColors.textTertiary,
+            color: textColor,
             fontSize: 9.5,
             fontWeight: FontWeight.w700,
           ),
@@ -356,7 +363,7 @@ class _UsageChartPainter extends CustomPainter {
 
   void _drawLegend(Canvas canvas, Size size) {
     final driven = _legendPainter('Driven km', OpenVtsColors.brandInk);
-    final engine = _legendPainter('Engine hours', OpenVtsColors.textTertiary);
+    final engine = _legendPainter('Engine hours', textColor);
     driven.paint(canvas, const Offset(4, 0));
     engine.paint(canvas, const Offset(92, 0));
   }

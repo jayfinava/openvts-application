@@ -369,7 +369,11 @@ class _DayNightChart extends StatelessWidget {
       height: 170,
       child: CustomPaint(
         painter: _DayNightChartPainter(
-            points: points, metric: metric, unitFormatter: unitFormatter),
+          points: points,
+          metric: metric,
+          unitFormatter: unitFormatter,
+          textColor: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
         size: Size.infinite,
       ),
     );
@@ -377,14 +381,17 @@ class _DayNightChart extends StatelessWidget {
 }
 
 class _DayNightChartPainter extends CustomPainter {
-  const _DayNightChartPainter(
-      {required this.points,
-      required this.metric,
-      required this.unitFormatter});
+  const _DayNightChartPainter({
+    required this.points,
+    required this.metric,
+    required this.unitFormatter,
+    required this.textColor,
+  });
 
   final List<UserDashboardDayNightPoint> points;
   final _DayNightMetric metric;
   final UnitFormatter unitFormatter;
+  final Color textColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -476,7 +483,7 @@ class _DayNightChartPainter extends CustomPainter {
       text: TextSpan(
         text: text,
         style: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.textTertiary,
+          color: textColor,
           fontSize: 10,
           fontWeight: FontWeight.w600,
         ),

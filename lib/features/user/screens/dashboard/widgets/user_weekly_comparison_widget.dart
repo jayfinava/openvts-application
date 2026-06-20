@@ -271,7 +271,11 @@ class _WeeklyComparisonChart extends StatelessWidget {
     return SizedBox(
       height: 172,
       child: CustomPaint(
-        painter: _WeeklyComparisonChartPainter(points, metric),
+        painter: _WeeklyComparisonChartPainter(
+          points,
+          metric,
+          textColor: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
         size: Size.infinite,
       ),
     );
@@ -279,10 +283,15 @@ class _WeeklyComparisonChart extends StatelessWidget {
 }
 
 class _WeeklyComparisonChartPainter extends CustomPainter {
-  _WeeklyComparisonChartPainter(this.points, this.metric);
+  _WeeklyComparisonChartPainter(
+    this.points,
+    this.metric, {
+    required this.textColor,
+  });
 
   final List<UserDashboardWeeklyPoint> points;
   final _WeeklyMetric metric;
+  final Color textColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -374,7 +383,7 @@ class _WeeklyComparisonChartPainter extends CustomPainter {
         text: TextSpan(
           text: label.length > 3 ? label.substring(0, 3) : label,
           style: OpenVtsTypography.meta.copyWith(
-            color: OpenVtsColors.textTertiary,
+            color: textColor,
             fontSize: 9.5,
             fontWeight: FontWeight.w700,
           ),
@@ -390,8 +399,7 @@ class _WeeklyComparisonChartPainter extends CustomPainter {
   void _drawLegend(Canvas canvas) {
     _legendPainter('This week', OpenVtsColors.brandInk)
         .paint(canvas, const Offset(4, 0));
-    _legendPainter('Last week', OpenVtsColors.textTertiary)
-        .paint(canvas, const Offset(92, 0));
+    _legendPainter('Last week', textColor).paint(canvas, const Offset(92, 0));
   }
 
   TextPainter _legendPainter(String text, Color color) {
