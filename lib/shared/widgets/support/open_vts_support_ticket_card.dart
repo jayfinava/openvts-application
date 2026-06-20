@@ -39,10 +39,7 @@ class OpenVtsSupportTicketCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return OpenVtsCard(
       onTap: onTap,
       padding: const EdgeInsets.symmetric(
@@ -53,13 +50,9 @@ class OpenVtsSupportTicketCard extends StatelessWidget {
         decoration: BoxDecoration(
           border: BorderDirectional(
             start: BorderSide(
-<<<<<<< HEAD
               color: isSelected
                   ? (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk)
                   : Colors.transparent,
-=======
-              color: isSelected ? OpenVtsColors.brandInk : Colors.transparent,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               width: 3,
             ),
           ),

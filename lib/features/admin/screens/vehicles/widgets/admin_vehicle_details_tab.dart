@@ -36,7 +36,8 @@ class AdminVehicleDetailsOverviewTab extends StatelessWidget {
               _SectionItem(label: 'Name', value: vehicle.name),
               _SectionItem(label: 'Plate Number', value: vehicle.plateNumber),
               _SectionItem(label: 'VIN', value: vehicle.vin),
-              _SectionItem(label: 'Type', value: vehicle.vehicleType?.name ?? '-'),
+              _SectionItem(
+                  label: 'Type', value: vehicle.vehicleType?.name ?? '-'),
             ],
           ),
         ),
@@ -56,8 +57,11 @@ class AdminVehicleDetailsOverviewTab extends StatelessWidget {
                 label: 'Distance Variation',
                 value: _num(vehicle.device?.distanceVariation),
               ),
-              _SectionItem(label: 'Odometer', value: _num(vehicle.device?.odometer)),
-              _SectionItem(label: 'Engine Hours', value: _num(vehicle.device?.engineHours)),
+              _SectionItem(
+                  label: 'Odometer', value: _num(vehicle.device?.odometer)),
+              _SectionItem(
+                  label: 'Engine Hours',
+                  value: _num(vehicle.device?.engineHours)),
               _SectionItem(
                 label: 'Ignition Source',
                 value: vehicle.device?.ignitionSource ?? '-',
@@ -87,8 +91,10 @@ class AdminVehicleDetailsOverviewTab extends StatelessWidget {
           child: _Section(
             title: 'Dates',
             items: [
-              _SectionItem(label: 'Created At', value: _date(vehicle.createdAt)),
-              _SectionItem(label: 'Updated At', value: _date(vehicle.displayUpdatedAt)),
+              _SectionItem(
+                  label: 'Created At', value: _date(vehicle.createdAt)),
+              _SectionItem(
+                  label: 'Updated At', value: _date(vehicle.displayUpdatedAt)),
             ],
           ),
         ),
@@ -99,7 +105,8 @@ class AdminVehicleDetailsOverviewTab extends StatelessWidget {
             child: _Section(
               title: 'Metadata',
               items: vehicle.vehicleMeta.entries
-                  .map((e) => _SectionItem(label: e.key, value: e.value?.toString() ?? '-'))
+                  .map((e) => _SectionItem(
+                      label: e.key, value: e.value?.toString() ?? '-'))
                   .toList(growable: false),
             ),
           ),
@@ -194,6 +201,7 @@ class _LabelValueRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final displayValue = value.trim().isEmpty ? '-' : value;
     return Row(
       children: [
@@ -202,7 +210,7 @@ class _LabelValueRow extends StatelessWidget {
           child: Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).textTheme.bodySmall?.color,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ),
@@ -212,6 +220,7 @@ class _LabelValueRow extends StatelessWidget {
             displayValue,
             style: OpenVtsTypography.meta.copyWith(
               fontWeight: FontWeight.w600,
+              color: colorScheme.onSurface,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

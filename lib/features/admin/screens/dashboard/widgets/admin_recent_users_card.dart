@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/router/route_paths.dart';
-<<<<<<< HEAD
-=======
-import '../../../../../core/theme/open_vts_colors.dart';
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
@@ -62,11 +58,7 @@ class _RecentUserRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-<<<<<<< HEAD
                     color: Theme.of(context).colorScheme.onSurface,
-=======
-                    color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -79,11 +71,7 @@ class _RecentUserRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                    color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontSize: 10.5,
                   ),
                 ),
@@ -103,11 +91,7 @@ class _RecentUserRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
                   style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                     color: Theme.of(context).colorScheme.onSurface,
-=======
-                    color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -118,11 +102,7 @@ class _RecentUserRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
                   style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                    color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontSize: 10,
                   ),
                 ),

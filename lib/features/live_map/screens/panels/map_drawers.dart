@@ -1156,12 +1156,9 @@ class _MapSettingTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // In dark mode use black background, in light mode use onSurface (dark)
     final iconBgColor = isDark ? const Color(0xFF1A1A1A) : scheme.onSurface;
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
 
     return Row(
       children: [
@@ -1169,11 +1166,7 @@ class _MapSettingTile extends StatelessWidget {
           width: 34,
           height: 34,
           decoration: BoxDecoration(
-<<<<<<< HEAD
             color: iconBgColor,
-=======
-            color: scheme.onSurface,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(data.icon, size: 18, color: Colors.white),
@@ -1210,15 +1203,9 @@ class _MapSettingTile extends StatelessWidget {
           child: Switch(
             value: data.value,
             onChanged: data.onChanged,
-<<<<<<< HEAD
             activeThumbColor: scheme.surface,
             activeTrackColor: scheme.onSurface,
             inactiveThumbColor: scheme.outlineVariant.withValues(alpha: 0.5),
-=======
-            activeThumbColor: Colors.white,
-            activeTrackColor: scheme.onSurface,
-            inactiveThumbColor: Colors.white,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             inactiveTrackColor: scheme.outlineVariant,
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),

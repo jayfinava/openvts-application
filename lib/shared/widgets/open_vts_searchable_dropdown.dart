@@ -209,11 +209,7 @@ class _OpenVtsSearchableDropdownState<T>
                     Icon(
                       widget.leadingIcon,
                       size: 18,
-<<<<<<< HEAD
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                      color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     ),
                     const SizedBox(width: OpenVtsSpacing.sm),
                   ],
@@ -235,13 +231,8 @@ class _OpenVtsSearchableDropdownState<T>
                       Icons.unfold_more_rounded,
                       size: 18,
                       color: widget.enabled
-<<<<<<< HEAD
                           ? Theme.of(context).colorScheme.onSurfaceVariant
                           : Theme.of(context).colorScheme.outline,
-=======
-                          ? OpenVtsColors.textSecondary
-                          : OpenVtsColors.textTertiary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     ),
                 ],
               ),
@@ -262,11 +253,7 @@ class _OpenVtsSearchableDropdownState<T>
           Text(
             widget.helperText!,
             style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
               color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-              color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
           ),
         ],
@@ -424,11 +411,7 @@ class _ValueDisplay<T> extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                      color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     ),
                   ),
                 ),
@@ -519,11 +502,7 @@ class _SearchableDropdownSheetState<T>
                   height: 4,
                   width: 40,
                   decoration: BoxDecoration(
-<<<<<<< HEAD
                     color: Theme.of(context).colorScheme.outlineVariant,
-=======
-                    color: OpenVtsColors.border,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -549,11 +528,7 @@ class _SearchableDropdownSheetState<T>
                         onPressed: () => Navigator.of(context)
                             .pop<_PickerResult<T>>(_PickerResult.cleared()),
                         style: TextButton.styleFrom(
-<<<<<<< HEAD
                           foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                          foregroundColor: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                           visualDensity: VisualDensity.compact,
                         ),
                         child: const Text('Clear'),
@@ -579,14 +554,10 @@ class _SearchableDropdownSheetState<T>
                 ),
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
-<<<<<<< HEAD
               Divider(
                 height: 1,
                 color: Theme.of(context).colorScheme.outlineVariant,
               ),
-=======
-              const Divider(height: 1, color: OpenVtsColors.divider),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               Flexible(
                 child: filtered.isEmpty
                     ? _EmptyResults(message: widget.emptyMessage)
@@ -651,27 +622,18 @@ class _SheetSearchField extends StatelessWidget {
             autofocus: true,
             textAlignVertical: TextAlignVertical.center,
             onChanged: onChanged,
-<<<<<<< HEAD
             style: TextStyle(
-=======
-            style: const TextStyle(
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               fontFamily: OpenVtsTypography.primaryFontFamily,
               fontFamilyFallback: OpenVtsTypography.fontFallback,
               fontSize: 14,
               fontWeight: FontWeight.w500,
-<<<<<<< HEAD
               color: Theme.of(context).colorScheme.onSurface,
-=======
-              color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
             decoration: InputDecoration(
               filled: true,
               fillColor: fillColor,
               isDense: true,
               hintText: hintText,
-<<<<<<< HEAD
               hintStyle: TextStyle(
                 fontFamily: OpenVtsTypography.primaryFontFamily,
                 fontFamilyFallback: OpenVtsTypography.fontFallback,
@@ -685,21 +647,6 @@ class _SheetSearchField extends StatelessWidget {
                   Icons.search_rounded,
                   size: 18,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-              hintStyle: const TextStyle(
-                fontFamily: OpenVtsTypography.primaryFontFamily,
-                fontFamilyFallback: OpenVtsTypography.fontFallback,
-                fontSize: 14,
-                color: OpenVtsColors.textTertiary,
-                fontWeight: FontWeight.w400,
-              ),
-              prefixIcon: const Padding(
-                padding: EdgeInsetsDirectional.only(start: 12, end: 8),
-                child: Icon(
-                  Icons.search_rounded,
-                  size: 18,
-                  color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 ),
               ),
               prefixIconConstraints: const BoxConstraints(
@@ -722,17 +669,10 @@ class _SheetSearchField extends StatelessWidget {
                           minHeight: 28,
                         ),
                         splashRadius: 16,
-<<<<<<< HEAD
                         icon: Icon(
                           Icons.close_rounded,
                           size: 16,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                        icon: const Icon(
-                          Icons.close_rounded,
-                          size: 16,
-                          color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         ),
                       ),
                     ),
@@ -813,11 +753,7 @@ class _OptionRow<T> extends StatelessWidget {
                       style: OpenVtsTypography.body.copyWith(
                         fontWeight:
                             isSelected ? FontWeight.w700 : FontWeight.w500,
-<<<<<<< HEAD
                         color: Theme.of(context).colorScheme.onSurface,
-=======
-                        color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                       ),
                     ),
                     if (hasSubtitle) ...[
@@ -827,11 +763,7 @@ class _OptionRow<T> extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                          color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         ),
                       ),
                     ],
@@ -846,11 +778,7 @@ class _OptionRow<T> extends StatelessWidget {
                 size: 18,
                 color: isSelected
                     ? OpenVtsColors.brandInk
-<<<<<<< HEAD
                     : Theme.of(context).colorScheme.outline,
-=======
-                    : OpenVtsColors.textTertiary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               ),
             ],
           ),
@@ -875,28 +803,17 @@ class _EmptyResults extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-<<<<<<< HEAD
           Icon(
             Icons.search_off_rounded,
             size: 32,
             color: Theme.of(context).colorScheme.outline,
-=======
-          const Icon(
-            Icons.search_off_rounded,
-            size: 32,
-            color: OpenVtsColors.textTertiary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
           Text(
             message,
             textAlign: TextAlign.center,
             style: OpenVtsTypography.body.copyWith(
-<<<<<<< HEAD
               color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-              color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
           ),
         ],

@@ -161,7 +161,7 @@ class _UserCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -184,13 +184,13 @@ class _UserCard extends StatelessWidget {
                 _MetaPill(
                   icon: Icons.phone_outlined,
                   label: user.phone,
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               if (user.email.trim().isNotEmpty)
                 _MetaPill(
                   icon: Icons.mail_outline_rounded,
                   label: user.email,
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               if (user.isActive != null)
                 _MetaPill(
@@ -200,13 +200,13 @@ class _UserCard extends StatelessWidget {
                   label: user.isActive! ? 'Active' : 'Inactive',
                   color: user.isActive!
                       ? OpenVtsColors.success
-                      : OpenVtsColors.textTertiary,
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               if (user.assignedAt != null)
                 _MetaPill(
                   icon: Icons.calendar_today_rounded,
                   label: f.formatDate(user.assignedAt!),
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
             ],
           ),
@@ -236,17 +236,17 @@ class _UserAvatar extends StatelessWidget {
       width: 40,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk.withValues(alpha: 0.15),
+        color: _softSurfaceColor(context),
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
         border: Border.all(
-          color: OpenVtsColors.brandInk.withValues(alpha: 0.3),
+          color: _softBorderColor(context),
         ),
       ),
       child: Text(
         _initials(),
         style: OpenVtsTypography.label.copyWith(
           fontWeight: FontWeight.w700,
-          color: OpenVtsColors.brandInk,
+          color: _primaryInkColor(context),
           fontSize: 13,
         ),
       ),
@@ -289,8 +289,11 @@ class _TinyTextButton extends StatelessWidget {
                       icon,
                       size: 14,
                       color: onPressed != null
-                          ? OpenVtsColors.textSecondary
-                          : OpenVtsColors.textTertiary,
+                          ? Theme.of(context).colorScheme.onSurfaceVariant
+                          : Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant
+                              .withValues(alpha: 0.5),
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -298,8 +301,11 @@ class _TinyTextButton extends StatelessWidget {
                       style: OpenVtsTypography.meta.copyWith(
                         fontWeight: FontWeight.w600,
                         color: onPressed != null
-                            ? OpenVtsColors.textSecondary
-                            : OpenVtsColors.textTertiary,
+                            ? Theme.of(context).colorScheme.onSurfaceVariant
+                            : Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant
+                                .withValues(alpha: 0.5),
                         fontSize: 10,
                       ),
                     ),
@@ -350,4 +356,26 @@ class _MetaPill extends StatelessWidget {
       ),
     );
   }
+}
+
+// ---------------------------------------------------------------------------
+// Theme helpers
+// ---------------------------------------------------------------------------
+
+Color _softSurfaceColor(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.dark
+      ? OpenVtsColors.darkSurface
+      : OpenVtsColors.background;
+}
+
+Color _softBorderColor(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.dark
+      ? OpenVtsColors.darkBorder
+      : OpenVtsColors.border;
+}
+
+Color _primaryInkColor(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.dark
+      ? OpenVtsColors.darkTextPrimary
+      : OpenVtsColors.brandInk;
 }

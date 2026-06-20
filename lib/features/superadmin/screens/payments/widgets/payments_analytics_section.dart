@@ -165,12 +165,9 @@ class _CompactKpiCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final effectiveIconColor = isDark ? Theme.of(context).colorScheme.primary : iconColor;
 
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return OpenVtsCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,11 +176,7 @@ class _CompactKpiCard extends StatelessWidget {
           Icon(
             icon,
             size: 18,
-<<<<<<< HEAD
             color: effectiveIconColor,
-=======
-            color: iconColor,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
           Text(
@@ -216,11 +209,8 @@ class _RevenueSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currencyFormat = NumberFormat('#,##0.##', 'en_US');
-<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final iconColor = isDark ? Theme.of(context).colorScheme.primary : OpenVtsColors.success.withValues(alpha: 0.9);
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
 
     return OpenVtsCard(
       child: Column(
@@ -232,11 +222,7 @@ class _RevenueSummaryCard extends StatelessWidget {
               Icon(
                 Icons.payments_rounded,
                 size: 18,
-<<<<<<< HEAD
                 color: iconColor,
-=======
-                color: OpenVtsColors.success.withValues(alpha: 0.9),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
               Text(

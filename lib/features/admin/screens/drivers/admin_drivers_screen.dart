@@ -396,23 +396,15 @@ class _InlineErrorBanner extends StatelessWidget {
         vertical: OpenVtsSpacing.sm,
       ),
       decoration: BoxDecoration(
-<<<<<<< HEAD
         color: Theme.of(context).colorScheme.error.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: Theme.of(context).colorScheme.error.withValues(alpha: 0.2)),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.error.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline_rounded, color: Theme.of(context).colorScheme.error),
-=======
-        color: OpenVtsColors.error.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.error.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.error_outline_rounded, color: OpenVtsColors.error),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
+          Icon(Icons.error_outline_rounded,
+              color: Theme.of(context).colorScheme.error),
           const SizedBox(width: OpenVtsSpacing.sm),
           Expanded(
             child: Text(

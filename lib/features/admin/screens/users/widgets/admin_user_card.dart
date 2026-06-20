@@ -162,11 +162,7 @@ class _CardHeader extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: OpenVtsTypography.label.copyWith(
-<<<<<<< HEAD
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                  color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 ),
               ),
             ],
@@ -254,15 +250,9 @@ class _StatusToggle extends StatelessWidget {
         child: Switch(
           value: isActive,
           onChanged: isBusy ? null : onChanged,
-<<<<<<< HEAD
           activeThumbColor: Theme.of(context).colorScheme.onPrimary,
           activeTrackColor: _primaryInkColor(context),
           inactiveThumbColor: Theme.of(context).colorScheme.onPrimary,
-=======
-          activeThumbColor: OpenVtsColors.white,
-          activeTrackColor: _primaryInkColor(context),
-          inactiveThumbColor: OpenVtsColors.white,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           inactiveTrackColor: _softBorderColor(context),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
@@ -310,17 +300,10 @@ class _CardMenu extends StatelessWidget {
             _menuItem(context, action),
       ],
       enabled: !isBusy,
-<<<<<<< HEAD
       icon: Icon(
         Icons.more_vert_rounded,
         size: 18,
         color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-      icon: const Icon(
-        Icons.more_vert_rounded,
-        size: 18,
-        color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
       padding: EdgeInsets.zero,
       splashRadius: 18,
@@ -455,15 +438,11 @@ class _InfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-<<<<<<< HEAD
         Icon(
           icon,
           size: 16,
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
-=======
-        Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Text(
@@ -471,11 +450,7 @@ class _InfoRow extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.label.copyWith(
-<<<<<<< HEAD
               color: Theme.of(context).colorScheme.onSurface,
-=======
-              color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               height: 1.4,
             ),
           ),
@@ -597,15 +572,11 @@ class _MetricCell extends StatelessWidget {
         children: [
           Row(
             children: [
-<<<<<<< HEAD
               Icon(
                 icon,
                 size: 14,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
-=======
-              Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               const SizedBox(width: OpenVtsSpacing.xxs + 2),
               Flexible(
                 child: Text(
@@ -613,11 +584,7 @@ class _MetricCell extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                    color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontWeight: FontWeight.w500,
                   ),
                 ),

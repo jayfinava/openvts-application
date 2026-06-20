@@ -581,11 +581,7 @@ class _PrimaryCreateButton extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final background =
         isDark ? OpenVtsColors.surfaceElevated : OpenVtsColors.brandInk;
-<<<<<<< HEAD
     final foreground = isDark ? OpenVtsColors.brandInk : Theme.of(context).colorScheme.onPrimary;
-=======
-    final foreground = isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
 
     return ElevatedButton.icon(
       onPressed: onPressed,
@@ -747,7 +743,7 @@ class _SearchInput extends StatelessWidget {
             textAlignVertical: TextAlignVertical.center,
             cursorColor: _primaryInkColor(context),
             cursorWidth: 1.4,
-            style: _baseStyle.copyWith(color: OpenVtsColors.textPrimary),
+            style: _baseStyle.copyWith(color: Theme.of(context).colorScheme.onSurface),
             strutStyle: const StrutStyle(
               fontFamily: OpenVtsTypography.primaryFontFamily,
               fontFamilyFallback: OpenVtsTypography.fontFallback,
@@ -763,18 +759,18 @@ class _SearchInput extends StatelessWidget {
               isCollapsed: false,
               hintText: 'Search by name, email\u2026',
               hintStyle: _baseStyle.copyWith(
-                color: OpenVtsColors.textTertiary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w400,
               ),
-              prefixIcon: const Padding(
-                padding: EdgeInsetsDirectional.only(
+              prefixIcon: Padding(
+                padding: const EdgeInsetsDirectional.only(
                   start: OpenVtsSpacing.sm,
                   end: OpenVtsSpacing.xs,
                 ),
                 child: Icon(
                   Icons.search_rounded,
                   size: 18,
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               prefixIconConstraints: const BoxConstraints(
@@ -799,10 +795,10 @@ class _SearchInput extends StatelessWidget {
                           minHeight: 28,
                         ),
                         splashRadius: 16,
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.close_rounded,
                           size: 16,
-                          color: OpenVtsColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ),
@@ -1030,7 +1026,6 @@ class _PageButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final enabled = onPressed != null;
-<<<<<<< HEAD
     final baseColor = _softSurfaceColor(context);
     return Material(
       color: enabled
@@ -1039,12 +1034,6 @@ class _PageButton extends StatelessWidget {
               Theme.of(context).colorScheme.surface.withValues(alpha: 0.4),
               baseColor,
             ),
-=======
-    return Material(
-      color: enabled
-          ? _softSurfaceColor(context)
-          : _softSurfaceColor(context).withValues(alpha: 0.6),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       child: InkWell(
         onTap: onPressed,

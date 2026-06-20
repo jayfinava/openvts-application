@@ -83,6 +83,7 @@ class _AdminUserPaymentsTabState extends ConsumerState<AdminUserPaymentsTab> {
           for (final payment in state.payments) ...[
             _PaymentCard(
               payment: payment,
+              linkedVehicles: state.linkedVehicles,
               onTap: () => _showPaymentDetails(payment),
             ),
             if (payment != state.payments.last)
@@ -140,6 +141,7 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Row(
@@ -150,16 +152,16 @@ class _SummaryCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.payments_outlined,
                       size: 17,
-                      color: OpenVtsColors.textSecondary,
+                      color: colors.onSurfaceVariant,
                     ),
                     const SizedBox(width: OpenVtsSpacing.xs),
                     Text(
                       'Payments',
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: colors.onSurface,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -177,7 +179,7 @@ class _SummaryCard extends StatelessWidget {
                 Text(
                   totalCount == 1 ? '1 payment' : '$totalCount payments',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: colors.onSurfaceVariant,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -260,6 +262,7 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return SizedBox(
       width: width,
       child: OpenVtsCard(
@@ -269,7 +272,7 @@ class _StatCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, size: 15, color: OpenVtsColors.textSecondary),
+                Icon(icon, size: 15, color: colors.onSurfaceVariant),
                 const SizedBox(width: OpenVtsSpacing.xs),
                 Expanded(
                   child: Text(
@@ -277,7 +280,7 @@ class _StatCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.textSecondary,
+                      color: colors.onSurfaceVariant,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),
@@ -291,7 +294,7 @@ class _StatCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.label.copyWith(
-                color: OpenVtsColors.textPrimary,
+                color: colors.onSurface,
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
               ),
@@ -304,20 +307,59 @@ class _StatCard extends StatelessWidget {
 }
 
 class _PaymentCard extends StatelessWidget {
-  const _PaymentCard({required this.payment, required this.onTap});
+  const _PaymentCard({
+    required this.payment,
+    required this.linkedVehicles,
+    required this.onTap,
+  });
 
   final AdminUserPayment payment;
+  final List<AdminUserVehicle> linkedVehicles;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final vehicle = _mapLabel(payment.vehicle, const [
       'name',
       'vehicleName',
       'vehicle_name',
       'plateNumber',
       'plate_number',
-      'imei',
+    ]);
+    final matchedVehicle = _matchVehicle(payment.vehicle, linkedVehicles);
+    final rawDevice = _valueForKey(payment.vehicle, 'device') ??
+        _valueForKey(payment.vehicle, 'gpsDevice') ??
+        _valueForKey(payment.vehicle, 'tracker');
+    final vehicleDevice = rawDevice is Map<String, dynamic>
+        ? rawDevice
+        : const <String, dynamic>{};
+    final imei = _firstNonEmpty([
+      _mapLabel(payment.vehicle, const [
+        'imei',
+        'IMEI',
+        'deviceImei',
+        'device_imei',
+        'imeiNumber',
+        'imei_number',
+        'trackerImei',
+        'tracker_imei',
+      ]),
+      _mapLabel(vehicleDevice, const [
+        'imei',
+        'IMEI',
+        'deviceImei',
+        'imeiNumber',
+      ]),
+      if (matchedVehicle != null) matchedVehicle.imei,
+      _mapLabel(payment.meta, const [
+        'imei',
+        'IMEI',
+        'deviceImei',
+        'device_imei',
+        'imeiNumber',
+        'imei_number',
+      ]),
     ]);
     final plan = _mapLabel(payment.plan, const [
       'name',
@@ -325,11 +367,6 @@ class _PaymentCard extends StatelessWidget {
       'plan_name',
       'title',
       'label',
-    ]);
-    final reference = _joinParts([
-      payment.reference,
-      payment.provider,
-      payment.providerRef,
     ]);
 
     return OpenVtsCard(
@@ -350,7 +387,7 @@ class _PaymentCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: colors.onSurface,
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                       ),
@@ -361,7 +398,7 @@ class _PaymentCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: colors.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -374,26 +411,90 @@ class _PaymentCard extends StatelessWidget {
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
           Wrap(
-            spacing: OpenVtsSpacing.xs,
-            runSpacing: OpenVtsSpacing.xs,
+            spacing: OpenVtsSpacing.sm,
+            runSpacing: OpenVtsSpacing.sm,
             children: [
-              _MetaPill(
+              _LabeledMetaItem(
                 icon: Icons.directions_car_filled_outlined,
-                label: _displayValue(vehicle),
+                label: 'Vehicle',
+                value: _displayValue(vehicle),
               ),
-              _MetaPill(
+              _LabeledMetaItem(
                 icon: Icons.workspace_premium_outlined,
-                label: _displayValue(plan),
+                label: 'Default plan',
+                value: _displayValue(plan),
               ),
-              _MetaPill(
-                icon: Icons.receipt_long_outlined,
-                label: _displayValue(reference),
-              ),
-              _MetaPill(
+              _LabeledMetaItem(
                 icon: Icons.calendar_today_outlined,
-                label: _dateTimeText(payment.createdAt),
+                label: 'Created at',
+                value: _dateTimeText(payment.createdAt),
+              ),
+              _LabeledMetaItem(
+                icon: Icons.memory_outlined,
+                label: 'IMEI',
+                value: _displayValue(imei),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LabeledMetaItem extends StatelessWidget {
+  const _LabeledMetaItem({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: colors.onSurface.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+        border: Border.all(
+          color: colors.onSurface.withValues(alpha: 0.08),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: colors.onSurfaceVariant),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: '$label: ',
+                    style: OpenVtsTypography.meta.copyWith(
+                      color: colors.onSurfaceVariant,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  TextSpan(
+                    text: value,
+                    style: OpenVtsTypography.meta.copyWith(
+                      color: colors.onSurface,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
@@ -425,6 +526,7 @@ class _RenewPaymentSheetState extends ConsumerState<_RenewPaymentSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final provider = adminUserDetailsControllerProvider(widget.userId);
     final state = ref.watch(provider);
     final vehicles = state.linkedVehicles;
@@ -476,7 +578,7 @@ class _RenewPaymentSheetState extends ConsumerState<_RenewPaymentSheet> {
               Text(
                 'Vehicles',
                 style: OpenVtsTypography.label.copyWith(
-                  color: OpenVtsColors.textPrimary,
+                  color: colors.onSurface,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -592,14 +694,15 @@ class _EstimateCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.calculate_outlined,
             size: 18,
-            color: OpenVtsColors.textSecondary,
+            color: colors.onSurfaceVariant,
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
           Expanded(
@@ -609,14 +712,14 @@ class _EstimateCard extends StatelessWidget {
                 Text(
                   '$selectedCount selected',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: colors.onSurface,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 Text(
                   'Estimated total $estimateLabel',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: colors.onSurfaceVariant,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -680,14 +783,15 @@ class _SelectableVehicleTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final planName = _vehiclePlanName(vehicle);
     final price = _vehiclePlanPrice(vehicle);
     return Material(
-      color: OpenVtsColors.white,
+      color: colors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
         side: BorderSide(
-          color: isSelected ? OpenVtsColors.brandInk : OpenVtsColors.border,
+          color: isSelected ? OpenVtsColors.brandInk : colors.outline,
         ),
       ),
       child: InkWell(
@@ -704,7 +808,7 @@ class _SelectableVehicleTile extends StatelessWidget {
                 size: 18,
                 color: isSelected
                     ? OpenVtsColors.brandInk
-                    : OpenVtsColors.textTertiary,
+                    : colors.onSurfaceVariant,
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
               Expanded(
@@ -716,7 +820,7 @@ class _SelectableVehicleTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: colors.onSurface,
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
                       ),
@@ -727,7 +831,7 @@ class _SelectableVehicleTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -737,7 +841,7 @@ class _SelectableVehicleTile extends StatelessWidget {
               Text(
                 price == null ? '-' : _formatNumber(price),
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: colors.onSurfaceVariant,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -756,6 +860,7 @@ class _PaymentDetailsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return ListView(
       controller: PrimaryScrollController.maybeOf(context),
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
@@ -771,7 +876,7 @@ class _PaymentDetailsSheet extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.numeric.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: colors.onSurface,
                     fontSize: 24,
                   ),
                 ),
@@ -840,6 +945,7 @@ class _DetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -848,7 +954,7 @@ class _DetailsCard extends StatelessWidget {
           Text(
             title,
             style: OpenVtsTypography.label.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: colors.onSurface,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -867,6 +973,7 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),
       child: Row(
@@ -877,7 +984,7 @@ class _DetailRow extends StatelessWidget {
             child: Text(
               row.label,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textTertiary,
+                color: colors.onSurfaceVariant,
               ),
             ),
           ),
@@ -885,7 +992,7 @@ class _DetailRow extends StatelessWidget {
             child: Text(
               row.value,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textPrimary,
+                color: colors.onSurface,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -910,6 +1017,7 @@ class _MetaJsonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -918,7 +1026,7 @@ class _MetaJsonCard extends StatelessWidget {
           Text(
             'Meta',
             style: OpenVtsTypography.label.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: colors.onSurface,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -926,7 +1034,7 @@ class _MetaJsonCard extends StatelessWidget {
           SelectableText(
             meta.toString(),
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: colors.onSurface,
               height: 1.35,
             ),
           ),
@@ -960,31 +1068,33 @@ class _MetaPill extends StatelessWidget {
   const _MetaPill({
     required this.icon,
     required this.label,
-    this.color = OpenVtsColors.textSecondary,
+    this.color,
   });
 
   final IconData icon;
   final String label;
-  final Color color;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
+    final resolvedColor =
+        color ?? Theme.of(context).colorScheme.onSurfaceVariant;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.06),
+        color: resolvedColor.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: color.withValues(alpha: 0.18)),
+        border: Border.all(color: resolvedColor.withValues(alpha: 0.18)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: color),
+          Icon(icon, size: 12, color: resolvedColor),
           const SizedBox(width: 4),
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: color,
+              color: resolvedColor,
               fontSize: 11,
               fontWeight: FontWeight.w700,
             ),
@@ -1040,6 +1150,7 @@ class _SectionLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Row(
@@ -1053,7 +1164,7 @@ class _SectionLoader extends StatelessWidget {
           Text(
             'Loading $title',
             style: OpenVtsTypography.label.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: colors.onSurfaceVariant,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -1071,6 +1182,7 @@ class _SectionErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -1088,7 +1200,7 @@ class _SectionErrorCard extends StatelessWidget {
                 child: Text(
                   'Unable to load payments',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: colors.onSurface,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -1099,7 +1211,7 @@ class _SectionErrorCard extends StatelessWidget {
           Text(
             message,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: colors.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
@@ -1122,18 +1234,22 @@ class _EmptyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(
+          color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
+        ),
       ),
       child: Text(
         label,
         style: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.textSecondary,
+          color: colors.onSurfaceVariant,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -1401,6 +1517,49 @@ dynamic _valueForKey(Map<String, dynamic> source, String key) {
       return entry.value;
     }
   }
+  return null;
+}
+
+String _firstNonEmpty(List<String> values) {
+  for (final v in values) {
+    if (v.trim().isNotEmpty && v.trim() != '-') {
+      return v;
+    }
+  }
+  return '';
+}
+
+AdminUserVehicle? _matchVehicle(
+  Map<String, dynamic> paymentVehicle,
+  List<AdminUserVehicle> linkedVehicles,
+) {
+  if (linkedVehicles.isEmpty || paymentVehicle.isEmpty) return null;
+
+  final id = _mapLabel(paymentVehicle, const [
+    'id',
+    '_id',
+    'vehicleId',
+    'vehicle_id',
+  ]);
+  if (id.isNotEmpty) {
+    for (final v in linkedVehicles) {
+      if (v.id == id) return v;
+    }
+  }
+
+  final plate = _mapLabel(paymentVehicle, const [
+    'plateNumber',
+    'plate_number',
+    'name',
+    'vehicleName',
+    'vehicle_name',
+  ]);
+  if (plate.isNotEmpty) {
+    for (final v in linkedVehicles) {
+      if (v.plateNumber == plate || v.name == plate) return v;
+    }
+  }
+
   return null;
 }
 

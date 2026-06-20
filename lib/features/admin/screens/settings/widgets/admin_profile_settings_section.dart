@@ -121,17 +121,10 @@ class _ProfileSettingsSectionState
           children: [
             Text(
               state.sectionErrorMessage ?? 'No profile available.',
-<<<<<<< HEAD
               style: TextStyle(
                 fontFamily: OpenVtsTypography.primaryFontFamily,
                 fontSize: 12.5,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-              style: const TextStyle(
-                fontFamily: OpenVtsTypography.primaryFontFamily,
-                fontSize: 12.5,
-                color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               ),
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
@@ -433,17 +426,10 @@ class _ProfileHeaderCard extends ConsumerWidget {
                       const SizedBox(height: 2),
                       Text(
                         '@$username',
-<<<<<<< HEAD
                         style: TextStyle(
                           fontFamily: OpenVtsTypography.primaryFontFamily,
                           fontSize: 12,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                        style: const TextStyle(
-                          fontFamily: OpenVtsTypography.primaryFontFamily,
-                          fontSize: 12,
-                          color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                           height: 1.2,
                         ),
                         maxLines: 1,
@@ -460,26 +446,15 @@ class _ProfileHeaderCard extends ConsumerWidget {
             if (email.isNotEmpty)
               Row(
                 children: [
-<<<<<<< HEAD
                   Icon(Icons.mail_outline_rounded, size: 14, color: Theme.of(context).colorScheme.outline),
-=======
-                  const Icon(Icons.mail_outline_rounded, size: 14, color: OpenVtsColors.textTertiary),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       email,
-<<<<<<< HEAD
                       style: TextStyle(
                         fontFamily: OpenVtsTypography.primaryFontFamily,
                         fontSize: 12,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                      style: const TextStyle(
-                        fontFamily: OpenVtsTypography.primaryFontFamily,
-                        fontSize: 12,
-                        color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         height: 1.2,
                       ),
                       maxLines: 1,
@@ -492,26 +467,15 @@ class _ProfileHeaderCard extends ConsumerWidget {
             if (mobile.isNotEmpty)
               Row(
                 children: [
-<<<<<<< HEAD
                   Icon(Icons.phone_outlined, size: 14, color: Theme.of(context).colorScheme.outline),
-=======
-                  const Icon(Icons.phone_outlined, size: 14, color: OpenVtsColors.textTertiary),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       mobile,
-<<<<<<< HEAD
                       style: TextStyle(
                         fontFamily: OpenVtsTypography.primaryFontFamily,
                         fontSize: 12,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                      style: const TextStyle(
-                        fontFamily: OpenVtsTypography.primaryFontFamily,
-                        fontSize: 12,
-                        color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         height: 1.2,
                       ),
                       maxLines: 1,
@@ -537,11 +501,7 @@ class _ProfileHeaderCard extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-<<<<<<< HEAD
                   Icon(Icons.credit_card_outlined, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
-=======
-                  const Icon(Icons.credit_card_outlined, size: 16, color: OpenVtsColors.textSecondary),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   const SizedBox(width: 8),
                   Expanded(
                     child: Column(
@@ -763,11 +723,7 @@ class _VerificationRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-<<<<<<< HEAD
         Icon(icon, size: 18, color: Theme.of(context).colorScheme.onSurfaceVariant),
-=======
-        Icon(icon, size: 18, color: OpenVtsColors.textSecondary),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Column(
@@ -775,17 +731,10 @@ class _VerificationRow extends StatelessWidget {
             children: [
               Text(
                 label,
-<<<<<<< HEAD
                 style: TextStyle(
                   fontFamily: OpenVtsTypography.primaryFontFamily,
                   fontSize: 11,
                   color: Theme.of(context).colorScheme.outline,
-=======
-                style: const TextStyle(
-                  fontFamily: OpenVtsTypography.primaryFontFamily,
-                  fontSize: 11,
-                  color: OpenVtsColors.textTertiary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.4,
                 ),
@@ -1169,21 +1118,13 @@ class _EmailSubscriptionCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-<<<<<<< HEAD
                 Text(
-=======
-                const Text(
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   'Email Subscription',
                   style: TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
-<<<<<<< HEAD
                     color: Theme.of(context).colorScheme.onSurface,
-=======
-                    color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   ),
                 ),
                 const SizedBox(height: 1),
@@ -1195,17 +1136,10 @@ class _EmailSubscriptionCard extends StatelessWidget {
                           : isSubscribed
                               ? 'Subscribed'
                               : 'Not subscribed',
-<<<<<<< HEAD
                   style: TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 11.5,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                  style: const TextStyle(
-                    fontFamily: OpenVtsTypography.primaryFontFamily,
-                    fontSize: 11.5,
-                    color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   ),
                 ),
               ],
@@ -1267,11 +1201,7 @@ class _LogoutCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
-<<<<<<< HEAD
               Expanded(
-=======
-              const Expanded(
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -1281,27 +1211,16 @@ class _LogoutCard extends StatelessWidget {
                         fontFamily: OpenVtsTypography.primaryFontFamily,
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
-<<<<<<< HEAD
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 1),
-=======
-                        color: OpenVtsColors.textPrimary,
-                      ),
-                    ),
-                    SizedBox(height: 1),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     Text(
                       'End this session on this device.',
                       style: TextStyle(
                         fontFamily: OpenVtsTypography.primaryFontFamily,
                         fontSize: 11,
-<<<<<<< HEAD
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                        color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                       ),
                     ),
                   ],
@@ -1379,36 +1298,21 @@ class _SheetHeader extends StatelessWidget {
               children: [
                 Text(
                   title,
-<<<<<<< HEAD
                   style: TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: Theme.of(context).colorScheme.onSurface,
-=======
-                  style: const TextStyle(
-                    fontFamily: OpenVtsTypography.primaryFontFamily,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   ),
                 ),
                 if (subtitle != null) ...[
                   const SizedBox(height: 2),
                   Text(
                     subtitle!,
-<<<<<<< HEAD
                     style: TextStyle(
                       fontFamily: OpenVtsTypography.primaryFontFamily,
                       fontSize: 12,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                    style: const TextStyle(
-                      fontFamily: OpenVtsTypography.primaryFontFamily,
-                      fontSize: 12,
-                      color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     ),
                   ),
                 ],
@@ -1920,17 +1824,10 @@ class _DropdownField<T> extends StatelessWidget {
                             value: value,
                             child: Text(
                               value.toString(),
-<<<<<<< HEAD
                               style: TextStyle(
                                 fontFamily: OpenVtsTypography.primaryFontFamily,
                                 fontSize: 12.5,
                                 color: Theme.of(context).colorScheme.outline,
-=======
-                              style: const TextStyle(
-                                fontFamily: OpenVtsTypography.primaryFontFamily,
-                                fontSize: 12.5,
-                                color: OpenVtsColors.textTertiary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                               ),
                             ),
                           ),
@@ -2375,20 +2272,12 @@ class _SubSectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       label.toUpperCase(),
-<<<<<<< HEAD
       style: TextStyle(
-=======
-      style: const TextStyle(
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         fontFamily: OpenVtsTypography.primaryFontFamily,
         fontSize: 10,
         letterSpacing: 0.8,
         fontWeight: FontWeight.w600,
-<<<<<<< HEAD
         color: Theme.of(context).colorScheme.outline,
-=======
-        color: OpenVtsColors.textTertiary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
     );
   }
@@ -2505,20 +2394,12 @@ class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                 ],
-<<<<<<< HEAD
                 style: TextStyle(
-=======
-                style: const TextStyle(
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   fontFamily: OpenVtsTypography.primaryFontFamily,
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 8,
-<<<<<<< HEAD
                   color: Theme.of(context).colorScheme.onSurface,
-=======
-                  color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 ),
                 decoration: InputDecoration(
                   counterText: '',
@@ -2550,20 +2431,13 @@ class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
                           height: 14,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-<<<<<<< HEAD
                       : Text(
-=======
-                      : const Text(
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                           'Resend code',
                           style: TextStyle(
                             fontFamily: OpenVtsTypography.primaryFontFamily,
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
-<<<<<<< HEAD
                             color: Theme.of(context).colorScheme.primary,
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                           ),
                         ),
                 ),

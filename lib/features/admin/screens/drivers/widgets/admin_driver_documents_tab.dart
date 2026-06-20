@@ -198,7 +198,7 @@ class _DocCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -255,13 +255,13 @@ class _DocCard extends StatelessWidget {
               _MetaPill(
                 icon: Icons.insert_drive_file_outlined,
                 label: doc.fileName,
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               if (doc.createdAt != null)
                 _MetaPill(
                   icon: Icons.calendar_today_rounded,
                   label: f.formatDate(doc.createdAt!),
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               if (doc.expiryAt != null)
                 _MetaPill(
@@ -274,7 +274,7 @@ class _DocCard extends StatelessWidget {
                     ? Icons.visibility_rounded
                     : Icons.visibility_off_rounded,
                 label: doc.isVisible ? 'Visible' : 'Hidden',
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ],
           ),
@@ -342,15 +342,9 @@ class _MetaPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-<<<<<<< HEAD
         color: color.withOpacity(0.06),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         border: Border.all(color: color.withOpacity(0.22)),
-=======
-        color: color.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: color.withValues(alpha: 0.22)),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

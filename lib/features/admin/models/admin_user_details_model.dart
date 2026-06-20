@@ -590,6 +590,40 @@ class AdminUserVehicle {
 
   factory AdminUserVehicle.fromJson(dynamic json) {
     final source = _asMap(json);
+    final deviceMap =
+        _firstMap(source, const ['device', 'gpsDevice', 'tracker']) ??
+            const <String, dynamic>{};
+    final imei = _firstString(source, const [
+          'imei',
+          'IMEI',
+          'deviceImei',
+          'device_imei',
+          'imeiNumber',
+          'imei_number',
+          'trackerImei',
+          'tracker_imei',
+        ]) ??
+        _firstString(deviceMap, const [
+          'imei',
+          'IMEI',
+          'deviceImei',
+          'imeiNumber',
+        ]) ??
+        '';
+    final simNumber = _firstString(source, const [
+          'simNumber',
+          'sim_number',
+          'simno',
+          'simNo',
+          'sim',
+        ]) ??
+        _firstString(deviceMap, const [
+          'simNumber',
+          'sim_number',
+          'simNo',
+          'sim',
+        ]) ??
+        '';
     return AdminUserVehicle(
       id: _firstString(source, const ['id', '_id', 'vehicleId']) ?? '',
       name: _firstString(source, const [
@@ -609,15 +643,8 @@ class AdminUserVehicle {
             'vehicleNo',
           ]) ??
           '',
-      imei: _firstString(source, const ['imei', 'IMEI', 'deviceImei']) ?? '',
-      simNumber: _firstString(source, const [
-            'simNumber',
-            'sim_number',
-            'simno',
-            'simNo',
-            'sim',
-          ]) ??
-          '',
+      imei: imei,
+      simNumber: simNumber,
       isLicenseBlocked: _parseBool(_firstValue(source, const [
             'isLicenseBlocked',
             'is_license_blocked',

@@ -372,10 +372,7 @@ class _CreateTicketHelperCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       child: Column(
@@ -384,13 +381,9 @@ class _CreateTicketHelperCard extends StatelessWidget {
           Text(
             'New support ticket',
             style: OpenVtsTypography.titleSmall.copyWith(
-<<<<<<< HEAD
               color: isDark
                   ? OpenVtsColors.darkTextPrimary
                   : OpenVtsColors.textPrimary,
-=======
-              color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               fontWeight: FontWeight.w800,
               fontSize: 16,
             ),
@@ -399,13 +392,9 @@ class _CreateTicketHelperCard extends StatelessWidget {
           Text(
             'Select an administrator, describe the issue, and attach files if needed.',
             style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
               color: isDark
                   ? OpenVtsColors.darkTextSecondary
                   : OpenVtsColors.textSecondary,
-=======
-              color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
           ),
         ],
@@ -481,7 +470,6 @@ class _TicketFields extends StatelessWidget {
         ),
         if (admins.isEmpty && !adminsAreLoading) ...[
           const SizedBox(height: OpenVtsSpacing.xs),
-<<<<<<< HEAD
           Builder(
             builder: (context) {
               final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -496,15 +484,6 @@ class _TicketFields extends StatelessWidget {
                 ),
               );
             },
-=======
-          Text(
-            adminSearchController.text.trim().isEmpty
-                ? 'No administrators found.'
-                : 'No administrators match this search.',
-            style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
-            ),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           ),
         ],
         const SizedBox(height: OpenVtsSpacing.sm),
@@ -621,10 +600,7 @@ class _TicketFormActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return SafeArea(
       top: false,
       child: Container(
@@ -634,7 +610,6 @@ class _TicketFormActionBar extends StatelessWidget {
           OpenVtsSpacing.md,
           OpenVtsSpacing.md,
         ),
-<<<<<<< HEAD
         decoration: BoxDecoration(
           color: isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
           border: Border(
@@ -642,11 +617,6 @@ class _TicketFormActionBar extends StatelessWidget {
               color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
             ),
           ),
-=======
-        decoration: const BoxDecoration(
-          color: OpenVtsColors.surface,
-          border: Border(top: BorderSide(color: OpenVtsColors.border)),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         ),
         child: Align(
           alignment: Alignment.center,
@@ -689,10 +659,7 @@ class _DraftAttachmentWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Wrap(
       spacing: OpenVtsSpacing.xs,
       runSpacing: OpenVtsSpacing.xs,
@@ -704,34 +671,21 @@ class _DraftAttachmentWrap extends StatelessWidget {
                 end: OpenVtsSpacing.xxs,
               ),
               decoration: BoxDecoration(
-<<<<<<< HEAD
                 border: Border.all(
                   color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
                 ),
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                 color: isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
-=======
-                border: Border.all(color: OpenVtsColors.border),
-                borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                color: OpenVtsColors.surface,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-<<<<<<< HEAD
                   Icon(
                     Icons.insert_drive_file_outlined,
                     size: 14,
                     color: isDark
                         ? OpenVtsColors.darkTextSecondary
                         : OpenVtsColors.textTertiary,
-=======
-                  const Icon(
-                    Icons.insert_drive_file_outlined,
-                    size: 14,
-                    color: OpenVtsColors.textTertiary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   ),
                   const SizedBox(width: OpenVtsSpacing.xxs),
                   ConstrainedBox(

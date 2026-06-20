@@ -25,10 +25,7 @@ class OpenVtsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPrimary = variant == OpenVtsButtonVariant.primary;
-<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
 
     return SizedBox(
       height: height,
@@ -40,7 +37,6 @@ class OpenVtsButton extends StatelessWidget {
               isPrimary ? OpenVtsColors.brandInk : OpenVtsColors.white,
           foregroundColor:
               isPrimary ? OpenVtsColors.white : OpenVtsColors.brandInk,
-<<<<<<< HEAD
           disabledBackgroundColor:
               isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
           disabledForegroundColor: isDark
@@ -52,14 +48,6 @@ class OpenVtsButton extends StatelessWidget {
               color: isPrimary
                   ? OpenVtsColors.brandInk
                   : (isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border),
-=======
-          disabledBackgroundColor: OpenVtsColors.surface,
-          disabledForegroundColor: OpenVtsColors.textTertiary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-            side: BorderSide(
-              color: isPrimary ? OpenVtsColors.brandInk : OpenVtsColors.border,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
             ),
           ),
         ),

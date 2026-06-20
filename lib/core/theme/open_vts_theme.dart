@@ -81,7 +81,6 @@ class OpenVtsTheme {
           color: OpenVtsColors.darkTextPrimary,
         ),
       ),
-<<<<<<< HEAD
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: OpenVtsColors.darkSurface,
@@ -100,8 +99,6 @@ class OpenVtsTheme {
           borderSide: const BorderSide(color: OpenVtsColors.white),
         ),
       ),
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     );
   }
 }

@@ -210,7 +210,6 @@ class _HeaderStatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final backgroundColor = isActive
         ? Theme.of(context).colorScheme.primaryContainer
         : Theme.of(context).colorScheme.surfaceContainerHighest;
@@ -220,34 +219,20 @@ class _HeaderStatusChip extends StatelessWidget {
     final borderColor = isActive
         ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.25)
         : Theme.of(context).colorScheme.outlineVariant;
-=======
-    final color =
-        isActive ? OpenVtsColors.brandInk : OpenVtsColors.textTertiary;
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-<<<<<<< HEAD
           color: backgroundColor,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
           border: Border.all(color: borderColor),
-=======
-          color: color.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-          border: Border.all(color: color.withValues(alpha: 0.25)),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         ),
         child: Text(
           isActive ? 'Active' : 'Inactive',
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w600,
-<<<<<<< HEAD
             color: foregroundColor,
-=======
-            color: color,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           ),
         ),
       ),
@@ -395,7 +380,6 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final backgroundColor = isActive
         ? Theme.of(context).colorScheme.tertiaryContainer
         : Theme.of(context).colorScheme.surfaceContainerHighest;
@@ -411,26 +395,13 @@ class _StatusBadge extends StatelessWidget {
         color: backgroundColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         border: Border.all(color: borderColor),
-=======
-    final color = isActive ? OpenVtsColors.success : OpenVtsColors.textTertiary;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: color.withValues(alpha: 0.25)),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
       child: Text(
         isActive ? 'Active' : 'Inactive',
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w600,
-<<<<<<< HEAD
           color: foregroundColor,
-=======
-          color: color,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         ),
       ),
     );

@@ -20,7 +20,6 @@ class OpenVtsSupportFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -35,8 +34,6 @@ class OpenVtsSupportFilterChip extends StatelessWidget {
         ? colorScheme.onPrimary
         : (isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary);
 
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return ChoiceChip(
       label: Text('$label $count'),
       selected: selected,
@@ -44,22 +41,12 @@ class OpenVtsSupportFilterChip extends StatelessWidget {
       visualDensity: VisualDensity.compact,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       labelPadding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.xs),
-<<<<<<< HEAD
       selectedColor: selectedBg,
       backgroundColor: unselectedBg,
       side: BorderSide(color: borderColor, width: 1),
       checkmarkColor: colorScheme.onPrimary,
       labelStyle: OpenVtsTypography.meta.copyWith(
         color: labelColor,
-=======
-      selectedColor: OpenVtsColors.brandInk.withValues(alpha: 0.08),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      side: BorderSide(
-        color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
-      ),
-      labelStyle: OpenVtsTypography.meta.copyWith(
-        color: selected ? OpenVtsColors.brandInk : OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
         fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
       ),
       shape: RoundedRectangleBorder(

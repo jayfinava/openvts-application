@@ -84,9 +84,8 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
     );
 
     _mobilePrefix = driver?.mobilePrefix == '-' ? null : driver?.mobilePrefix;
-    _countryCode = driver?.address.countryCode == '-'
-        ? null
-        : driver?.address.countryCode;
+    _countryCode =
+        driver?.address.countryCode == '-' ? null : driver?.address.countryCode;
     _stateCode =
         driver?.address.stateCode == '-' ? null : driver?.address.stateCode;
     _cityValue = driver?.address.cityId == '-' ? null : driver?.address.cityId;

@@ -18,7 +18,6 @@ class AdminFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final backgroundColor = selected
         ? OpenVtsColors.brandInk
         : Theme.of(context).colorScheme.surfaceContainerHigh;
@@ -47,24 +46,6 @@ class AdminFilterChip extends StatelessWidget {
               color: foregroundColor,
               fontWeight: FontWeight.w600,
             ),
-=======
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? OpenVtsColors.brandInk : OpenVtsColors.white,
-          borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          border: Border.all(
-              color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border),
-        ),
-        child: Text(
-          label,
-          style: OpenVtsTypography.meta.copyWith(
-            color: selected ? OpenVtsColors.white : OpenVtsColors.textSecondary,
-            fontWeight: FontWeight.w600,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           ),
         ),
       ),

@@ -100,7 +100,7 @@ class _CardHeader extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: OpenVtsTypography.label.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -181,9 +181,9 @@ class _StatusToggle extends StatelessWidget {
         child: Switch(
           value: isActive,
           onChanged: isBusy ? null : onChanged,
-          activeThumbColor: OpenVtsColors.white,
+          activeThumbColor: Theme.of(context).colorScheme.onPrimary,
           activeTrackColor: _primaryInkColor(context),
-          inactiveThumbColor: OpenVtsColors.white,
+          inactiveThumbColor: Theme.of(context).colorScheme.onSurface,
           inactiveTrackColor: _softBorderColor(context),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
@@ -414,7 +414,9 @@ class _MetricCell extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 14, color: OpenVtsColors.textSecondary),
+              Icon(icon,
+                  size: 14,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               const SizedBox(width: OpenVtsSpacing.xxs + 2),
               Flexible(
                 child: Text(
@@ -422,7 +424,7 @@ class _MetricCell extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

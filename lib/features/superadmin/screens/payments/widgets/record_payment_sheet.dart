@@ -4,10 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-<<<<<<< HEAD
-=======
-import '../../../../../core/theme/open_vts_colors.dart';
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -268,11 +264,7 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                       child: Text(
                         'Record Payment',
                         style: OpenVtsTypography.titleSmall.copyWith(
-<<<<<<< HEAD
                           color: Theme.of(context).colorScheme.onSurface,
-=======
-                          color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         ),
                       ),
                     ),
@@ -492,11 +484,7 @@ class _AdminMenuLabel extends StatelessWidget {
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: OpenVtsTypography.body.copyWith(
-<<<<<<< HEAD
         color: Theme.of(context).colorScheme.onSurface,
-=======
-        color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
     );
   }

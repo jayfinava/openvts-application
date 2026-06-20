@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-<<<<<<< HEAD
-=======
-import '../../../../../core/theme/open_vts_colors.dart';
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 
@@ -37,11 +33,7 @@ class AdminUserFormSection extends StatelessWidget {
         Text(
           title,
           style: OpenVtsTypography.label.copyWith(
-<<<<<<< HEAD
             color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-            color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           ),
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
@@ -94,10 +86,7 @@ class AdminUserDropdownField extends StatelessWidget {
           items: menuItems,
           onChanged: isLoading ? null : onChanged,
           validator: validator,
-<<<<<<< HEAD
           dropdownColor: Theme.of(context).colorScheme.surface,
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           decoration: InputDecoration(
             hintText: hintText,
             prefixIcon: prefixIcon == null
@@ -105,11 +94,7 @@ class AdminUserDropdownField extends StatelessWidget {
                 : Icon(
                     prefixIcon,
                     size: 20,
-<<<<<<< HEAD
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                    color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   ),
             suffixIcon: isLoading
                 ? const Padding(
@@ -161,7 +146,6 @@ class AdminUserDropdownField extends StatelessWidget {
           (option) => DropdownMenuItem<String>(
             value: option.value,
             enabled: !option.isFallback,
-<<<<<<< HEAD
             child: Builder(
               builder: (context) => Text(
                 option.label,
@@ -171,15 +155,6 @@ class AdminUserDropdownField extends StatelessWidget {
                       ? Theme.of(context).colorScheme.outline
                       : Theme.of(context).colorScheme.onSurface,
                 ),
-=======
-            child: Text(
-              option.label,
-              overflow: TextOverflow.ellipsis,
-              style: OpenVtsTypography.body.copyWith(
-                color: option.isFallback
-                    ? OpenVtsColors.textTertiary
-                    : OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
               ),
             ),
           ),

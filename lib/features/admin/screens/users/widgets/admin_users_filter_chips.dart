@@ -112,7 +112,6 @@ class _CountryFilterChip extends StatelessWidget {
         ];
       },
       child: Material(
-<<<<<<< HEAD
         color: selected
             ? OpenVtsColors.brandInk
             : Theme.of(context).colorScheme.surface,
@@ -122,13 +121,6 @@ class _CountryFilterChip extends StatelessWidget {
             color: selected
                 ? OpenVtsColors.brandInk
                 : Theme.of(context).colorScheme.outlineVariant,
-=======
-        color: selected ? OpenVtsColors.brandInk : OpenVtsColors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-          side: BorderSide(
-            color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           ),
         ),
         child: ConstrainedBox(
@@ -145,26 +137,16 @@ class _CountryFilterChip extends StatelessWidget {
                   Icons.public_rounded,
                   size: 14,
                   color: selected
-<<<<<<< HEAD
                       ? Theme.of(context).colorScheme.onPrimary
                       : Theme.of(context).colorScheme.onSurface,
-=======
-                      ? OpenVtsColors.white
-                      : OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 ),
                 const SizedBox(width: OpenVtsSpacing.xxs),
                 Text(
                   label,
                   style: OpenVtsTypography.meta.copyWith(
                     color: selected
-<<<<<<< HEAD
                         ? Theme.of(context).colorScheme.onPrimary
                         : Theme.of(context).colorScheme.onSurface,
-=======
-                        ? OpenVtsColors.white
-                        : OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -173,13 +155,8 @@ class _CountryFilterChip extends StatelessWidget {
                   Icons.expand_more_rounded,
                   size: 16,
                   color: selected
-<<<<<<< HEAD
                       ? Theme.of(context).colorScheme.onPrimary
                       : Theme.of(context).colorScheme.onSurface,
-=======
-                      ? OpenVtsColors.white
-                      : OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 ),
               ],
             ),
@@ -224,7 +201,6 @@ class _AdminFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final backgroundColor = selected
         ? OpenVtsColors.brandInk
         : Theme.of(context).colorScheme.surfaceContainerHigh;
@@ -240,15 +216,6 @@ class _AdminFilterChip extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         side: BorderSide(color: borderColor, width: 1),
-=======
-    return Material(
-      color: selected ? OpenVtsColors.brandInk : OpenVtsColors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        side: BorderSide(
-          color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
-        ),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -263,12 +230,7 @@ class _AdminFilterChip extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                 color: foregroundColor,
-=======
-                color:
-                    selected ? OpenVtsColors.white : OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 fontWeight: FontWeight.w600,
               ),
             ),

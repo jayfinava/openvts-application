@@ -469,7 +469,6 @@ class _SummaryCard extends StatelessWidget {
                 height: 44,
                 width: 44,
                 alignment: Alignment.center,
-<<<<<<< HEAD
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -480,18 +479,6 @@ class _SummaryCard extends StatelessWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: Theme.of(context).colorScheme.onSurface,
-=======
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: OpenVtsColors.surface,
-                ),
-                child: Text(
-                  user.initials,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                   ),
                 ),
               ),
@@ -502,17 +489,10 @@ class _SummaryCard extends StatelessWidget {
                   children: [
                     Text(
                       user.displayName,
-<<<<<<< HEAD
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: Theme.of(context).colorScheme.onSurface,
-=======
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                         height: 1.2,
                       ),
                       maxLines: 1,
@@ -522,15 +502,9 @@ class _SummaryCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         '@${user.username}',
-<<<<<<< HEAD
                         style: TextStyle(
                           fontSize: 12,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                           height: 1.2,
                         ),
                         maxLines: 1,
@@ -570,14 +544,10 @@ class _SummaryCard extends StatelessWidget {
               _CompactInfoLine(icon: Icons.phone_outlined, value: user.phone),
           ],
           const SizedBox(height: OpenVtsSpacing.md),
-<<<<<<< HEAD
           Divider(
             height: 1,
             color: Theme.of(context).colorScheme.outlineVariant,
           ),
-=======
-          const Divider(height: 1, color: OpenVtsColors.border),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           const SizedBox(height: OpenVtsSpacing.md),
           Row(
             children: [
@@ -653,13 +623,9 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final color = isActive
         ? OpenVtsColors.brandInk
         : Theme.of(context).colorScheme.outline;
-=======
-    final color = isActive ? OpenVtsColors.brandInk : OpenVtsColors.textTertiary;
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return _MicroChip(
       label: isActive ? 'Active' : 'Inactive',
       icon: isActive ? Icons.check_circle_outline_rounded : Icons.pause_circle_outline_rounded,
@@ -681,7 +647,6 @@ class _MicroChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -689,14 +654,6 @@ class _MicroChip extends StatelessWidget {
         color: color.withValues(alpha: isDark ? 0.15 : 0.06),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         border: Border.all(color: color.withValues(alpha: isDark ? 0.35 : 0.22)),
-=======
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: color.withValues(alpha: 0.22)),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -734,15 +691,11 @@ class _ContactLineWithVerification extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xxs),
       child: Row(
         children: [
-<<<<<<< HEAD
           Icon(
             icon,
             size: 14,
             color: Theme.of(context).colorScheme.outline,
           ),
-=======
-          Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           const SizedBox(width: OpenVtsSpacing.xs),
           Flexible(
             child: Text(
@@ -750,11 +703,7 @@ class _ContactLineWithVerification extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -786,15 +735,11 @@ class _CompactInfoLine extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xxs),
       child: Row(
         children: [
-<<<<<<< HEAD
           Icon(
             icon,
             size: 14,
             color: Theme.of(context).colorScheme.outline,
           ),
-=======
-          Icon(icon, size: 14, color: OpenVtsColors.textTertiary),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
@@ -802,11 +747,7 @@ class _CompactInfoLine extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -836,7 +777,6 @@ class _MetricTile extends StatelessWidget {
         vertical: OpenVtsSpacing.sm,
       ),
       decoration: BoxDecoration(
-<<<<<<< HEAD
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
         border: Border.all(
@@ -850,15 +790,6 @@ class _MetricTile extends StatelessWidget {
             size: 16,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
-=======
-        color: OpenVtsColors.background,
-        borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border.withValues(alpha: 0.7)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: OpenVtsColors.textSecondary),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Column(
@@ -868,11 +799,7 @@ class _MetricTile extends StatelessWidget {
                 Text(
                   label,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-<<<<<<< HEAD
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                        color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                       ),
                 ),
                 const SizedBox(height: 2),
@@ -882,10 +809,7 @@ class _MetricTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
-<<<<<<< HEAD
                         color: Theme.of(context).colorScheme.onSurface,
-=======
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                       ),
                 ),
               ],
@@ -938,27 +862,19 @@ class _TabChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final background = isSelected ? OpenVtsColors.brandInk : Theme.of(context).colorScheme.surface;
-    final foreground = isSelected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurface;
+    final foreground = isSelected
+        ? (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.white)
+        : Theme.of(context).colorScheme.onSurface;
     final borderColor = isSelected
         ? OpenVtsColors.brandInk
         : Theme.of(context).colorScheme.outlineVariant;
-=======
-    final background = isSelected ? OpenVtsColors.brandInk : OpenVtsColors.white;
-    final foreground = isSelected ? OpenVtsColors.white : OpenVtsColors.textPrimary;
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     return Material(
       color: background,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-<<<<<<< HEAD
         side: BorderSide(color: borderColor),
-=======
-        side: BorderSide(
-          color: isSelected ? OpenVtsColors.brandInk : OpenVtsColors.border,
-        ),
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),

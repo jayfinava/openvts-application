@@ -61,11 +61,7 @@ class _RecentVehicleRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-<<<<<<< HEAD
                     color: Theme.of(context).colorScheme.onSurface,
-=======
-                    color: OpenVtsColors.textPrimary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -75,11 +71,7 @@ class _RecentVehicleRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                    color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontSize: 10.5,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
@@ -106,11 +98,7 @@ class _RecentVehicleRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
                   style: OpenVtsTypography.meta.copyWith(
-<<<<<<< HEAD
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
-=======
-                    color: OpenVtsColors.textSecondary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
                     fontSize: 10,
                   ),
                 ),
@@ -136,11 +124,7 @@ _VehicleStatus _vehicleStatus(AdminRecentVehicle vehicle) {
     return const _VehicleStatus(
       label: 'No Device',
       icon: Icons.wifi_off_outlined,
-<<<<<<< HEAD
       color: Color(0xFF71717A),
-=======
-      color: OpenVtsColors.textTertiary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
     );
   }
 
@@ -168,11 +152,7 @@ _VehicleStatus _vehicleStatus(AdminRecentVehicle vehicle) {
       return const _VehicleStatus(
         label: 'No Data',
         icon: Icons.storage_outlined,
-<<<<<<< HEAD
         color: Color(0xFF71717A),
-=======
-        color: OpenVtsColors.textTertiary,
->>>>>>> 9a00c1c3ad83d590af1eb72db6db5e5a5d47992e
       );
   }
 }
