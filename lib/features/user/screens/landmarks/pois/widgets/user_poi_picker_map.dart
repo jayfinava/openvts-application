@@ -224,31 +224,31 @@ class _UserPoiPickerMapState extends State<UserPoiPickerMap> {
   Widget build(BuildContext context) {
     final center = _point ?? widget.initialPoint ?? _kPoiFallbackCenter;
     return Scaffold(
-      backgroundColor: OpenVtsColors.surface,
+      backgroundColor: OpenVtsColors.brandInk,
       appBar: AppBar(
-        backgroundColor: OpenVtsColors.surfaceElevated,
+        backgroundColor: OpenVtsColors.brandInk,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: OpenVtsColors.textPrimary),
+          icon: Icon(Icons.close, color: OpenVtsColors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           widget.title,
           style: OpenVtsTypography.titleSmall.copyWith(
-            color: OpenVtsColors.textPrimary,
+            color: OpenVtsColors.white,
           ),
         ),
         actions: [
           TextButton(
             onPressed: _save,
             style: TextButton.styleFrom(
-              foregroundColor: OpenVtsColors.brandInk,
+              foregroundColor: OpenVtsColors.white,
             ),
             child: Text(
               'Save',
               style: OpenVtsTypography.label.copyWith(
-                color: OpenVtsColors.brandInk,
+                color: OpenVtsColors.white,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -257,7 +257,7 @@ class _UserPoiPickerMapState extends State<UserPoiPickerMap> {
         ],
         bottom: const PreferredSize(
           preferredSize: Size.fromHeight(1),
-          child: Divider(height: 1, color: OpenVtsColors.divider),
+          child: Divider(height: 1, color: OpenVtsColors.white),
         ),
       ),
       body: Column(
@@ -439,9 +439,9 @@ class _Panel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.brandInk,
         border: Border(
-          top: BorderSide(color: OpenVtsColors.divider),
+          top: BorderSide(color: OpenVtsColors.white),
         ),
       ),
       padding: const EdgeInsets.fromLTRB(
@@ -487,7 +487,7 @@ class _Panel extends StatelessWidget {
                 Text(
                   'Nudge 10 m',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: OpenVtsColors.white,
                   ),
                 ),
                 const Spacer(),
@@ -519,7 +519,7 @@ class _Panel extends StatelessWidget {
                 Text(
                   'Tolerance',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: OpenVtsColors.white,
                   ),
                 ),
                 const SizedBox(width: OpenVtsSpacing.xs),
@@ -598,14 +598,16 @@ class _CoordField extends StatelessWidget {
       inputFormatters: <TextInputFormatter>[
         FilteringTextInputFormatter.allow(RegExp(r'[0-9.\-]')),
       ],
-      style: OpenVtsTypography.numeric,
+      style: OpenVtsTypography.numeric.copyWith(
+        color: OpenVtsColors.white,
+      ),
       onSubmitted: (_) => onSubmitted(),
       onEditingComplete: onSubmitted,
       decoration: InputDecoration(
         isDense: true,
         labelText: label,
         labelStyle: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.textSecondary,
+          color: OpenVtsColors.white,
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: OpenVtsSpacing.sm,
@@ -613,16 +615,16 @@ class _CoordField extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-          borderSide: const BorderSide(color: OpenVtsColors.border),
+          borderSide: const BorderSide(color: OpenVtsColors.white),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-          borderSide: const BorderSide(color: OpenVtsColors.border),
+          borderSide: const BorderSide(color: OpenVtsColors.white),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.button),
           borderSide: const BorderSide(
-            color: OpenVtsColors.brandInk,
+            color: OpenVtsColors.white,
             width: 1.4,
           ),
         ),
@@ -656,8 +658,8 @@ class _IconBtn extends StatelessWidget {
             icon,
             size: 18,
             color: disabled
-                ? OpenVtsColors.textTertiary
-                : OpenVtsColors.textPrimary,
+                ? OpenVtsColors.white.withValues(alpha: 0.4)
+                : OpenVtsColors.white,
           ),
         ),
       ),
@@ -696,9 +698,9 @@ class _SearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.white),
         boxShadow: const [
           BoxShadow(
             color: Color(0x14000000),
@@ -715,17 +717,19 @@ class _SearchBar extends StatelessWidget {
             child: TextField(
               controller: controller,
               onChanged: (_) => onSearch(),
-              style: OpenVtsTypography.body,
+              style: OpenVtsTypography.body.copyWith(
+                color: OpenVtsColors.white,
+              ),
               decoration: InputDecoration(
                 isDense: true,
                 hintText: 'Search place...',
                 hintStyle: OpenVtsTypography.body.copyWith(
-                  color: OpenVtsColors.textTertiary,
+                  color: OpenVtsColors.white.withValues(alpha: 0.6),
                 ),
                 prefixIcon: Icon(
                   Icons.search,
                   size: 18,
-                  color: OpenVtsColors.textSecondary,
+                  color: OpenVtsColors.white,
                 ),
                 suffixIcon: isLoading
                     ? Padding(
@@ -743,7 +747,8 @@ class _SearchBar extends StatelessWidget {
                       )
                     : controller.text.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.close, size: 18),
+                            icon: const Icon(Icons.close,
+                                size: 18, color: OpenVtsColors.white),
                             onPressed: () {
                               controller.clear();
                               onSearch();
@@ -752,6 +757,7 @@ class _SearchBar extends StatelessWidget {
                         : null,
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                suffixIconColor: OpenVtsColors.white,
               ),
             ),
           ),
@@ -760,7 +766,8 @@ class _SearchBar extends StatelessWidget {
               constraints: const BoxConstraints(maxHeight: 200),
               decoration: BoxDecoration(
                 border: Border(
-                  top: BorderSide(color: OpenVtsColors.border),
+                  top: BorderSide(
+                      color: OpenVtsColors.white.withValues(alpha: 0.2)),
                 ),
               ),
               child: ListView.builder(
@@ -780,7 +787,7 @@ class _SearchBar extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.body.copyWith(
-                          color: OpenVtsColors.textPrimary,
+                          color: OpenVtsColors.white,
                         ),
                       ),
                     ),
