@@ -194,9 +194,9 @@ class _UserRouteSearchPanelState extends State<UserRouteSearchPanel> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsColors.white),
       ),
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       child: Column(
@@ -208,14 +208,14 @@ class _UserRouteSearchPanelState extends State<UserRouteSearchPanel> {
               const Icon(
                 Icons.alt_route,
                 size: 16,
-                color: OpenVtsColors.textSecondary,
+                color: OpenVtsColors.white,
               ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   'Generate from search',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: OpenVtsColors.white,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -229,7 +229,7 @@ class _UserRouteSearchPanelState extends State<UserRouteSearchPanel> {
                     child: Icon(
                       Icons.close,
                       size: 16,
-                      color: OpenVtsColors.textSecondary,
+                      color: OpenVtsColors.white,
                     ),
                   ),
                 ),
@@ -325,18 +325,18 @@ class _SearchInput extends StatelessWidget {
           child: TextField(
             controller: controller,
             onChanged: onChanged,
-            style: OpenVtsTypography.body,
+            style: OpenVtsTypography.body.copyWith(color: OpenVtsColors.white),
             decoration: InputDecoration(
               isDense: true,
               hintText: label,
               hintStyle: OpenVtsTypography.body
-                  .copyWith(color: OpenVtsColors.textTertiary),
+                  .copyWith(color: OpenVtsColors.white),
               prefixIcon: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
                   label,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: OpenVtsColors.white,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -348,7 +348,10 @@ class _SearchInput extends StatelessWidget {
                       child: SizedBox(
                         width: 14,
                         height: 14,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(OpenVtsColors.white),
+                        ),
                       ),
                     )
                   : (picked != null
@@ -358,7 +361,7 @@ class _SearchInput extends StatelessWidget {
                           onPressed: onClear,
                           icon: const Icon(
                             Icons.close,
-                            color: OpenVtsColors.textSecondary,
+                            color: OpenVtsColors.white,
                           ),
                         )
                       : null),
@@ -367,16 +370,16 @@ class _SearchInput extends StatelessWidget {
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(color: OpenVtsColors.border),
+                borderSide: const BorderSide(color: OpenVtsColors.white),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(color: OpenVtsColors.border),
+                borderSide: const BorderSide(color: OpenVtsColors.white),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
                 borderSide: const BorderSide(
-                  color: OpenVtsColors.brandInk,
+                  color: OpenVtsColors.white,
                   width: 1.4,
                 ),
               ),
@@ -388,9 +391,9 @@ class _SearchInput extends StatelessWidget {
             margin: const EdgeInsets.only(top: 4),
             constraints: const BoxConstraints(maxHeight: 180),
             decoration: BoxDecoration(
-              color: OpenVtsColors.surface,
+              color: OpenVtsColors.brandInk,
               borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-              border: Border.all(color: OpenVtsColors.border),
+              border: Border.all(color: OpenVtsColors.white),
             ),
             child: ListView.separated(
               shrinkWrap: true,
@@ -398,7 +401,7 @@ class _SearchInput extends StatelessWidget {
               itemCount: suggestions.length,
               separatorBuilder: (_, __) => const Divider(
                 height: 1,
-                color: OpenVtsColors.divider,
+                color: Color(0xFF444444),
               ),
               itemBuilder: (context, i) {
                 final s = suggestions[i];
@@ -414,7 +417,7 @@ class _SearchInput extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: OpenVtsColors.white,
                       ),
                     ),
                   ),
