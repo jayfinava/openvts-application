@@ -400,18 +400,16 @@ class _TypePill extends StatelessWidget {
           vertical: 6,
         ),
         decoration: BoxDecoration(
-          color: selected ? OpenVtsColors.brandInk : OpenVtsColors.surface,
+          color: OpenVtsColors.brandInk,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
           border: Border.all(
-            color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
+            color: selected ? OpenVtsColors.white : OpenVtsColors.brandInk,
           ),
         ),
         child: Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: selected
-                ? OpenVtsColors.white
-                : Theme.of(context).colorScheme.onSurface,
+            color: OpenVtsColors.white,
             fontWeight: FontWeight.w600,
           ),
         ),
