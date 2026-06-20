@@ -514,7 +514,8 @@ class _Panel extends StatelessWidget {
               ],
             ),
             const SizedBox(height: OpenVtsSpacing.xs),
-            Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Tolerance',
@@ -522,45 +523,71 @@ class _Panel extends StatelessWidget {
                     color: OpenVtsColors.white,
                   ),
                 ),
-                const SizedBox(width: OpenVtsSpacing.xs),
-                Expanded(
-                  child: Slider(
-                    value: tolerance.clamp(0, 1000).toDouble(),
-                    min: 0,
-                    max: 1000,
-                    divisions: 100,
-                    activeColor: OpenVtsColors.brandInk,
-                    inactiveColor: OpenVtsColors.border,
-                    label: tolerance > 0
-                        ? '${tolerance.toStringAsFixed(0)} m'
-                        : 'off',
-                    onChanged: onToleranceChanged,
-                  ),
-                ),
-                SizedBox(
-                  width: 70,
-                  child: TextField(
-                    controller: tolCtrl,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
+                const SizedBox(height: OpenVtsSpacing.xs),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Slider(
+                        value: tolerance.clamp(0, 1000).toDouble(),
+                        min: 0,
+                        max: 1000,
+                        divisions: 100,
+                        activeColor: OpenVtsColors.white,
+                        inactiveColor: const Color(0xFF666666),
+                        label: tolerance > 0
+                            ? '${tolerance.toStringAsFixed(0)} m'
+                            : 'off',
+                        onChanged: onToleranceChanged,
+                      ),
                     ),
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-                    ],
-                    style: OpenVtsTypography.numeric,
-                    textAlign: TextAlign.center,
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      hintText: '0',
-                      suffixText: 'm',
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 8,
+                    const SizedBox(width: OpenVtsSpacing.sm),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
                         vertical: 8,
                       ),
-                      border: OutlineInputBorder(),
+                      decoration: BoxDecoration(
+                        color: OpenVtsColors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 35,
+                            child: TextField(
+                              controller: tolCtrl,
+                              keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true,
+                              ),
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                              ],
+                              style: OpenVtsTypography.numeric.copyWith(
+                                color: OpenVtsColors.brandInk,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              textAlign: TextAlign.center,
+                              decoration: const InputDecoration(
+                                isDense: true,
+                                hintText: '0',
+                                contentPadding: EdgeInsets.zero,
+                                border: InputBorder.none,
+                              ),
+                              onChanged: (_) => onApplyTolerance(),
+                            ),
+                          ),
+                          Text(
+                            'm',
+                            style: OpenVtsTypography.label.copyWith(
+                              color: OpenVtsColors.brandInk,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    onChanged: (_) => onApplyTolerance(),
-                  ),
+                  ],
                 ),
               ],
             ),
