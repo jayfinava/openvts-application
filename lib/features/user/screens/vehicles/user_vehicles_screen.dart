@@ -201,13 +201,13 @@ class _FilterChip extends StatelessWidget {
     return ChoiceChip(
       label: Text(label),
       selected: selected,
-      checkmarkColor: OpenVtsColors.white,
-      selectedColor: _primaryInkColor(context),
+      checkmarkColor: OpenVtsColors.brandInk,
+      selectedColor: OpenVtsColors.white,
       backgroundColor: _softSurfaceColor(context),
       side: BorderSide(color: _softBorderColor(context)),
       labelStyle: OpenVtsTypography.label.copyWith(
         color: selected
-            ? OpenVtsColors.white
+            ? OpenVtsColors.brandInk
             : Theme.of(context).colorScheme.onSurfaceVariant,
         fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
       ),
