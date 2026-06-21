@@ -391,6 +391,13 @@ class _TypePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor = selected
+        ? (isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary)
+        : bgColor;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -400,16 +407,14 @@ class _TypePill extends StatelessWidget {
           vertical: 6,
         ),
         decoration: BoxDecoration(
-          color: OpenVtsColors.brandInk,
+          color: bgColor,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-          border: Border.all(
-            color: selected ? OpenVtsColors.white : OpenVtsColors.brandInk,
-          ),
+          border: Border.all(color: borderColor),
         ),
         child: Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: OpenVtsColors.white,
+            color: textColor,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -433,13 +438,18 @@ class _GeometrySummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
     final summary = _summary(geodata, type, toleranceM);
+
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk,
+        color: bgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.white),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         children: [
@@ -447,14 +457,14 @@ class _GeometrySummaryCard extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: OpenVtsColors.brandInk,
+              color: bgColor,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: OpenVtsColors.white),
+              border: Border.all(color: borderColor),
             ),
             child: Icon(
               _iconFor(type),
               size: 14,
-              color: OpenVtsColors.white,
+              color: textColor,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -465,7 +475,7 @@ class _GeometrySummaryCard extends StatelessWidget {
                 Text(
                   geodata == null ? 'No geometry yet' : 'Geometry ready',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.white,
+                    color: textColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -473,7 +483,7 @@ class _GeometrySummaryCard extends StatelessWidget {
                 Text(
                   summary,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.white,
+                    color: textColor,
                   ),
                 ),
               ],
@@ -481,24 +491,24 @@ class _GeometrySummaryCard extends StatelessWidget {
           ),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: OpenVtsColors.brandInk,
-              foregroundColor: OpenVtsColors.white,
+              backgroundColor: bgColor,
+              foregroundColor: textColor,
               minimumSize: const Size(0, 32),
               padding: const EdgeInsets.symmetric(
                 horizontal: OpenVtsSpacing.sm,
               ),
-              side: const BorderSide(
-                color: OpenVtsColors.white,
+              side: BorderSide(
+                color: borderColor,
                 width: 1,
               ),
             ),
             onPressed: onDraw,
-            icon: const Icon(Icons.edit_location_alt_outlined, size: 14),
+            icon: Icon(Icons.edit_location_alt_outlined, size: 14, color: textColor),
             label: Text(
               geodata == null ? 'Draw' : 'Edit',
               style: OpenVtsTypography.meta.copyWith(
                 fontWeight: FontWeight.w700,
-                color: OpenVtsColors.white,
+                color: textColor,
               ),
             ),
           ),
@@ -561,15 +571,20 @@ class _ActiveToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk,
+        color: bgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.white),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         children: [
@@ -580,7 +595,7 @@ class _ActiveToggle extends StatelessWidget {
                 Text(
                   'Active',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.white,
+                    color: textColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -589,7 +604,7 @@ class _ActiveToggle extends StatelessWidget {
                       ? 'Events will trigger for this geofence.'
                       : 'Geofence is paused.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.white,
+                    color: textColor,
                   ),
                 ),
               ],
@@ -598,7 +613,7 @@ class _ActiveToggle extends StatelessWidget {
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeThumbColor: OpenVtsColors.brandInk,
+            activeThumbColor: bgColor,
           ),
         ],
       ),
