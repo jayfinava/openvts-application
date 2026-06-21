@@ -24,9 +24,6 @@ class UserCompanySettingsCard extends StatelessWidget {
     final website = company?.websiteUrl?.trim() ?? '';
     final customDomain = company?.customDomain?.trim() ?? '';
     final primaryColor = company?.primaryColor?.trim() ?? '';
-    final logoLightUrl = company?.logoLightUrl?.trim() ?? '';
-    final logoDarkUrl = company?.logoDarkUrl?.trim() ?? '';
-    final faviconUrl = company?.faviconUrl?.trim() ?? '';
 
     final socialLinks = company?.socialLinks;
     final facebook = socialLinks?.facebook?.trim() ?? '';
@@ -36,21 +33,102 @@ class UserCompanySettingsCard extends StatelessWidget {
     final youtube = socialLinks?.youtube?.trim() ?? '';
     final github = socialLinks?.github?.trim() ?? '';
 
-    return OpenVtsCard(
-      padding: const EdgeInsets.fromLTRB(
-        OpenVtsSpacing.md,
-        OpenVtsSpacing.sm,
-        OpenVtsSpacing.md,
-        OpenVtsSpacing.md,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    final hasSocialLinks = [
+      facebook,
+      twitter,
+      linkedin,
+      instagram,
+      youtube,
+      github
+    ].any((link) => link.isNotEmpty);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        OpenVtsCard(
+          padding: const EdgeInsets.fromLTRB(
+            OpenVtsSpacing.md,
+            OpenVtsSpacing.sm,
+            OpenVtsSpacing.md,
+            OpenVtsSpacing.md,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  'COMPANY',
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'COMPANY DETAILS',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        letterSpacing: 0.4,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints:
+                          const BoxConstraints(minWidth: 32, minHeight: 32),
+                      icon: Icon(
+                        Icons.edit_outlined,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      tooltip: 'Edit company',
+                      onPressed: onEdit,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: OpenVtsSpacing.xs),
+              Divider(
+                height: 1,
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
+              const SizedBox(height: OpenVtsSpacing.xs),
+              _InfoRow(
+                label: 'Name',
+                value: companyName,
+                icon: Icons.business_outlined,
+              ),
+              _InfoRow(
+                label: 'Website',
+                value: website,
+                icon: Icons.language_outlined,
+              ),
+              _InfoRow(
+                label: 'Custom Domain',
+                value: customDomain,
+                icon: Icons.dns_outlined,
+              ),
+              _InfoRow(
+                label: 'Primary Color',
+                value: primaryColor,
+                icon: Icons.palette_outlined,
+              ),
+            ],
+          ),
+        ),
+        if (hasSocialLinks) ...[
+          const SizedBox(height: OpenVtsSpacing.sm),
+          OpenVtsCard(
+            padding: const EdgeInsets.fromLTRB(
+              OpenVtsSpacing.md,
+              OpenVtsSpacing.sm,
+              OpenVtsSpacing.md,
+              OpenVtsSpacing.md,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'SOCIAL LINKS',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -58,133 +136,53 @@ class UserCompanySettingsCard extends StatelessWidget {
                     letterSpacing: 0.4,
                   ),
                 ),
-              ),
-              SizedBox(
-                width: 32,
-                height: 32,
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                  icon: Icon(
-                    Icons.edit_outlined,
-                    size: 16,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  tooltip: 'Edit company',
-                  onPressed: onEdit,
+                const SizedBox(height: OpenVtsSpacing.xs),
+                Divider(
+                  height: 1,
+                  color: Theme.of(context).colorScheme.outlineVariant,
                 ),
-              ),
-            ],
+                const SizedBox(height: OpenVtsSpacing.xs),
+                if (facebook.isNotEmpty)
+                  _InfoRow(
+                    label: 'Facebook',
+                    value: facebook,
+                    icon: Icons.facebook_outlined,
+                  ),
+                if (twitter.isNotEmpty)
+                  _InfoRow(
+                    label: 'Twitter/X',
+                    value: twitter,
+                    icon: Icons.public_outlined,
+                  ),
+                if (linkedin.isNotEmpty)
+                  _InfoRow(
+                    label: 'LinkedIn',
+                    value: linkedin,
+                    icon: Icons.public_outlined,
+                  ),
+                if (instagram.isNotEmpty)
+                  _InfoRow(
+                    label: 'Instagram',
+                    value: instagram,
+                    icon: Icons.public_outlined,
+                  ),
+                if (youtube.isNotEmpty)
+                  _InfoRow(
+                    label: 'YouTube',
+                    value: youtube,
+                    icon: Icons.video_library_outlined,
+                  ),
+                if (github.isNotEmpty)
+                  _InfoRow(
+                    label: 'GitHub',
+                    value: github,
+                    icon: Icons.code_outlined,
+                  ),
+              ],
+            ),
           ),
-          const SizedBox(height: OpenVtsSpacing.xs),
-          Divider(
-            height: 1,
-            color: Theme.of(context).colorScheme.outlineVariant,
-          ),
-          const SizedBox(height: OpenVtsSpacing.xs),
-          if (companyName.isNotEmpty)
-            _InfoRow(
-              label: 'Name',
-              value: companyName,
-              icon: Icons.business_outlined,
-            ),
-          if (website.isNotEmpty)
-            _InfoRow(
-              label: 'Website',
-              value: website,
-              icon: Icons.language_outlined,
-            ),
-          if (customDomain.isNotEmpty)
-            _InfoRow(
-              label: 'Custom Domain',
-              value: customDomain,
-              icon: Icons.dns_outlined,
-            ),
-          if (primaryColor.isNotEmpty)
-            _InfoRow(
-              label: 'Primary Color',
-              value: primaryColor,
-              icon: Icons.palette_outlined,
-            ),
-          if (logoLightUrl.isNotEmpty)
-            _InfoRow(
-              label: 'Logo Light',
-              value: logoLightUrl,
-              icon: Icons.image_outlined,
-            ),
-          if (logoDarkUrl.isNotEmpty)
-            _InfoRow(
-              label: 'Logo Dark',
-              value: logoDarkUrl,
-              icon: Icons.image_outlined,
-            ),
-          if (faviconUrl.isNotEmpty)
-            _InfoRow(
-              label: 'Favicon',
-              value: faviconUrl,
-              icon: Icons.image_not_supported_outlined,
-            ),
-          if (facebook.isNotEmpty ||
-              twitter.isNotEmpty ||
-              linkedin.isNotEmpty ||
-              instagram.isNotEmpty ||
-              youtube.isNotEmpty ||
-              github.isNotEmpty) ...[
-            const SizedBox(height: OpenVtsSpacing.xs),
-            Divider(
-              height: 1,
-              color: Theme.of(context).colorScheme.outlineVariant,
-            ),
-            const SizedBox(height: OpenVtsSpacing.xs),
-            Text(
-              'SOCIAL LINKS',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                letterSpacing: 0.4,
-              ),
-            ),
-            const SizedBox(height: OpenVtsSpacing.xs),
-            if (facebook.isNotEmpty)
-              _InfoRow(
-                label: 'Facebook',
-                value: facebook,
-                icon: Icons.facebook_outlined,
-              ),
-            if (twitter.isNotEmpty)
-              _InfoRow(
-                label: 'Twitter/X',
-                value: twitter,
-                icon: Icons.public_outlined,
-              ),
-            if (linkedin.isNotEmpty)
-              _InfoRow(
-                label: 'LinkedIn',
-                value: linkedin,
-                icon: Icons.public_outlined,
-              ),
-            if (instagram.isNotEmpty)
-              _InfoRow(
-                label: 'Instagram',
-                value: instagram,
-                icon: Icons.public_outlined,
-              ),
-            if (youtube.isNotEmpty)
-              _InfoRow(
-                label: 'YouTube',
-                value: youtube,
-                icon: Icons.video_library_outlined,
-              ),
-            if (github.isNotEmpty)
-              _InfoRow(
-                label: 'GitHub',
-                value: github,
-                icon: Icons.code_outlined,
-              ),
-          ],
         ],
-      ),
+      ],
     );
   }
 }
