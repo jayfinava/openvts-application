@@ -58,6 +58,9 @@ class _UserRouteFormBodyState extends ConsumerState<_UserRouteFormBody> {
   late bool _active;
   List<UserGeoPoint> _points = const <UserGeoPoint>[];
   double _toleranceM = 50;
+  bool _alertEnabled = false;
+  double _alertToleranceM = 100;
+  int _alertCooldownMinutes = 10;
 
   bool _submitting = false;
   String? _submitError;
@@ -75,6 +78,12 @@ class _UserRouteFormBodyState extends ConsumerState<_UserRouteFormBody> {
     _points = existing?.geodata?.coordinates ?? const <UserGeoPoint>[];
     final t = existing?.toleranceMeters ?? existing?.geodata?.toleranceM;
     if (t != null && t > 0) _toleranceM = t;
+    final alert = existing?.routeAlert;
+    if (alert != null) {
+      _alertEnabled = alert.enabled;
+      _alertToleranceM = alert.toleranceMeters;
+      _alertCooldownMinutes = alert.cooldownMinutes;
+    }
   }
 
   @override
@@ -140,6 +149,13 @@ class _UserRouteFormBodyState extends ConsumerState<_UserRouteFormBody> {
         coordinates: _points,
         toleranceM: _toleranceM,
       );
+      final routeAlert = _alertEnabled
+          ? UserRouteAlert(
+              enabled: true,
+              toleranceMeters: _alertToleranceM,
+              cooldownMinutes: _alertCooldownMinutes,
+            )
+          : null;
       if (widget.existing == null) {
         saved = await controller.createRoute(
           CreateUserRouteRequest(
@@ -151,6 +167,7 @@ class _UserRouteFormBodyState extends ConsumerState<_UserRouteFormBody> {
             isActive: _active,
             toleranceMeters: _toleranceM,
             geodata: geodata,
+            routeAlert: routeAlert,
           ),
         );
       } else {
@@ -163,6 +180,7 @@ class _UserRouteFormBodyState extends ConsumerState<_UserRouteFormBody> {
             isActive: _active,
             toleranceMeters: _toleranceM,
             geodata: geodata,
+            routeAlert: routeAlert,
           ),
         );
       }
@@ -224,6 +242,17 @@ class _UserRouteFormBodyState extends ConsumerState<_UserRouteFormBody> {
             points: _points,
             toleranceM: _toleranceM,
             onOpenEditor: _openEditor,
+          ),
+          const SizedBox(height: OpenVtsSpacing.md),
+          const _SectionLabel('Route alerts'),
+          const SizedBox(height: OpenVtsSpacing.xs),
+          _RouteAlertSection(
+            enabled: _alertEnabled,
+            toleranceM: _alertToleranceM,
+            cooldownMinutes: _alertCooldownMinutes,
+            onEnabledChanged: (v) => setState(() => _alertEnabled = v),
+            onToleranceChanged: (v) => setState(() => _alertToleranceM = v),
+            onCooldownChanged: (v) => setState(() => _alertCooldownMinutes = v),
           ),
           const SizedBox(height: OpenVtsSpacing.md),
           const _SectionLabel('Appearance'),
@@ -347,20 +376,25 @@ class _GeometryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
     final hasGeometry = points.length >= 2;
+
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk,
+        color: bgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-        border: Border.all(color: OpenVtsColors.white),
+        border: Border.all(color: borderColor),
       ),
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.timeline,
             size: 18,
-            color: OpenVtsColors.white,
+            color: textColor,
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
           Expanded(
@@ -370,7 +404,7 @@ class _GeometryCard extends StatelessWidget {
                 Text(
                   hasGeometry ? '${points.length} points' : 'No geometry yet',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.white,
+                    color: textColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -380,7 +414,7 @@ class _GeometryCard extends StatelessWidget {
                       ? 'Tolerance ±${toleranceM.toStringAsFixed(0)} m'
                       : 'Draw at least 2 points on the map.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.white,
+                    color: textColor,
                   ),
                 ),
               ],
@@ -389,12 +423,12 @@ class _GeometryCard extends StatelessWidget {
           TextButton(
             onPressed: onOpenEditor,
             style: TextButton.styleFrom(
-              foregroundColor: OpenVtsColors.white,
+              foregroundColor: textColor,
             ),
             child: Text(
               hasGeometry ? 'Edit on map' : 'Draw on map',
               style: OpenVtsTypography.label.copyWith(
-                color: OpenVtsColors.white,
+                color: textColor,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -413,11 +447,21 @@ class _ActiveToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final toggleBgOn = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final toggleBgOff = isDark ? const Color(0xFF555555) : OpenVtsColors.border;
+    final toggleThumbColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
+    final toggleThumbBorder =
+        isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk,
+        color: bgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-        border: Border.all(color: OpenVtsColors.white),
+        border: Border.all(color: borderColor),
       ),
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
@@ -432,14 +476,14 @@ class _ActiveToggle extends StatelessWidget {
                 Text(
                   'Active',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.white,
+                    color: textColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 Text(
                   'Inactive routes stay archived but visible.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.white,
+                    color: textColor,
                   ),
                 ),
               ],
@@ -451,9 +495,9 @@ class _ActiveToggle extends StatelessWidget {
               width: 50,
               height: 28,
               decoration: BoxDecoration(
-                color: value ? OpenVtsColors.white : const Color(0xFF555555),
+                color: value ? toggleBgOn : toggleBgOff,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: OpenVtsColors.white, width: 1),
+                border: Border.all(color: borderColor, width: 1),
               ),
               child: Row(
                 children: [
@@ -466,14 +510,15 @@ class _ActiveToggle extends StatelessWidget {
                     height: 24,
                     margin: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      color: OpenVtsColors.brandInk,
+                      color: toggleThumbColor,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: OpenVtsColors.white, width: 1),
+                      border:
+                          Border.all(color: toggleThumbBorder, width: 1),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.check,
                       size: 14,
-                      color: OpenVtsColors.white,
+                      color: isDark ? OpenVtsColors.white : bgColor,
                     ),
                   ),
                   if (value)
@@ -484,6 +529,186 @@ class _ActiveToggle extends StatelessWidget {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RouteAlertSection extends StatelessWidget {
+  const _RouteAlertSection({
+    required this.enabled,
+    required this.toleranceM,
+    required this.cooldownMinutes,
+    required this.onEnabledChanged,
+    required this.onToleranceChanged,
+    required this.onCooldownChanged,
+  });
+
+  final bool enabled;
+  final double toleranceM;
+  final int cooldownMinutes;
+  final ValueChanged<bool> onEnabledChanged;
+  final ValueChanged<double> onToleranceChanged;
+  final ValueChanged<int> onCooldownChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final toggleBgOn = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final toggleBgOff = isDark ? const Color(0xFF555555) : OpenVtsColors.border;
+    final toggleThumbColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
+    final toggleThumbBorder =
+        isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final chipBgUnselected =
+        isDark ? OpenVtsColors.white.withValues(alpha: 0.1) : OpenVtsColors.border;
+    final chipBgSelected =
+        isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final chipTextSelected = isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
+    final chipBorderUnselected =
+        isDark ? OpenVtsColors.white.withValues(alpha: 0.5) : OpenVtsColors.border;
+    final chipBorderSelected = isDark ? OpenVtsColors.white : borderColor;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
+        border: Border.all(color: borderColor),
+      ),
+      padding: const EdgeInsets.all(OpenVtsSpacing.sm),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Notify when vehicle leaves route',
+                      style: OpenVtsTypography.label.copyWith(
+                        color: textColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Get notified when assigned vehicles deviate.',
+                      style: OpenVtsTypography.meta.copyWith(
+                        color: textColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () => onEnabledChanged(!enabled),
+                child: Container(
+                  width: 50,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: enabled ? toggleBgOn : toggleBgOff,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: borderColor, width: 1),
+                  ),
+                  child: Row(
+                    children: [
+                      if (!enabled)
+                        Expanded(
+                          child: Container(),
+                        ),
+                      Container(
+                        width: 24,
+                        height: 24,
+                        margin: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: toggleThumbColor,
+                          borderRadius: BorderRadius.circular(12),
+                          border:
+                              Border.all(color: toggleThumbBorder, width: 1),
+                        ),
+                        child: Icon(
+                          Icons.check,
+                          size: 14,
+                          color: isDark ? OpenVtsColors.white : bgColor,
+                        ),
+                      ),
+                      if (enabled)
+                        Expanded(
+                          child: Container(),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (enabled) ...[
+            const SizedBox(height: OpenVtsSpacing.sm),
+            Divider(color: borderColor, height: 1),
+            const SizedBox(height: OpenVtsSpacing.sm),
+            Text(
+              'Allowed deviation',
+              style: OpenVtsTypography.meta.copyWith(
+                color: textColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: OpenVtsSpacing.xs),
+            Wrap(
+              spacing: OpenVtsSpacing.xs,
+              children: [50.0, 100.0, 200.0, 500.0].map((value) {
+                final isSelected = (toleranceM - value).abs() < 1;
+                return ChoiceChip(
+                  label: Text('${value.toInt()}m'),
+                  selected: isSelected,
+                  onSelected: (_) => onToleranceChanged(value),
+                  backgroundColor: chipBgUnselected,
+                  selectedColor: chipBgSelected,
+                  labelStyle: OpenVtsTypography.meta.copyWith(
+                    color: isSelected ? chipTextSelected : textColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  side: BorderSide(
+                    color: isSelected ? chipBorderSelected : chipBorderUnselected,
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: OpenVtsSpacing.sm),
+            Text(
+              'Notification cooldown',
+              style: OpenVtsTypography.meta.copyWith(
+                color: textColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: OpenVtsSpacing.xs),
+            Wrap(
+              spacing: OpenVtsSpacing.xs,
+              children: [5, 10, 15, 30].map((value) {
+                final isSelected = cooldownMinutes == value;
+                return ChoiceChip(
+                  label: Text('${value}min'),
+                  selected: isSelected,
+                  onSelected: (_) => onCooldownChanged(value),
+                  backgroundColor: chipBgUnselected,
+                  selectedColor: chipBgSelected,
+                  labelStyle: OpenVtsTypography.meta.copyWith(
+                    color: isSelected ? chipTextSelected : textColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  side: BorderSide(
+                    color: isSelected ? chipBorderSelected : chipBorderUnselected,
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
         ],
       ),
     );
