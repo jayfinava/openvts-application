@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/open_vts_colors.dart';
 import '../../core/theme/open_vts_radius.dart';
 import '../../core/theme/open_vts_spacing.dart';
 import '../../core/theme/open_vts_typography.dart';
@@ -70,9 +71,10 @@ class OpenVtsSegmentedPillControl<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final outerBackgroundColor = isDark ? Colors.black : Colors.white;
+    final outerBackgroundColor =
+        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated;
     final outerBorderColor =
-        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+        isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
 
     final Widget segmentRow = Row(
       mainAxisSize: equalWidth ? MainAxisSize.max : MainAxisSize.min,
@@ -124,13 +126,14 @@ class OpenVtsSegmentedPillControl<T> extends StatelessWidget {
     final isSelected = segment.value == selectedValue;
 
     final backgroundColor = isSelected
-        ? (isDark ? Colors.black : Colors.white)
+        ? (isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated)
         : Colors.transparent;
 
-    final textColor = isDark ? Colors.white : Colors.black;
+    final textColor =
+        isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
 
     final borderColor =
-        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+        isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
 
     return Material(
       color: backgroundColor,
@@ -165,10 +168,14 @@ class OpenVtsSegmentedPillControl<T> extends StatelessWidget {
                   width: 6,
                   height: 6,
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white : Colors.black,
+                    color: isDark
+                        ? OpenVtsColors.darkTextPrimary
+                        : OpenVtsColors.textPrimary,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isDark ? Colors.white : Colors.black,
+                      color: isDark
+                          ? OpenVtsColors.darkTextPrimary
+                          : OpenVtsColors.textPrimary,
                       width: 1,
                     ),
                   ),
@@ -193,11 +200,13 @@ class OpenVtsSegmentedPillControl<T> extends StatelessWidget {
                     vertical: 1,
                   ),
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.black : Colors.white,
+                    color: isDark
+                        ? OpenVtsColors.darkSurface
+                        : OpenVtsColors.surface,
                     border: Border.all(
                       color: isDark
-                          ? Colors.white
-                          : Colors.black.withValues(alpha: 0.2),
+                          ? OpenVtsColors.darkBorder
+                          : OpenVtsColors.border,
                       width: 1,
                     ),
                     borderRadius: BorderRadius.circular(OpenVtsRadius.sm),

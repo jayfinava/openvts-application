@@ -48,8 +48,8 @@ class OpenVtsButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(OpenVtsRadius.button),
             side: BorderSide(
               color: isPrimary
-                  ? OpenVtsColors.white
-                  : (isDark ? OpenVtsColors.white : OpenVtsColors.border),
+                  ? (isDark ? OpenVtsColors.white : OpenVtsColors.brandInk)
+                  : OpenVtsColors.border,
             ),
           ),
         ),

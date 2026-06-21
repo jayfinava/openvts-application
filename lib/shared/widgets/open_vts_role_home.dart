@@ -98,10 +98,10 @@ class OpenVtsRoleHome extends StatelessWidget {
     final gridCrossSpacing = _gridCrossSpacing(screenWidth);
     final gridChildAspectRatio = _gridChildAspectRatio(screenWidth);
     final topBarColor =
-        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.white;
+        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated;
     final cardColor = isDark
         ? OpenVtsColors.darkSurface.withValues(alpha: 0.94)
-        : OpenVtsColors.white.withValues(alpha: 0.96);
+        : OpenVtsColors.surfaceElevated.withValues(alpha: 0.96);
     final borderColor =
         isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
     final secondaryTextColor =
@@ -169,9 +169,7 @@ class OpenVtsRoleHome extends StatelessWidget {
                           ),
                           _TopBarAction(
                             tooltip: isDark ? 'Light mode' : 'Dark mode',
-                            icon: isDark
-                                ? Icons.light_mode
-                                : Icons.dark_mode,
+                            icon: isDark ? Icons.light_mode : Icons.dark_mode,
                             borderColor: borderColor,
                             onPressed: onToggleTheme,
                           ),

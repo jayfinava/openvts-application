@@ -170,9 +170,12 @@ class OpenVtsMapLayerSelectorButton extends StatelessWidget {
   final ValueChanged<MapLayerOption> onLayerSelected;
 
   Future<void> _openLayerDrawer(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return showModalBottomSheet<void>(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: isDark
+          ? open_vts_colors.OpenVtsColors.darkSurface
+          : open_vts_colors.OpenVtsColors.surfaceElevated,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),

@@ -746,11 +746,13 @@ class OpenVtsListPageChoiceChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
-    final textColor = isDark ? Colors.white : Colors.black;
+    final backgroundColor = selected
+        ? (isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated)
+        : Colors.transparent;
+    final textColor =
+        isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
     final borderColor =
-        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+        isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
 
     return Material(
       color: backgroundColor,

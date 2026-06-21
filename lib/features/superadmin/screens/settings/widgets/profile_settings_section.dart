@@ -45,7 +45,8 @@ class _ProfileSettingsSectionState
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeLoadSubscription());
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _maybeLoadSubscription());
   }
 
   @override
@@ -145,8 +146,7 @@ class _ProfileSettingsSectionState
           isLoading: state.isLoadingEmailSubscription,
           isSubscribing: state.isSubscribingEmail,
           onSubscribe: _handleSubscribe,
-          onRefresh: () =>
-              unawaited(_controller.loadEmailSubscription()),
+          onRefresh: () => unawaited(_controller.loadEmailSubscription()),
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
         _LogoutCard(onLogout: _handleLogout),
@@ -157,9 +157,7 @@ class _ProfileSettingsSectionState
   // ---------- AuthController sync ----------
 
   Future<void> _syncCurrentUser() async {
-    final profile = ref
-        .read(superadminSettingsControllerProvider)
-        .profile;
+    final profile = ref.read(superadminSettingsControllerProvider).profile;
     if (profile == null) return;
     final current = ref.read(authControllerProvider).user;
     if (current == null) return;
@@ -178,9 +176,7 @@ class _ProfileSettingsSectionState
       cityName: address?.cityName ?? current.cityName,
       pincode: address?.pincode ?? current.pincode,
     );
-    await ref
-        .read(authControllerProvider.notifier)
-        .replaceCurrentUser(updated);
+    await ref.read(authControllerProvider.notifier).replaceCurrentUser(updated);
   }
 
   // ---------- Photo upload ----------
@@ -240,17 +236,15 @@ class _ProfileSettingsSectionState
     if (!mounted) return;
     if (ok) {
       setState(() {
-        _photoCacheBust =
-            DateTime.now().millisecondsSinceEpoch.toString();
+        _photoCacheBust = DateTime.now().millisecondsSinceEpoch.toString();
       });
       await _syncCurrentUser();
       if (!mounted) return;
       ToastHelper.showSuccess('Profile photo updated');
     } else {
-      final msg = ref
-              .read(superadminSettingsControllerProvider)
-              .sectionErrorMessage ??
-          'Unable to upload photo.';
+      final msg =
+          ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+              'Unable to upload photo.';
       ToastHelper.showError(msg);
     }
   }
@@ -297,9 +291,7 @@ class _ProfileSettingsSectionState
     );
     if (ok == true && mounted) {
       ToastHelper.showSuccess(
-        channel == _OtpChannel.email
-            ? 'Email verified'
-            : 'WhatsApp verified',
+        channel == _OtpChannel.email ? 'Email verified' : 'WhatsApp verified',
       );
     }
   }
@@ -319,18 +311,16 @@ class _ProfileSettingsSectionState
     if (ok) {
       ToastHelper.showSuccess('Subscribed to email updates');
     } else {
-      final msg = ref
-              .read(superadminSettingsControllerProvider)
-              .sectionErrorMessage ??
-          'Unable to subscribe.';
+      final msg =
+          ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+              'Unable to subscribe.';
       ToastHelper.showError(msg);
     }
   }
 
   Future<void> _handleLogout() async {
     final activeRole = ref.read(authControllerProvider).activeRole;
-    final loggedOut =
-        await ref.read(authControllerProvider.notifier).logout();
+    final loggedOut = await ref.read(authControllerProvider.notifier).logout();
     if (!mounted) return;
     final label = (loggedOut ?? activeRole)?.displayLabel;
     if (label != null) {
@@ -427,7 +417,9 @@ class _ProfileHeaderCard extends ConsumerWidget {
             if (email.isNotEmpty)
               Row(
                 children: [
-                  Icon(Icons.mail_outline_rounded, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  Icon(Icons.mail_outline_rounded,
+                      size: 14,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
@@ -444,11 +436,14 @@ class _ProfileHeaderCard extends ConsumerWidget {
                   ),
                 ],
               ),
-            if (email.isNotEmpty && mobile.isNotEmpty) const SizedBox(height: 4),
+            if (email.isNotEmpty && mobile.isNotEmpty)
+              const SizedBox(height: 4),
             if (mobile.isNotEmpty)
               Row(
                 children: [
-                  Icon(Icons.phone_outlined, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  Icon(Icons.phone_outlined,
+                      size: 14,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
@@ -468,7 +463,8 @@ class _ProfileHeaderCard extends ConsumerWidget {
           ],
           if (profile.credits != null) ...[
             const SizedBox(height: OpenVtsSpacing.md),
-            Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+            Divider(
+                height: 1, color: Theme.of(context).colorScheme.outlineVariant),
             const SizedBox(height: OpenVtsSpacing.md),
             Container(
               padding: const EdgeInsets.symmetric(
@@ -478,11 +474,14 @@ class _ProfileHeaderCard extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                border: Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.credit_card_outlined, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  Icon(Icons.credit_card_outlined,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Column(
@@ -494,7 +493,8 @@ class _ProfileHeaderCard extends ConsumerWidget {
                           style: TextStyle(
                             fontFamily: OpenVtsTypography.primaryFontFamily,
                             fontSize: 11,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                             height: 1.1,
                           ),
                         ),
@@ -580,8 +580,7 @@ class _AvatarWithEdit extends StatelessWidget {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.45),
-                  borderRadius:
-                      BorderRadius.circular(OpenVtsRadius.md),
+                  borderRadius: BorderRadius.circular(OpenVtsRadius.md),
                 ),
                 child: const Center(
                   child: SizedBox(
@@ -613,8 +612,7 @@ class _AvatarWithEdit extends StatelessWidget {
                     border: Border.all(
                       color: Theme.of(context).colorScheme.outlineVariant,
                     ),
-                    borderRadius:
-                        BorderRadius.circular(OpenVtsRadius.pill),
+                    borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                   ),
                   child: Icon(
                     Icons.camera_alt_rounded,
@@ -706,7 +704,8 @@ class _VerificationRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        Icon(icon,
+            size: 18, color: Theme.of(context).colorScheme.onSurfaceVariant),
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: Column(
@@ -739,12 +738,10 @@ class _VerificationRow extends StatelessWidget {
         const SizedBox(width: OpenVtsSpacing.xs),
         if (verified)
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
               color: OpenVtsColors.success.withValues(alpha: 0.15),
-              borderRadius:
-                  BorderRadius.circular(OpenVtsRadius.pill),
+              borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
               border: Border.all(
                 color: OpenVtsColors.success,
                 width: 1,
@@ -783,19 +780,29 @@ class _VerificationRow extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     minimumSize: const Size(0, 30),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    backgroundColor: isDark ? Colors.black : OpenVtsColors.brandInk,
-                    foregroundColor: Colors.white,
+                    backgroundColor: isDark
+                        ? OpenVtsColors.darkSurface
+                        : OpenVtsColors.surfaceElevated,
+                    foregroundColor: isDark
+                        ? OpenVtsColors.darkTextPrimary
+                        : OpenVtsColors.textPrimary,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                      side: isDark
-                          ? const BorderSide(color: Colors.white, width: 1)
-                          : BorderSide.none,
+                      side: BorderSide(
+                        color: isDark
+                            ? OpenVtsColors.darkBorder
+                            : OpenVtsColors.border,
+                        width: 1,
+                      ),
                     ),
-                    textStyle: const TextStyle(
+                    textStyle: TextStyle(
                       fontFamily: OpenVtsTypography.primaryFontFamily,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? OpenVtsColors.darkTextPrimary
+                          : OpenVtsColors.textPrimary,
                     ),
                   ),
                   child: busy
@@ -804,7 +811,7 @@ class _VerificationRow extends StatelessWidget {
                           height: 14,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                            valueColor: AlwaysStoppedAnimation(Colors.black),
                           ),
                         )
                       : const Text('Verify'),
@@ -934,7 +941,8 @@ class _SectionCard extends StatelessWidget {
               ),
             ),
           const SizedBox(height: OpenVtsSpacing.xs),
-          Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+          Divider(
+              height: 1, color: Theme.of(context).colorScheme.outlineVariant),
           const SizedBox(height: OpenVtsSpacing.xs),
           ...children,
         ],
@@ -965,7 +973,8 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(icon,
+              size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
           const SizedBox(width: 8),
           SizedBox(
             width: 100,
@@ -1128,7 +1137,8 @@ class _EmailSubscriptionCard extends StatelessWidget {
             height: 30,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant),
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
             ),
             child: Icon(
@@ -1215,7 +1225,8 @@ class _LogoutCard extends StatelessWidget {
                 height: 28,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
-                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant),
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
                 ),
                 child: Icon(
@@ -1285,7 +1296,8 @@ class _BottomSheetShell extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+            border:
+                Border.all(color: Theme.of(context).colorScheme.outlineVariant),
           ),
           child: ConstrainedBox(
             constraints: BoxConstraints(
@@ -1363,8 +1375,7 @@ class _EditProfileSheet extends ConsumerStatefulWidget {
   final SuperadminProfileSettings profile;
 
   @override
-  ConsumerState<_EditProfileSheet> createState() =>
-      _EditProfileSheetState();
+  ConsumerState<_EditProfileSheet> createState() => _EditProfileSheetState();
 }
 
 class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
@@ -1404,14 +1415,11 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     _mobile = TextEditingController(text: p.mobileNumber ?? '');
     _addressLine = TextEditingController(text: a?.addressLine ?? '');
     _pincode = TextEditingController(text: a?.pincode ?? '');
-    _mobilePrefix = p.mobilePrefix?.trim().isNotEmpty == true
-        ? p.mobilePrefix
-        : null;
-    _countryCode = a?.countryCode?.trim().isNotEmpty == true
-        ? a!.countryCode
-        : null;
-    _stateCode =
-        a?.stateCode?.trim().isNotEmpty == true ? a!.stateCode : null;
+    _mobilePrefix =
+        p.mobilePrefix?.trim().isNotEmpty == true ? p.mobilePrefix : null;
+    _countryCode =
+        a?.countryCode?.trim().isNotEmpty == true ? a!.countryCode : null;
+    _stateCode = a?.stateCode?.trim().isNotEmpty == true ? a!.stateCode : null;
 
     _initialCityName = a?.cityDisplayName?.trim().isNotEmpty == true
         ? a!.cityDisplayName
@@ -1433,7 +1441,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
   }
 
   Future<void> _loadCatalogs() async {
-    final controller = ref.read(superadminAdministratorsControllerProvider.notifier);
+    final controller =
+        ref.read(superadminAdministratorsControllerProvider.notifier);
     try {
       final results = await Future.wait([
         controller.getCountries(),
@@ -1512,7 +1521,9 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         }
       }
 
-      if (matchedOption == null && _initialCityName != null && _initialCityName!.isNotEmpty) {
+      if (matchedOption == null &&
+          _initialCityName != null &&
+          _initialCityName!.isNotEmpty) {
         try {
           matchedOption = _cities.firstWhere(
             (c) => c.name.toLowerCase() == _initialCityName!.toLowerCase(),
@@ -1557,17 +1568,15 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
-    final controller =
-        ref.read(superadminSettingsControllerProvider.notifier);
+    final controller = ref.read(superadminSettingsControllerProvider.notifier);
     final ok = await controller.updateProfile(
       SuperadminUpdateProfileRequest(
         name: _name.text.trim(),
         email: _email.text.trim(),
         mobilePrefix: _mobilePrefix,
         mobileNumber: _mobile.text.trim().isEmpty ? null : _mobile.text.trim(),
-        addressLine: _addressLine.text.trim().isEmpty
-            ? null
-            : _addressLine.text.trim(),
+        addressLine:
+            _addressLine.text.trim().isEmpty ? null : _addressLine.text.trim(),
         countryCode: _countryCode,
         stateCode: _stateCode,
         cityName: _cityName,
@@ -1579,10 +1588,9 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       Navigator.of(context).pop(true);
     } else {
       setState(() => _submitting = false);
-      final msg = ref
-              .read(superadminSettingsControllerProvider)
-              .sectionErrorMessage ??
-          'Unable to update profile.';
+      final msg =
+          ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+              'Unable to update profile.';
       ToastHelper.showError(msg);
     }
   }
@@ -1619,9 +1627,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                   OpenVtsTextField(
                     label: 'Name',
                     controller: _name,
-                    validator: (v) => (v ?? '').trim().isEmpty
-                        ? 'Name is required'
-                        : null,
+                    validator: (v) =>
+                        (v ?? '').trim().isEmpty ? 'Name is required' : null,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   OpenVtsTextField(
@@ -1655,8 +1662,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                                 ),
                               )
                               .toList(),
-                          onChanged: (v) =>
-                              setState(() => _mobilePrefix = v),
+                          onChanged: (v) => setState(() => _mobilePrefix = v),
                         ),
                       ),
                       const SizedBox(width: OpenVtsSpacing.xs),
@@ -1731,7 +1737,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                   _DropdownField<String>(
                     label: 'City',
                     value: _cityName,
-                    enabled: !_loadingCities && (_cities.isNotEmpty || _cityName != null),
+                    enabled: !_loadingCities &&
+                        (_cities.isNotEmpty || _cityName != null),
                     busy: _loadingCities,
                     items: _cities
                         .map(
@@ -1813,11 +1820,13 @@ class _DropdownField<T> extends StatelessWidget {
             fillColor: Theme.of(context).colorScheme.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              borderSide: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+              borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.outlineVariant),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              borderSide: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+              borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.outlineVariant),
             ),
             suffixIcon: busy
                 ? const Padding(
@@ -1844,10 +1853,11 @@ class _DropdownField<T> extends StatelessWidget {
                             child: Text(
                               value.toString(),
                               style: TextStyle(
-                                fontFamily:
-                                    OpenVtsTypography.primaryFontFamily,
+                                fontFamily: OpenVtsTypography.primaryFontFamily,
                                 fontSize: 12.5,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -1894,8 +1904,7 @@ class _ChangePasswordSheet extends ConsumerStatefulWidget {
       _ChangePasswordSheetState();
 }
 
-class _ChangePasswordSheetState
-    extends ConsumerState<_ChangePasswordSheet> {
+class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
   final _formKey = GlobalKey<FormState>();
   final _current = TextEditingController();
   final _next = TextEditingController();
@@ -1928,10 +1937,9 @@ class _ChangePasswordSheetState
       Navigator.of(context).pop(true);
     } else {
       setState(() => _submitting = false);
-      final msg = ref
-              .read(superadminSettingsControllerProvider)
-              .sectionErrorMessage ??
-          'Unable to change password.';
+      final msg =
+          ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+              'Unable to change password.';
       ToastHelper.showError(msg);
     }
   }
@@ -1973,9 +1981,8 @@ class _ChangePasswordSheetState
                         () => _obscureCurrent = !_obscureCurrent,
                       ),
                     ),
-                    validator: (v) => (v ?? '').isEmpty
-                        ? 'Current password required'
-                        : null,
+                    validator: (v) =>
+                        (v ?? '').isEmpty ? 'Current password required' : null,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   OpenVtsTextField(
@@ -2037,8 +2044,7 @@ class _EditCompanySheet extends ConsumerStatefulWidget {
   final SuperadminCompanySettings company;
 
   @override
-  ConsumerState<_EditCompanySheet> createState() =>
-      _EditCompanySheetState();
+  ConsumerState<_EditCompanySheet> createState() => _EditCompanySheetState();
 }
 
 class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
@@ -2113,10 +2119,9 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
       Navigator.of(context).pop(true);
     } else {
       setState(() => _submitting = false);
-      final msg = ref
-              .read(superadminSettingsControllerProvider)
-              .sectionErrorMessage ??
-          'Unable to update company.';
+      final msg =
+          ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+              'Unable to update company.';
       ToastHelper.showError(msg);
     }
   }
@@ -2146,9 +2151,8 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
                   OpenVtsTextField(
                     label: 'Company name',
                     controller: _name,
-                    validator: (v) => (v ?? '').trim().isEmpty
-                        ? 'Name is required'
-                        : null,
+                    validator: (v) =>
+                        (v ?? '').trim().isEmpty ? 'Name is required' : null,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   OpenVtsTextField(
@@ -2275,8 +2279,7 @@ class _OtpVerificationSheet extends ConsumerStatefulWidget {
       _OtpVerificationSheetState();
 }
 
-class _OtpVerificationSheetState
-    extends ConsumerState<_OtpVerificationSheet> {
+class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
   final _otp = TextEditingController();
   bool _initialOtpRequested = false;
   bool _otpRequestSuccess = false;
@@ -2304,8 +2307,7 @@ class _OtpVerificationSheetState
     setState(() {
       if (isResend) _resending = true;
     });
-    final controller =
-        ref.read(superadminSettingsControllerProvider.notifier);
+    final controller = ref.read(superadminSettingsControllerProvider.notifier);
     final ok = widget.channel == _OtpChannel.email
         ? await controller.requestEmailOtp()
         : await controller.requestWhatsAppOtp();
@@ -2321,10 +2323,9 @@ class _OtpVerificationSheetState
             : 'OTP sent via WhatsApp',
       );
     } else {
-      final msg = ref
-              .read(superadminSettingsControllerProvider)
-              .sectionErrorMessage ??
-          'Unable to send OTP.';
+      final msg =
+          ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+              'Unable to send OTP.';
       ToastHelper.showError(msg);
     }
   }
@@ -2336,8 +2337,7 @@ class _OtpVerificationSheetState
       return;
     }
     setState(() => _submitting = true);
-    final controller =
-        ref.read(superadminSettingsControllerProvider.notifier);
+    final controller = ref.read(superadminSettingsControllerProvider.notifier);
     final ok = widget.channel == _OtpChannel.email
         ? await controller.confirmEmailOtp(code)
         : await controller.confirmWhatsAppOtp(code);
@@ -2346,10 +2346,9 @@ class _OtpVerificationSheetState
       Navigator.of(context).pop(true);
     } else {
       setState(() => _submitting = false);
-      final msg = ref
-              .read(superadminSettingsControllerProvider)
-              .sectionErrorMessage ??
-          'Invalid or expired code.';
+      final msg =
+          ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+              'Invalid or expired code.';
       ToastHelper.showError(msg);
     }
   }
@@ -2398,16 +2397,14 @@ class _OtpVerificationSheetState
                     vertical: 14,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(OpenVtsRadius.sm),
-                    borderSide:
-                        BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+                    borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.outlineVariant),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(OpenVtsRadius.sm),
-                    borderSide:
-                        BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+                    borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.outlineVariant),
                   ),
                 ),
               ),
@@ -2426,8 +2423,7 @@ class _OtpVerificationSheetState
                       : const Text(
                           'Resend code',
                           style: TextStyle(
-                            fontFamily:
-                                OpenVtsTypography.primaryFontFamily,
+                            fontFamily: OpenVtsTypography.primaryFontFamily,
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
                           ),
@@ -2447,5 +2443,3 @@ class _OtpVerificationSheetState
     );
   }
 }
-
-

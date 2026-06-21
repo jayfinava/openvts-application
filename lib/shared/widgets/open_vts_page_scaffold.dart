@@ -31,7 +31,8 @@ class OpenVtsPageScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final role = ref.watch(authControllerProvider.select((state) => state.role));
+    final role =
+        ref.watch(authControllerProvider.select((state) => state.role));
 
     return Scaffold(
       appBar: headerMode == OpenVtsPageHeaderMode.closeable
@@ -80,14 +81,12 @@ class _CloseablePageHeader extends StatelessWidget
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final titleStyle = (theme.appBarTheme.titleTextStyle ??
-            theme.textTheme.titleSmall)
-        ?.copyWith(
-          color: isDark
-              ? OpenVtsColors.darkTextPrimary
-              : OpenVtsColors.textPrimary,
-          fontWeight: FontWeight.w600,
-        );
+    final titleStyle =
+        (theme.appBarTheme.titleTextStyle ?? theme.textTheme.titleSmall)
+            ?.copyWith(
+      color: isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary,
+      fontWeight: FontWeight.w600,
+    );
 
     return AppBar(
       automaticallyImplyLeading: false,
@@ -113,14 +112,16 @@ class _CloseablePageHeader extends StatelessWidget
             tooltip: 'Close page',
             onPressed: onClose ?? () => _handleClose(context),
             style: IconButton.styleFrom(
-              backgroundColor: isDark ? Colors.black : OpenVtsColors.brandInk,
-              foregroundColor: Colors.white,
+              backgroundColor: isDark
+                  ? OpenVtsColors.surfaceElevated
+                  : OpenVtsColors.brandInk,
+              foregroundColor:
+                  isDark ? OpenVtsColors.brandInk : OpenVtsColors.white,
               minimumSize: const Size.square(36),
               padding: EdgeInsets.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                side: isDark ? const BorderSide(color: Colors.white, width: 1) : BorderSide.none,
               ),
             ),
             icon: const Icon(Icons.close_rounded, size: 18),
