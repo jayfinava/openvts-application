@@ -374,6 +374,14 @@ class _TicketFormActionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDark
+        ? colorScheme.surface
+        : const Color(0xFFF5F5F5);
+    final borderColor = isDark
+        ? colorScheme.outline
+        : const Color(0xFFE0E0E0);
+
     return SafeArea(
       top: false,
       child: Container(
@@ -384,8 +392,8 @@ class _TicketFormActionBar extends StatelessWidget {
           OpenVtsSpacing.md,
         ),
         decoration: BoxDecoration(
-          color: colorScheme.surface,
-          border: Border(top: BorderSide(color: colorScheme.outline)),
+          color: backgroundColor,
+          border: Border(top: BorderSide(color: borderColor)),
         ),
         child: Align(
           alignment: Alignment.center,
@@ -393,10 +401,23 @@ class _TicketFormActionBar extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 720),
             child: Row(
               children: [
-                IconButton.filledTonal(
-                  tooltip: 'Attach files',
-                  onPressed: onAttach,
-                  icon: const Icon(Icons.attach_file_rounded, size: 18),
+                Theme(
+                  data: Theme.of(context).copyWith(
+                    iconButtonTheme: IconButtonThemeData(
+                      style: IconButton.styleFrom(
+                        backgroundColor: isDark ? null : Colors.white,
+                        foregroundColor: isDark ? null : Colors.black,
+                        side: isDark
+                            ? null
+                            : const BorderSide(color: Color(0xFFE0E0E0)),
+                      ),
+                    ),
+                  ),
+                  child: IconButton.filledTonal(
+                    tooltip: 'Attach files',
+                    onPressed: onAttach,
+                    icon: const Icon(Icons.attach_file_rounded, size: 18),
+                  ),
                 ),
                 const SizedBox(width: OpenVtsSpacing.sm),
                 Expanded(

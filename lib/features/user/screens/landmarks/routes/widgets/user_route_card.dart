@@ -170,6 +170,8 @@ class UserRouteCard extends ConsumerWidget {
       if (coords.isNotEmpty) '${coords.length} pts',
       if (coords.length >= 2) _formatMeters(_lengthMeters(coords)),
       if (tolerance != null && tolerance > 0) '±${_formatMeters(tolerance)}',
+      if (r.assignedVehicleCount > 0)
+        '${r.assignedVehicleCount} vehicle${r.assignedVehicleCount == 1 ? '' : 's'}',
     ];
     if (parts.isEmpty) return 'Route';
     return parts.join(' • ');

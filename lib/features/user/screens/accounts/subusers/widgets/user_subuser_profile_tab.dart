@@ -87,8 +87,12 @@ class UserSubUserProfileTab extends ConsumerWidget {
           title: 'Timeline',
           icon: Icons.schedule_rounded,
           rows: [
-            _InfoRow(label: 'Created', value: _dateText(subUser.createdAt, dateFormatter)),
-            _InfoRow(label: 'Updated', value: _dateText(subUser.updatedAt, dateFormatter)),
+            _InfoRow(
+                label: 'Created',
+                value: _dateText(subUser.createdAt, dateFormatter)),
+            _InfoRow(
+                label: 'Updated',
+                value: _dateText(subUser.updatedAt, dateFormatter)),
           ],
         ),
       ],
@@ -332,7 +336,9 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary,
+                color: isDarkMode
+                    ? OpenVtsColors.darkTextTertiary
+                    : OpenVtsColors.textTertiary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -346,7 +352,9 @@ class _InfoRow extends StatelessWidget {
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: isDarkMode ? OpenVtsColors.white : OpenVtsColors.textPrimary,
+                color: isDarkMode
+                    ? OpenVtsColors.white
+                    : OpenVtsColors.textPrimary,
                 fontWeight: FontWeight.w700,
               ),
             ),

@@ -329,8 +329,8 @@ class _SearchInput extends StatelessWidget {
             decoration: InputDecoration(
               isDense: true,
               hintText: label,
-              hintStyle: OpenVtsTypography.body
-                  .copyWith(color: OpenVtsColors.white),
+              hintStyle:
+                  OpenVtsTypography.body.copyWith(color: OpenVtsColors.white),
               prefixIcon: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
@@ -350,7 +350,8 @@ class _SearchInput extends StatelessWidget {
                         height: 14,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(OpenVtsColors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              OpenVtsColors.white),
                         ),
                       ),
                     )

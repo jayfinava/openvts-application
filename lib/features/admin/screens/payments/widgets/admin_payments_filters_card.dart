@@ -10,7 +10,7 @@ import '../../../models/admin_payments_model.dart';
 import '../../../models/admin_payments_state.dart';
 import '../../../models/admin_users_model.dart';
 
-class AdminPaymentsFiltersCard extends StatelessWidget {
+class AdminPaymentsFiltersCard extends StatefulWidget {
   const AdminPaymentsFiltersCard({
     required this.state,
     required this.onUserChanged,
@@ -33,377 +33,300 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
   final VoidCallback onApply;
 
   @override
+  State<AdminPaymentsFiltersCard> createState() =>
+      _AdminPaymentsFiltersCardState();
+}
+
+class _AdminPaymentsFiltersCardState extends State<AdminPaymentsFiltersCard> {
+  bool _showAdvancedFilters = false;
+
+  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final headingColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
-    final subheadingColor =
-        isDark ? Colors.grey[300] : OpenVtsColors.textSecondary;
-    final iconColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
-    final iconBgColor = isDark ? Colors.black : OpenVtsColors.surfaceElevated;
+    final hasAdvancedSelection = widget.state.selectedMode != null;
+    final showAdvancedFilters = _showAdvancedFilters || hasAdvancedSelection;
 
     return OpenVtsCard(
-      padding: const EdgeInsets.all(OpenVtsSpacing.md),
+      padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: iconBgColor,
-                  borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                  border: Border.all(color: OpenVtsColors.border),
-                ),
-                child: Icon(
-                  Icons.filter_list_rounded,
-                  size: 18,
-                  color: iconColor,
+              Text(
+                'Filters',
+                style: OpenVtsTypography.label.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: headingColor,
                 ),
               ),
-              const SizedBox(width: OpenVtsSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Filters',
-                        style: OpenVtsTypography.titleSmall
-                            .copyWith(color: headingColor)),
-                    const SizedBox(height: OpenVtsSpacing.xxs),
-                    Text(
-                      'Refine payments by user, status, mode, and date.',
-                      style: OpenVtsTypography.meta.copyWith(
-                        color: subheadingColor,
-                      ),
+              const Spacer(),
+              if (widget.state.hasActiveFilters)
+                TextButton.icon(
+                  onPressed: _handleClear,
+                  style: TextButton.styleFrom(
+                    foregroundColor: OpenVtsColors.textSecondary,
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: OpenVtsSpacing.xs,
                     ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: OpenVtsSpacing.md),
-          _buildFilterFields(),
-          const SizedBox(height: OpenVtsSpacing.md),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: state.hasActiveFilters ? onClear : null,
-                  icon: const Icon(Icons.restart_alt_rounded, size: 16),
-                  label: const Text('Clear'),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(44),
-                    side: const BorderSide(color: OpenVtsColors.border),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                    ),
+                    minimumSize: const Size(44, 44),
                   ),
-                ),
-              ),
-              const SizedBox(width: OpenVtsSpacing.sm),
-              Expanded(
-                child: FilledButton.icon(
-                  onPressed: onApply,
-                  icon: Icon(
-                    Icons.check_circle_outline_rounded,
-                    size: 16,
-                    color: isDark ? Colors.white : Colors.white,
-                  ),
+                  icon: const Icon(Icons.filter_alt_off_outlined, size: 14),
                   label: Text(
-                    'Apply Filters',
-                    style: TextStyle(
-                      color: isDark ? Colors.white : Colors.white,
+                    'Clear',
+                    style: OpenVtsTypography.meta.copyWith(
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(44),
-                    backgroundColor:
-                        isDark ? Colors.black : OpenVtsColors.brandInk,
-                    side: BorderSide(
-                      color: isDark ? Colors.white : Colors.transparent,
-                      width: isDark ? 1 : 0,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                    ),
-                    foregroundColor: isDark ? Colors.white : Colors.white,
-                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: OpenVtsSpacing.sm),
+          const _SectionLabel(text: 'Date Range'),
+          const SizedBox(height: OpenVtsSpacing.xs),
+          Wrap(
+            spacing: OpenVtsSpacing.xs,
+            runSpacing: OpenVtsSpacing.xs,
+            children: [
+              _CompactChoiceChip(
+                label: 'Today',
+                selected:
+                    widget.state.rangePreset == AdminPaymentsRangePreset.today,
+                onTap: () => widget.onRangePresetChanged(
+                  AdminPaymentsRangePreset.today,
+                ),
+              ),
+              _CompactChoiceChip(
+                label: 'Yesterday',
+                selected: widget.state.rangePreset ==
+                    AdminPaymentsRangePreset.yesterday,
+                onTap: () => widget.onRangePresetChanged(
+                  AdminPaymentsRangePreset.yesterday,
+                ),
+              ),
+              _CompactChoiceChip(
+                label: 'Last 12 Hours',
+                selected: widget.state.rangePreset ==
+                    AdminPaymentsRangePreset.last12Hours,
+                onTap: () => widget.onRangePresetChanged(
+                  AdminPaymentsRangePreset.last12Hours,
+                ),
+              ),
+              _CompactChoiceChip(
+                label: 'Last 24 Hours',
+                selected: widget.state.rangePreset ==
+                    AdminPaymentsRangePreset.last24Hours,
+                onTap: () => widget.onRangePresetChanged(
+                  AdminPaymentsRangePreset.last24Hours,
+                ),
+              ),
+              _CompactChoiceChip(
+                label: 'Last 7 Days',
+                selected: widget.state.rangePreset ==
+                    AdminPaymentsRangePreset.last7Days,
+                onTap: () => widget.onRangePresetChanged(
+                  AdminPaymentsRangePreset.last7Days,
+                ),
+              ),
+              _CompactChoiceChip(
+                label: 'Last 30 Days',
+                selected: widget.state.rangePreset ==
+                    AdminPaymentsRangePreset.last30Days,
+                onTap: () => widget.onRangePresetChanged(
+                  AdminPaymentsRangePreset.last30Days,
+                ),
+              ),
+              _CompactChoiceChip(
+                label: 'This Month',
+                selected: widget.state.rangePreset ==
+                    AdminPaymentsRangePreset.thisMonth,
+                onTap: () => widget.onRangePresetChanged(
+                  AdminPaymentsRangePreset.thisMonth,
+                ),
+              ),
+              _CompactChoiceChip(
+                label: 'This Year',
+                selected: widget.state.rangePreset ==
+                    AdminPaymentsRangePreset.thisYear,
+                onTap: () => widget.onRangePresetChanged(
+                  AdminPaymentsRangePreset.thisYear,
+                ),
+              ),
+              _CompactChoiceChip(
+                label: 'Custom',
+                selected:
+                    widget.state.rangePreset == AdminPaymentsRangePreset.custom,
+                onTap: () => widget.onRangePresetChanged(
+                  AdminPaymentsRangePreset.custom,
                 ),
               ),
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFilterFields() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isWide = constraints.maxWidth >= 600;
-
-        if (isWide) {
-          return Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: _buildUserDropdown()),
-                  const SizedBox(width: OpenVtsSpacing.sm),
-                  Expanded(child: _buildStatusDropdown()),
-                ],
+          if (widget.state.rangePreset == AdminPaymentsRangePreset.custom) ...[
+            const SizedBox(height: OpenVtsSpacing.sm),
+            OpenVtsDateTimeRangeField(
+              label: 'Custom Range',
+              value: OpenVtsDateTimeRange(
+                start: widget.state.customFrom,
+                end: widget.state.customTo,
               ),
-              const SizedBox(height: OpenVtsSpacing.sm),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: _buildPaymentModeDropdown()),
-                  const SizedBox(width: OpenVtsSpacing.sm),
-                  Expanded(child: _buildDateRangeDropdown()),
-                ],
-              ),
-              if (state.rangePreset == AdminPaymentsRangePreset.custom) ...[
-                const SizedBox(height: OpenVtsSpacing.sm),
-                _buildCustomDateRangeField(),
-              ],
-            ],
-          );
-        } else {
-          return Column(
-            children: [
-              _buildUserDropdown(),
-              const SizedBox(height: OpenVtsSpacing.sm),
-              _buildStatusDropdown(),
-              const SizedBox(height: OpenVtsSpacing.sm),
-              _buildPaymentModeDropdown(),
-              const SizedBox(height: OpenVtsSpacing.sm),
-              _buildDateRangeDropdown(),
-              if (state.rangePreset == AdminPaymentsRangePreset.custom) ...[
-                const SizedBox(height: OpenVtsSpacing.sm),
-                _buildCustomDateRangeField(),
-              ],
-            ],
-          );
-        }
-      },
-    );
-  }
-
-  Widget _buildUserDropdown() {
-    return _buildDropdownField<String?>(
-      label: 'User',
-      value: state.selectedUserId,
-      options: [
-        const _DropdownOption<String?>(value: null, label: 'All Users'),
-        ...state.users.map((u) => _DropdownOption(
-              value: u.id,
-              label: _getUserLabel(u),
-            )),
-      ],
-      onChanged: onUserChanged,
-    );
-  }
-
-  Widget _buildStatusDropdown() {
-    return Builder(builder: (context) {
-      final isDark = Theme.of(context).brightness == Brightness.dark;
-      final textColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
-
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Status',
-            style: OpenVtsTypography.label.copyWith(
-              color: textColor,
-              fontWeight: FontWeight.w600,
+              onChanged: (range) =>
+                  widget.onCustomRangeChanged(range.start, range.end),
+              title: 'Choose Date Range',
             ),
-          ),
+          ],
+          const SizedBox(height: OpenVtsSpacing.sm),
+          const _SectionLabel(text: 'Status'),
           const SizedBox(height: OpenVtsSpacing.xs),
-          _buildPillSegmentedControl<AdminPaymentStatus?>(
-            context: context,
-            segments: [
-              _PillSegment<AdminPaymentStatus?>(value: null, label: 'All'),
-              _PillSegment(
-                value: AdminPaymentStatus.success,
+          Wrap(
+            spacing: OpenVtsSpacing.xs,
+            runSpacing: OpenVtsSpacing.xs,
+            children: [
+              _CompactChoiceChip(
+                label: 'All',
+                selected: widget.state.selectedStatus == null,
+                onTap: () => widget.onStatusChanged(null),
+              ),
+              _CompactChoiceChip(
                 label: 'Success',
+                selected:
+                    widget.state.selectedStatus == AdminPaymentStatus.success,
+                onTap: () => widget.onStatusChanged(AdminPaymentStatus.success),
               ),
-              _PillSegment(
-                value: AdminPaymentStatus.pending,
+              _CompactChoiceChip(
                 label: 'Pending',
+                selected:
+                    widget.state.selectedStatus == AdminPaymentStatus.pending,
+                onTap: () => widget.onStatusChanged(AdminPaymentStatus.pending),
               ),
-              _PillSegment(
-                value: AdminPaymentStatus.failed,
+              _CompactChoiceChip(
                 label: 'Failed',
+                selected:
+                    widget.state.selectedStatus == AdminPaymentStatus.failed,
+                onTap: () => widget.onStatusChanged(AdminPaymentStatus.failed),
               ),
             ],
-            selectedValue: state.selectedStatus,
-            onChanged: onStatusChanged,
           ),
-        ],
-      );
-    });
-  }
-
-  Widget _buildPaymentModeDropdown() {
-    return Builder(builder: (context) {
-      final isDark = Theme.of(context).brightness == Brightness.dark;
-      final textColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
-
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Payment Mode',
-            style: OpenVtsTypography.label.copyWith(
-              color: textColor,
-              fontWeight: FontWeight.w600,
+          const SizedBox(height: OpenVtsSpacing.sm),
+          TextButton.icon(
+            onPressed: () {
+              setState(() {
+                _showAdvancedFilters = !showAdvancedFilters;
+              });
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: OpenVtsColors.textSecondary,
+              minimumSize: const Size(44, 44),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.xs),
+            ),
+            icon: Icon(
+              showAdvancedFilters
+                  ? Icons.expand_less_rounded
+                  : Icons.tune_rounded,
+              size: 16,
+            ),
+            label: Text(
+              showAdvancedFilters
+                  ? 'Hide payment filters'
+                  : 'Show payment filters',
+              style: OpenVtsTypography.meta.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
-          const SizedBox(height: OpenVtsSpacing.xs),
-          _buildPillSegmentedControl<AdminPaymentMode?>(
-            context: context,
-            segments: [
-              _PillSegment<AdminPaymentMode?>(value: null, label: 'All'),
-              ...AdminPaymentMode.values.map((mode) => _PillSegment(
-                    value: mode,
-                    label: mode.label,
-                  )),
-            ],
-            selectedValue: state.selectedMode,
-            onChanged: onModeChanged,
-          ),
+          if (showAdvancedFilters) ...[
+            const SizedBox(height: OpenVtsSpacing.xs),
+            const _SectionLabel(text: 'User'),
+            const SizedBox(height: OpenVtsSpacing.xs),
+            Wrap(
+              spacing: OpenVtsSpacing.xs,
+              runSpacing: OpenVtsSpacing.xs,
+              children: [
+                _CompactChoiceChip(
+                  label: 'All Users',
+                  selected: widget.state.selectedUserId == null,
+                  onTap: () => widget.onUserChanged(null),
+                ),
+                ...widget.state.users.map((user) => _CompactChoiceChip(
+                      label: _getUserLabel(user),
+                      selected: widget.state.selectedUserId == user.id,
+                      onTap: () => widget.onUserChanged(user.id),
+                    )),
+              ],
+            ),
+            const SizedBox(height: OpenVtsSpacing.sm),
+            const _SectionLabel(text: 'Payment Mode'),
+            const SizedBox(height: OpenVtsSpacing.xs),
+            Wrap(
+              spacing: OpenVtsSpacing.xs,
+              runSpacing: OpenVtsSpacing.xs,
+              children: [
+                _CompactChoiceChip(
+                  label: 'All',
+                  selected: widget.state.selectedMode == null,
+                  onTap: () => widget.onModeChanged(null),
+                ),
+                _CompactChoiceChip(
+                  label: 'Cash',
+                  selected: widget.state.selectedMode == AdminPaymentMode.cash,
+                  onTap: () => widget.onModeChanged(AdminPaymentMode.cash),
+                ),
+                _CompactChoiceChip(
+                  label: 'UPI',
+                  selected: widget.state.selectedMode == AdminPaymentMode.upi,
+                  onTap: () => widget.onModeChanged(AdminPaymentMode.upi),
+                ),
+                _CompactChoiceChip(
+                  label: 'Bank Transfer',
+                  selected: widget.state.selectedMode ==
+                      AdminPaymentMode.bankTransfer,
+                  onTap: () =>
+                      widget.onModeChanged(AdminPaymentMode.bankTransfer),
+                ),
+                _CompactChoiceChip(
+                  label: 'Card',
+                  selected: widget.state.selectedMode == AdminPaymentMode.card,
+                  onTap: () => widget.onModeChanged(AdminPaymentMode.card),
+                ),
+                _CompactChoiceChip(
+                  label: 'Wallet',
+                  selected:
+                      widget.state.selectedMode == AdminPaymentMode.wallet,
+                  onTap: () => widget.onModeChanged(AdminPaymentMode.wallet),
+                ),
+                _CompactChoiceChip(
+                  label: 'Razorpay',
+                  selected:
+                      widget.state.selectedMode == AdminPaymentMode.razorpay,
+                  onTap: () => widget.onModeChanged(AdminPaymentMode.razorpay),
+                ),
+                _CompactChoiceChip(
+                  label: 'Stripe',
+                  selected:
+                      widget.state.selectedMode == AdminPaymentMode.stripe,
+                  onTap: () => widget.onModeChanged(AdminPaymentMode.stripe),
+                ),
+                _CompactChoiceChip(
+                  label: 'Other',
+                  selected: widget.state.selectedMode == AdminPaymentMode.other,
+                  onTap: () => widget.onModeChanged(AdminPaymentMode.other),
+                ),
+              ],
+            ),
+          ],
         ],
-      );
-    });
-  }
-
-  Widget _buildDateRangeDropdown() {
-    const options = [
-      _DropdownOption(
-        value: AdminPaymentsRangePreset.today,
-        label: 'Today',
       ),
-      _DropdownOption(
-        value: AdminPaymentsRangePreset.yesterday,
-        label: 'Yesterday',
-      ),
-      _DropdownOption(
-        value: AdminPaymentsRangePreset.last12Hours,
-        label: 'Last 12 Hours',
-      ),
-      _DropdownOption(
-        value: AdminPaymentsRangePreset.last24Hours,
-        label: 'Last 24 Hours',
-      ),
-      _DropdownOption(
-        value: AdminPaymentsRangePreset.last7Days,
-        label: 'Last 7 Days',
-      ),
-      _DropdownOption(
-        value: AdminPaymentsRangePreset.last30Days,
-        label: 'Last 30 Days',
-      ),
-      _DropdownOption(
-        value: AdminPaymentsRangePreset.thisMonth,
-        label: 'This Month',
-      ),
-      _DropdownOption(
-        value: AdminPaymentsRangePreset.thisYear,
-        label: 'This Year',
-      ),
-      _DropdownOption(
-        value: AdminPaymentsRangePreset.custom,
-        label: 'Custom Range',
-      ),
-    ];
-
-    return _buildDropdownField<AdminPaymentsRangePreset>(
-      label: 'Date Range',
-      value: state.rangePreset,
-      options: options,
-      onChanged: (value) {
-        if (value != null) {
-          onRangePresetChanged(value);
-        }
-      },
     );
   }
 
-  Widget _buildCustomDateRangeField() {
-    return OpenVtsDateTimeRangeField(
-      label: 'Custom Range',
-      title: 'Choose Date Range',
-      value: OpenVtsDateTimeRange(
-        start: state.customFrom,
-        end: state.customTo,
-      ),
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-      onChanged: (range) => onCustomRangeChanged(range.start, range.end),
-    );
-  }
-
-  Widget _buildDropdownField<T>({
-    required String label,
-    required T value,
-    required List<_DropdownOption<T>> options,
-    required ValueChanged<T?> onChanged,
-  }) {
-    return Builder(builder: (context) {
-      final isDark = Theme.of(context).brightness == Brightness.dark;
-      final fillColor = isDark ? Colors.black : OpenVtsColors.surfaceElevated;
-      final textColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
-
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: OpenVtsTypography.label.copyWith(
-              color: textColor,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: OpenVtsSpacing.xs),
-          DropdownButtonFormField<T>(
-            initialValue: value,
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 13,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                borderSide: const BorderSide(color: OpenVtsColors.border),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                borderSide: const BorderSide(color: OpenVtsColors.border),
-              ),
-              filled: true,
-              fillColor: fillColor,
-            ),
-            style: OpenVtsTypography.body.copyWith(
-              color: textColor,
-            ),
-            dropdownColor: fillColor,
-            items: options
-                .map((opt) => DropdownMenuItem<T>(
-                      value: opt.value,
-                      child: Text(
-                        opt.label,
-                        style: TextStyle(color: textColor),
-                      ),
-                    ))
-                .toList(growable: false),
-            onChanged: onChanged,
-            isExpanded: true,
-          ),
-        ],
-      );
+  void _handleClear() {
+    widget.onClear();
+    widget.onApply();
+    setState(() {
+      _showAdvancedFilters = false;
     });
   }
 
@@ -412,71 +335,53 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
     final text = username.isEmpty ? user.name : '${user.name} (@$username)';
     return text;
   }
+}
 
-  Widget _buildPillSegmentedControl<T>({
-    required BuildContext context,
-    required List<_PillSegment<T>> segments,
-    required T selectedValue,
-    required ValueChanged<T?> onChanged,
-  }) {
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final outerBackgroundColor = isDark ? Colors.black : Colors.white;
-    final outerBorderColor =
-        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+    final textColor = isDark ? Colors.grey[300] : OpenVtsColors.textSecondary;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: outerBackgroundColor,
-        border: Border.all(color: outerBorderColor, width: 1),
-        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (int i = 0; i < segments.length; i++) ...[
-              Expanded(
-                child: _buildPillSegment(
-                  context: context,
-                  segment: segments[i],
-                  isSelected: segments[i].value == selectedValue,
-                  isDark: isDark,
-                  onTap: () => onChanged(segments[i].value),
-                ),
-              ),
-              if (i < segments.length - 1)
-                Container(
-                  width: 1,
-                  height: 32,
-                  color: outerBorderColor,
-                ),
-            ],
-          ],
-        ),
+    return Text(
+      text,
+      style: OpenVtsTypography.meta.copyWith(
+        color: textColor,
+        fontWeight: FontWeight.w700,
       ),
     );
   }
+}
 
-  Widget _buildPillSegment<T>({
-    required BuildContext context,
-    required _PillSegment<T> segment,
-    required bool isSelected,
-    required bool isDark,
-    required VoidCallback onTap,
-  }) {
-    final backgroundColor = isSelected
-        ? (isDark ? Colors.black : Colors.white)
+class _CompactChoiceChip extends StatelessWidget {
+  const _CompactChoiceChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = selected
+        ? (isDark ? Colors.black : OpenVtsColors.white)
         : Colors.transparent;
-
-    final textColor = isDark ? Colors.white : Colors.black;
-
-    final borderColor =
-        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+    final textColor = isDark ? Colors.white : OpenVtsColors.brandInk;
+    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
 
     return Material(
       color: backgroundColor,
+      borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       child: InkWell(
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         onTap: onTap,
         child: Container(
           constraints: const BoxConstraints(minHeight: 34),
@@ -484,39 +389,21 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
             horizontal: OpenVtsSpacing.sm,
             vertical: OpenVtsSpacing.xs,
           ),
-          decoration: isSelected
+          decoration: selected
               ? BoxDecoration(
+                  borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                   border: Border.all(color: borderColor, width: 1),
-                  borderRadius: BorderRadius.circular(OpenVtsRadius.pill - 1),
                 )
               : null,
-          child: Center(
-            child: Text(
-              segment.label,
-              style: OpenVtsTypography.meta.copyWith(
-                color: textColor,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
+          child: Text(
+            label,
+            style: OpenVtsTypography.meta.copyWith(
+              color: textColor,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
             ),
           ),
         ),
       ),
     );
   }
-}
-
-class _DropdownOption<T> {
-  const _DropdownOption({required this.value, required this.label});
-
-  final T value;
-  final String label;
-}
-
-class _PillSegment<T> {
-  const _PillSegment({required this.value, required this.label});
-
-  final T value;
-  final String label;
 }

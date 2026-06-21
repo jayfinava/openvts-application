@@ -51,7 +51,9 @@ class OpenVtsSupportTicketCard extends StatelessWidget {
           border: BorderDirectional(
             start: BorderSide(
               color: isSelected
-                  ? (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk)
+                  ? (isDark
+                      ? OpenVtsColors.darkTextPrimary
+                      : OpenVtsColors.brandInk)
                   : Colors.transparent,
               width: 3,
             ),
@@ -86,10 +88,13 @@ class OpenVtsSupportTicketCard extends StatelessWidget {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   OpenVtsSupportPlainChip(label: ticketNumber),
-                  OpenVtsSupportSoftChip(label: statusLabel, color: statusColor),
-                  OpenVtsSupportSoftChip(label: priorityLabel, color: priorityColor),
+                  OpenVtsSupportSoftChip(
+                      label: statusLabel, color: statusColor),
+                  OpenVtsSupportSoftChip(
+                      label: priorityLabel, color: priorityColor),
                   OpenVtsSupportPlainChip(label: categoryLabel),
-                  for (final meta in extraMetaLabels) OpenVtsSupportPlainChip(label: meta),
+                  for (final meta in extraMetaLabels)
+                    OpenVtsSupportPlainChip(label: meta),
                 ],
               ),
               if (preview != null && preview!.trim().isNotEmpty) ...[

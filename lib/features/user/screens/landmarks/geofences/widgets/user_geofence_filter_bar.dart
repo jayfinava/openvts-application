@@ -181,12 +181,12 @@ class _FilterGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final borderColor =
-        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
+    final containerColor = isDark ? Colors.black : OpenVtsColors.white;
     return Container(
       constraints: const BoxConstraints(minHeight: 34),
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: containerColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         border: Border.all(color: borderColor),
       ),
@@ -218,11 +218,15 @@ class _FilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
-    final textColor = isDark ? Colors.white : Colors.black;
-    final borderColor =
-        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+    final backgroundColor = selected
+        ? (isDark ? Colors.black : OpenVtsColors.white)
+        : Colors.transparent;
+    final textColor = selected
+        ? (isDark ? Colors.white : OpenVtsColors.brandInk)
+        : (isDark ? Colors.white : OpenVtsColors.brandInk);
+    final borderColor = selected
+        ? (isDark ? Colors.white : OpenVtsColors.border)
+        : (isDark ? Colors.white : OpenVtsColors.border);
 
     return InkWell(
       onTap: onTap,

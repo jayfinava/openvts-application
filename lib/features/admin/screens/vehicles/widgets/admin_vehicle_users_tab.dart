@@ -211,9 +211,8 @@ class _VehicleUserCard extends StatelessWidget {
                   builder: (context) => OpenVtsButton(
                     label: 'Unassign',
                     isLoading: isUnlinking,
-                    onPressed: isUnlinking
-                        ? null
-                        : () => _showConfirmDialog(context),
+                    onPressed:
+                        isUnlinking ? null : () => _showConfirmDialog(context),
                     variant: OpenVtsButtonVariant.secondary,
                   ),
                 ),
@@ -319,7 +318,8 @@ class _PrimaryBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.star_rounded, size: 10, color: OpenVtsColors.brandInk),
+          const Icon(Icons.star_rounded,
+              size: 10, color: OpenVtsColors.brandInk),
           const SizedBox(width: 2),
           Text(
             'Primary',
@@ -437,7 +437,8 @@ class _AssignUserSheetState extends State<_AssignUserSheet> {
               groupValue: _selectedUserId,
               // ignore: deprecated_member_use
               onChanged: (value) => setState(() => _selectedUserId = value),
-              title: Text(user.displayName.isNotEmpty ? user.displayName : 'Unknown'),
+              title: Text(
+                  user.displayName.isNotEmpty ? user.displayName : 'Unknown'),
               subtitle: Text(
                 [user.username, user.email]
                     .where((item) => item.trim().isNotEmpty)

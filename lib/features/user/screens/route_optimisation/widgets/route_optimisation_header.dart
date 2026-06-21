@@ -18,6 +18,12 @@ class RouteOptimisationHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? Colors.black : Colors.white;
+    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final secondaryTextColor = isDark ? Colors.white : Colors.black54;
+
     final stopsCount = state.points.length;
     final stopsSummary = stopsCount == 0
         ? 'No stops yet'
@@ -30,9 +36,9 @@ class RouteOptimisationHeader extends StatelessWidget {
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: bgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: Colors.white),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -45,14 +51,14 @@ class RouteOptimisationHeader extends StatelessWidget {
                 Text(
                   'Plan multi-stop routes',
                   style: OpenVtsTypography.label.copyWith(
-                    color: Colors.white,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   stopsSummary,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Colors.white,
+                    color: secondaryTextColor,
                   ),
                 ),
               ],

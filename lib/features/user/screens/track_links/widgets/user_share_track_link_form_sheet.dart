@@ -81,7 +81,9 @@ class _UserShareTrackLinkFormSheetState
   }
 
   Future<List<UserShareTrackVehicle>> _loadVehicles() {
-    return ref.read(userShareTrackLinkControllerProvider.notifier).getVehicles();
+    return ref
+        .read(userShareTrackLinkControllerProvider.notifier)
+        .getVehicles();
   }
 
   Future<void> _loadLatestDetails(String id) async {
@@ -503,6 +505,10 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final subtitleColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.textSecondary;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -516,7 +522,7 @@ class _SectionLabel extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: OpenVtsTypography.titleSmall.copyWith(
                   fontSize: compact ? 14 : 16,
-                  color: OpenVtsColors.white,
+                  color: textColor,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -526,7 +532,7 @@ class _SectionLabel extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.white,
+                  color: subtitleColor,
                   fontSize: 12,
                 ),
               ),
@@ -545,12 +551,14 @@ class _VehicleListFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       constraints: const BoxConstraints(minHeight: 112),
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: isDark ? Colors.black : Colors.white,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-        border: Border.all(color: OpenVtsColors.white),
+        border: Border.all(
+            color: isDark ? OpenVtsColors.white : OpenVtsColors.border),
       ),
       child: child,
     );
@@ -572,8 +580,12 @@ class _VehicleSelectRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleColor =
-        disabled ? OpenVtsColors.textTertiary : OpenVtsColors.white;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final titleColor = disabled
+        ? OpenVtsColors.textTertiary
+        : (isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary);
+    final subtitleColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.textSecondary;
 
     return InkWell(
       onTap: onChanged,
@@ -622,7 +634,7 @@ class _VehicleSelectRow extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.white,
+                      color: subtitleColor,
                       fontSize: 11,
                     ),
                   ),
@@ -675,22 +687,28 @@ class _PickerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? Colors.black : Colors.white;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final labelColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.textSecondary;
     return InkWell(
       borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(OpenVtsSpacing.sm),
         decoration: BoxDecoration(
-          color: Colors.black,
+          color: bgColor,
           borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-          border: Border.all(color: OpenVtsColors.white),
+          border: Border.all(color: borderColor),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(icon, size: 15, color: OpenVtsColors.white),
+                Icon(icon, size: 15, color: labelColor),
                 const SizedBox(width: 5),
                 Expanded(
                   child: Text(
@@ -698,7 +716,7 @@ class _PickerTile extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.white,
+                      color: labelColor,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),
@@ -712,7 +730,7 @@ class _PickerTile extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.label.copyWith(
-                color: OpenVtsColors.white,
+                color: textColor,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -738,15 +756,21 @@ class _ToggleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? Colors.black : Colors.white;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final subtitleColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.textSecondary;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: bgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-        border: Border.all(color: OpenVtsColors.white),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         children: [
@@ -757,7 +781,7 @@ class _ToggleRow extends StatelessWidget {
                 Text(
                   title,
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.white,
+                    color: textColor,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -767,7 +791,7 @@ class _ToggleRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.white,
+                    color: subtitleColor,
                     fontSize: 11,
                   ),
                 ),
@@ -780,7 +804,8 @@ class _ToggleRow extends StatelessWidget {
             activeThumbColor: OpenVtsColors.white,
             activeTrackColor: OpenVtsColors.brandInk,
             inactiveThumbColor: OpenVtsColors.textSecondary,
-            inactiveTrackColor: OpenVtsColors.textTertiary.withValues(alpha: 0.3),
+            inactiveTrackColor:
+                OpenVtsColors.textTertiary.withValues(alpha: 0.3),
           ),
         ],
       ),
@@ -803,31 +828,35 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? Colors.black : OpenVtsColors.brandInk;
+    final fgColor = isDark ? OpenVtsColors.white : Colors.white;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.brandInk;
     return SizedBox(
       height: 42,
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor: Colors.black,
-          foregroundColor: OpenVtsColors.white,
+          backgroundColor: bgColor,
+          foregroundColor: fgColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-            side: const BorderSide(color: OpenVtsColors.white),
+            side: BorderSide(color: borderColor),
           ),
         ),
         child: isLoading
-            ? const SizedBox(
+            ? SizedBox(
                 width: 16,
                 height: 16,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(OpenVtsColors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(fgColor),
                 ),
               )
             : Text(
                 label,
                 style: OpenVtsTypography.label.copyWith(
-                  color: OpenVtsColors.white,
+                  color: fgColor,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -851,6 +880,7 @@ class _ActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return SafeArea(
       top: false,
       child: Container(
@@ -860,9 +890,11 @@ class _ActionBar extends StatelessWidget {
           OpenVtsSpacing.md,
           OpenVtsSpacing.md,
         ),
-        decoration: const BoxDecoration(
-          color: Colors.black,
-          border: Border(top: BorderSide(color: OpenVtsColors.white)),
+        decoration: BoxDecoration(
+          color: isDark ? Colors.black : Colors.white,
+          border: Border(
+              top: BorderSide(
+                  color: isDark ? OpenVtsColors.white : OpenVtsColors.border)),
         ),
         child: Row(
           children: [
@@ -905,19 +937,23 @@ class _MutedPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final subtitleColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.textSecondary;
     return Padding(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 22, color: OpenVtsColors.white),
+          Icon(icon, size: 22, color: textColor),
           const SizedBox(height: OpenVtsSpacing.xs),
           Text(
             title,
             textAlign: TextAlign.center,
             style: OpenVtsTypography.label.copyWith(
-              color: OpenVtsColors.white,
+              color: textColor,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -926,7 +962,7 @@ class _MutedPanel extends StatelessWidget {
             message,
             textAlign: TextAlign.center,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.white,
+              color: subtitleColor,
               fontSize: 11,
             ),
           ),

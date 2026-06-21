@@ -77,7 +77,8 @@ class _AdminVehicleEditSheetState extends State<AdminVehicleEditSheet> {
               const SizedBox(height: OpenVtsSpacing.sm),
               TextFormField(
                 controller: _plateController,
-                decoration: const InputDecoration(labelText: 'Plate Number (optional)'),
+                decoration:
+                    const InputDecoration(labelText: 'Plate Number (optional)'),
                 validator: Validators.plateNumberOptional,
               ),
               const SizedBox(height: OpenVtsSpacing.sm),

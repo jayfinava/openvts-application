@@ -45,11 +45,13 @@ class RouteOptimisationMetricStrip extends ConsumerWidget {
     final tiles = <Widget>[
       _MetricTile(
         label: 'Original',
-        value: '${uf.distanceFromKm(result.originalDistanceKm).toStringAsFixed(2)} ${uf.distanceLabel}',
+        value:
+            '${uf.distanceFromKm(result.originalDistanceKm).toStringAsFixed(2)} ${uf.distanceLabel}',
       ),
       _MetricTile(
         label: 'Optimised',
-        value: '${uf.distanceFromKm(result.optimizedDistanceKm).toStringAsFixed(2)} ${uf.distanceLabel}',
+        value:
+            '${uf.distanceFromKm(result.optimizedDistanceKm).toStringAsFixed(2)} ${uf.distanceLabel}',
         emphasis: true,
       ),
       _MetricTile(label: 'Saved', value: _savedLabel(uf)),

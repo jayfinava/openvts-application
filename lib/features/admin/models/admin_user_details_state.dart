@@ -167,9 +167,12 @@ class AdminUserDetailsState {
   final String? sectionErrorMessage;
 
   bool get hasProfile => user != null;
-  bool get hasLoadedVehicles => linkedVehicles.isNotEmpty || availableVehicles.isNotEmpty;
-  bool get hasLoadedDrivers => linkedDrivers.isNotEmpty || availableDrivers.isNotEmpty;
-  bool get hasLoadedDocuments => documents.isNotEmpty || documentTypes.isNotEmpty;
+  bool get hasLoadedVehicles =>
+      linkedVehicles.isNotEmpty || availableVehicles.isNotEmpty;
+  bool get hasLoadedDrivers =>
+      linkedDrivers.isNotEmpty || availableDrivers.isNotEmpty;
+  bool get hasLoadedDocuments =>
+      documents.isNotEmpty || documentTypes.isNotEmpty;
   bool get hasLoadedTickets => tickets.isNotEmpty || selectedTicket != null;
   bool get hasLoadedPayments => paymentsPage != null;
   bool get hasLoadedLogs => logs.isNotEmpty || logsNextCursorId != null;
@@ -263,10 +266,12 @@ class AdminUserDetailsState {
     return AdminUserDetailsState(
       userId: userId,
       user: identical(user, _unset) ? this.user : user as AdminUserDetails?,
-      initialUser:
-          identical(initialUser, _unset) ? this.initialUser : initialUser as AdminUserDetails?,
-      vehicleCount:
-          identical(vehicleCount, _unset) ? this.vehicleCount : vehicleCount as int?,
+      initialUser: identical(initialUser, _unset)
+          ? this.initialUser
+          : initialUser as AdminUserDetails?,
+      vehicleCount: identical(vehicleCount, _unset)
+          ? this.vehicleCount
+          : vehicleCount as int?,
       selectedTab: selectedTab ?? this.selectedTab,
       linkedVehicles: linkedVehicles ?? this.linkedVehicles,
       availableVehicles: availableVehicles ?? this.availableVehicles,
@@ -283,8 +288,9 @@ class AdminUserDetailsState {
           ? this.paymentsPage
           : paymentsPage as AdminUserPaymentPage?,
       logs: logs ?? this.logs,
-      logsNextCursorId:
-          identical(logsNextCursorId, _unset) ? this.logsNextCursorId : logsNextCursorId as int?,
+      logsNextCursorId: identical(logsNextCursorId, _unset)
+          ? this.logsNextCursorId
+          : logsNextCursorId as int?,
       logsHasMore: logsHasMore ?? this.logsHasMore,
       logSearch: logSearch ?? this.logSearch,
       logActionPrefix: logActionPrefix ?? this.logActionPrefix,
@@ -294,9 +300,11 @@ class AdminUserDetailsState {
       isLoadingVehicles: isLoadingVehicles ?? this.isLoadingVehicles,
       isLoadingDrivers: isLoadingDrivers ?? this.isLoadingDrivers,
       isLoadingDocuments: isLoadingDocuments ?? this.isLoadingDocuments,
-      isLoadingDocumentTypes: isLoadingDocumentTypes ?? this.isLoadingDocumentTypes,
+      isLoadingDocumentTypes:
+          isLoadingDocumentTypes ?? this.isLoadingDocumentTypes,
       isLoadingTickets: isLoadingTickets ?? this.isLoadingTickets,
-      isLoadingTicketDetails: isLoadingTicketDetails ?? this.isLoadingTicketDetails,
+      isLoadingTicketDetails:
+          isLoadingTicketDetails ?? this.isLoadingTicketDetails,
       isLoadingPayments: isLoadingPayments ?? this.isLoadingPayments,
       isLoadingLogs: isLoadingLogs ?? this.isLoadingLogs,
       isLoadingMoreLogs: isLoadingMoreLogs ?? this.isLoadingMoreLogs,
@@ -313,9 +321,12 @@ class AdminUserDetailsState {
       isDeletingDocument: isDeletingDocument ?? this.isDeletingDocument,
       isCreatingTicket: isCreatingTicket ?? this.isCreatingTicket,
       isReplyingTicket: isReplyingTicket ?? this.isReplyingTicket,
-      isUpdatingTicketStatus: isUpdatingTicketStatus ?? this.isUpdatingTicketStatus,
+      isUpdatingTicketStatus:
+          isUpdatingTicketStatus ?? this.isUpdatingTicketStatus,
       isRenewingPayment: isRenewingPayment ?? this.isRenewingPayment,
-      errorMessage: identical(errorMessage, _unset) ? this.errorMessage : errorMessage as String?,
+      errorMessage: identical(errorMessage, _unset)
+          ? this.errorMessage
+          : errorMessage as String?,
       sectionErrorMessage: identical(sectionErrorMessage, _unset)
           ? this.sectionErrorMessage
           : sectionErrorMessage as String?,

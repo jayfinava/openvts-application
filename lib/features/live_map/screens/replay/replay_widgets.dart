@@ -55,12 +55,9 @@ class _ReplayStopMarkerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final foreground = isSelected
-        ? scheme.surface
-        : scheme.onSurfaceVariant;
+    final foreground = isSelected ? scheme.surface : scheme.onSurfaceVariant;
     final innerFill = isSelected ? scheme.onSurface : Colors.white;
-    final borderColor =
-        isSelected ? scheme.onSurface : const Color(0xFFC0CBD3);
+    final borderColor = isSelected ? scheme.onSurface : const Color(0xFFC0CBD3);
 
     return Semantics(
       button: true,
@@ -450,7 +447,9 @@ class _ReplayInfoHud extends StatelessWidget {
                     width: 1,
                     height: 12,
                     margin: const EdgeInsets.symmetric(horizontal: 8),
-                    color: isDark ? scheme.outlineVariant : const Color(0xFFE5E7EB),
+                    color: isDark
+                        ? scheme.outlineVariant
+                        : const Color(0xFFE5E7EB),
                   ),
                   Expanded(
                     flex: 5,
@@ -748,8 +747,7 @@ class _ReplayControlDrawer extends StatelessWidget {
                       activeTrackColor: scheme.onSurface,
                       inactiveTrackColor: scheme.outlineVariant,
                       thumbColor: scheme.onSurface,
-                      overlayColor:
-                          scheme.onSurface.withValues(alpha: 0.12),
+                      overlayColor: scheme.onSurface.withValues(alpha: 0.12),
                       trackHeight: 3,
                     ),
                     child: Slider(
@@ -1007,4 +1005,3 @@ class _ReplaySpeedSelector extends StatelessWidget {
     );
   }
 }
-

@@ -188,9 +188,7 @@ class _StatusChip extends StatelessWidget {
           border: Border.all(
             color: selected
                 ? (isDarkMode ? OpenVtsColors.white : OpenVtsColors.brandInk)
-                : (isDarkMode
-                    ? const Color(0xFF333333)
-                    : OpenVtsColors.border),
+                : (isDarkMode ? const Color(0xFF333333) : OpenVtsColors.border),
           ),
         ),
         child: Center(
@@ -199,7 +197,9 @@ class _StatusChip extends StatelessWidget {
             style: OpenVtsTypography.meta.copyWith(
               color: selected
                   ? (isDarkMode ? OpenVtsColors.brandInk : OpenVtsColors.white)
-                  : (isDarkMode ? OpenVtsColors.white : OpenVtsColors.textSecondary),
+                  : (isDarkMode
+                      ? OpenVtsColors.white
+                      : OpenVtsColors.textSecondary),
               fontWeight: FontWeight.w800,
             ),
           ),

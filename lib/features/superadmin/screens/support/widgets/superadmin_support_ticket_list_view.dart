@@ -270,7 +270,8 @@ class _SupportEmptyState extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
-                border: Border.all(color: Theme.of(context).colorScheme.outline),
+                border:
+                    Border.all(color: Theme.of(context).colorScheme.outline),
                 borderRadius: BorderRadius.circular(OpenVtsRadius.md),
               ),
               child: Icon(

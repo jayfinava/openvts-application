@@ -215,7 +215,8 @@ class _HeaderAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final initial = adminName.trim().isNotEmpty ? adminName.trim()[0].toUpperCase() : '?';
+    final initial =
+        adminName.trim().isNotEmpty ? adminName.trim()[0].toUpperCase() : '?';
 
     return Padding(
       padding: const EdgeInsetsDirectional.only(start: OpenVtsSpacing.sm),
@@ -225,7 +226,8 @@ class _HeaderAvatar extends StatelessWidget {
           height: 36,
           width: 36,
           decoration: BoxDecoration(
-            color: isDark ? Colors.black : Theme.of(context).colorScheme.primary,
+            color:
+                isDark ? Colors.black : Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.circular(OpenVtsRadius.md),
             border: isDark ? Border.all(color: Colors.white, width: 1) : null,
           ),
@@ -235,7 +237,9 @@ class _HeaderAvatar extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: isDark ? Colors.white : Theme.of(context).colorScheme.onPrimary,
+              color: isDark
+                  ? Colors.white
+                  : Theme.of(context).colorScheme.onPrimary,
             ),
           ),
         ),

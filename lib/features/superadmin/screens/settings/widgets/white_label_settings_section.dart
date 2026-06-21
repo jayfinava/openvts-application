@@ -262,7 +262,8 @@ class _WhiteLabelSettingsSectionState
       ToastHelper.showSuccess('Favicon updated');
     } else {
       ToastHelper.showError(
-        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ?? 'Could not save favicon',
+        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+            'Could not save favicon',
       );
     }
   }
@@ -293,7 +294,8 @@ class _WhiteLabelSettingsSectionState
       ToastHelper.showSuccess('Light logo updated');
     } else {
       ToastHelper.showError(
-        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ?? 'Could not save light logo',
+        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+            'Could not save light logo',
       );
     }
   }
@@ -324,7 +326,8 @@ class _WhiteLabelSettingsSectionState
       ToastHelper.showSuccess('Dark logo updated');
     } else {
       ToastHelper.showError(
-        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ?? 'Could not save dark logo',
+        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+            'Could not save dark logo',
       );
     }
   }
@@ -435,7 +438,8 @@ class _WhiteLabelSettingsSectionState
         const SizedBox(height: OpenVtsSpacing.sm),
         _AssetCard(
           title: 'Light Logo',
-          subtitle: 'Shown on light backgrounds. PNG, JPG, SVG, WEBP. Max 5 MB.',
+          subtitle:
+              'Shown on light backgrounds. PNG, JPG, SVG, WEBP. Max 5 MB.',
           icon: Icons.wb_sunny_outlined,
           currentUrl: wl.logoLightUrl,
           baseUrl: baseUrl,
@@ -538,9 +542,11 @@ class _SectionHeader extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant),
             ),
-            child: Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurface),
+            child: Icon(icon,
+                size: 16, color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -643,9 +649,11 @@ class _DomainAndColorCard extends StatelessWidget {
               onTap: isSaving
                   ? null
                   : () async {
-                      final result = await showModalBottomSheet<_ThemeColorOption>(
+                      final result =
+                          await showModalBottomSheet<_ThemeColorOption>(
                         context: context,
-                        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.surfaceContainer,
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.vertical(
                             top: Radius.circular(OpenVtsRadius.lg),
@@ -665,7 +673,8 @@ class _DomainAndColorCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant),
                 ),
                 child: Row(
                   children: [
@@ -929,9 +938,9 @@ class _AssetCard extends StatelessWidget {
                   style: IconButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.surface,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(OpenVtsRadius.sm),
-                      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+                      borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+                      side: BorderSide(
+                          color: Theme.of(context).colorScheme.outlineVariant),
                     ),
                   ),
                 ),
@@ -1076,7 +1085,8 @@ class _CardTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        Icon(icon,
+            size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
         const SizedBox(width: 8),
         Expanded(
           child: Column(

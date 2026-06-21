@@ -27,7 +27,7 @@ class SuperadminAdministratorsController
       final page = await _service.getAdministrators();
 
       state = state.copyWith(
-      administrators: page.items,
+        administrators: page.items,
         isInitialLoading: false,
         isRefreshing: false,
         errorMessage: null,
@@ -179,7 +179,8 @@ class SuperadminAdministratorsController
     );
 
     try {
-      final cities = await _service.getCities(normalizedCountry, normalizedState);
+      final cities =
+          await _service.getCities(normalizedCountry, normalizedState);
       state = state.copyWith(
         cityOptions: cities,
         isCatalogLoading: false,
@@ -243,7 +244,8 @@ class SuperadminAdministratorsController
     }
   }
 
-  Future<void> deleteAdministrator(SuperadminAdministrator administrator) async {
+  Future<void> deleteAdministrator(
+      SuperadminAdministrator administrator) async {
     state = state.copyWith(
       deletingAdministratorId: administrator.id,
       errorMessage: null,

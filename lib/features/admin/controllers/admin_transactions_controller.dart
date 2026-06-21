@@ -191,8 +191,8 @@ class AdminTransactionsController
         final yesterday = now.subtract(const Duration(days: 1));
         final start =
             DateTime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0);
-        final end =
-            DateTime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59);
+        final end = DateTime(
+            yesterday.year, yesterday.month, yesterday.day, 23, 59, 59);
         return _DateRange(start, end);
 
       case AdminTransactionsRangePreset.last12Hours:
@@ -204,8 +204,7 @@ class AdminTransactionsController
         return _DateRange(start, now);
 
       case AdminTransactionsRangePreset.last7Days:
-        final start =
-            DateTime(now.year, now.month, now.day - 6, 0, 0, 0);
+        final start = DateTime(now.year, now.month, now.day - 6, 0, 0, 0);
         final end = DateTime(now.year, now.month, now.day, 23, 59, 59);
         return _DateRange(start, end);
 

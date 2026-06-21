@@ -48,7 +48,8 @@ class VehicleCard extends ConsumerWidget {
             children: [
               OpenVtsStatusChip(label: vehicle.status, type: statusType),
               const SizedBox(height: OpenVtsSpacing.xs),
-              Text(ref.watch(unitFormatterProvider).speed(vehicle.speed), style: OpenVtsTypography.meta),
+              Text(ref.watch(unitFormatterProvider).speed(vehicle.speed),
+                  style: OpenVtsTypography.meta),
             ],
           ),
         ],

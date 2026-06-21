@@ -100,9 +100,11 @@ class AdminDashboardListHeading extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+            border:
+                Border.all(color: Theme.of(context).colorScheme.outlineVariant),
           ),
-          child: Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          child: Icon(icon,
+              size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(width: OpenVtsSpacing.xs),
         Flexible(
@@ -170,7 +172,8 @@ class AdminDashboardLeadingIcon extends StatelessWidget {
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
-      child: Icon(icon, size: 17, color: Theme.of(context).colorScheme.onSurfaceVariant),
+      child: Icon(icon,
+          size: 17, color: Theme.of(context).colorScheme.onSurfaceVariant),
     );
   }
 }
@@ -248,9 +251,11 @@ class AdminDashboardCompactEmpty extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                border: Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant),
               ),
-              child: Icon(icon, size: 18, color: Theme.of(context).colorScheme.outline),
+              child: Icon(icon,
+                  size: 18, color: Theme.of(context).colorScheme.outline),
             ),
             const SizedBox(height: OpenVtsSpacing.xs),
             Text(
@@ -401,7 +406,8 @@ String adminDashboardFormatNumber(num value) {
 
 /// Format relative time with fallback to formatted date.
 /// The [formatter] should come from ref.watch(appDateFormatterProvider) in ConsumerWidgets.
-String adminDashboardRelativeDate(DateTime? value, {AppDateFormatter? formatter}) {
+String adminDashboardRelativeDate(DateTime? value,
+    {AppDateFormatter? formatter}) {
   if (value == null) {
     return '-';
   }

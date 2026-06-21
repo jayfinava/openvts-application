@@ -321,7 +321,9 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                               child: Text(
                                 'No administrators available. Pull to refresh and try again.',
                                 style: OpenVtsTypography.meta.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -344,7 +346,9 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                               errorText: amountError,
                               suffixText: _currencySuffix(selectedAdmin),
                               suffixStyle: OpenVtsTypography.label.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -393,7 +397,9 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                           Text(
                             'Manual payments update transactions and analytics after successful submission.',
                             style: OpenVtsTypography.meta.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
                           ),
                         ],

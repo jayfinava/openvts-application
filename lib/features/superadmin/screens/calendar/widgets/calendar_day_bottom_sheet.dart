@@ -45,8 +45,10 @@ class CalendarDayBottomSheet extends ConsumerWidget {
             OpenVtsSpacing.lg,
           ),
           itemCount: details.length,
-          separatorBuilder: (context, index) => const SizedBox(height: OpenVtsSpacing.sm),
-          itemBuilder: (context, index) => _CalendarDayEventTile(detail: details[index]),
+          separatorBuilder: (context, index) =>
+              const SizedBox(height: OpenVtsSpacing.sm),
+          itemBuilder: (context, index) =>
+              _CalendarDayEventTile(detail: details[index]),
         );
       },
     );
@@ -95,8 +97,7 @@ class _CalendarDayEventTile extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    if (detail.count > 1)
-                      _CountBadge(count: detail.count),
+                    if (detail.count > 1) _CountBadge(count: detail.count),
                   ],
                 ),
                 if (subtitle.isNotEmpty) ...[
@@ -119,7 +120,8 @@ class _CalendarDayEventTile extends ConsumerWidget {
                         item,
                         style: OpenVtsTypography.meta.copyWith(
                           color: isDark
-                              ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.7)
+                              ? OpenVtsColors.darkTextSecondary
+                                  .withValues(alpha: 0.7)
                               : OpenVtsColors.textTertiary,
                         ),
                       ),
@@ -146,7 +148,9 @@ class _CalendarDayEventTile extends ConsumerWidget {
     CalendarDayDetail detail,
     CalendarLinkedDetail? linkedDetail,
   ) {
-    if (detail.title.trim().isNotEmpty && detail.title != 'Users' && detail.title != 'Vehicle') {
+    if (detail.title.trim().isNotEmpty &&
+        detail.title != 'Users' &&
+        detail.title != 'Vehicle') {
       return detail.title;
     }
     if (linkedDetail != null && linkedDetail.title.trim().isNotEmpty) {

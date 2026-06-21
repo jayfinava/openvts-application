@@ -279,8 +279,8 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
         final yesterday = now.subtract(const Duration(days: 1));
         final start =
             DateTime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0);
-        final end =
-            DateTime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59);
+        final end = DateTime(
+            yesterday.year, yesterday.month, yesterday.day, 23, 59, 59);
         return _DateRange(start, end);
 
       case AdminPaymentsRangePreset.last12Hours:
@@ -292,8 +292,7 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
         return _DateRange(start, now);
 
       case AdminPaymentsRangePreset.last7Days:
-        final start =
-            DateTime(now.year, now.month, now.day - 6, 0, 0, 0);
+        final start = DateTime(now.year, now.month, now.day - 6, 0, 0, 0);
         final end = DateTime(now.year, now.month, now.day, 23, 59, 59);
         return _DateRange(start, end);
 

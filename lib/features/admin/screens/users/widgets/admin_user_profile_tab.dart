@@ -57,7 +57,9 @@ class AdminUserProfileTab extends ConsumerWidget {
       );
     }
 
-    final isBusy = state.isSavingProfile || state.isChangingPassword || state.isSavingCompany;
+    final isBusy = state.isSavingProfile ||
+        state.isChangingPassword ||
+        state.isSavingCompany;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -79,7 +81,8 @@ class AdminUserProfileTab extends ConsumerWidget {
             isBusy: isBusy,
             onEditCompany: () => _openEditCompany(context, ref),
           ),
-        if (_hasCompanyContent(profile)) const SizedBox(height: OpenVtsSpacing.sm),
+        if (_hasCompanyContent(profile))
+          const SizedBox(height: OpenVtsSpacing.sm),
         const SizedBox(height: OpenVtsSpacing.xs),
         _BottomActions(
           isBusy: isBusy,
@@ -153,7 +156,8 @@ class AdminUserProfileTab extends ConsumerWidget {
             isSubmitting: state.isChangingPassword,
             errorMessage: state.sectionErrorMessage,
             onSubmit: (password) async {
-              final ok = await ref.read(provider.notifier).updatePassword(password);
+              final ok =
+                  await ref.read(provider.notifier).updatePassword(password);
               if (!sheetContext.mounted) return;
               if (ok) {
                 Navigator.of(sheetContext).pop();
@@ -161,7 +165,8 @@ class AdminUserProfileTab extends ConsumerWidget {
                 ToastHelper.showSuccess('Password updated.', context: context);
               } else {
                 ToastHelper.showError(
-                  ref.read(provider).sectionErrorMessage ?? 'Unable to update password.',
+                  ref.read(provider).sectionErrorMessage ??
+                      'Unable to update password.',
                   context: sheetContext,
                 );
               }
@@ -239,7 +244,9 @@ Future<void> _showAdminUserEditProfileSheetWithProfile({
           ToastHelper.showSuccess('Profile updated.', context: context);
         } else {
           ToastHelper.showError(
-            ref.read(adminUserDetailsControllerProvider(userId)).sectionErrorMessage ??
+            ref
+                    .read(adminUserDetailsControllerProvider(userId))
+                    .sectionErrorMessage ??
                 'Unable to update profile.',
             context: context,
           );
@@ -300,7 +307,9 @@ Future<void> _showAdminUserEditCompanySheetWithProfile({
           ToastHelper.showSuccess('Company updated.', context: context);
         } else {
           ToastHelper.showError(
-            ref.read(adminUserDetailsControllerProvider(userId)).sectionErrorMessage ??
+            ref
+                    .read(adminUserDetailsControllerProvider(userId))
+                    .sectionErrorMessage ??
                 'Unable to update company.',
             context: context,
           );
@@ -331,8 +340,11 @@ class _AccountCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const fmt = DateTimeFormatter();
-    final lastLogin = profile.updatedAt != null ? fmt.formatDate(profile.updatedAt!) : 'Never';
-    final created = profile.createdAt != null ? fmt.formatDate(profile.createdAt!) : '—';
+    final lastLogin = profile.updatedAt != null
+        ? fmt.formatDate(profile.updatedAt!)
+        : 'Never';
+    final created =
+        profile.createdAt != null ? fmt.formatDate(profile.createdAt!) : '—';
 
     return _SectionCard(
       title: 'ACCOUNT',
@@ -720,10 +732,13 @@ class _Avatar extends StatelessWidget {
   }
 
   static String _initials(String value) {
-    final parts = value.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    final parts =
+        value.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
     if (parts.isEmpty) return 'OV';
     if (parts.length == 1) {
-      return parts.first.substring(0, parts.first.length.clamp(1, 2)).toUpperCase();
+      return parts.first
+          .substring(0, parts.first.length.clamp(1, 2))
+          .toUpperCase();
     }
     return (parts.first[0] + parts.last[0]).toUpperCase();
   }
@@ -1138,8 +1153,9 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                       prefixIcon: Icons.location_city_rounded,
                       isLoading: _isLoadingCities,
                       validator: requiredDropdown,
-                      onChanged:
-                          _stateCode == null ? null : (value) => setState(() => _city = value),
+                      onChanged: _stateCode == null
+                          ? null
+                          : (value) => setState(() => _city = value),
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     OpenVtsTextField(
@@ -1167,19 +1183,22 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
 
   List<AdminUserDropdownOption> get _mobilePrefixOptions {
     return _mobilePrefixes
-        .map((item) => AdminUserDropdownOption(value: item.value, label: item.label))
+        .map((item) =>
+            AdminUserDropdownOption(value: item.value, label: item.label))
         .toList(growable: false);
   }
 
   List<AdminUserDropdownOption> get _countryOptions {
     final options = _countries
-        .map((item) => AdminUserDropdownOption(value: item.value, label: item.label))
+        .map((item) =>
+            AdminUserDropdownOption(value: item.value, label: item.label))
         .toList(growable: true);
     // Inject current country if not in list
     if (_countryCode != null && !options.any((o) => o.value == _countryCode)) {
       options.insert(
         0,
-        AdminUserDropdownOption(value: _countryCode!, label: '$_countryCode (current)'),
+        AdminUserDropdownOption(
+            value: _countryCode!, label: '$_countryCode (current)'),
       );
     }
     return options;
@@ -1187,13 +1206,15 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
 
   List<AdminUserDropdownOption> get _stateOptions {
     final options = _states
-        .map((item) => AdminUserDropdownOption(value: item.value, label: item.label))
+        .map((item) =>
+            AdminUserDropdownOption(value: item.value, label: item.label))
         .toList(growable: true);
     // Inject current state if not in list
     if (_stateCode != null && !options.any((o) => o.value == _stateCode)) {
       options.insert(
         0,
-        AdminUserDropdownOption(value: _stateCode!, label: '$_stateCode (current)'),
+        AdminUserDropdownOption(
+            value: _stateCode!, label: '$_stateCode (current)'),
       );
     }
     return options;
@@ -1201,7 +1222,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
 
   List<AdminUserDropdownOption> get _cityOptions {
     final options = _cities
-        .map((item) => AdminUserDropdownOption(value: item.value, label: item.label))
+        .map((item) =>
+            AdminUserDropdownOption(value: item.value, label: item.label))
         .toList(growable: true);
     // Inject current city if not in list
     if (_city != null && !options.any((o) => o.value == _city)) {
@@ -1269,8 +1291,9 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
 
     setState(() => _isLoadingStates = true);
     try {
-      final states =
-          await ref.read(adminUsersControllerProvider.notifier).getStates(requestedCountry);
+      final states = await ref
+          .read(adminUsersControllerProvider.notifier)
+          .getStates(requestedCountry);
       if (!mounted || _countryCode?.toUpperCase() != requestedCountry) return;
       setState(() {
         _states = states;
@@ -1407,7 +1430,9 @@ class _PasswordSheetState extends State<_PasswordSheet> {
                 setState(() => _obscurePassword = !_obscurePassword);
               },
               icon: Icon(
-                _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                _obscurePassword
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
                 size: 18,
               ),
             ),
@@ -1426,7 +1451,9 @@ class _PasswordSheetState extends State<_PasswordSheet> {
                 setState(() => _obscureConfirm = !_obscureConfirm);
               },
               icon: Icon(
-                _obscureConfirm ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                _obscureConfirm
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
                 size: 18,
               ),
             ),
@@ -1532,7 +1559,8 @@ class _CompanySheetState extends State<_CompanySheet> {
       text: _initialText(company?.customDomain),
     );
     // Default to Black if no color set
-    _primaryColor = _normalizePrimaryColorOption(company?.primaryColor) ?? 'Black';
+    _primaryColor =
+        _normalizePrimaryColorOption(company?.primaryColor) ?? 'Black';
     _socialControllers = <String, TextEditingController>{
       for (final socialKey in _socialKeys)
         socialKey: TextEditingController(
@@ -1633,7 +1661,8 @@ class _CompanySheetState extends State<_CompanySheet> {
                         keyboardType: TextInputType.url,
                         prefixIcon: Icons.link_rounded,
                       ),
-                      if (socialKey != _socialKeys.last) const SizedBox(height: OpenVtsSpacing.sm),
+                      if (socialKey != _socialKeys.last)
+                        const SizedBox(height: OpenVtsSpacing.sm),
                     ],
                   ],
                 ),
@@ -1666,7 +1695,8 @@ class _CompanySheetState extends State<_CompanySheet> {
     } catch (_) {
       if (!mounted) return;
       setState(() => _isLoadingCompany = false);
-      ToastHelper.showError('Unable to load company details.', context: context);
+      ToastHelper.showError('Unable to load company details.',
+          context: context);
     }
   }
 
@@ -1676,11 +1706,13 @@ class _CompanySheetState extends State<_CompanySheet> {
     _websiteController.text = _initialText(company.websiteUrl);
     _customDomainController.text = _initialText(company.customDomain);
     // Always set primaryColor, default to Black if not provided
-    _primaryColor = _normalizePrimaryColorOption(company.primaryColor) ?? 'Black';
+    _primaryColor =
+        _normalizePrimaryColorOption(company.primaryColor) ?? 'Black';
     for (final socialKey in _socialKeys) {
-      _socialControllers[socialKey]?.text = _initialText(company.socialLinks[socialKey]);
+      _socialControllers[socialKey]?.text =
+          _initialText(company.socialLinks[socialKey]);
     }
-    setState(() {});  // Ensure UI updates with all applied values
+    setState(() {}); // Ensure UI updates with all applied values
   }
 
   Future<void> _submit() async {
@@ -1737,7 +1769,8 @@ class _SheetActions extends StatelessWidget {
                 label: 'Cancel',
                 height: 40,
                 variant: OpenVtsButtonVariant.secondary,
-                onPressed: isSubmitting ? null : () => Navigator.of(context).pop(),
+                onPressed:
+                    isSubmitting ? null : () => Navigator.of(context).pop(),
               ),
             ),
             const SizedBox(width: OpenVtsSpacing.sm),
@@ -1818,7 +1851,8 @@ class _ProfileSnapshot {
   final DateTime? updatedAt;
   final int? vehicleCount;
 
-  bool get hasKnownData => name.isNotEmpty || username.isNotEmpty || email.isNotEmpty;
+  bool get hasKnownData =>
+      name.isNotEmpty || username.isNotEmpty || email.isNotEmpty;
 
   String get displayName {
     if (name.trim().isNotEmpty) return name.trim();
@@ -1866,7 +1900,8 @@ class _ProfileSnapshot {
           address?.fullAddress,
           details.location,
         ]),
-        countryCode: _firstNonEmpty([details.countryCode, address?.countryCode]),
+        countryCode:
+            _firstNonEmpty([details.countryCode, address?.countryCode]),
         countryName: address?.countryName ?? '',
         stateCode: address?.stateCode ?? '',
         stateName: address?.stateName ?? '',
@@ -2042,7 +2077,8 @@ String _normalizeUrl(String value) {
 String _hostnameOnly(String value) {
   final normalized = value.trim();
   if (normalized.isEmpty) return '';
-  final candidate = normalized.contains('://') ? normalized : 'https://$normalized';
+  final candidate =
+      normalized.contains('://') ? normalized : 'https://$normalized';
   final uri = Uri.tryParse(candidate);
   if (uri != null && uri.host.isNotEmpty) {
     return uri.host.toLowerCase();

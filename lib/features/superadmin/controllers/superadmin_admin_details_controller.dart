@@ -53,9 +53,7 @@ class SuperadminAdminDetailsController
     if (state.initialAdmin != null) return;
 
     final knownActive =
-        state.statusOverride ??
-        state.resolvedIsActive ??
-        admin.isActive;
+        state.statusOverride ?? state.resolvedIsActive ?? admin.isActive;
 
     final mergedAdmin = state.admin == null
         ? null
@@ -72,7 +70,9 @@ class SuperadminAdminDetailsController
   /// Seed initial data from the administrators list item.
   /// Call this from the screen when initialAdmin is available.
   void seedInitialData({int? vehicleCount, DateTime? lastLogin}) {
-    if (vehicleCount != null && vehicleCount > 0 && state.vehicleCount == null) {
+    if (vehicleCount != null &&
+        vehicleCount > 0 &&
+        state.vehicleCount == null) {
       state = state.copyWith(vehicleCount: vehicleCount);
     }
 
@@ -100,9 +100,9 @@ class SuperadminAdminDetailsController
       // Preserve vehicle count if missing
       if (fresh.totalVehicles < 0) {
         final knownCount = preservedVehicleCount ??
-                          (preservedAdminCount != null && preservedAdminCount >= 0
-                              ? preservedAdminCount
-                              : null);
+            (preservedAdminCount != null && preservedAdminCount >= 0
+                ? preservedAdminCount
+                : null);
         if (knownCount != null) {
           updatedAdmin = updatedAdmin.copyWith(totalVehicles: knownCount);
         }
@@ -120,8 +120,7 @@ class SuperadminAdminDetailsController
       }
 
       // Preserve active status: prioritize override, then resolved, then initial, then current
-      final knownActive =
-          state.statusOverride ??
+      final knownActive = state.statusOverride ??
           state.resolvedIsActive ??
           state.initialAdmin?.isActive ??
           state.admin?.isActive;

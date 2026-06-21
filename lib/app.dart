@@ -66,10 +66,12 @@ class _MobilePushLifecycleScope extends ConsumerStatefulWidget {
   final Widget child;
 
   @override
-  ConsumerState<_MobilePushLifecycleScope> createState() => _MobilePushLifecycleScopeState();
+  ConsumerState<_MobilePushLifecycleScope> createState() =>
+      _MobilePushLifecycleScopeState();
 }
 
-class _MobilePushLifecycleScopeState extends ConsumerState<_MobilePushLifecycleScope> {
+class _MobilePushLifecycleScopeState
+    extends ConsumerState<_MobilePushLifecycleScope> {
   late final MobilePushLifecycleObserver _lifecycleObserver;
   late final MobilePushNavigation _mobilePushNavigation;
   late final MobilePushService _mobilePushService;
@@ -83,7 +85,8 @@ class _MobilePushLifecycleScopeState extends ConsumerState<_MobilePushLifecycleS
       ..setNotificationCenterRefreshHook(
         _mobilePushNavigation.handleForegroundMessage,
       );
-    _lifecycleObserver = MobilePushLifecycleObserver(onResume: _handleResume)..attach();
+    _lifecycleObserver = MobilePushLifecycleObserver(onResume: _handleResume)
+      ..attach();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) {
@@ -158,7 +161,8 @@ class _MobilePushLifecycleScopeState extends ConsumerState<_MobilePushLifecycleS
 
     // Resume path must not await network work and should only attempt
     // fire-and-forget registration when cached gating allows it.
-    if (authState.isAuthenticated && controller.shouldAttemptBackgroundRegistration) {
+    if (authState.isAuthenticated &&
+        controller.shouldAttemptBackgroundRegistration) {
       unawaited(controller.registerTokenForCurrentSession());
     }
   }

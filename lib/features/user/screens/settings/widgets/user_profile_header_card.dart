@@ -278,9 +278,7 @@ class _AvatarInitial extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? OpenVtsColors.brandInk : OpenVtsColors.brandInk,
         border: Border.all(
-          color: isDark
-              ? OpenVtsColors.darkBorder
-              : OpenVtsColors.border,
+          color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
         ),
       ),
       alignment: Alignment.center,

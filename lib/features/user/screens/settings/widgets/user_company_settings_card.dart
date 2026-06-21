@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
-import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
-import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../models/user_settings_model.dart';
 
@@ -19,9 +16,33 @@ class UserCompanySettingsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final current = company;
+    if (company == null) {
+      return const SizedBox.shrink();
+    }
+
+    final companyName = company?.name?.trim() ?? '';
+    final website = company?.websiteUrl?.trim() ?? '';
+    final customDomain = company?.customDomain?.trim() ?? '';
+    final primaryColor = company?.primaryColor?.trim() ?? '';
+    final logoLightUrl = company?.logoLightUrl?.trim() ?? '';
+    final logoDarkUrl = company?.logoDarkUrl?.trim() ?? '';
+    final faviconUrl = company?.faviconUrl?.trim() ?? '';
+
+    final socialLinks = company?.socialLinks;
+    final facebook = socialLinks?.facebook?.trim() ?? '';
+    final twitter = socialLinks?.twitter?.trim() ?? '';
+    final linkedin = socialLinks?.linkedin?.trim() ?? '';
+    final instagram = socialLinks?.instagram?.trim() ?? '';
+    final youtube = socialLinks?.youtube?.trim() ?? '';
+    final github = socialLinks?.github?.trim() ?? '';
+
     return OpenVtsCard(
-      padding: const EdgeInsets.all(OpenVtsSpacing.sm),
+      padding: const EdgeInsets.fromLTRB(
+        OpenVtsSpacing.md,
+        OpenVtsSpacing.sm,
+        OpenVtsSpacing.md,
+        OpenVtsSpacing.md,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -29,116 +50,188 @@ class UserCompanySettingsCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Company Settings',
-                  style: OpenVtsTypography.label.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                  'COMPANY',
+                  style: TextStyle(
+                    fontSize: 12,
                     fontWeight: FontWeight.w700,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    letterSpacing: 0.4,
                   ),
                 ),
               ),
-              OutlinedButton.icon(
-                onPressed: current == null ? null : onEdit,
-                icon: const Icon(Icons.edit_outlined, size: 14),
-                label: const Text('Edit'),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(0, 44),
+              SizedBox(
+                width: 32,
+                height: 32,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  icon: Icon(
+                    Icons.edit_outlined,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  tooltip: 'Edit company',
+                  onPressed: onEdit,
                 ),
               ),
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
-          if (current == null)
+          Divider(
+            height: 1,
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
+          const SizedBox(height: OpenVtsSpacing.xs),
+          if (companyName.isNotEmpty)
+            _InfoRow(
+              label: 'Name',
+              value: companyName,
+              icon: Icons.business_outlined,
+            ),
+          if (website.isNotEmpty)
+            _InfoRow(
+              label: 'Website',
+              value: website,
+              icon: Icons.language_outlined,
+            ),
+          if (customDomain.isNotEmpty)
+            _InfoRow(
+              label: 'Custom Domain',
+              value: customDomain,
+              icon: Icons.dns_outlined,
+            ),
+          if (primaryColor.isNotEmpty)
+            _InfoRow(
+              label: 'Primary Color',
+              value: primaryColor,
+              icon: Icons.palette_outlined,
+            ),
+          if (logoLightUrl.isNotEmpty)
+            _InfoRow(
+              label: 'Logo Light',
+              value: logoLightUrl,
+              icon: Icons.image_outlined,
+            ),
+          if (logoDarkUrl.isNotEmpty)
+            _InfoRow(
+              label: 'Logo Dark',
+              value: logoDarkUrl,
+              icon: Icons.image_outlined,
+            ),
+          if (faviconUrl.isNotEmpty)
+            _InfoRow(
+              label: 'Favicon',
+              value: faviconUrl,
+              icon: Icons.image_not_supported_outlined,
+            ),
+          if (facebook.isNotEmpty ||
+              twitter.isNotEmpty ||
+              linkedin.isNotEmpty ||
+              instagram.isNotEmpty ||
+              youtube.isNotEmpty ||
+              github.isNotEmpty) ...[
+            const SizedBox(height: OpenVtsSpacing.xs),
+            Divider(
+              height: 1,
+              color: Theme.of(context).colorScheme.outlineVariant,
+            ),
+            const SizedBox(height: OpenVtsSpacing.xs),
             Text(
-              'No company details are available for this account.',
-              style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            )
-          else ...[
-            _KV(label: 'Name', value: _orDash(current.name)),
-            _KV(label: 'Website', value: _orDash(current.websiteUrl)),
-            _KV(label: 'Custom Domain', value: _orDash(current.customDomain)),
-            _KV(label: 'Primary Color', value: _orDash(current.primaryColor)),
-            _KV(label: 'Logo Light URL', value: _orDash(current.logoLightUrl)),
-            _KV(label: 'Logo Dark URL', value: _orDash(current.logoDarkUrl)),
-            _KV(label: 'Favicon URL', value: _orDash(current.faviconUrl)),
-            const SizedBox(height: OpenVtsSpacing.xxs),
-            Text(
-              'Social Links',
-              style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              'SOCIAL LINKS',
+              style: TextStyle(
+                fontSize: 12,
                 fontWeight: FontWeight.w700,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                letterSpacing: 0.4,
               ),
             ),
-            const SizedBox(height: OpenVtsSpacing.xxs),
-            _KV(
+            const SizedBox(height: OpenVtsSpacing.xs),
+            if (facebook.isNotEmpty)
+              _InfoRow(
                 label: 'Facebook',
-                value: _orDash(current.socialLinks?.facebook)),
-            _KV(
+                value: facebook,
+                icon: Icons.facebook_outlined,
+              ),
+            if (twitter.isNotEmpty)
+              _InfoRow(
                 label: 'Twitter/X',
-                value: _orDash(current.socialLinks?.twitter)),
-            _KV(
+                value: twitter,
+                icon: Icons.public_outlined,
+              ),
+            if (linkedin.isNotEmpty)
+              _InfoRow(
                 label: 'LinkedIn',
-                value: _orDash(current.socialLinks?.linkedin)),
-            _KV(
+                value: linkedin,
+                icon: Icons.public_outlined,
+              ),
+            if (instagram.isNotEmpty)
+              _InfoRow(
                 label: 'Instagram',
-                value: _orDash(current.socialLinks?.instagram)),
-            _KV(label: 'YouTube', value: _orDash(current.socialLinks?.youtube)),
-            _KV(label: 'GitHub', value: _orDash(current.socialLinks?.github)),
+                value: instagram,
+                icon: Icons.public_outlined,
+              ),
+            if (youtube.isNotEmpty)
+              _InfoRow(
+                label: 'YouTube',
+                value: youtube,
+                icon: Icons.video_library_outlined,
+              ),
+            if (github.isNotEmpty)
+              _InfoRow(
+                label: 'GitHub',
+                value: github,
+                icon: Icons.code_outlined,
+              ),
           ],
         ],
       ),
     );
   }
-
-  String _orDash(String? value) {
-    final normalized = value?.trim() ?? '';
-    return normalized.isEmpty ? '-' : normalized;
-  }
 }
 
-class _KV extends StatelessWidget {
-  const _KV({
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({
     required this.label,
     required this.value,
+    required this.icon,
   });
 
   final String label;
   final String value;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: OpenVtsSpacing.xxs),
-      padding: const EdgeInsets.symmetric(
-        horizontal: OpenVtsSpacing.xs,
-        vertical: 6,
-      ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Icon(icon,
+              size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          const SizedBox(width: 8),
           SizedBox(
-            width: 104,
+            width: 100,
             child: Text(
               label,
-              style: OpenVtsTypography.meta.copyWith(
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
               ),
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
-              value,
-              style: OpenVtsTypography.meta.copyWith(
+              value.trim().isEmpty ? '—' : value.trim(),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
                 color: Theme.of(context).colorScheme.onSurface,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

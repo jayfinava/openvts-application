@@ -329,8 +329,7 @@ class UserDriverService {
     }
 
     // Attempt 3: Use local fallback data
-    final localStates =
-        LocationData.statesByCountry[normalizedCountryCode];
+    final localStates = LocationData.statesByCountry[normalizedCountryCode];
     if (localStates != null) {
       return localStates
           .map((item) => UserDriverStateOption(
@@ -371,7 +370,8 @@ class UserDriverService {
 
     // Attempt 2: Try with country name and state name from LocationData
     final countryName = _countryNameFromCode(normalizedCountryCode);
-    final stateName = _stateNameFromCode(normalizedCountryCode, normalizedStateCode);
+    final stateName =
+        _stateNameFromCode(normalizedCountryCode, normalizedStateCode);
     if ((countryName != null && countryName.isNotEmpty) &&
         (stateName != null && stateName.isNotEmpty)) {
       try {
@@ -391,8 +391,7 @@ class UserDriverService {
     }
 
     // Attempt 3: Use local fallback data
-    final countryCities =
-        LocationData.citiesByState[normalizedCountryCode];
+    final countryCities = LocationData.citiesByState[normalizedCountryCode];
     if (countryCities != null) {
       final stateCities = countryCities[normalizedStateCode];
       if (stateCities != null) {

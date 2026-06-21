@@ -90,7 +90,8 @@ class CalendarEvent {
 
         addTypedCount(
           dateKey,
-          _firstString(value, const ['type', 'eventType', 'event_type', 'bucket']),
+          _firstString(
+              value, const ['type', 'eventType', 'event_type', 'bucket']),
           _countFromAny(value),
         );
         return;
@@ -115,7 +116,8 @@ class CalendarEvent {
             }
 
             for (final entry in item.entries) {
-              consumeDateEntry(entry.key, entry.value, forcedType: normalizedType);
+              consumeDateEntry(entry.key, entry.value,
+                  forcedType: normalizedType);
             }
             continue;
           }
@@ -128,7 +130,15 @@ class CalendarEvent {
       if (source is Map<String, dynamic>) {
         final nestedList = _firstList(
           source,
-          const ['items', 'rows', 'records', 'data', 'results', 'list', 'events'],
+          const [
+            'items',
+            'rows',
+            'records',
+            'data',
+            'results',
+            'list',
+            'events'
+          ],
         );
         if (nestedList != null) {
           consumeTypedBucket(normalizedType, nestedList);
@@ -137,7 +147,19 @@ class CalendarEvent {
 
         final nestedCollection = _firstNestedCollection(
           source,
-          const ['data', 'items', 'rows', 'records', 'results', 'list', 'events', 'payload', 'result', 'calendar', 'days'],
+          const [
+            'data',
+            'items',
+            'rows',
+            'records',
+            'results',
+            'list',
+            'events',
+            'payload',
+            'result',
+            'calendar',
+            'days'
+          ],
         );
         if (nestedCollection != null) {
           consumeTypedBucket(normalizedType, nestedCollection);
@@ -191,7 +213,8 @@ class CalendarEvent {
 
           addTypedCount(
             date,
-            _firstString(item, const ['type', 'eventType', 'event_type', 'bucket']),
+            _firstString(
+                item, const ['type', 'eventType', 'event_type', 'bucket']),
             _countFromAny(item),
           );
         }
@@ -205,7 +228,17 @@ class CalendarEvent {
 
       final nestedList = _firstList(
         map,
-        const ['items', 'rows', 'records', 'data', 'results', 'list', 'events', 'calendar', 'days'],
+        const [
+          'items',
+          'rows',
+          'records',
+          'data',
+          'results',
+          'list',
+          'events',
+          'calendar',
+          'days'
+        ],
       );
       if (nestedList != null) {
         consumeUngrouped(nestedList);
@@ -214,7 +247,19 @@ class CalendarEvent {
 
       final nestedCollection = _firstNestedCollection(
         map,
-        const ['data', 'items', 'rows', 'records', 'results', 'list', 'events', 'calendar', 'days', 'payload', 'result'],
+        const [
+          'data',
+          'items',
+          'rows',
+          'records',
+          'results',
+          'list',
+          'events',
+          'calendar',
+          'days',
+          'payload',
+          'result'
+        ],
       );
       if (nestedCollection != null) {
         consumeUngrouped(nestedCollection);
@@ -282,15 +327,17 @@ class CalendarDayDetail {
   });
 
   bool get isUser => type == 'users' && userId != null && userId!.isNotEmpty;
-  bool get isVehicle => type == 'vehicle' && vehicleId != null && vehicleId!.isNotEmpty;
+  bool get isVehicle =>
+      type == 'vehicle' && vehicleId != null && vehicleId!.isNotEmpty;
 
   factory CalendarDayDetail.fromJson(
     Map<String, dynamic> json, {
     String? fallbackType,
   }) {
-    final normalizedType =
-        _normalizeCalendarType(_firstString(json, const ['type', 'eventType', 'event_type', 'bucket']) ?? fallbackType) ??
-            'users';
+    final normalizedType = _normalizeCalendarType(_firstString(
+                json, const ['type', 'eventType', 'event_type', 'bucket']) ??
+            fallbackType) ??
+        'users';
     final resolvedId = _firstString(
           json,
           const [
@@ -333,24 +380,36 @@ class CalendarDayDetail {
         _labelForType(normalizedType);
 
     final resolvedSubtitle = _joinParts(<String?>[
-      _firstString(json, const ['plateNumber', 'plate_number', 'registrationNo', 'registration_no']),
-      _firstString(json, const ['mobile', 'phone', 'mobileNumber', 'mobile_number']),
+      _firstString(json, const [
+        'plateNumber',
+        'plate_number',
+        'registrationNo',
+        'registration_no'
+      ]),
+      _firstString(
+          json, const ['mobile', 'phone', 'mobileNumber', 'mobile_number']),
       _firstString(json, const ['email']),
       _firstString(json, const ['status', 'state']),
-      _firstString(json, const ['expiresAt', 'expiryDate', 'expiry_date', 'date']),
-      _firstString(json, const ['vehicleType', 'vehicle_type', 'typeName', 'type_name']),
+      _firstString(
+          json, const ['expiresAt', 'expiryDate', 'expiry_date', 'date']),
+      _firstString(
+          json, const ['vehicleType', 'vehicle_type', 'typeName', 'type_name']),
       _firstString(json, const ['subtitle', 'description']),
     ]);
 
     return CalendarDayDetail(
       id: resolvedId.isNotEmpty
           ? resolvedId
-          : (normalizedType == 'vehicle' ? (resolvedVehicleId ?? '') : (resolvedUserId ?? '')),
+          : (normalizedType == 'vehicle'
+              ? (resolvedVehicleId ?? '')
+              : (resolvedUserId ?? '')),
       title: resolvedTitle,
       type: normalizedType,
       subtitle: resolvedSubtitle,
       userId: normalizedType == 'users' ? (resolvedUserId ?? resolvedId) : null,
-      vehicleId: normalizedType == 'vehicle' ? (resolvedVehicleId ?? resolvedId) : null,
+      vehicleId: normalizedType == 'vehicle'
+          ? (resolvedVehicleId ?? resolvedId)
+          : null,
       count: _countFromAny(json),
     );
   }
@@ -388,7 +447,8 @@ class CalendarDayDetail {
 
       if (source is List<dynamic>) {
         for (final item in source.whereType<Map<String, dynamic>>()) {
-          items.add(CalendarDayDetail.fromJson(item, fallbackType: normalizedType));
+          items.add(
+              CalendarDayDetail.fromJson(item, fallbackType: normalizedType));
         }
         return;
       }
@@ -396,7 +456,15 @@ class CalendarDayDetail {
       if (source is Map<String, dynamic>) {
         final nestedList = _firstList(
           source,
-          const ['items', 'rows', 'records', 'data', 'results', 'list', 'events'],
+          const [
+            'items',
+            'rows',
+            'records',
+            'data',
+            'results',
+            'list',
+            'events'
+          ],
         );
         if (nestedList != null) {
           consumeTypedBucket(normalizedType, nestedList);
@@ -405,7 +473,17 @@ class CalendarDayDetail {
 
         final nestedCollection = _firstNestedCollection(
           source,
-          const ['data', 'items', 'rows', 'records', 'results', 'list', 'events', 'payload', 'result'],
+          const [
+            'data',
+            'items',
+            'rows',
+            'records',
+            'results',
+            'list',
+            'events',
+            'payload',
+            'result'
+          ],
         );
         if (nestedCollection != null) {
           consumeTypedBucket(normalizedType, nestedCollection);
@@ -413,7 +491,8 @@ class CalendarDayDetail {
         }
 
         if (_looksLikeItemMap(source)) {
-          items.add(CalendarDayDetail.fromJson(source, fallbackType: normalizedType));
+          items.add(
+              CalendarDayDetail.fromJson(source, fallbackType: normalizedType));
           return;
         }
 
@@ -448,7 +527,17 @@ class CalendarDayDetail {
 
       final nestedCollection = _firstNestedCollection(
         map,
-        const ['data', 'items', 'rows', 'records', 'results', 'list', 'events', 'payload', 'result'],
+        const [
+          'data',
+          'items',
+          'rows',
+          'records',
+          'results',
+          'list',
+          'events',
+          'payload',
+          'result'
+        ],
       );
       if (nestedCollection != null) {
         consume(nestedCollection);
@@ -493,12 +582,20 @@ class CalendarLinkedDetail {
     return CalendarLinkedDetail(
       title: _firstString(
             json,
-            const ['name', 'fullName', 'displayName', 'username', 'userName', 'title'],
+            const [
+              'name',
+              'fullName',
+              'displayName',
+              'username',
+              'userName',
+              'title'
+            ],
           ) ??
           'User',
       subtitle: _joinParts(<String?>[
         _firstString(json, const ['email']),
-        _firstString(json, const ['mobile', 'phone', 'mobileNumber', 'mobile_number']),
+        _firstString(
+            json, const ['mobile', 'phone', 'mobileNumber', 'mobile_number']),
       ]),
       metadata: <String>[
         _joinParts(<String?>[
@@ -518,12 +615,29 @@ class CalendarLinkedDetail {
     return CalendarLinkedDetail(
       title: _firstString(
             json,
-            const ['name', 'vehicleName', 'vehicle_name', 'plateNumber', 'plate_number'],
+            const [
+              'name',
+              'vehicleName',
+              'vehicle_name',
+              'plateNumber',
+              'plate_number'
+            ],
           ) ??
           'Vehicle',
       subtitle: _joinParts(<String?>[
-        _firstString(json, const ['plateNumber', 'plate_number', 'registrationNo', 'registration_no']),
-        _firstString(json, const ['vehicleType', 'vehicle_type', 'type', 'typeName', 'type_name']),
+        _firstString(json, const [
+          'plateNumber',
+          'plate_number',
+          'registrationNo',
+          'registration_no'
+        ]),
+        _firstString(json, const [
+          'vehicleType',
+          'vehicle_type',
+          'type',
+          'typeName',
+          'type_name'
+        ]),
       ]),
       metadata: <String>[
         _joinParts(<String?>[
@@ -532,7 +646,8 @@ class CalendarLinkedDetail {
         ]),
         _joinParts(<String?>[
           _firstString(json, const ['status', 'state']),
-          _firstString(json, const ['primaryUser', 'assignedTo', 'assigned_to', 'userName']),
+          _firstString(json,
+              const ['primaryUser', 'assignedTo', 'assigned_to', 'userName']),
         ]),
       ].where((item) => item.isNotEmpty).toList(),
     );
@@ -722,7 +837,15 @@ int _countFromAny(dynamic value) {
 
     final nestedSummary = _firstNestedCollection(
       map,
-      const ['summary', 'totals', 'counts', 'stats', 'metrics', 'payload', 'result'],
+      const [
+        'summary',
+        'totals',
+        'counts',
+        'stats',
+        'metrics',
+        'payload',
+        'result'
+      ],
     );
     if (nestedSummary != null) {
       final nestedCount = _countFromAny(nestedSummary);
@@ -734,7 +857,8 @@ int _countFromAny(dynamic value) {
     var aggregate = 0;
     var sawStructuredKey = false;
     for (final entry in map.entries) {
-      if (_normalizeCalendarType(entry.key) != null || _looksLikeDateKey(entry.key)) {
+      if (_normalizeCalendarType(entry.key) != null ||
+          _looksLikeDateKey(entry.key)) {
         sawStructuredKey = true;
         aggregate += _countFromAny(entry.value);
       }

@@ -26,10 +26,12 @@ class LocalizationSettingsSection extends ConsumerStatefulWidget {
   final SuperadminSettingsState state;
 
   @override
-  ConsumerState<LocalizationSettingsSection> createState() => _LocalizationSettingsSectionState();
+  ConsumerState<LocalizationSettingsSection> createState() =>
+      _LocalizationSettingsSectionState();
 }
 
-class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettingsSection> {
+class _LocalizationSettingsSectionState
+    extends ConsumerState<LocalizationSettingsSection> {
   final _formKey = GlobalKey<FormState>();
   final _latCtrl = TextEditingController();
   final _lonCtrl = TextEditingController();
@@ -134,7 +136,9 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
       // Apply preferences immediately with saved request values (confirmed by successful API save).
       // This updates appLocalizationPreferencesProvider, which cascades to appDateFormatterProvider,
       // triggering UI rebuilds across all date/time displays.
-      await ref.read(appLocalizationPreferencesProvider.notifier).applyFromSuperadminSettings(
+      await ref
+          .read(appLocalizationPreferencesProvider.notifier)
+          .applyFromSuperadminSettings(
             language: request.language,
             dateFormat: request.dateFormat,
             use24Hour: request.use24Hour,
@@ -157,8 +161,10 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
           _theme = request.theme;
           _timezone = request.timezoneOffset;
           _units = request.units;
-          _latCtrl.text = request.defaultLat == 0 ? '' : request.defaultLat.toString();
-          _lonCtrl.text = request.defaultLon == 0 ? '' : request.defaultLon.toString();
+          _latCtrl.text =
+              request.defaultLat == 0 ? '' : request.defaultLat.toString();
+          _lonCtrl.text =
+              request.defaultLon == 0 ? '' : request.defaultLon.toString();
           _zoomCtrl.text = request.mapZoom.toString();
         });
       }
@@ -238,7 +244,9 @@ class _LocalizationSettingsSectionState extends ConsumerState<LocalizationSettin
             icon: Icons.public_rounded,
             trailing: IconButton(
               tooltip: 'Refresh',
-              onPressed: state.isLoadingLocalization ? null : _controller.loadLocalization,
+              onPressed: state.isLoadingLocalization
+                  ? null
+                  : _controller.loadLocalization,
               iconSize: 18,
               visualDensity: VisualDensity.compact,
               icon: const Icon(Icons.refresh_rounded),
@@ -623,7 +631,8 @@ class _LanguageDropdown extends StatelessWidget {
     final items = <DropdownMenuItem<String>>[
       if (!hasValue && value.isNotEmpty)
         DropdownMenuItem(value: value, child: Text(value.toUpperCase())),
-      for (final o in options) DropdownMenuItem(value: o.code, child: Text(o.label)),
+      for (final o in options)
+        DropdownMenuItem(value: o.code, child: Text(o.label)),
     ];
     return _DropdownShell(
       label: 'Language',
@@ -663,8 +672,10 @@ class _DateFormatDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasValue = options.any((o) => o.value == value);
     final items = <DropdownMenuItem<String>>[
-      if (!hasValue && value.isNotEmpty) DropdownMenuItem(value: value, child: Text(value)),
-      for (final o in options) DropdownMenuItem(value: o.value, child: Text(o.label)),
+      if (!hasValue && value.isNotEmpty)
+        DropdownMenuItem(value: value, child: Text(value)),
+      for (final o in options)
+        DropdownMenuItem(value: o.value, child: Text(o.label)),
     ];
     return _DropdownShell(
       label: 'Date format',
@@ -704,7 +715,8 @@ class _TimezoneDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasValue = options.contains(value);
     final items = <DropdownMenuItem<String>>[
-      if (!hasValue && value.isNotEmpty) DropdownMenuItem(value: value, child: Text(value)),
+      if (!hasValue && value.isNotEmpty)
+        DropdownMenuItem(value: value, child: Text(value)),
       for (final o in options) DropdownMenuItem(value: o, child: Text(o)),
     ];
     return _DropdownShell(
@@ -816,7 +828,9 @@ class _SegBtn extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: selected ? Theme.of(context).colorScheme.primary : Colors.transparent,
+          color: selected
+              ? Theme.of(context).colorScheme.primary
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(OpenVtsRadius.sm - 2),
         ),
         child: Text(
@@ -825,7 +839,9 @@ class _SegBtn extends StatelessWidget {
             fontFamily: OpenVtsTypography.primaryFontFamily,
             fontSize: 11.5,
             fontWeight: FontWeight.w600,
-            color: selected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurface,
+            color: selected
+                ? Theme.of(context).colorScheme.onPrimary
+                : Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ),
@@ -904,7 +920,8 @@ class _PresetsRow extends StatelessWidget {
           spacing: 6,
           runSpacing: 6,
           children: [
-            for (final p in _kMapPresets) _PresetChip(label: p.label, onTap: () => onPick(p)),
+            for (final p in _kMapPresets)
+              _PresetChip(label: p.label, onTap: () => onPick(p)),
           ],
         ),
       ],
@@ -927,7 +944,8 @@ class _PresetChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          border:
+              Border.all(color: Theme.of(context).colorScheme.outlineVariant),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -983,9 +1001,11 @@ class _SectionHeader extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant),
             ),
-            child: Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurface),
+            child: Icon(icon,
+                size: 16, color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -1051,7 +1071,9 @@ class _GroupedCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              Icon(icon,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(

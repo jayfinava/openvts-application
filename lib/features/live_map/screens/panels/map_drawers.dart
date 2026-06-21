@@ -490,9 +490,7 @@ class _MapLayerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final labelColor = isSelected
-        ? const Color(0xFF1293A6)
-        : scheme.onSurface;
+    final labelColor = isSelected ? const Color(0xFF1293A6) : scheme.onSurface;
 
     return InkWell(
       onTap: onTap,
@@ -1412,4 +1410,3 @@ class _MapBottomDrawerState extends State<_MapBottomDrawer>
     };
   }
 }
-

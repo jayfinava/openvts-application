@@ -13,8 +13,7 @@ const int kExactSolverThreshold = kHeldKarpMaxPoints;
 const int kMultiStartTwoOptIterations = 500;
 
 /// Multi-start restart count for the heuristic path.
-int multiStartRestartsFor(int n) =>
-    math.min(20, math.max(5, n ~/ 2));
+int multiStartRestartsFor(int n) => math.min(20, math.max(5, n ~/ 2));
 
 /// Computes the optimised order for [points] under the supplied [constraints].
 ///
@@ -35,10 +34,9 @@ RouteOptimisationResult optimizeRoute(
 
   final int n = points.length;
   final int startIndex = constraints.startIndex.clamp(0, n - 1);
-  final int endIndex =
-      (constraints.roundTrip || constraints.endIndex < 0)
-          ? -1
-          : (constraints.endIndex >= n ? -1 : constraints.endIndex);
+  final int endIndex = (constraints.roundTrip || constraints.endIndex < 0)
+      ? -1
+      : (constraints.endIndex >= n ? -1 : constraints.endIndex);
   final bool roundTrip = constraints.roundTrip;
   final bool fixedEnd = !roundTrip && endIndex >= 0 && endIndex != startIndex;
 
@@ -150,8 +148,7 @@ List<int> _multiStartTwoOpt({
   final rng = math.Random(0xC0FFEE ^ n);
 
   var bestOrder = seed;
-  var bestDist =
-      calculateOrderDistance(seed, matrix, roundTrip: roundTrip);
+  var bestDist = calculateOrderDistance(seed, matrix, roundTrip: roundTrip);
 
   // Indices eligible to be shuffled (everything except pinned start/end).
   final middle = <int>[];
@@ -174,8 +171,7 @@ List<int> _multiStartTwoOpt({
       fixedEnd: fixedEnd,
       maxIterations: kMultiStartTwoOptIterations,
     );
-    final dist =
-        calculateOrderDistance(improved, matrix, roundTrip: roundTrip);
+    final dist = calculateOrderDistance(improved, matrix, roundTrip: roundTrip);
     if (dist < bestDist) {
       bestDist = dist;
       bestOrder = improved;

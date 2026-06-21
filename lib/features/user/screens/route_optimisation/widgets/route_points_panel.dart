@@ -143,6 +143,11 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final badgeBg = isDark ? Colors.black : Colors.white;
+    final badgeBorder = isDark ? Colors.white : OpenVtsColors.border;
+    final badgeText = isDark ? Colors.white : Colors.black;
+
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.xs,
@@ -157,14 +162,14 @@ class _Header extends StatelessWidget {
               vertical: 2,
             ),
             decoration: BoxDecoration(
-              color: Colors.black,
+              color: badgeBg,
               borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-              border: Border.all(color: Colors.white),
+              border: Border.all(color: badgeBorder),
             ),
             child: Text(
               '$count',
               style: OpenVtsTypography.meta.copyWith(
-                color: Colors.white,
+                color: badgeText,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -188,8 +193,15 @@ class _RoundTripPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = active ? OpenVtsColors.brandInk : Colors.black;
-    final fg = active ? Colors.black : Colors.white;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = active
+        ? OpenVtsColors.brandInk
+        : (isDark ? Colors.black : Colors.white);
+    final fg = active ? Colors.black : (isDark ? Colors.white : Colors.black);
+    final borderColor = active
+        ? OpenVtsColors.brandInk
+        : (isDark ? Colors.white : OpenVtsColors.border);
+
     return Material(
       color: bg,
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -200,9 +212,7 @@ class _RoundTripPill extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-            border: Border.all(
-              color: active ? OpenVtsColors.brandInk : Colors.white,
-            ),
+            border: Border.all(color: borderColor),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -294,18 +304,23 @@ class _PrimaryAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? Colors.black : Colors.white;
+    final fg = isDark ? Colors.white : Colors.black;
+    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
+
     return ElevatedButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, size: 14),
       label: Text(label, style: OpenVtsTypography.label),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        backgroundColor: bg,
+        foregroundColor: fg,
         minimumSize: const Size(0, 36),
         padding: const EdgeInsets.symmetric(horizontal: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-          side: const BorderSide(color: Colors.white),
+          side: BorderSide(color: borderColor),
         ),
       ),
     );
@@ -324,13 +339,17 @@ class _SecondaryAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fg = isDark ? Colors.white : Colors.black;
+    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
+
     return OutlinedButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, size: 14),
       label: Text(label, style: OpenVtsTypography.label),
       style: OutlinedButton.styleFrom(
-        foregroundColor: Colors.white,
-        side: const BorderSide(color: Colors.white),
+        foregroundColor: fg,
+        side: BorderSide(color: borderColor),
         minimumSize: const Size(0, 36),
         padding: const EdgeInsets.symmetric(horizontal: 12),
         shape: RoundedRectangleBorder(
@@ -353,12 +372,15 @@ class _SubtleAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fg = isDark ? Colors.white : Colors.black;
+
     return TextButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, size: 14),
       label: Text(label, style: OpenVtsTypography.label),
       style: TextButton.styleFrom(
-        foregroundColor: Colors.white,
+        foregroundColor: fg,
         minimumSize: const Size(0, 36),
         padding: const EdgeInsets.symmetric(horizontal: 8),
       ),

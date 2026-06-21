@@ -82,7 +82,8 @@ class AdminVehicleExpiryCard extends StatelessWidget {
                   vertical: 8,
                 ),
                 foregroundColor: Theme.of(context).colorScheme.onSurface,
-                side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+                side: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant),
                 textStyle: OpenVtsTypography.meta.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -114,9 +115,11 @@ class _SectionHeading extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+            border:
+                Border.all(color: Theme.of(context).colorScheme.outlineVariant),
           ),
-          child: Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          child: Icon(icon,
+              size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(width: OpenVtsSpacing.xs),
         Flexible(
@@ -204,7 +207,8 @@ class _ExpiryPreviewRow extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant),
             ),
             child: Icon(
               Icons.directions_car_outlined,

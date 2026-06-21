@@ -91,8 +91,10 @@ class SuperadminAdministratorsState {
     filtered.sort((left, right) {
       switch (sortOption) {
         case SuperadminAdministratorSortOption.recentLogin:
-          final leftValue = left.lastLoginAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-          final rightValue = right.lastLoginAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final leftValue =
+              left.lastLoginAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final rightValue =
+              right.lastLoginAt ?? DateTime.fromMillisecondsSinceEpoch(0);
           return rightValue.compareTo(leftValue);
         case SuperadminAdministratorSortOption.nameAscending:
           return left.name.toLowerCase().compareTo(right.name.toLowerCase());
@@ -110,7 +112,8 @@ class SuperadminAdministratorsState {
 
   int get filteredCount => filteredAdministrators.length;
 
-  int get pageCount => math.max<int>(1, (filteredCount / recordsPerPage).ceil());
+  int get pageCount =>
+      math.max<int>(1, (filteredCount / recordsPerPage).ceil());
 
   int get safeCurrentPage {
     return currentPage.clamp(1, pageCount);
@@ -121,16 +124,22 @@ class SuperadminAdministratorsState {
     if (start >= filteredCount) {
       return const <SuperadminAdministrator>[];
     }
-    return filteredAdministrators.skip(start).take(recordsPerPage).toList(growable: false);
+    return filteredAdministrators
+        .skip(start)
+        .take(recordsPerPage)
+        .toList(growable: false);
   }
 
   int get showingCount => visibleAdministrators.length;
 
-  bool isToggling(String administratorId) => togglingAdministratorId == administratorId;
+  bool isToggling(String administratorId) =>
+      togglingAdministratorId == administratorId;
 
-  bool isDeleting(String administratorId) => deletingAdministratorId == administratorId;
+  bool isDeleting(String administratorId) =>
+      deletingAdministratorId == administratorId;
 
-  bool isLoggingIn(String administratorId) => loggingInAdministratorId == administratorId;
+  bool isLoggingIn(String administratorId) =>
+      loggingInAdministratorId == administratorId;
 
   SuperadminAdministratorsState copyWith({
     List<SuperadminAdministrator>? administrators,

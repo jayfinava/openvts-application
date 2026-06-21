@@ -29,7 +29,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset('assets/brand/icon.png', height: 56, errorBuilder: (_, __, ___) {
+            Image.asset('assets/brand/icon.png', height: 56,
+                errorBuilder: (_, __, ___) {
               return const Icon(Icons.navigation_outlined, size: 56);
             }),
             const SizedBox(height: OpenVtsSpacing.md),

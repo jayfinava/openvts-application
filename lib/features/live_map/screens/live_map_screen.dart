@@ -194,7 +194,9 @@ class _MapDrawerCloseButton extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: isDark ? scheme.surfaceContainerHighest : const Color(0xFF111827),
+              color: isDark
+                  ? scheme.surfaceContainerHighest
+                  : const Color(0xFF111827),
               shape: BoxShape.circle,
               border: Border.all(
                 color: isDark
@@ -625,13 +627,14 @@ class _LiveMapState extends ConsumerState<_LiveMap>
     });
 
     try {
-      final replay =
-          await ref.read(liveMapVehicleControllerProvider).getVehicleReplayByImei(
-                imei: imei,
-                from: request.from,
-                to: request.to,
-                maxPoints: 5000,
-              );
+      final replay = await ref
+          .read(liveMapVehicleControllerProvider)
+          .getVehicleReplayByImei(
+            imei: imei,
+            from: request.from,
+            to: request.to,
+            maxPoints: 5000,
+          );
 
       if (!mounted) {
         return const _ReplayRequestResult(errorMessage: null);
@@ -1961,7 +1964,8 @@ class _VehicleBottomDrawerState extends ConsumerState<_VehicleBottomDrawer>
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        _buildVehicleDrawerSubtitle(liveVehicle, ref.watch(appDateFormatterProvider)),
+                        _buildVehicleDrawerSubtitle(
+                            liveVehicle, ref.watch(appDateFormatterProvider)),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -2292,9 +2296,7 @@ class _VehicleLogsTabState extends ConsumerState<_VehicleLogsTab> {
 
     try {
       final connection =
-          await ref
-              .read(liveMapSocketControllerProvider)
-              .connectTelemetry();
+          await ref.read(liveMapSocketControllerProvider).connectTelemetry();
       if (!mounted ||
           generation != _socketGeneration ||
           !widget.isActive ||
@@ -2379,8 +2381,9 @@ class _VehicleLogsTabState extends ConsumerState<_VehicleLogsTab> {
   }
 
   void _handleTelemetryUpdate(dynamic data) {
-    final log =
-        ref.read(liveMapVehicleControllerProvider).parseTelemetryLogPayload(data);
+    final log = ref
+        .read(liveMapVehicleControllerProvider)
+        .parseTelemetryLogPayload(data);
     if (log == null) {
       return;
     }
@@ -2431,9 +2434,8 @@ class _VehicleLogsTabState extends ConsumerState<_VehicleLogsTab> {
 
     final logs = _visibleLogs;
     final statusLabel = _socketConnected ? 'Live' : 'Connecting';
-    final statusColor = _socketConnected
-        ? const Color(0xFF20B15A)
-        : scheme.onSurfaceVariant;
+    final statusColor =
+        _socketConnected ? const Color(0xFF20B15A) : scheme.onSurfaceVariant;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2612,7 +2614,8 @@ class _VehicleLogListRow extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               _VehicleLogPill(
-                label: _formatVehicleLogSpeed(log.speedKph, unitFormatter: unitFormatter),
+                label: _formatVehicleLogSpeed(log.speedKph,
+                    unitFormatter: unitFormatter),
               ),
               const SizedBox(width: 6),
               _VehicleLogPill(
@@ -2772,14 +2775,24 @@ class _VehicleLogDetailGrid extends ConsumerWidget {
             : 'Database'
       ),
       (label: 'IMEI', value: log.imei.isEmpty ? '--' : log.imei),
-      (label: 'Server time', value: _formatVehicleLogDateTime(log.serverTime, dateFormatter)),
-      (label: 'Device time', value: _formatVehicleLogDateTime(log.deviceTime, dateFormatter)),
+      (
+        label: 'Server time',
+        value: _formatVehicleLogDateTime(log.serverTime, dateFormatter)
+      ),
+      (
+        label: 'Device time',
+        value: _formatVehicleLogDateTime(log.deviceTime, dateFormatter)
+      ),
       (
         label: 'Packet type',
         value: log.packetType.isEmpty ? '--' : log.packetType
       ),
       (label: 'Protocol', value: log.protocol.isEmpty ? '--' : log.protocol),
-      (label: 'Speed', value: _formatVehicleLogSpeed(log.speedKph, unitFormatter: unitFormatter)),
+      (
+        label: 'Speed',
+        value:
+            _formatVehicleLogSpeed(log.speedKph, unitFormatter: unitFormatter)
+      ),
       (label: 'Ignition', value: _formatVehicleLogBool(log.ignition)),
       (label: 'ACC', value: _formatVehicleLogBool(log.acc)),
       (label: 'Latitude', value: _formatVehicleLogCoordinate(log.latitude)),
@@ -2805,12 +2818,16 @@ class _VehicleLogDetailGrid extends ConsumerWidget {
       (
         label: 'Distance',
         value: _formatVehicleMetricDistance(null,
-            fallback: log.distance, fractionDigits: 3, unitFormatter: unitFormatter)
+            fallback: log.distance,
+            fractionDigits: 3,
+            unitFormatter: unitFormatter)
       ),
       (
         label: 'Odometer',
         value: _formatVehicleMetricDistance(null,
-            fallback: log.odometer, fractionDigits: 1, unitFormatter: unitFormatter)
+            fallback: log.odometer,
+            fractionDigits: 1,
+            unitFormatter: unitFormatter)
       ),
       (
         label: 'Engine hours',
@@ -2820,7 +2837,10 @@ class _VehicleLogDetailGrid extends ConsumerWidget {
         label: 'Total engine hours',
         value: _formatVehicleEngineHoursValue(log.totalEngineHours)
       ),
-      (label: 'Created', value: _formatVehicleLogDateTime(log.createdAt, dateFormatter)),
+      (
+        label: 'Created',
+        value: _formatVehicleLogDateTime(log.createdAt, dateFormatter)
+      ),
     ];
 
     return DecoratedBox(
@@ -3068,11 +3088,12 @@ class _VehicleEventsTabState extends ConsumerState<_VehicleEventsTab> {
     });
 
     try {
-      final page =
-          await ref.read(liveMapVehicleControllerProvider).getVehicleEventsByImei(
-                imei,
-                limit: _pageSize,
-              );
+      final page = await ref
+          .read(liveMapVehicleControllerProvider)
+          .getVehicleEventsByImei(
+            imei,
+            limit: _pageSize,
+          );
       if (!mounted || generation != _requestGeneration || _imei != imei) {
         return;
       }
@@ -3113,12 +3134,13 @@ class _VehicleEventsTabState extends ConsumerState<_VehicleEventsTab> {
     });
 
     try {
-      final page =
-          await ref.read(liveMapVehicleControllerProvider).getVehicleEventsByImei(
-                imei,
-                limit: _pageSize,
-                beforeId: cursor,
-              );
+      final page = await ref
+          .read(liveMapVehicleControllerProvider)
+          .getVehicleEventsByImei(
+            imei,
+            limit: _pageSize,
+            beforeId: cursor,
+          );
       if (!mounted || generation != _requestGeneration || _imei != imei) {
         return;
       }
@@ -3159,10 +3181,9 @@ class _VehicleEventsTabState extends ConsumerState<_VehicleEventsTab> {
     final generation = ++_socketGeneration;
 
     try {
-      final connection =
-          await ref
-              .read(liveMapSocketControllerProvider)
-              .connectNotifications();
+      final connection = await ref
+          .read(liveMapSocketControllerProvider)
+          .connectNotifications();
       if (!mounted ||
           generation != _socketGeneration ||
           !widget.isActive ||
@@ -3284,9 +3305,8 @@ class _VehicleEventsTabState extends ConsumerState<_VehicleEventsTab> {
 
     final events = _visibleEvents;
     final statusLabel = _socketConnected ? 'Live' : 'Connecting';
-    final statusColor = _socketConnected
-        ? const Color(0xFF20B15A)
-        : scheme.onSurfaceVariant;
+    final statusColor =
+        _socketConnected ? const Color(0xFF20B15A) : scheme.onSurfaceVariant;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -3458,7 +3478,8 @@ class _VehicleEventListRow extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
-                            color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
+                            color:
+                                scheme.onSurfaceVariant.withValues(alpha: 0.7),
                           ),
                         ),
                       ],
@@ -3630,7 +3651,10 @@ class _VehicleEventDetailGrid extends ConsumerWidget {
       (label: 'Message', value: event.message.trim()),
       (label: 'IMEI', value: event.vehicleImei?.trim() ?? '--'),
       (label: 'Context', value: event.contextLabel?.trim() ?? '--'),
-      (label: 'Created', value: _formatVehicleEventDateTime(event.createdAt, dateFormatter)),
+      (
+        label: 'Created',
+        value: _formatVehicleEventDateTime(event.createdAt, dateFormatter)
+      ),
       (label: 'Read', value: event.isRead ? 'Yes' : 'No'),
       (label: 'ID', value: event.id > 0 ? event.id.toString() : '--'),
       (
@@ -3907,7 +3931,8 @@ class _VehicleSensorsTabState extends ConsumerState<_VehicleSensorsTab> {
               else if (telemetryTime != null)
                 Flexible(
                   child: Text(
-                    _formatVehicleSensorUpdatedAt(telemetryTime, ref.watch(appDateFormatterProvider)),
+                    _formatVehicleSensorUpdatedAt(
+                        telemetryTime, ref.watch(appDateFormatterProvider)),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.end,
@@ -4725,8 +4750,9 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
     }
 
     try {
-      final status =
-          await ref.read(liveMapVehicleControllerProvider).getCommandStatus(cmdId);
+      final status = await ref
+          .read(liveMapVehicleControllerProvider)
+          .getCommandStatus(cmdId);
       if (!mounted || generation != _pollGeneration) {
         return;
       }
@@ -5542,7 +5568,8 @@ class _VehicleCommandHistoryRow extends ConsumerWidget {
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
-                              color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
+                              color: scheme.onSurfaceVariant
+                                  .withValues(alpha: 0.7),
                             ),
                           ),
                         ),
@@ -5572,7 +5599,8 @@ class _VehicleCommandHistoryRow extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
-                          color: scheme.onSurfaceVariant.withValues(alpha: 0.75),
+                          color:
+                              scheme.onSurfaceVariant.withValues(alpha: 0.75),
                         ),
                       ),
                     ],
@@ -5781,13 +5809,34 @@ class _VehicleCommandDetailGrid extends ConsumerWidget {
         value: _formatVehicleLogBool(entry.connectedAtSend,
             trueLabel: 'Yes', falseLabel: 'No')
       ),
-      (label: 'Requested', value: _formatVehicleLogDateTime(entry.requestedAt, dateFormatter)),
-      (label: 'Queued', value: _formatVehicleLogDateTime(entry.queuedAt, dateFormatter)),
-      (label: 'Sent', value: _formatVehicleLogDateTime(entry.sentAt, dateFormatter)),
-      (label: 'Responded', value: _formatVehicleLogDateTime(entry.respondedAt, dateFormatter)),
-      (label: 'Failed', value: _formatVehicleLogDateTime(entry.failedAt, dateFormatter)),
-      (label: 'Timed out', value: _formatVehicleLogDateTime(entry.timeoutAt, dateFormatter)),
-      (label: 'Created', value: _formatVehicleLogDateTime(entry.createdAt, dateFormatter)),
+      (
+        label: 'Requested',
+        value: _formatVehicleLogDateTime(entry.requestedAt, dateFormatter)
+      ),
+      (
+        label: 'Queued',
+        value: _formatVehicleLogDateTime(entry.queuedAt, dateFormatter)
+      ),
+      (
+        label: 'Sent',
+        value: _formatVehicleLogDateTime(entry.sentAt, dateFormatter)
+      ),
+      (
+        label: 'Responded',
+        value: _formatVehicleLogDateTime(entry.respondedAt, dateFormatter)
+      ),
+      (
+        label: 'Failed',
+        value: _formatVehicleLogDateTime(entry.failedAt, dateFormatter)
+      ),
+      (
+        label: 'Timed out',
+        value: _formatVehicleLogDateTime(entry.timeoutAt, dateFormatter)
+      ),
+      (
+        label: 'Created',
+        value: _formatVehicleLogDateTime(entry.createdAt, dateFormatter)
+      ),
     ];
 
     return DecoratedBox(
@@ -7185,7 +7234,9 @@ class _VehicleListTile extends ConsumerWidget {
                   text: TextSpan(
                     children: [
                       TextSpan(
-                        text: _formatVehicleSpeed(ref.watch(unitFormatterProvider).speedFromKph(vehicle.speed)),
+                        text: _formatVehicleSpeed(ref
+                            .watch(unitFormatterProvider)
+                            .speedFromKph(vehicle.speed)),
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -7208,7 +7259,8 @@ class _VehicleListTile extends ConsumerWidget {
               SizedBox(
                 width: 52,
                 child: Text(
-                  _formatVehicleDistance(vehicle.distanceKm, ref.watch(unitFormatterProvider)),
+                  _formatVehicleDistance(
+                      vehicle.distanceKm, ref.watch(unitFormatterProvider)),
                   textAlign: TextAlign.right,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -7558,7 +7610,8 @@ class _HistorySummaryStrip extends ConsumerWidget {
         if (history.maxSpeedKph != null)
           _HistorySummaryPill(
             icon: Icons.speed_rounded,
-            label: '${_formatHistoryNumber(uf.speedFromKph(history.maxSpeedKph!), 1)} ${uf.speedLabel} max',
+            label:
+                '${_formatHistoryNumber(uf.speedFromKph(history.maxSpeedKph!), 1)} ${uf.speedLabel} max',
           ),
         if (analytics.averageSpeedKph != null)
           _HistorySummaryPill(
@@ -7569,7 +7622,8 @@ class _HistorySummaryStrip extends ConsumerWidget {
         if (history.totalDistanceKm != null)
           _HistorySummaryPill(
             icon: Icons.route_rounded,
-            label: '${_formatHistoryNumber(uf.distanceFromKm(history.totalDistanceKm!), 1)} ${uf.distanceLabel}',
+            label:
+                '${_formatHistoryNumber(uf.distanceFromKm(history.totalDistanceKm!), 1)} ${uf.distanceLabel}',
           ),
         if (analytics.runningDuration != null)
           _HistorySummaryPill(
@@ -7817,7 +7871,8 @@ class _HistoryTimelineTile extends StatelessWidget {
             top: isFirst ? 24 : 0,
             bottom: isLast ? 24 : 0,
             child: CustomPaint(
-              painter: _HistoryTimelineRailPainter(color: scheme.outlineVariant),
+              painter:
+                  _HistoryTimelineRailPainter(color: scheme.outlineVariant),
               child: const SizedBox(width: 1),
             ),
           ),
@@ -8022,7 +8077,8 @@ class _HistoryPointTimelineDetails extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _HistoryTimeLine(text: _formatHistoryPointTimestamp(entry.timestamp, formatter)),
+        _HistoryTimeLine(
+            text: _formatHistoryPointTimestamp(entry.timestamp, formatter)),
         const SizedBox(height: 5),
         _HistoryMutedLine(text: _formatHistoryAddress(entry.point?.address)),
       ],
@@ -8087,7 +8143,8 @@ class _HistoryRunningTimelineDetails extends ConsumerWidget {
               child: _HistoryMetricBox(
                 label: 'Distance',
                 value: _formatHistoryDistanceValue(
-                  _historyEntryDistanceKm(entry), uf,
+                  _historyEntryDistanceKm(entry),
+                  uf,
                 ),
               ),
             ),
@@ -8096,7 +8153,8 @@ class _HistoryRunningTimelineDetails extends ConsumerWidget {
               child: _HistoryMetricBox(
                 label: 'Avg Speed',
                 value: _formatHistorySpeedValue(
-                  _historyEntryAvgSpeedKph(entry), uf,
+                  _historyEntryAvgSpeedKph(entry),
+                  uf,
                 ),
               ),
             ),
@@ -8105,7 +8163,8 @@ class _HistoryRunningTimelineDetails extends ConsumerWidget {
               child: _HistoryMetricBox(
                 label: 'Max Speed',
                 value: _formatHistorySpeedValue(
-                  _historyEntryMaxSpeedKph(entry), uf,
+                  _historyEntryMaxSpeedKph(entry),
+                  uf,
                 ),
               ),
             ),
@@ -8542,7 +8601,8 @@ List<VehicleSummary> _historySelectableVehicles(List<VehicleSummary> vehicles) {
     ..sort(_compareVehicleListOrder);
 }
 
-String _formatHistoryRequestSummary(SuperadminVehicleHistoryRequest request, AppDateFormatter formatter) {
+String _formatHistoryRequestSummary(
+    SuperadminVehicleHistoryRequest request, AppDateFormatter formatter) {
   final start = formatter.formatDateTime(request.from.toLocal());
   final end = formatter.formatDateTime(request.to.toLocal());
   return '$start - $end • Stops >= ${request.stopMinutes} min';
@@ -9404,7 +9464,8 @@ String _replaySpeedLabel(double speed) {
   return '${speed.toInt()}x';
 }
 
-String _formatHistoryPointTimestamp(DateTime? timestamp, AppDateFormatter formatter) {
+String _formatHistoryPointTimestamp(
+    DateTime? timestamp, AppDateFormatter formatter) {
   if (timestamp == null) {
     return '--';
   }
@@ -9413,13 +9474,11 @@ String _formatHistoryPointTimestamp(DateTime? timestamp, AppDateFormatter format
   return '${formatter.formatTime(local)} · ${formatter.formatDate(local)}';
 }
 
-String _formatHistoryTimeRange(DateTime? start, DateTime? end, AppDateFormatter formatter) {
-  final startText = start == null
-      ? '--'
-      : formatter.formatTime(start.toLocal());
-  final endText = end == null
-      ? '--'
-      : formatter.formatTime(end.toLocal());
+String _formatHistoryTimeRange(
+    DateTime? start, DateTime? end, AppDateFormatter formatter) {
+  final startText =
+      start == null ? '--' : formatter.formatTime(start.toLocal());
+  final endText = end == null ? '--' : formatter.formatTime(end.toLocal());
   return '$startText → $endText';
 }
 
@@ -9563,8 +9622,8 @@ class _AlertsTab extends ConsumerWidget {
       ),
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
       itemCount: visibleAlerts.length,
-      separatorBuilder: (_, __) =>
-          Divider(height: 1, color: scheme.outlineVariant.withValues(alpha: 0.3)),
+      separatorBuilder: (_, __) => Divider(
+          height: 1, color: scheme.outlineVariant.withValues(alpha: 0.3)),
       itemBuilder: (context, index) {
         final alert = visibleAlerts[index];
         final visuals = _resolveAlertVisuals(alert);
@@ -11001,7 +11060,8 @@ String _vehicleCommandConnectionHint(VehicleSummary vehicle) {
   return status.isEmpty ? 'Status unknown' : status;
 }
 
-String _formatVehicleListSubtitle(VehicleSummary vehicle, AppDateFormatter formatter) {
+String _formatVehicleListSubtitle(
+    VehicleSummary vehicle, AppDateFormatter formatter) {
   if (vehicle.updatedAt != null) {
     return formatter.formatDateTime(vehicle.updatedAt!.toLocal());
   }
@@ -11013,7 +11073,8 @@ String _formatVehicleListSubtitle(VehicleSummary vehicle, AppDateFormatter forma
   return 'No update time';
 }
 
-String _buildVehicleDrawerSubtitle(VehicleSummary vehicle, AppDateFormatter formatter) {
+String _buildVehicleDrawerSubtitle(
+    VehicleSummary vehicle, AppDateFormatter formatter) {
   final plateNumber = vehicle.plateNumber.trim();
   final updatedAt = vehicle.updatedAt;
 
@@ -11194,7 +11255,8 @@ String _formatVehicleMetricDistance(
   return '--';
 }
 
-String _formatVehicleSpeedMetric(String? raw, {double? fallback, required UnitFormatter unitFormatter}) {
+String _formatVehicleSpeedMetric(String? raw,
+    {double? fallback, required UnitFormatter unitFormatter}) {
   final rawText = raw?.trim() ?? '';
   if (rawText.isNotEmpty) {
     final numeric = _parseVehicleDouble(rawText);
@@ -11254,7 +11316,8 @@ String _formatVehicleEventTime(DateTime? value, AppDateFormatter formatter) {
   return formatter.formatTime(value.toLocal());
 }
 
-String _formatVehicleEventDateTime(DateTime? value, AppDateFormatter formatter) {
+String _formatVehicleEventDateTime(
+    DateTime? value, AppDateFormatter formatter) {
   if (value == null) {
     return '--';
   }
@@ -11541,7 +11604,8 @@ DateTime? _vehicleSensorTelemetryUpdatedAt(VehicleSummary vehicle) {
   return vehicle.updatedAt ?? vehicle.lastSeenAt;
 }
 
-String _formatVehicleSensorUpdatedAt(DateTime value, AppDateFormatter formatter) {
+String _formatVehicleSensorUpdatedAt(
+    DateTime value, AppDateFormatter formatter) {
   return formatter.formatDateTime(value.toLocal());
 }
 
@@ -11561,7 +11625,8 @@ String _formatVehicleLogDateTime(DateTime? value, AppDateFormatter formatter) {
   return formatter.formatDateTime(value.toLocal());
 }
 
-String _formatVehicleLogSpeed(double? value, {required UnitFormatter unitFormatter}) {
+String _formatVehicleLogSpeed(double? value,
+    {required UnitFormatter unitFormatter}) {
   if (value == null || !value.isFinite) {
     return '--';
   }
@@ -11784,6 +11849,3 @@ bool _isInactiveStatus(String normalizedStatus) {
     'license_blocked',
   }.contains(normalizedStatus);
 }
-
-
-

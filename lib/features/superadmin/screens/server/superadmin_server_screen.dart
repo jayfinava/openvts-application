@@ -289,9 +289,8 @@ class _ServerHeroCard extends StatelessWidget {
               _CompactOutlineButton(
                 label: isRefreshing ? 'Refreshing' : 'Refresh',
                 icon: Icons.refresh_rounded,
-                onPressed: (isRefreshing || isLoading)
-                    ? null
-                    : () => onRefresh(),
+                onPressed:
+                    (isRefreshing || isLoading) ? null : () => onRefresh(),
                 isLoading: isRefreshing,
               ),
             ],
@@ -712,8 +711,7 @@ class _ServicesSection extends StatelessWidget {
                 final hasRight = i + 1 < components.length;
                 rows.add(
                   Padding(
-                    padding:
-                        const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
+                    padding: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -731,8 +729,8 @@ class _ServicesSection extends StatelessWidget {
                           Expanded(
                             child: _ServiceCard(
                               component: components[i + 1],
-                              isBusy: state
-                                  .isBusyComponent(components[i + 1].id),
+                              isBusy:
+                                  state.isBusyComponent(components[i + 1].id),
                               isSubmitting: (action) => state.isSubmitting(
                                   components[i + 1].id, action),
                               onAction: onAction,

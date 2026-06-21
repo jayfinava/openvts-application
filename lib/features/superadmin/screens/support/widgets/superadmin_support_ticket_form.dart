@@ -672,10 +672,12 @@ class _DraftAttachmentWrap extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
+                  color:
+                      isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
                 ),
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                color: isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
+                color:
+                    isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,

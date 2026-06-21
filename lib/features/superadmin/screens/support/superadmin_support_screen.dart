@@ -24,7 +24,8 @@ class SuperadminSupportScreen extends ConsumerStatefulWidget {
       _SuperadminSupportScreenState();
 }
 
-class _SuperadminSupportScreenState extends ConsumerState<SuperadminSupportScreen> {
+class _SuperadminSupportScreenState
+    extends ConsumerState<SuperadminSupportScreen> {
   Timer? _searchDebounce;
   int? _activeSplitTicketId;
 
@@ -70,7 +71,8 @@ class _SuperadminSupportScreenState extends ConsumerState<SuperadminSupportScree
 
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => SuperadminSupportConversationScreen(ticketId: ticket.id),
+        builder: (_) =>
+            SuperadminSupportConversationScreen(ticketId: ticket.id),
       ),
     );
   }
@@ -79,7 +81,9 @@ class _SuperadminSupportScreenState extends ConsumerState<SuperadminSupportScree
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 260), () {
       if (!mounted) return;
-      ref.read(superadminSupportControllerProvider.notifier).setSearchQuery(value);
+      ref
+          .read(superadminSupportControllerProvider.notifier)
+          .setSearchQuery(value);
     });
   }
 

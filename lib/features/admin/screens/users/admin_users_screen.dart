@@ -81,8 +81,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
           ? const OpenVtsLoader()
           : state.errorMessage != null && !state.hasUsers
               ? OpenVtsErrorView(
-                  message:
-                      state.errorMessage ?? 'Users could not be loaded.',
+                  message: state.errorMessage ?? 'Users could not be loaded.',
                   onRetry: controller.refresh,
                 )
               : _UsersBody(
@@ -739,7 +738,8 @@ class _SearchInput extends StatelessWidget {
             textAlignVertical: TextAlignVertical.center,
             cursorColor: _primaryInkColor(context),
             cursorWidth: 1.4,
-            style: _baseStyle.copyWith(color: Theme.of(context).colorScheme.onSurface),
+            style: _baseStyle.copyWith(
+                color: Theme.of(context).colorScheme.onSurface),
             strutStyle: const StrutStyle(
               fontFamily: OpenVtsTypography.primaryFontFamily,
               fontFamilyFallback: OpenVtsTypography.fontFallback,
@@ -1131,8 +1131,7 @@ class _OptionsSheet extends StatelessWidget {
               section.child,
               const SizedBox(height: OpenVtsSpacing.md),
             ],
-            if (primaryActionLabel != null ||
-                secondaryActionLabel != null) ...[
+            if (primaryActionLabel != null || secondaryActionLabel != null) ...[
               const SizedBox(height: OpenVtsSpacing.xs),
               Row(
                 children: [

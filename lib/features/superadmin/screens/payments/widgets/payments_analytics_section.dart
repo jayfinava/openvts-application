@@ -166,7 +166,8 @@ class _CompactKpiCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final effectiveIconColor = isDark ? Theme.of(context).colorScheme.primary : iconColor;
+    final effectiveIconColor =
+        isDark ? Theme.of(context).colorScheme.primary : iconColor;
 
     return OpenVtsCard(
       child: Column(
@@ -210,7 +211,9 @@ class _RevenueSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final currencyFormat = NumberFormat('#,##0.##', 'en_US');
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = isDark ? Theme.of(context).colorScheme.primary : OpenVtsColors.success.withValues(alpha: 0.9);
+    final iconColor = isDark
+        ? Theme.of(context).colorScheme.primary
+        : OpenVtsColors.success.withValues(alpha: 0.9);
 
     return OpenVtsCard(
       child: Column(

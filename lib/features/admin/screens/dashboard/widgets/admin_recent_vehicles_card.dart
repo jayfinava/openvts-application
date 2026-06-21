@@ -26,7 +26,8 @@ class AdminRecentVehiclesCard extends ConsumerWidget {
       emptyMessage: 'New vehicles will appear here.',
       itemCount: vehicles.length,
       itemBuilder: (context, index) {
-        return _RecentVehicleRow(vehicle: vehicles[index], formatter: formatter);
+        return _RecentVehicleRow(
+            vehicle: vehicles[index], formatter: formatter);
       },
     );
   }
@@ -93,7 +94,8 @@ class _RecentVehicleRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  adminDashboardRelativeDate(vehicle.createdAt, formatter: formatter),
+                  adminDashboardRelativeDate(vehicle.createdAt,
+                      formatter: formatter),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,

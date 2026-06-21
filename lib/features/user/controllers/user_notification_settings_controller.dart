@@ -182,7 +182,7 @@ class UserNotificationSettingsController
 
   void updateOverspeedLimit(int vehicleId, int? speedLimitKph) {
     final normalizedLimit =
-      speedLimitKph != null && speedLimitKph < 0 ? null : speedLimitKph;
+        speedLimitKph != null && speedLimitKph < 0 ? null : speedLimitKph;
 
     _updateDraft((draft) {
       final rows = List<UserOverspeedNotificationRow>.from(draft.overspeed);

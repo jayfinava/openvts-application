@@ -141,7 +141,8 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
         knownCount = state.vehicleCount;
       } else if (state.user != null && state.user!.vehicleCount > 0) {
         knownCount = state.user!.vehicleCount;
-      } else if (state.initialUser != null && state.initialUser!.vehicleCount > 0) {
+      } else if (state.initialUser != null &&
+          state.initialUser!.vehicleCount > 0) {
         knownCount = state.initialUser!.vehicleCount;
       } else if (state.hasLoadedVehicles) {
         knownCount = state.linkedVehicles.length;
@@ -155,7 +156,8 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
       _loadedTabs.add(AdminUserDetailsTab.profile);
       state = state.copyWith(
         user: user,
-        vehicleCount: knownCount ?? (user.vehicleCount > 0 ? user.vehicleCount : null),
+        vehicleCount:
+            knownCount ?? (user.vehicleCount > 0 ? user.vehicleCount : null),
         isLoadingProfile: false,
       );
     } catch (error) {
@@ -275,7 +277,8 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
         var preservedCompany = updatedCompany;
 
         // If we submitted customDomain but backend response doesn't have it, preserve it
-        if (request.customDomain.trim().isNotEmpty && updatedCompany.customDomain.isEmpty) {
+        if (request.customDomain.trim().isNotEmpty &&
+            updatedCompany.customDomain.isEmpty) {
           preservedCompany = AdminUserCompany(
             id: preservedCompany.id,
             name: preservedCompany.name,
@@ -290,7 +293,8 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
         }
 
         // If we submitted primaryColor but backend response doesn't have it, preserve it
-        if (request.primaryColor.trim().isNotEmpty && preservedCompany.primaryColor.isEmpty) {
+        if (request.primaryColor.trim().isNotEmpty &&
+            preservedCompany.primaryColor.isEmpty) {
           preservedCompany = AdminUserCompany(
             id: preservedCompany.id,
             name: preservedCompany.name,

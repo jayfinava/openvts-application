@@ -526,7 +526,6 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
     _stateCode = _blankToNull(user.stateCode)?.toUpperCase();
     _city = _blankToNull(user.city);
   }
-
 }
 
 String _initialText(String? value) {

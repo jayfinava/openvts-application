@@ -330,10 +330,10 @@ class _AdminCreateVehicleScreenState
           enabled: !_isCatalogLoading && _catalogError == null,
           options: userOptions,
           value: _userId,
-          validator: (value) => value == null || value.trim().isEmpty ||
-                  value == _createUserValue
-              ? 'Primary user is required'
-              : null,
+          validator: (value) =>
+              value == null || value.trim().isEmpty || value == _createUserValue
+                  ? 'Primary user is required'
+                  : null,
           onChanged: (value) async {
             if (value == _createUserValue) {
               await _handleCreateUser();
@@ -539,9 +539,8 @@ class _AdminCreateVehicleScreenState
 
   Future<void> _refreshUsers() async {
     try {
-      final users = await ref
-          .read(adminVehiclesControllerProvider.notifier)
-          .getUsers();
+      final users =
+          await ref.read(adminVehiclesControllerProvider.notifier).getUsers();
       if (!mounted) return;
       setState(() => _users = users);
     } catch (error) {

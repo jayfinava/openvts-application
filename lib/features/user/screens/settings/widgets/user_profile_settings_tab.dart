@@ -12,13 +12,16 @@ import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_role_home.dart';
+import '../../../../auth/controllers/auth_controller.dart';
 import '../../../controllers/user_providers.dart';
 import '../../../controllers/user_settings_controller.dart';
 import '../../../models/user_settings_model.dart';
 import '../../../models/user_settings_state.dart';
+import 'user_address_card.dart';
 import 'user_company_edit_sheet.dart';
 import 'user_company_settings_card.dart';
 import 'user_email_subscription_card.dart';
+import 'user_logout_card.dart';
 import 'user_otp_verification_sheet.dart';
 import 'user_password_change_sheet.dart';
 import 'user_profile_edit_sheet.dart';
@@ -121,6 +124,8 @@ class _UserProfileSettingsTabState
         const SizedBox(height: OpenVtsSpacing.sm),
         UserProfileInfoCard(profile: draft),
         const SizedBox(height: OpenVtsSpacing.sm),
+        UserAddressCard(address: draft.address),
+        const SizedBox(height: OpenVtsSpacing.sm),
         UserVerificationCard(
           isEmailVerified: draft.isEmailVerified,
           isMobileVerified: draft.isMobileVerified,
@@ -155,8 +160,22 @@ class _UserProfileSettingsTabState
           },
           onSubscribe: _subscribeEmail,
         ),
+        const SizedBox(height: OpenVtsSpacing.sm),
+        UserLogoutCard(onLogout: _handleLogout),
       ],
     );
+  }
+
+  Future<void> _handleLogout() async {
+    final activeRole = ref.read(authControllerProvider).activeRole;
+    final loggedOut = await ref.read(authControllerProvider.notifier).logout();
+    if (!mounted) {
+      return;
+    }
+    final label = (loggedOut ?? activeRole)?.displayLabel;
+    if (label != null) {
+      ToastHelper.showInfo('Logged out from $label');
+    }
   }
 
   Future<void> _pickPhoto() async {

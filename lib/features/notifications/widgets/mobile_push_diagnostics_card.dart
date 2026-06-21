@@ -38,7 +38,8 @@ class MobilePushDiagnosticsCard extends ConsumerWidget {
           _DiagnosticRow(
             label: 'Permission',
             value: _formatPermissionStatus(pushState.permissionStatus),
-            valueColor: _getPermissionColor(pushState.isPermissionGranted, theme),
+            valueColor:
+                _getPermissionColor(pushState.isPermissionGranted, theme),
           ),
           _DiagnosticRow(
             label: 'Firebase',

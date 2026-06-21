@@ -357,12 +357,10 @@ class _GroupChips extends StatelessWidget {
                 vertical: 8,
               ),
               decoration: BoxDecoration(
-                color:
-                    isActive ? primary : surface,
+                color: isActive ? primary : surface,
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                 border: Border.all(
-                  color:
-                      isActive ? primary : outlineVariant,
+                  color: isActive ? primary : outlineVariant,
                 ),
               ),
               child: Text(
@@ -373,9 +371,7 @@ class _GroupChips extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: isActive
-                      ? onPrimary
-                      : onSurfaceVariant,
+                  color: isActive ? onPrimary : onSurfaceVariant,
                 ),
               ),
             ),
@@ -451,9 +447,7 @@ class _DateRangeRow extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 12,
-                            color: label == null
-                                ? onSurfaceVariant
-                                : onSurface,
+                            color: label == null ? onSurfaceVariant : onSurface,
                           ),
                         ),
                       ),
@@ -708,7 +702,9 @@ class _ActivityDetailSheet extends StatelessWidget {
                             timeLabel,
                             style: TextStyle(
                               fontSize: 12,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -718,7 +714,9 @@ class _ActivityDetailSheet extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: OpenVtsSpacing.md),
-              Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+              Divider(
+                  height: 1,
+                  color: Theme.of(context).colorScheme.outlineVariant),
               Expanded(
                 child: ListView(
                   controller: scrollController,
@@ -767,7 +765,9 @@ class _ActivityDetailSheet extends StatelessWidget {
                             icon: const Icon(Icons.copy, size: 14),
                             label: const Text('Copy'),
                             style: TextButton.styleFrom(
-                              foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                              foregroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8),
                               minimumSize: const Size(0, 28),
@@ -784,7 +784,9 @@ class _ActivityDetailSheet extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                          border: Border.all(
+                              color:
+                                  Theme.of(context).colorScheme.outlineVariant),
                         ),
                         child: SelectableText(
                           metaJson,

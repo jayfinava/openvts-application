@@ -32,7 +32,12 @@ class SuperadminDashboardService {
             {'label': 'Feb\'26', 'vehicles': 0, 'users': 0, 'licenses': 0},
             {'label': 'Mar\'26', 'vehicles': 0, 'users': 0, 'licenses': 0},
             {'label': 'Apr\'26', 'vehicles': 0, 'users': 0, 'licenses': 350000},
-            {'label': 'May\'26', 'vehicles': 10, 'users': 9, 'licenses': 2914018},
+            {
+              'label': 'May\'26',
+              'vehicles': 10,
+              'users': 9,
+              'licenses': 2914018
+            },
           ],
           'vehicleStatus': <String, dynamic>{
             'totalDevices': 10,

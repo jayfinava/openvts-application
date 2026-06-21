@@ -435,7 +435,8 @@ class _ExpiryField extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.event_rounded, size: 18, color: OpenVtsColors.textSecondary),
+          const Icon(Icons.event_rounded,
+              size: 18, color: OpenVtsColors.textSecondary),
           const SizedBox(width: OpenVtsSpacing.sm),
           Expanded(
             child: Column(
@@ -451,9 +452,7 @@ class _ExpiryField extends ConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  value == null
-                      ? 'Optional'
-                      : formatter.formatDateTime(value!),
+                  value == null ? 'Optional' : formatter.formatDateTime(value!),
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),

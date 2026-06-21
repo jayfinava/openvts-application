@@ -54,4 +54,3 @@ class SuperadminSupportTicketCard extends StatelessWidget {
     );
   }
 }
-

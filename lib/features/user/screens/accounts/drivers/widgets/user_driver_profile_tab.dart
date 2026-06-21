@@ -390,7 +390,9 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: isDarkMode ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary,
+                color: isDarkMode
+                    ? OpenVtsColors.darkTextTertiary
+                    : OpenVtsColors.textTertiary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -404,7 +406,9 @@ class _InfoRow extends StatelessWidget {
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: isDarkMode ? OpenVtsColors.white : OpenVtsColors.textPrimary,
+                color: isDarkMode
+                    ? OpenVtsColors.white
+                    : OpenVtsColors.textPrimary,
                 fontWeight: FontWeight.w700,
               ),
             ),

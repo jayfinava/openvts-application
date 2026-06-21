@@ -548,7 +548,6 @@ class _StatusChip extends StatelessWidget {
   }
 }
 
-
 /*
           LayoutBuilder(
             builder: (context, constraints) {

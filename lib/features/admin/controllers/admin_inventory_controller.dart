@@ -297,7 +297,8 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
     return items;
   }
 
-  Future<AdminInventoryDevice?> createDevice(AdminCreateDeviceRequest request) async {
+  Future<AdminInventoryDevice?> createDevice(
+      AdminCreateDeviceRequest request) async {
     if (state.isCreating) return null;
     state = state.copyWith(isCreating: true, createErrorMessage: null);
     try {

@@ -37,9 +37,8 @@ List<int> heldKarpOptimalOrder({
     throw RouteOptimisationException('startIndex $startIndex out of range.');
   }
 
-  final int effectiveEnd = (roundTrip || endIndex < 0 || endIndex == startIndex)
-      ? -1
-      : endIndex;
+  final int effectiveEnd =
+      (roundTrip || endIndex < 0 || endIndex == startIndex) ? -1 : endIndex;
 
   final int full = (1 << n) - 1;
   const double inf = double.infinity;

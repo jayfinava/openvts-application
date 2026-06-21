@@ -223,37 +223,37 @@ class AdminAddressSettings {
     return AdminAddressSettings(
       id: _firstInt(source, const ['id', 'addressId']),
       addressLine: _firstString(source, const [
-            'addressLine',
-            'address_line',
-            'address',
-            'line',
-          ]),
+        'addressLine',
+        'address_line',
+        'address',
+        'line',
+      ]),
       countryCode: _firstString(source, const [
-            'countryCode',
-            'country_code',
-            'country',
-          ]),
+        'countryCode',
+        'country_code',
+        'country',
+      ]),
       stateCode: _firstString(source, const [
-            'stateCode',
-            'state_code',
-            'state',
-          ]),
+        'stateCode',
+        'state_code',
+        'state',
+      ]),
       cityName: cityName,
       cityId: cityId,
       cityCode: cityCode,
       pincode: _firstString(source, const [
-            'pincode',
-            'pinCode',
-            'pin_code',
-            'zip',
-            'zipCode',
-          ]),
+        'pincode',
+        'pinCode',
+        'pin_code',
+        'zip',
+        'zipCode',
+      ]),
       fullAddress: _firstString(source, const [
-            'fullAddress',
-            'full_address',
-            'formatted',
-            'address',
-          ]),
+        'fullAddress',
+        'full_address',
+        'formatted',
+        'address',
+      ]),
     );
   }
 
@@ -486,10 +486,29 @@ class AdminProfileSettings {
       final rootLevelAddressFields = <String, dynamic>{};
 
       // Look for address fields at root level and copy them
-      for (final key in ['addressLine', 'address', 'line', 'countryCode', 'country',
-                         'stateCode', 'state', 'cityName', 'city_name', 'cityname', 'city',
-                         'cityId', 'city_id', 'cityCode', 'city_code', 'pincode',
-                         'pinCode', 'zip', 'zipCode', 'fullAddress', 'formatted']) {
+      for (final key in [
+        'addressLine',
+        'address',
+        'line',
+        'countryCode',
+        'country',
+        'stateCode',
+        'state',
+        'cityName',
+        'city_name',
+        'cityname',
+        'city',
+        'cityId',
+        'city_id',
+        'cityCode',
+        'city_code',
+        'pincode',
+        'pinCode',
+        'zip',
+        'zipCode',
+        'fullAddress',
+        'formatted'
+      ]) {
         if (source.containsKey(key)) {
           rootLevelAddressFields[key] = source[key];
         }
@@ -500,9 +519,8 @@ class AdminProfileSettings {
       }
     }
 
-    final parsedAddress = addressMap != null
-        ? AdminAddressSettings.fromJson(addressMap)
-        : null;
+    final parsedAddress =
+        addressMap != null ? AdminAddressSettings.fromJson(addressMap) : null;
 
     // Extract city name: prefer parsed address city, then try root-level
     String? rootCityName;

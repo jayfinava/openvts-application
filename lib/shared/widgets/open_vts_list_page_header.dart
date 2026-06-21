@@ -96,25 +96,32 @@ class OpenVtsListPageCreateButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.brandInk;
+    final foregroundColor =
+        isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.brandInk;
+
     return ElevatedButton.icon(
       onPressed: isLoading ? null : onPressed,
       icon: isLoading
-          ? const SizedBox.square(
+          ? SizedBox.square(
               dimension: 16,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: OpenVtsColors.white,
+                color: foregroundColor,
               ),
             )
-          : const Icon(Icons.add_rounded, size: 18),
+          : Icon(Icons.add_rounded, size: 18, color: foregroundColor),
       label: Text(label),
       style: ElevatedButton.styleFrom(
-        backgroundColor: OpenVtsColors.brandInk,
-        foregroundColor: OpenVtsColors.white,
-        disabledBackgroundColor: OpenVtsColors.brandInk.withValues(alpha: 0.72),
-        disabledForegroundColor: OpenVtsColors.white.withValues(alpha: 0.72),
+        backgroundColor: backgroundColor,
+        foregroundColor: foregroundColor,
+        disabledBackgroundColor: backgroundColor.withValues(alpha: 0.72),
+        disabledForegroundColor: foregroundColor.withValues(alpha: 0.72),
         elevation: 0,
-        side: const BorderSide(color: OpenVtsColors.white, width: 0.8),
+        side: BorderSide(color: borderColor, width: 0.8),
         padding: const EdgeInsets.symmetric(
           horizontal: OpenVtsSpacing.md,
           vertical: OpenVtsSpacing.sm,

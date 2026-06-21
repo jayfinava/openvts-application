@@ -26,8 +26,7 @@ final authControllerProvider =
     authService: ref.watch(authServiceProvider),
     mobilePushController: ref.watch(mobilePushControllerProvider.notifier),
     tokenStorage: ref.watch(tokenStorageProvider),
-    appPreferencesCtrl:
-        ref.watch(appLocalizationPreferencesProvider.notifier),
+    appPreferencesCtrl: ref.watch(appLocalizationPreferencesProvider.notifier),
   );
 });
 

@@ -393,7 +393,8 @@ class _TopBar extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         color: OpenVtsColors.brandInk,
-        border: Border(bottom: BorderSide(color: OpenVtsColors.white, width: 1)),
+        border:
+            Border(bottom: BorderSide(color: OpenVtsColors.white, width: 1)),
       ),
       padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
       child: Row(
@@ -840,8 +841,7 @@ class _MetaChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon,
-              size: 12, color: OpenVtsColors.white),
+          Icon(icon, size: 12, color: OpenVtsColors.white),
           const SizedBox(width: 4),
           Text(
             label,

@@ -72,7 +72,7 @@ class OpenVtsSegmentedPillControl<T> extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final outerBackgroundColor =
-        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated;
+        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.background;
     final outerBorderColor =
         isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
 
@@ -126,14 +126,18 @@ class OpenVtsSegmentedPillControl<T> extends StatelessWidget {
     final isSelected = segment.value == selectedValue;
 
     final backgroundColor = isSelected
-        ? (isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated)
+        ? (isDark ? OpenVtsColors.darkSurface : OpenVtsColors.brandInk)
         : Colors.transparent;
 
-    final textColor =
-        isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
+    final textColor = isSelected
+        ? (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.white)
+        : (isDark
+            ? OpenVtsColors.darkTextPrimary
+            : OpenVtsColors.textSecondary);
 
-    final borderColor =
-        isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
+    final borderColor = isDark
+        ? OpenVtsColors.darkBorder
+        : (isSelected ? OpenVtsColors.brandInk : OpenVtsColors.border);
 
     return Material(
       color: backgroundColor,

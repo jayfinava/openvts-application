@@ -167,9 +167,7 @@ class _OpenVtsSearchableDropdownState<T>
 
     final labelColor = !widget.enabled
         ? OpenVtsColors.textTertiary
-        : (isDark
-            ? OpenVtsColors.darkTextPrimary
-            : OpenVtsColors.textPrimary);
+        : (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,10 +290,10 @@ class _OpenVtsSearchableDropdownState<T>
           title: widget.sheetTitle ?? widget.label,
           options: widget.options,
           selectedValue: widget.value,
-          searchHintText: widget.searchHintText ??
-              'Search ${widget.label.toLowerCase()}',
-          emptyMessage:
-              widget.emptyMessage ?? 'No matching ${widget.label.toLowerCase()}',
+          searchHintText:
+              widget.searchHintText ?? 'Search ${widget.label.toLowerCase()}',
+          emptyMessage: widget.emptyMessage ??
+              'No matching ${widget.label.toLowerCase()}',
         );
       },
     );
@@ -368,9 +366,8 @@ class _ValueDisplay<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark
-        ? OpenVtsColors.darkTextPrimary
-        : OpenVtsColors.textPrimary;
+    final textColor =
+        isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
 
     if (option == null) {
       return Text(
@@ -528,7 +525,8 @@ class _SearchableDropdownSheetState<T>
                         onPressed: () => Navigator.of(context)
                             .pop<_PickerResult<T>>(_PickerResult.cleared()),
                         style: TextButton.styleFrom(
-                          foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.onSurfaceVariant,
                           visualDensity: VisualDensity.compact,
                         ),
                         child: const Text('Clear'),
@@ -720,8 +718,7 @@ class _OptionRow<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasSubtitle = (option.subtitle ?? '').trim().isNotEmpty;
-    final background =
-        isSelected ? OpenVtsColors.surface : Colors.transparent;
+    final background = isSelected ? OpenVtsColors.surface : Colors.transparent;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final selectedBackground =
         isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface;

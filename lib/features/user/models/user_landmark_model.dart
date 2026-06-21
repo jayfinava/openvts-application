@@ -608,6 +608,48 @@ class UserPoi {
   }
 }
 
+class UserRouteAlert {
+  const UserRouteAlert({
+    required this.enabled,
+    required this.toleranceMeters,
+    required this.cooldownMinutes,
+  });
+
+  final bool enabled;
+  final double toleranceMeters;
+  final int cooldownMinutes;
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'enabled': enabled,
+      'toleranceMeters': toleranceMeters,
+      'cooldownMinutes': cooldownMinutes,
+    };
+  }
+
+  factory UserRouteAlert.fromJson(dynamic json) {
+    final source = _asMap(json);
+    return UserRouteAlert(
+      enabled: _toBool(
+            _firstValue(source, const ['enabled', 'isEnabled', 'active']),
+          ) ??
+          false,
+      toleranceMeters: _toDouble(
+            _firstValue(
+              source,
+              const ['toleranceMeters', 'tolerance_m', 'tolerance'],
+            ),
+          ) ??
+          100,
+      cooldownMinutes: _firstInt(
+            source,
+            const ['cooldownMinutes', 'cooldown_minutes', 'cooldown'],
+          ) ??
+          10,
+    );
+  }
+}
+
 class UserRouteLandmark {
   const UserRouteLandmark({
     required this.id,
@@ -619,6 +661,8 @@ class UserRouteLandmark {
     required this.createdAt,
     required this.updatedAt,
     required this.geodata,
+    required this.assignedVehicleIds,
+    required this.routeAlert,
   });
 
   final String id;
@@ -630,6 +674,10 @@ class UserRouteLandmark {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final UserLineGeoData? geodata;
+  final List<String> assignedVehicleIds;
+  final UserRouteAlert? routeAlert;
+
+  int get assignedVehicleCount => assignedVehicleIds.length;
 
   factory UserRouteLandmark.fromJson(dynamic json) {
     final source = _unwrapSingle(json, const [
@@ -662,6 +710,32 @@ class UserRouteLandmark {
       }
     }
 
+    final vehicleIdsRaw = _firstValue(
+      source,
+      const [
+        'assignedVehicleIds',
+        'assigned_vehicle_ids',
+        'vehicleIds',
+        'vehicles'
+      ],
+    );
+    List<String> vehicleIds = const <String>[];
+    if (vehicleIdsRaw is List) {
+      vehicleIds = vehicleIdsRaw
+          .map((e) => e?.toString().trim() ?? '')
+          .where((e) => e.isNotEmpty)
+          .toList();
+    }
+
+    final alertMap = _firstMap(
+      source,
+      const ['routeAlert', 'route_alert', 'alert', 'alertConfig'],
+    );
+    UserRouteAlert? routeAlert;
+    if (alertMap != null && alertMap.isNotEmpty) {
+      routeAlert = UserRouteAlert.fromJson(alertMap);
+    }
+
     return UserRouteLandmark(
       id: _firstId(source, const ['id', '_id', 'routeId']) ?? '',
       name: _firstString(source, const ['name', 'title', 'label']) ?? '',
@@ -686,6 +760,8 @@ class UserRouteLandmark {
       updatedAt:
           _parseDate(_firstValue(source, const ['updatedAt', 'updated_at'])),
       geodata: line,
+      assignedVehicleIds: vehicleIds,
+      routeAlert: routeAlert,
     );
   }
 
@@ -882,6 +958,7 @@ class CreateUserRouteRequest {
     this.color,
     this.toleranceMeters,
     this.isActive = true,
+    this.routeAlert,
   });
 
   final String name;
@@ -890,6 +967,7 @@ class CreateUserRouteRequest {
   final String? color;
   final double? toleranceMeters;
   final bool isActive;
+  final UserRouteAlert? routeAlert;
 
   void validate() {
     if (name.trim().isEmpty) {
@@ -902,7 +980,7 @@ class CreateUserRouteRequest {
 
   Map<String, dynamic> toJson() {
     validate();
-    return <String, dynamic>{
+    final payload = <String, dynamic>{
       'name': name.trim(),
       if (description != null) 'description': description!.trim(),
       if (color != null && color!.trim().isNotEmpty) 'color': color!.trim(),
@@ -919,6 +997,11 @@ class CreateUserRouteRequest {
         if (toleranceMeters != null) 'toleranceM': toleranceMeters,
       },
     };
+
+    // TODO: Uncomment this line once backend supports route alerts
+    // if (routeAlert != null) payload['routeAlert'] = routeAlert!.toJson();
+
+    return payload;
   }
 }
 
@@ -930,6 +1013,7 @@ class UpdateUserRouteRequest {
     this.toleranceMeters,
     this.isActive,
     this.geodata,
+    this.routeAlert,
   });
 
   final String? name;
@@ -938,6 +1022,7 @@ class UpdateUserRouteRequest {
   final double? toleranceMeters;
   final bool? isActive;
   final UserLineGeoData? geodata;
+  final UserRouteAlert? routeAlert;
 
   Map<String, dynamic> toJson() {
     final payload = <String, dynamic>{};
@@ -958,6 +1043,12 @@ class UpdateUserRouteRequest {
         if (toleranceMeters != null) 'toleranceM': toleranceMeters,
       };
     }
+
+    // TODO: Uncomment this line once backend supports route alerts
+    // if (routeAlert != null) {
+    //   payload['routeAlert'] = routeAlert!.toJson();
+    // }
+
     return payload;
   }
 }
@@ -1224,6 +1315,22 @@ String? _firstString(Map<String, dynamic> source, List<String> keys) {
   }
   if (value is num || value is bool) {
     return value.toString();
+  }
+  return null;
+}
+
+Map<String, dynamic>? _firstMap(
+    Map<String, dynamic> source, List<String> keys) {
+  for (final key in keys) {
+    if (source.containsKey(key) && source[key] != null) {
+      final value = source[key];
+      if (value is Map<String, dynamic>) {
+        return value;
+      }
+      if (value is Map) {
+        return value.map((k, v) => MapEntry(k.toString(), v));
+      }
+    }
   }
   return null;
 }

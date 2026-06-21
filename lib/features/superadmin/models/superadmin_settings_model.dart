@@ -49,8 +49,7 @@ enum SuperadminLayoutDirection {
   ltr,
   rtl;
 
-  String get apiValue =>
-      this == SuperadminLayoutDirection.rtl ? 'RTL' : 'LTR';
+  String get apiValue => this == SuperadminLayoutDirection.rtl ? 'RTL' : 'LTR';
 
   static SuperadminLayoutDirection fromValue(dynamic value) {
     final normalized = value?.toString().trim().toUpperCase();
@@ -94,8 +93,7 @@ enum SuperadminUnits {
   km,
   miles;
 
-  String get apiValue =>
-      this == SuperadminUnits.miles ? 'MILES' : 'KM';
+  String get apiValue => this == SuperadminUnits.miles ? 'MILES' : 'KM';
 
   static SuperadminUnits fromValue(dynamic value) {
     final normalized = value?.toString().trim().toUpperCase();
@@ -107,10 +105,9 @@ enum SuperadminGeocodingPrecision {
   twoDigit,
   threeDigit;
 
-  String get apiValue =>
-      this == SuperadminGeocodingPrecision.threeDigit
-          ? 'THREE_DIGIT'
-          : 'TWO_DIGIT';
+  String get apiValue => this == SuperadminGeocodingPrecision.threeDigit
+      ? 'THREE_DIGIT'
+      : 'TWO_DIGIT';
 
   static SuperadminGeocodingPrecision fromValue(dynamic value) {
     final normalized = value?.toString().trim().toUpperCase();
@@ -219,14 +216,19 @@ class SuperadminAddressSettings {
 
     return SuperadminAddressSettings(
       id: _firstInt(source, const ['id', 'addressId']),
-      addressLine: _firstString(source, const ['addressLine', 'address_line', 'address', 'line']),
-      countryCode: _firstString(source, const ['countryCode', 'country_code', 'country']),
-      stateCode: _firstString(source, const ['stateCode', 'state_code', 'state']),
+      addressLine: _firstString(
+          source, const ['addressLine', 'address_line', 'address', 'line']),
+      countryCode: _firstString(
+          source, const ['countryCode', 'country_code', 'country']),
+      stateCode:
+          _firstString(source, const ['stateCode', 'state_code', 'state']),
       cityName: cityName,
       cityId: cityId,
       cityCode: cityCode,
-      pincode: _firstString(source, const ['pincode', 'pinCode', 'pin_code', 'zip', 'zipCode']),
-      fullAddress: _firstString(source, const ['fullAddress', 'full_address', 'formatted']),
+      pincode: _firstString(
+          source, const ['pincode', 'pinCode', 'pin_code', 'zip', 'zipCode']),
+      fullAddress: _firstString(
+          source, const ['fullAddress', 'full_address', 'formatted']),
     );
   }
 
@@ -459,9 +461,24 @@ class SuperadminProfileSettings {
       final rootLevelAddressFields = <String, dynamic>{};
 
       // Look for address fields at root level and copy them
-      for (final key in ['addressLine', 'address', 'line', 'countryCode', 'country',
-                         'stateCode', 'state', 'cityName', 'city', 'cityId', 'pincode',
-                         'pinCode', 'zip', 'zipCode', 'fullAddress', 'formatted']) {
+      for (final key in [
+        'addressLine',
+        'address',
+        'line',
+        'countryCode',
+        'country',
+        'stateCode',
+        'state',
+        'cityName',
+        'city',
+        'cityId',
+        'pincode',
+        'pinCode',
+        'zip',
+        'zipCode',
+        'fullAddress',
+        'formatted'
+      ]) {
         if (source.containsKey(key)) {
           rootLevelAddressFields[key] = source[key];
         }
@@ -478,8 +495,10 @@ class SuperadminProfileSettings {
       username: _firstString(source, const ['username', 'userName']),
       email: _firstString(source, const ['email']),
       mobilePrefix: _firstString(source, const ['mobilePrefix', 'phonePrefix']),
-      mobileNumber: _firstString(source, const ['mobileNumber', 'phoneNumber', 'mobile']),
-      profileUrl: _firstString(source, const ['profileUrl', 'avatar', 'profile']),
+      mobileNumber:
+          _firstString(source, const ['mobileNumber', 'phoneNumber', 'mobile']),
+      profileUrl:
+          _firstString(source, const ['profileUrl', 'avatar', 'profile']),
       credits: _firstDouble(source, const ['credits', 'balance']),
       createdAt: _firstDate(source, const ['createdAt', 'created']),
       updatedAt: _firstDate(source, const ['updatedAt', 'modified']),
@@ -840,8 +859,7 @@ class SuperadminLocalizationSettings {
       language: _firstString(source, const ['language', 'lang']) ?? 'en',
       layoutDirection:
           SuperadminLayoutDirection.fromValue(source['layoutDirection']),
-      dateFormat:
-          _firstString(source, const ['dateFormat']) ?? 'YYYY-MM-DD',
+      dateFormat: _firstString(source, const ['dateFormat']) ?? 'YYYY-MM-DD',
       use24Hour: _firstBool(source, const ['use24Hour']) ?? true,
       theme: SuperadminTheme.fromValue(source['theme']),
       timezoneOffset:
@@ -907,7 +925,8 @@ class SuperadminLanguageOption {
   factory SuperadminLanguageOption.fromJson(dynamic json) {
     final source = _asMap(json);
     final code = _firstString(source, const ['code', 'value', 'key']) ?? '';
-    final label = _firstString(source, const ['label', 'name', 'title']) ?? code;
+    final label =
+        _firstString(source, const ['label', 'name', 'title']) ?? code;
     return SuperadminLanguageOption(code: code, label: label);
   }
 
@@ -935,7 +954,8 @@ class SuperadminDateFormatOption {
     }
     final source = _asMap(json);
     final value = _firstString(source, const ['value', 'format', 'code']) ?? '';
-    final label = _firstString(source, const ['label', 'name', 'title']) ?? value;
+    final label =
+        _firstString(source, const ['label', 'name', 'title']) ?? value;
     return SuperadminDateFormatOption(value: value, label: label);
   }
 
@@ -975,8 +995,7 @@ class SuperadminSoftwareConfig {
         source['geocodingPrecision'],
       ),
       backupDays: _firstInt(source, const ['backupDays']) ?? 365,
-      allowDemoLogin:
-          _firstBool(source, const ['allowDemoLogin']) ?? false,
+      allowDemoLogin: _firstBool(source, const ['allowDemoLogin']) ?? false,
       allowSignup: _firstBool(source, const ['allowSignup']) ?? false,
       signupCredits: _firstInt(source, const ['signupCredits']) ?? 0,
     );

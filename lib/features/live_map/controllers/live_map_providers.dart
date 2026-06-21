@@ -101,8 +101,8 @@ final liveMapVehicleDetailsProvider =
 );
 
 /// Role-aware vehicle history controller (Quick Track tab).
-final liveMapVehicleHistoryControllerProvider = StateNotifierProvider
-    .autoDispose<LiveMapVehicleHistoryController,
+final liveMapVehicleHistoryControllerProvider =
+    StateNotifierProvider.autoDispose<LiveMapVehicleHistoryController,
         SuperadminVehicleHistoryState>(
   (ref) {
     return LiveMapVehicleHistoryController(

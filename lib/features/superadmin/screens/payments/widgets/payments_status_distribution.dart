@@ -151,7 +151,8 @@ class _LegendItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+            border:
+                Border.all(color: Theme.of(context).colorScheme.outlineVariant),
           ),
         ),
         const SizedBox(width: OpenVtsSpacing.xxs),

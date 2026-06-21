@@ -44,7 +44,8 @@ class SuperadminSettingsController
     unawaited(_loadForSection(section));
   }
 
-  Future<void> refreshCurrentSection() => _loadForSection(state.selectedSection);
+  Future<void> refreshCurrentSection() =>
+      _loadForSection(state.selectedSection);
 
   Future<void> _loadForSection(SuperadminSettingsSection section) async {
     switch (section) {
@@ -171,7 +172,8 @@ class SuperadminSettingsController
   }
 
   Future<bool> requestEmailOtp() async {
-    state = state.copyWith(isRequestingEmailOtp: true, sectionErrorMessage: null);
+    state =
+        state.copyWith(isRequestingEmailOtp: true, sectionErrorMessage: null);
     try {
       await _service.requestEmailOtp();
       state = state.copyWith(isRequestingEmailOtp: false);
@@ -201,7 +203,8 @@ class SuperadminSettingsController
   }
 
   Future<bool> requestWhatsAppOtp() async {
-    state = state.copyWith(isRequestingWhatsAppOtp: true, sectionErrorMessage: null);
+    state = state.copyWith(
+        isRequestingWhatsAppOtp: true, sectionErrorMessage: null);
     try {
       await _service.requestWhatsAppOtp();
       state = state.copyWith(isRequestingWhatsAppOtp: false);

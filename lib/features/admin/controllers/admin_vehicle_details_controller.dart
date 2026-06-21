@@ -181,7 +181,8 @@ class AdminVehicleDetailsController
 
       var updatedVehicle = state.vehicle;
       if (updatedVehicle?.primaryUser == null && linkedUsers.length == 1) {
-        updatedVehicle = updatedVehicle?.copyWith(primaryUser: linkedUsers.first);
+        updatedVehicle =
+            updatedVehicle?.copyWith(primaryUser: linkedUsers.first);
       }
 
       state = state.copyWith(

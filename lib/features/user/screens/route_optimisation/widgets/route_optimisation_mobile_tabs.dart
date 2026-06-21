@@ -52,12 +52,16 @@ class RouteOptimisationMobileTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? Colors.black : Colors.white;
+    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
+
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: bgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: Colors.white),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         children: [
@@ -96,6 +100,16 @@ class _Segment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final segmentBgColor = selected
+        ? (isDark ? Colors.black : OpenVtsColors.brandInk)
+        : Colors.transparent;
+    final segmentBorderColor = isDark ? Colors.white : OpenVtsColors.brandInk;
+    final segmentTextColor = isDark
+        ? Colors.white
+        : (selected ? Colors.white : OpenVtsColors.brandInk);
+    final segmentIconColor = isDark ? Colors.white : segmentTextColor;
+
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -108,14 +122,14 @@ class _Segment extends StatelessWidget {
             vertical: 6,
           ),
           decoration: BoxDecoration(
-            color: selected ? Colors.black : Colors.transparent,
+            color: segmentBgColor,
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-            border: selected ? Border.all(color: Colors.white) : null,
+            border: selected ? Border.all(color: segmentBorderColor) : null,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(tab.icon, size: 14, color: Colors.white),
+              Icon(tab.icon, size: 14, color: segmentIconColor),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
@@ -123,7 +137,7 @@ class _Segment extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-                    color: Colors.white,
+                    color: segmentTextColor,
                     fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                   ),
                 ),
@@ -149,6 +163,12 @@ class _Badge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDot = text == '•';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final badgeBgColor = isDot
+        ? Colors.transparent
+        : (isDark ? Colors.black : OpenVtsColors.brandInk);
+    final badgeBorderColor = isDark ? Colors.white : OpenVtsColors.brandInk;
+
     return Container(
       padding: isDot
           ? const EdgeInsets.all(0)
@@ -156,9 +176,9 @@ class _Badge extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 18, minHeight: 14),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: isDot ? Colors.transparent : Colors.black,
+        color: badgeBgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: isDot ? null : Border.all(color: Colors.white),
+        border: isDot ? null : Border.all(color: badgeBorderColor),
       ),
       child: Text(
         text,

@@ -276,7 +276,8 @@ class _VehicleLiveStatusSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant),
                 ),
                 child: Icon(
                   Icons.directions_car_outlined,
@@ -302,7 +303,8 @@ class _VehicleLiveStatusSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant),
                 ),
                 child: Text(
                   'LIVE',
@@ -430,7 +432,8 @@ class _RevenueForecastSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant),
                 ),
                 child: Icon(
                   Icons.trending_up_rounded,
@@ -509,7 +512,10 @@ class _RevenueForecastSection extends StatelessWidget {
               const SizedBox(width: OpenVtsSpacing.sm),
               _RevenueLegendItem(
                 label: 'Projected',
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.45),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.45),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
               Expanded(
@@ -538,7 +544,8 @@ class _RevenueForecastSection extends StatelessWidget {
                     ),
                     _InfoRow(
                       label: 'Pending payments',
-                      value: '${formatCurrency(revenue.pendingAmount, currency)} · '
+                      value:
+                          '${formatCurrency(revenue.pendingAmount, currency)} · '
                           '${revenue.pendingCount} invoices',
                     ),
                   ],
@@ -554,7 +561,8 @@ class _RevenueForecastSection extends StatelessWidget {
                     vertical: 8,
                   ),
                   foregroundColor: Theme.of(context).colorScheme.onSurface,
-                  side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+                  side: BorderSide(
+                      color: Theme.of(context).colorScheme.outlineVariant),
                   textStyle: OpenVtsTypography.meta.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -643,7 +651,8 @@ class _StatusPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(icon,
+              size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
           const SizedBox(width: OpenVtsSpacing.xxs),
           Text(
             label,
@@ -723,7 +732,8 @@ class _RevenueProgressBar extends StatelessWidget {
       height: 12,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final markerDx = (constraints.maxWidth * markerLeft).clamp(1.0, constraints.maxWidth - 2);
+          final markerDx = (constraints.maxWidth * markerLeft)
+              .clamp(1.0, constraints.maxWidth - 2);
 
           return Stack(
             clipBehavior: Clip.none,
@@ -734,11 +744,13 @@ class _RevenueProgressBar extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                   child: ColoredBox(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: FractionallySizedBox(
-                        widthFactor: (collectedPct.clamp(0, 100) / 100).toDouble(),
+                        widthFactor:
+                            (collectedPct.clamp(0, 100) / 100).toDouble(),
                         child: ColoredBox(
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -754,7 +766,10 @@ class _RevenueProgressBar extends StatelessWidget {
                 child: Container(
                   width: 2,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.45),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.45),
                     borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                   ),
                 ),

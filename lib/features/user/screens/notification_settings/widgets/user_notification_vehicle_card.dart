@@ -37,9 +37,7 @@ class UserNotificationVehicleCard extends StatelessWidget {
                   color: isDark ? Colors.black : OpenVtsColors.surface,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
                   border: Border.all(
-                    color: isDark
-                        ? OpenVtsColors.white
-                        : OpenVtsColors.border,
+                    color: isDark ? OpenVtsColors.white : OpenVtsColors.border,
                   ),
                 ),
                 child: Icon(

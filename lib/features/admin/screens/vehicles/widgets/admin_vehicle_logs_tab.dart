@@ -39,7 +39,8 @@ class AdminVehicleLogsTab extends ConsumerStatefulWidget {
   final Future<void> Function(DateTime? from, DateTime? to) onApplyRange;
 
   @override
-  ConsumerState<AdminVehicleLogsTab> createState() => _AdminVehicleLogsTabState();
+  ConsumerState<AdminVehicleLogsTab> createState() =>
+      _AdminVehicleLogsTabState();
 }
 
 class _AdminVehicleLogsTabState extends ConsumerState<AdminVehicleLogsTab> {
@@ -306,7 +307,8 @@ class _LogCard extends ConsumerWidget {
                     ),
                   ),
                 if (log.acc != null) ...[
-                  if (log.ignition != null) const SizedBox(width: OpenVtsSpacing.sm),
+                  if (log.ignition != null)
+                    const SizedBox(width: OpenVtsSpacing.sm),
                   Expanded(
                     child: _StatusChip(
                       label: 'ACC',
@@ -408,15 +410,15 @@ class _StatusChip extends StatelessWidget {
           Icon(
             isActive ? Icons.check_circle_rounded : Icons.cancel_rounded,
             size: 12,
-            color: isActive ? OpenVtsColors.success : OpenVtsColors.textTertiary,
+            color:
+                isActive ? OpenVtsColors.success : OpenVtsColors.textTertiary,
           ),
           const SizedBox(width: 4),
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: isActive
-                  ? OpenVtsColors.success
-                  : OpenVtsColors.textTertiary,
+              color:
+                  isActive ? OpenVtsColors.success : OpenVtsColors.textTertiary,
               fontSize: 10,
               fontWeight: FontWeight.w600,
             ),

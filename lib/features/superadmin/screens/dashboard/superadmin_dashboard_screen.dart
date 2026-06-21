@@ -37,8 +37,7 @@ class _SuperadminDashboardScreenState
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(superadminDashboardControllerProvider);
-    final controller =
-        ref.read(superadminDashboardControllerProvider.notifier);
+    final controller = ref.read(superadminDashboardControllerProvider.notifier);
 
     return OpenVtsPageScaffold(
       title: 'Dashboard',
@@ -118,8 +117,8 @@ class _SuperadminDashboardScreenState
                     builder: (context, ref, _) {
                       final dashboardState =
                           ref.watch(superadminDashboardControllerProvider);
-                      final dashboardController = ref.read(
-                          superadminDashboardControllerProvider.notifier);
+                      final dashboardController = ref
+                          .read(superadminDashboardControllerProvider.notifier);
                       return _AdoptionGrowthSection(
                         points: _pointsForRange(dashboard.adoptionGrowth),
                         selectedRange: _selectedRange,
@@ -147,7 +146,8 @@ class _SuperadminDashboardScreenState
                   _ActivityLogsSection(
                     logs: dashboard.activityLogs.items,
                     state: state,
-                    onOpenFilters: () => _openActivityFilterSheet(context, state),
+                    onOpenFilters: () =>
+                        _openActivityFilterSheet(context, state),
                     onClearFilters: state.hasActiveFilters
                         ? () => controller.clearFilters()
                         : null,
@@ -210,7 +210,8 @@ class _SuperadminDashboardScreenState
         var selectedActorId = state.selectedActorId;
         var fromDate = state.fromDate;
         var toDate = state.toDate;
-        final actors = state.dashboard?.activityActors ?? const <SuperadminActorOption>[];
+        final actors =
+            state.dashboard?.activityActors ?? const <SuperadminActorOption>[];
 
         return StatefulBuilder(
           builder: (context, setModalState) {
@@ -579,7 +580,8 @@ class _AdoptionGrowthSection extends StatelessWidget {
           if (latestPoint != null) ...[
             const SizedBox(height: OpenVtsSpacing.sm),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.md),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.md),
               child: Wrap(
                 spacing: OpenVtsSpacing.sm,
                 runSpacing: OpenVtsSpacing.sm,
@@ -642,7 +644,8 @@ class _AdoptionGrowthSection extends StatelessWidget {
                     ? const OpenVtsEmptyState(
                         key: ValueKey('empty-adoption-chart'),
                         title: 'No adoption data',
-                        message: 'The overview response does not include chart points yet.',
+                        message:
+                            'The overview response does not include chart points yet.',
                       )
                     : KeyedSubtree(
                         key: ValueKey<String>(
@@ -684,53 +687,52 @@ class _RangeSelector extends StatelessWidget {
         padding: const EdgeInsets.all(3),
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: _DashboardChartRange.values
-              .map(
-                (range) {
-                  final isSelected = selectedRange == range;
+          children: _DashboardChartRange.values.map(
+            (range) {
+              final isSelected = selectedRange == range;
 
-                  return Material(
-                    color: Colors.transparent,
-                    child: InkWell(
+              return Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+                  onTap: () => onRangeChanged(range),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    curve: Curves.easeOutCubic,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: OpenVtsSpacing.xs,
+                      vertical: OpenVtsSpacing.xxs + 1,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? theme.colorScheme.primaryContainer
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                      onTap: () => onRangeChanged(range),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 180),
-                        curve: Curves.easeOutCubic,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: OpenVtsSpacing.xs,
-                          vertical: OpenVtsSpacing.xxs + 1,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? theme.colorScheme.primaryContainer
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                    color: theme.colorScheme.primary.withValues(alpha: 0.08),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ]
-                              : null,
-                        ),
-                        child: Text(
-                          range.label,
-                          style: OpenVtsTypography.meta.copyWith(
-                            color: isSelected
-                                ? theme.colorScheme.onPrimaryContainer
-                                : theme.colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: theme.colorScheme.primary
+                                    .withValues(alpha: 0.08),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Text(
+                      range.label,
+                      style: OpenVtsTypography.meta.copyWith(
+                        color: isSelected
+                            ? theme.colorScheme.onPrimaryContainer
+                            : theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                  );
-                },
-              )
-              .toList(growable: false),
+                  ),
+                ),
+              );
+            },
+          ).toList(growable: false),
         ),
       ),
     );
@@ -797,8 +799,7 @@ class _LegendDot extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: color.withValues(
-                          alpha: isSelected ? 0.18 : 0.08),
+                      color: color.withValues(alpha: isSelected ? 0.18 : 0.08),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
@@ -943,7 +944,8 @@ class _AdoptionChart extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: [
                   theme.colorScheme.surface,
-                  Color.lerp(theme.colorScheme.surface, theme.colorScheme.onSurface, 0.08) ??
+                  Color.lerp(theme.colorScheme.surface,
+                          theme.colorScheme.onSurface, 0.08) ??
                       theme.colorScheme.surface,
                 ],
               ),
@@ -985,8 +987,10 @@ class _AdoptionChart extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                          border: Border.all(color: theme.colorScheme.outlineVariant),
+                          borderRadius:
+                              BorderRadius.circular(OpenVtsRadius.pill),
+                          border: Border.all(
+                              color: theme.colorScheme.outlineVariant),
                         ),
                         child: Text(
                           latestPoint.label,
@@ -1018,7 +1022,8 @@ class _AdoptionChart extends StatelessWidget {
                         const SizedBox(width: OpenVtsSpacing.xs),
                         Expanded(
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+                            borderRadius:
+                                BorderRadius.circular(OpenVtsRadius.md),
                             child: CustomPaint(
                               painter: _AdoptionChartPainter(
                                 series: filteredSeries,
@@ -1083,7 +1088,8 @@ class _AdoptionChart extends StatelessWidget {
       0,
       (max, item) => math.max(
         max,
-        item.values.fold<int>(0, (innerMax, value) => math.max(innerMax, value)),
+        item.values
+            .fold<int>(0, (innerMax, value) => math.max(innerMax, value)),
       ),
     );
 
@@ -1195,7 +1201,8 @@ class _AdoptionChartPainter extends CustomPainter {
         oldDelegate.backgroundColor != backgroundColor;
   }
 
-  void _drawPlotSurface(Canvas canvas, Rect plotRect, Color surfaceColor, Color outlineColor) {
+  void _drawPlotSurface(
+      Canvas canvas, Rect plotRect, Color surfaceColor, Color outlineColor) {
     canvas.drawRect(
       plotRect,
       Paint()
@@ -1288,7 +1295,8 @@ class _AdoptionChartPainter extends CustomPainter {
 
     return List<Offset>.generate(values.length, (index) {
       final x = plotRect.left + (plotRect.width * index / (values.length - 1));
-      final y = plotRect.bottom - ((values[index] / maxValue) * plotRect.height);
+      final y =
+          plotRect.bottom - ((values[index] / maxValue) * plotRect.height);
       return Offset(x, y.clamp(plotRect.top, plotRect.bottom));
     });
   }
@@ -1368,7 +1376,8 @@ class _AdoptionChartPainter extends CustomPainter {
 
     while (distance < totalDistance) {
       final dashStart = start + direction * distance;
-      final dashEnd = start + direction * math.min(distance + dashWidth, totalDistance);
+      final dashEnd =
+          start + direction * math.min(distance + dashWidth, totalDistance);
       canvas.drawLine(dashStart, dashEnd, paint);
       distance += dashWidth + dashSpace;
     }
@@ -1426,7 +1435,8 @@ class _XAxisLabels extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: List<Widget>.generate(points.length, (index) {
               final point = points[index];
-              final showLabel = index == points.length - 1 || index % interval == 0;
+              final showLabel =
+                  index == points.length - 1 || index % interval == 0;
               final style = OpenVtsTypography.meta.copyWith(
                 color: index == points.length - 1
                     ? theme.colorScheme.onSurfaceVariant
@@ -1439,9 +1449,8 @@ class _XAxisLabels extends StatelessWidget {
 
               return Expanded(
                 child: Align(
-                  alignment: useRotation
-                      ? Alignment.topLeft
-                      : Alignment.topCenter,
+                  alignment:
+                      useRotation ? Alignment.topLeft : Alignment.topCenter,
                   child: !showLabel
                       ? const SizedBox.shrink()
                       : useRotation
@@ -1594,7 +1603,8 @@ class _VehicleStatusSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      NumberFormat.decimalPattern().format(summary.totalDevices),
+                      NumberFormat.decimalPattern()
+                          .format(summary.totalDevices),
                       style: OpenVtsTypography.numeric.copyWith(fontSize: 18),
                     ),
                     Text(
@@ -1650,9 +1660,8 @@ class _VehicleStatusTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final percentage = totalDevices <= 0
-        ? 0.0
-        : (data.count / totalDevices).clamp(0.0, 1.0);
+    final percentage =
+        totalDevices <= 0 ? 0.0 : (data.count / totalDevices).clamp(0.0, 1.0);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -1667,7 +1676,8 @@ class _VehicleStatusTile extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(data.icon, size: 12, color: theme.colorScheme.onSurfaceVariant),
+                Icon(data.icon,
+                    size: 12, color: theme.colorScheme.onSurfaceVariant),
                 const SizedBox(width: OpenVtsSpacing.xxs),
                 Expanded(
                   child: Text(
@@ -1708,7 +1718,8 @@ class _VehicleStatusTile extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: percentage,
                 minHeight: 4,
-                backgroundColor: theme.colorScheme.outlineVariant.withValues(alpha: 0.2),
+                backgroundColor:
+                    theme.colorScheme.outlineVariant.withValues(alpha: 0.2),
                 color: data.color,
               ),
             ),
@@ -1748,7 +1759,8 @@ class _RecentVehiclesSection extends StatelessWidget {
               padding: EdgeInsets.all(OpenVtsSpacing.lg),
               child: OpenVtsEmptyState(
                 title: 'No recent vehicles',
-                message: 'The overview response does not include recent vehicles yet.',
+                message:
+                    'The overview response does not include recent vehicles yet.',
               ),
             )
           : Column(
@@ -1756,7 +1768,10 @@ class _RecentVehiclesSection extends StatelessWidget {
                 final vehicle = vehicles[index];
                 return Column(
                   children: [
-                    if (index > 0) Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+                    if (index > 0)
+                      Divider(
+                          height: 1,
+                          color: Theme.of(context).colorScheme.outlineVariant),
                     _RecentVehicleRow(vehicle: vehicle),
                   ],
                 );
@@ -1776,7 +1791,7 @@ class _RecentVehicleRow extends StatelessWidget {
     final theme = Theme.of(context);
     final dateText = vehicle.updatedAt == null
         ? '—'
-      : _dashboardDateFormatter.formatDate(vehicle.updatedAt!.toLocal());
+        : _dashboardDateFormatter.formatDate(vehicle.updatedAt!.toLocal());
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -1870,7 +1885,8 @@ class _TransactionsSection extends StatelessWidget {
               padding: EdgeInsets.all(OpenVtsSpacing.lg),
               child: OpenVtsEmptyState(
                 title: 'No transactions',
-                message: 'Transaction activity will appear here when available.',
+                message:
+                    'Transaction activity will appear here when available.',
               ),
             )
           : Column(
@@ -1878,7 +1894,10 @@ class _TransactionsSection extends StatelessWidget {
                 final transaction = transactions[index];
                 return Column(
                   children: [
-                    if (index > 0) Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+                    if (index > 0)
+                      Divider(
+                          height: 1,
+                          color: Theme.of(context).colorScheme.outlineVariant),
                     _TransactionRow(transaction: transaction),
                   ],
                 );
@@ -1896,7 +1915,8 @@ class _TransactionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final amountText = '${transaction.amount.toStringAsFixed(0)} ${transaction.currency}';
+    final amountText =
+        '${transaction.amount.toStringAsFixed(0)} ${transaction.currency}';
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -1985,7 +2005,8 @@ class _RecentUsersSection extends StatelessWidget {
               padding: EdgeInsets.all(OpenVtsSpacing.lg),
               child: OpenVtsEmptyState(
                 title: 'No recent users',
-                message: 'Recent users will appear here when the dashboard overview returns them.',
+                message:
+                    'Recent users will appear here when the dashboard overview returns them.',
               ),
             )
           : Column(
@@ -1993,7 +2014,10 @@ class _RecentUsersSection extends StatelessWidget {
                 final user = users[index];
                 return Column(
                   children: [
-                    if (index > 0) Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+                    if (index > 0)
+                      Divider(
+                          height: 1,
+                          color: Theme.of(context).colorScheme.outlineVariant),
                     _RecentUserRow(user: user),
                   ],
                 );
@@ -2141,17 +2165,20 @@ class _ActivityLogsSection extends StatelessWidget {
                   if (state.selectedActorId != null)
                     _FilterChipLabel(
                       label: _actorName(
-                        state.dashboard?.activityActors ?? const <SuperadminActorOption>[],
+                        state.dashboard?.activityActors ??
+                            const <SuperadminActorOption>[],
                         state.selectedActorId!,
                       ),
                     ),
                   if (state.fromDate != null)
                     _FilterChipLabel(
-                      label: 'From ${_dashboardDateFormatter.formatDate(state.fromDate!.toLocal())}',
+                      label:
+                          'From ${_dashboardDateFormatter.formatDate(state.fromDate!.toLocal())}',
                     ),
                   if (state.toDate != null)
                     _FilterChipLabel(
-                      label: 'To ${_dashboardDateFormatter.formatDate(state.toDate!.toLocal())}',
+                      label:
+                          'To ${_dashboardDateFormatter.formatDate(state.toDate!.toLocal())}',
                     ),
                   if (onClearFilters != null)
                     GestureDetector(
@@ -2172,7 +2199,8 @@ class _ActivityLogsSection extends StatelessWidget {
               padding: EdgeInsets.all(OpenVtsSpacing.lg),
               child: OpenVtsEmptyState(
                 title: 'No activity logs',
-                message: 'Recent activity will appear here once the backend returns it.',
+                message:
+                    'Recent activity will appear here once the backend returns it.',
               ),
             )
           else
@@ -2181,7 +2209,10 @@ class _ActivityLogsSection extends StatelessWidget {
                 final log = logs[index];
                 return Column(
                   children: [
-                    if (index > 0) Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+                    if (index > 0)
+                      Divider(
+                          height: 1,
+                          color: Theme.of(context).colorScheme.outlineVariant),
                     _ActivityLogRow(log: log),
                   ],
                 );
@@ -2489,8 +2520,7 @@ class _DashboardActivityFilterResult {
     this.clearFilters = false,
   });
 
-  const _DashboardActivityFilterResult.clear()
-      : this(clearFilters: true);
+  const _DashboardActivityFilterResult.clear() : this(clearFilters: true);
 
   final int? actorId;
   final DateTime? fromDate;

@@ -13,7 +13,8 @@ class SafeLoggingInterceptor extends Interceptor {
   }
 
   @override
-  void onResponse(Response<dynamic> response, ResponseInterceptorHandler handler) {
+  void onResponse(
+      Response<dynamic> response, ResponseInterceptorHandler handler) {
     assert(() {
       // ignore: avoid_print
       print('[API] ${response.statusCode} ${response.requestOptions.uri}');
@@ -28,7 +29,9 @@ class SafeLoggingInterceptor extends Interceptor {
       final statusCode = err.response?.statusCode;
       final prefix = statusCode == null ? '[API] ERROR' : '[API] $statusCode';
       final message = err.message?.trim();
-      final suffix = message == null || message.isEmpty ? err.type.name : '${err.type.name}: $message';
+      final suffix = message == null || message.isEmpty
+          ? err.type.name
+          : '${err.type.name}: $message';
       // ignore: avoid_print
       print('$prefix ${err.requestOptions.uri} ($suffix)');
       return true;

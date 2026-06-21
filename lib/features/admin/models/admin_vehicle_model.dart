@@ -464,7 +464,12 @@ class AdminVehicleUserMini {
         uid;
 
     if (kDebugMode && id.isNotEmpty) {
-      debugPrint('[AdminVehicleUserMini] parsed user: id=$id, uid=$uid, name=${_firstString(source, const ['name', 'fullName', 'full_name'])}');
+      debugPrint(
+          '[AdminVehicleUserMini] parsed user: id=$id, uid=$uid, name=${_firstString(source, const [
+            'name',
+            'fullName',
+            'full_name'
+          ])}');
     }
 
     return AdminVehicleUserMini(
@@ -586,9 +591,14 @@ class AdminCreateVehicleRequest {
         'name': name.trim(),
         'vin': vin.trim(),
         'plateNumber': plateNumber.trim(),
-        'deviceId': deviceId is String ? int.tryParse(deviceId) ?? deviceId : deviceId,
-        'vehicleTypeId': vehicleTypeId is String ? int.tryParse(vehicleTypeId) ?? vehicleTypeId : vehicleTypeId,
-        'primaryUserId': primaryUserId is String ? int.tryParse(primaryUserId) ?? primaryUserId : primaryUserId,
+        'deviceId':
+            deviceId is String ? int.tryParse(deviceId) ?? deviceId : deviceId,
+        'vehicleTypeId': vehicleTypeId is String
+            ? int.tryParse(vehicleTypeId) ?? vehicleTypeId
+            : vehicleTypeId,
+        'primaryUserId': primaryUserId is String
+            ? int.tryParse(primaryUserId) ?? primaryUserId
+            : primaryUserId,
         'planId': planId is String ? int.tryParse(planId) ?? planId : planId,
       };
 }
@@ -1190,12 +1200,13 @@ Map<String, dynamic>? _resolvePrimaryUserMap(Map<String, dynamic> source) {
       if (relation.isEmpty) continue;
 
       final isPrimary = _firstBool(relation, const [
-        'isPrimary',
-        'is_primary',
-        'primary',
-        'isOwner',
-        'is_owner',
-      ]) ?? false;
+            'isPrimary',
+            'is_primary',
+            'primary',
+            'isOwner',
+            'is_owner',
+          ]) ??
+          false;
 
       final relationUserId = _firstString(relation, const [
         'id',

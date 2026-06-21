@@ -558,9 +558,8 @@ class _VerificationPill extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final backgroundColor = isDark
-        ? color.withValues(alpha: 0.15)
-        : color.withValues(alpha: 0.08);
+    final backgroundColor =
+        isDark ? color.withValues(alpha: 0.15) : color.withValues(alpha: 0.08);
 
     final textColor = isDark
         ? (color == OpenVtsColors.brandInk
@@ -573,7 +572,8 @@ class _VerificationPill extends StatelessWidget {
         color: backgroundColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
         border: isDark && color == OpenVtsColors.brandInk
-            ? Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.3))
+            ? Border.all(
+                color: theme.colorScheme.outline.withValues(alpha: 0.3))
             : null,
       ),
       child: Padding(

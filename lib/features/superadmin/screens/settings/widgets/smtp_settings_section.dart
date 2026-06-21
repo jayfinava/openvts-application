@@ -120,7 +120,8 @@ class _SmtpSettingsSectionState extends ConsumerState<SmtpSettingsSection> {
       }
     } else {
       ToastHelper.showError(
-        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ?? 'Failed to save SMTP settings',
+        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+            'Failed to save SMTP settings',
       );
     }
   }
@@ -157,7 +158,8 @@ class _SmtpSettingsSectionState extends ConsumerState<SmtpSettingsSection> {
       ToastHelper.showSuccess('Test email sent to ${email.trim()}');
     } else {
       ToastHelper.showError(
-        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ?? 'Failed to send test email',
+        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+            'Failed to send test email',
       );
     }
   }
@@ -214,8 +216,7 @@ class _SmtpSettingsSectionState extends ConsumerState<SmtpSettingsSection> {
             icon: Icons.mail_outline_rounded,
             trailing: IconButton(
               tooltip: 'Refresh',
-              onPressed:
-                  state.isLoadingSmtp ? null : _controller.loadSmtp,
+              onPressed: state.isLoadingSmtp ? null : _controller.loadSmtp,
               iconSize: 18,
               visualDensity: VisualDensity.compact,
               icon: const Icon(Icons.refresh_rounded),
@@ -422,7 +423,8 @@ class _StatusCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant),
             ),
             child: Icon(
               isActive
@@ -689,9 +691,11 @@ class _SectionHeader extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant),
             ),
-            child: Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurface),
+            child: Icon(icon,
+                size: 16, color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -757,7 +761,9 @@ class _GroupedCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              Icon(icon,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(

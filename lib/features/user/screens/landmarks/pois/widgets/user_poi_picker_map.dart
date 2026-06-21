@@ -549,7 +549,8 @@ class _Panel extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: OpenVtsColors.brandInk,
                         borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: OpenVtsColors.white, width: 1),
+                        border:
+                            Border.all(color: OpenVtsColors.white, width: 1),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -558,11 +559,13 @@ class _Panel extends StatelessWidget {
                             width: 40,
                             child: TextField(
                               controller: tolCtrl,
-                              keyboardType: const TextInputType.numberWithOptions(
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
                                 decimal: true,
                               ),
                               inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[0-9.]')),
                               ],
                               style: OpenVtsTypography.numeric.copyWith(
                                 color: OpenVtsColors.white,
@@ -572,7 +575,8 @@ class _Panel extends StatelessWidget {
                               decoration: const InputDecoration(
                                 isDense: true,
                                 hintText: '0',
-                                hintStyle: TextStyle(color: OpenVtsColors.white),
+                                hintStyle:
+                                    TextStyle(color: OpenVtsColors.white),
                                 contentPadding: EdgeInsets.zero,
                                 border: InputBorder.none,
                               ),

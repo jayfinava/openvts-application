@@ -11,7 +11,6 @@ import '../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../shared/widgets/open_vts_page_scaffold.dart';
-import '../../../../shared/widgets/open_vts_search_field.dart';
 import '../../controllers/admin_providers.dart';
 import '../../controllers/admin_transactions_controller.dart';
 import '../../models/admin_transactions_model.dart';
@@ -65,17 +64,6 @@ class _AdminTransactionsScreenState
                     loaded: state.transactions.length,
                     total: state.total,
                     onPurchaseCredits: _showPurchaseCreditsDialog,
-                  ),
-                  const SizedBox(height: OpenVtsSpacing.sm),
-                  OpenVtsSearchField(
-                    hintText: 'Search reference, provider, counterparty...',
-                    onChanged: (value) {
-                      _searchDebounce?.cancel();
-                      _searchDebounce = Timer(
-                        const Duration(milliseconds: 300),
-                        () => unawaited(controller.setSearchQuery(value)),
-                      );
-                    },
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   AdminTransactionsFiltersCard(
@@ -278,7 +266,8 @@ class _HeaderCard extends StatelessWidget {
                     ),
                     backgroundColor: OpenVtsColors.brandInk,
                     foregroundColor: OpenVtsColors.white,
-                    side: const BorderSide(color: OpenVtsColors.white, width: 0.8),
+                    side: const BorderSide(
+                        color: OpenVtsColors.white, width: 0.8),
                   ),
                 ),
               ],

@@ -247,8 +247,7 @@ class UserRouteOptimisationService {
   ) async {
     if (waypoints.length < 2) return null;
     final coords = waypoints
-        .map((p) =>
-            '${p.lon.toStringAsFixed(6)},${p.lat.toStringAsFixed(6)}')
+        .map((p) => '${p.lon.toStringAsFixed(6)},${p.lat.toStringAsFixed(6)}')
         .join(';');
     final url = '$_osrmBaseUrl/$coords';
     final Response<dynamic> resp;

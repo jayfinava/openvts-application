@@ -120,7 +120,7 @@ class NotificationCenterView extends StatelessWidget {
       child: RefreshIndicator(
         onRefresh: onRefresh,
         child: Container(
-          color: isDark ? Colors.black : null,
+          color: isDark ? Colors.black : theme.colorScheme.surface,
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             children: children,
@@ -196,6 +196,7 @@ class _InboxSummaryCard extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox.shrink(),
               _NotificationStatusPill(
                 label: unreadCount == 0 ? 'All read' : '$unreadCount unread',
                 textColor: unreadCount == 0 ? secondaryColor : accentColor,
@@ -255,11 +256,11 @@ class _NotificationFilterPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final backgroundColor =
-        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
-    final textColor = isDark ? Colors.white : Colors.black;
-    final borderColor =
-        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+    final backgroundColor = selected
+        ? (isDark ? Colors.black : OpenVtsColors.white)
+        : Colors.transparent;
+    final textColor = isDark ? Colors.white : OpenVtsColors.brandInk;
+    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
 
     return Material(
       color: Colors.transparent,
@@ -349,7 +350,9 @@ class _NotificationListItem extends StatelessWidget {
                       : theme.colorScheme.onSurface.withValues(alpha: 0.04),
                   borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
                   border: Border.all(
-                    color: isDark ? OpenVtsColors.white : borderColor,
+                    color: isDark
+                        ? OpenVtsColors.white
+                        : (isDark ? OpenVtsColors.white : OpenVtsColors.border),
                   ),
                 ),
                 child: Icon(
@@ -521,9 +524,7 @@ class _NotificationActionPill extends StatelessWidget {
                     : theme.colorScheme.primary.withValues(alpha: 0.06)),
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
             border: Border.all(
-              color: isDark
-                  ? OpenVtsColors.white
-                  : theme.colorScheme.outlineVariant,
+              color: isDark ? OpenVtsColors.white : OpenVtsColors.border,
             ),
           ),
           child: Text(

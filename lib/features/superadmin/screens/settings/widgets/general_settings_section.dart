@@ -104,7 +104,8 @@ class _GeneralSettingsSectionState
       }
     } else {
       ToastHelper.showError(
-        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ?? 'Failed to save settings',
+        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+            'Failed to save settings',
       );
     }
   }
@@ -120,7 +121,8 @@ class _GeneralSettingsSectionState
       ToastHelper.showInfo('Preview updated');
     } else {
       ToastHelper.showError(
-        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ?? 'Failed to load preview',
+        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+            'Failed to load preview',
       );
     }
   }
@@ -132,7 +134,8 @@ class _GeneralSettingsSectionState
       ToastHelper.showInfo('Dry-run completed');
     } else {
       ToastHelper.showError(
-        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ?? 'Dry-run failed',
+        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+            'Dry-run failed',
       );
     }
   }
@@ -158,7 +161,8 @@ class _GeneralSettingsSectionState
       await _controller.previewDataRetention();
     } else {
       ToastHelper.showError(
-        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ?? 'Cleanup failed',
+        ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
+            'Cleanup failed',
       );
     }
   }
@@ -320,9 +324,8 @@ class _GeneralSettingsSectionState
           const SizedBox(height: OpenVtsSpacing.md),
           _AdvancedCleanupCard(
             state: state,
-            onPreview: state.isPreviewingDataRetention
-                ? null
-                : _previewRetention,
+            onPreview:
+                state.isPreviewingDataRetention ? null : _previewRetention,
             onDryRun: state.isRunningDataRetention ? null : _dryRunRetention,
             onRun: state.isRunningDataRetention ? null : _openCleanupSheet,
           ),
@@ -527,8 +530,7 @@ class _BackupDaysDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasValue = _kBackupOptions.any((o) => o.days == value);
     final items = <DropdownMenuItem<int>>[
-      if (!hasValue)
-        DropdownMenuItem(value: value, child: Text('$value days')),
+      if (!hasValue) DropdownMenuItem(value: value, child: Text('$value days')),
       for (final o in _kBackupOptions)
         DropdownMenuItem(
           value: o.days,
@@ -643,7 +645,9 @@ class _SegBtn extends StatelessWidget {
             fontFamily: OpenVtsTypography.primaryFontFamily,
             fontSize: 11.5,
             fontWeight: FontWeight.w600,
-            color: selected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurface,
+            color: selected
+                ? Theme.of(context).colorScheme.onPrimary
+                : Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ),
@@ -800,8 +804,8 @@ class _AdvancedCleanupCard extends StatelessWidget {
                   label: 'Dry-run',
                   variant: OpenVtsButtonVariant.secondary,
                   height: 40,
-                  isLoading:
-                      state.isRunningDataRetention && (preview?.dryRun ?? false),
+                  isLoading: state.isRunningDataRetention &&
+                      (preview?.dryRun ?? false),
                   onPressed: onDryRun,
                 ),
               ),
@@ -956,7 +960,9 @@ class _SummaryRow extends StatelessWidget {
               fontFamily: OpenVtsTypography.primaryFontFamily,
               fontSize: 11.5,
               fontWeight: FontWeight.w600,
-              color: warn ? const Color(0xFFB76E00) : Theme.of(context).colorScheme.onSurface,
+              color: warn
+                  ? const Color(0xFFB76E00)
+                  : Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ],
@@ -1273,9 +1279,11 @@ class _SectionHeader extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant),
             ),
-            child: Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurface),
+            child: Icon(icon,
+                size: 16, color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -1341,7 +1349,9 @@ class _GroupedCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              Icon(icon,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(

@@ -313,11 +313,13 @@ class _AdminDetailsDocumentsTabState
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text('Cancel', style: TextStyle(color: theme.colorScheme.onSurface)),
+            child: Text('Cancel',
+                style: TextStyle(color: theme.colorScheme.onSurface)),
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            style: TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
+            style:
+                TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
             child: const Text('Delete'),
           ),
         ],
@@ -555,12 +557,16 @@ class _ActionsMenu extends StatelessWidget {
         PopupMenuItem(
           value: _DocAction.view,
           height: 36,
-          child: Text('View', style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface)),
+          child: Text('View',
+              style:
+                  TextStyle(fontSize: 12, color: theme.colorScheme.onSurface)),
         ),
         PopupMenuItem(
           value: _DocAction.edit,
           height: 36,
-          child: Text('Edit', style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface)),
+          child: Text('Edit',
+              style:
+                  TextStyle(fontSize: 12, color: theme.colorScheme.onSurface)),
         ),
         PopupMenuItem(
           value: _DocAction.delete,
@@ -1273,9 +1279,7 @@ class _ExpiryField extends StatelessWidget {
                     label,
                     style: TextStyle(
                       fontSize: 12,
-                      color: value == null
-                          ? onSurfaceVariant
-                          : onSurface,
+                      color: value == null ? onSurfaceVariant : onSurface,
                     ),
                   ),
                 ),

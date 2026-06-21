@@ -60,10 +60,12 @@ class AdminSupportConversationPane extends ConsumerStatefulWidget {
   final VoidCallback? onBack;
 
   @override
-  ConsumerState<AdminSupportConversationPane> createState() => _AdminSupportConversationPaneState();
+  ConsumerState<AdminSupportConversationPane> createState() =>
+      _AdminSupportConversationPaneState();
 }
 
-class _AdminSupportConversationPaneState extends ConsumerState<AdminSupportConversationPane> {
+class _AdminSupportConversationPaneState
+    extends ConsumerState<AdminSupportConversationPane> {
   final TextEditingController _replyController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
@@ -176,7 +178,8 @@ class _AdminSupportConversationPaneState extends ConsumerState<AdminSupportConve
       }
 
       final error =
-          ref.read(adminSupportControllerProvider).detailsErrorMessage ?? 'Unable to send reply.';
+          ref.read(adminSupportControllerProvider).detailsErrorMessage ??
+              'Unable to send reply.';
       ToastHelper.showError(error, context: context);
     }
   }
@@ -186,12 +189,15 @@ class _AdminSupportConversationPaneState extends ConsumerState<AdminSupportConve
     AdminSupportTicketStatus status,
   ) async {
     if (status == ticket.status) {
-      ToastHelper.showInfo('Ticket status is already ${status.label}.', context: context);
+      ToastHelper.showInfo('Ticket status is already ${status.label}.',
+          context: context);
       return;
     }
 
     try {
-      await ref.read(adminSupportControllerProvider.notifier).updateTicketStatus(
+      await ref
+          .read(adminSupportControllerProvider.notifier)
+          .updateTicketStatus(
             tab: widget.tab,
             ticketId: ticket.id,
             status: status,
@@ -205,8 +211,9 @@ class _AdminSupportConversationPaneState extends ConsumerState<AdminSupportConve
         return;
       }
 
-      final error = ref.read(adminSupportControllerProvider).detailsErrorMessage ??
-          'Unable to update ticket status.';
+      final error =
+          ref.read(adminSupportControllerProvider).detailsErrorMessage ??
+              'Unable to update ticket status.';
       ToastHelper.showError(error, context: context);
     }
   }
@@ -271,7 +278,8 @@ class _AdminSupportConversationPaneState extends ConsumerState<AdminSupportConve
 
     if (detail == null) {
       return OpenVtsErrorView(
-        message: state.detailsErrorMessage ?? 'Unable to load this support ticket.',
+        message:
+            state.detailsErrorMessage ?? 'Unable to load this support ticket.',
         onRetry: () => unawaited(_loadTicket()),
       );
     }
@@ -295,7 +303,8 @@ class _AdminSupportConversationPaneState extends ConsumerState<AdminSupportConve
               OpenVtsSpacing.md,
               OpenVtsSpacing.xs,
             ),
-            child: _InlineConversationError(message: state.detailsErrorMessage!),
+            child:
+                _InlineConversationError(message: state.detailsErrorMessage!),
           ),
         Expanded(
           child: _MessageTimeline(
@@ -307,7 +316,8 @@ class _AdminSupportConversationPaneState extends ConsumerState<AdminSupportConve
             onRefresh: _refreshTicket,
           ),
         ),
-        if (detail.status == AdminSupportTicketStatus.closed) const _ClosedTicketNotice(),
+        if (detail.status == AdminSupportTicketStatus.closed)
+          const _ClosedTicketNotice(),
         _ReplyComposer(
           controller: _replyController,
           attachments: _attachments,
@@ -429,7 +439,9 @@ class _ConversationHeader extends StatelessWidget {
             spacing: OpenVtsSpacing.xs,
             runSpacing: OpenVtsSpacing.xs,
             children: [
-              _MetaChip(label: ticket.status.label, color: _statusColor(ticket.status)),
+              _MetaChip(
+                  label: ticket.status.label,
+                  color: _statusColor(ticket.status)),
               _StatusActionChip(
                 status: ticket.status,
                 isLoading: isUpdatingStatus,
@@ -447,15 +459,18 @@ class _ConversationHeader extends StatelessWidget {
               if (_roleMetaLabel != null) _MetaChip(label: _roleMetaLabel!),
               if (ticket.createdAt != null)
                 _MetaChip(
-                  label: 'Created ${_dateFormatter.formatDate(ticket.createdAt!)}',
+                  label:
+                      'Created ${_dateFormatter.formatDate(ticket.createdAt!)}',
                 ),
               if (ticket.updatedAt != null)
                 _MetaChip(
-                  label: 'Updated ${_dateFormatter.formatDate(ticket.updatedAt!)}',
+                  label:
+                      'Updated ${_dateFormatter.formatDate(ticket.updatedAt!)}',
                 ),
               if (ticket.closedAt != null)
                 _MetaChip(
-                  label: 'Closed ${_dateFormatter.formatDate(ticket.closedAt!)}',
+                  label:
+                      'Closed ${_dateFormatter.formatDate(ticket.closedAt!)}',
                 ),
             ],
           ),
@@ -465,7 +480,8 @@ class _ConversationHeader extends StatelessWidget {
   }
 
   String? get _roleMetaLabel {
-    final source = tab == AdminSupportTab.userTickets ? ticket.fromUser : ticket.toUser;
+    final source =
+        tab == AdminSupportTab.userTickets ? ticket.fromUser : ticket.toUser;
     final name = source?.displayName.trim() ?? '';
     if (name.isEmpty || name == '-') {
       return null;
@@ -499,7 +515,8 @@ class _StatusActionChip extends StatelessWidget {
                 value: value,
                 child: Row(
                   children: [
-                    if (value == status) const Icon(Icons.check_rounded, size: 16),
+                    if (value == status)
+                      const Icon(Icons.check_rounded, size: 16),
                     if (value == status) const SizedBox(width: 6),
                     Text(value.label),
                   ],
@@ -553,7 +570,8 @@ class _MessageTimeline extends StatelessWidget {
             SizedBox(height: OpenVtsSpacing.xl),
             OpenVtsEmptyState(
               title: 'No conversation yet',
-              message: 'Replies will appear here once the ticket conversation starts.',
+              message:
+                  'Replies will appear here once the ticket conversation starts.',
             ),
           ],
         ),
@@ -599,7 +617,8 @@ class _MessageTimeline extends StatelessWidget {
     final normalizedSender = senderId.trim();
     if (normalizedSender.isEmpty) return false;
 
-    if (currentUserId.trim().isNotEmpty && normalizedSender == currentUserId.trim()) {
+    if (currentUserId.trim().isNotEmpty &&
+        normalizedSender == currentUserId.trim()) {
       return true;
     }
 
@@ -627,11 +646,14 @@ class _AdminSupportMessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final alignment = isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
-    final borderColor =
-        isCurrentUser ? colorScheme.primary.withValues(alpha: 0.18) : colorScheme.outlineVariant;
-    final backgroundColor =
-        isCurrentUser ? colorScheme.primary.withValues(alpha: 0.045) : colorScheme.surface;
+    final alignment =
+        isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
+    final borderColor = isCurrentUser
+        ? colorScheme.primary.withValues(alpha: 0.18)
+        : colorScheme.outlineVariant;
+    final backgroundColor = isCurrentUser
+        ? colorScheme.primary.withValues(alpha: 0.045)
+        : colorScheme.surface;
 
     return Align(
       alignment: alignment,
@@ -1063,23 +1085,27 @@ class _UploadedAttachmentChip extends StatelessWidget {
   Future<void> _openAttachment(BuildContext context) async {
     final path = attachment.filePath.trim();
     if (path.isEmpty) {
-      ToastHelper.showError('Attachment path is not available.', context: context);
+      ToastHelper.showError('Attachment path is not available.',
+          context: context);
       return;
     }
 
     final resolved = _resolveAttachmentUrl(baseUrl, path);
     final uri = Uri.tryParse(resolved);
     if (uri == null) {
-      ToastHelper.showError('Unable to open this attachment.', context: context);
+      ToastHelper.showError('Unable to open this attachment.',
+          context: context);
       return;
     }
 
     try {
-      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      final launched =
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!launched && context.mounted) {
         await Clipboard.setData(ClipboardData(text: resolved));
         if (context.mounted) {
-          ToastHelper.showInfo('Could not open file. Link copied.', context: context);
+          ToastHelper.showInfo('Could not open file. Link copied.',
+              context: context);
         }
       }
     } catch (_) {
@@ -1107,7 +1133,8 @@ Future<List<PlatformFile>?> _pickAdminSupportAttachments(
     allowMultiple: true,
     withData: true,
     type: FileType.custom,
-    allowedExtensions: AdminSupportService.allowedExtensions.toList(growable: false),
+    allowedExtensions:
+        AdminSupportService.allowedExtensions.toList(growable: false),
   );
 
   if (!context.mounted || result == null || result.files.isEmpty) {
@@ -1185,8 +1212,10 @@ String _extensionFromFileName(String fileName) {
 }
 
 String _compactFileList(List<String> names) {
-  final cleaned =
-      names.map((name) => name.trim()).where((name) => name.isNotEmpty).toList(growable: false);
+  final cleaned = names
+      .map((name) => name.trim())
+      .where((name) => name.isNotEmpty)
+      .toList(growable: false);
 
   if (cleaned.isEmpty) {
     return 'Unknown file';
@@ -1217,7 +1246,8 @@ String _formatFileSize(int bytes) {
 
 String _resolveAttachmentUrl(String baseUrl, String path) {
   final normalizedPath = path.trim();
-  if (normalizedPath.startsWith('http://') || normalizedPath.startsWith('https://')) {
+  if (normalizedPath.startsWith('http://') ||
+      normalizedPath.startsWith('https://')) {
     return normalizedPath;
   }
 
@@ -1239,8 +1269,9 @@ String _resolveAttachmentUrl(String baseUrl, String path) {
     queryParameters: null,
     fragment: null,
   );
-  final relativePath =
-      normalizedPath.startsWith('/') ? normalizedPath.substring(1) : normalizedPath;
+  final relativePath = normalizedPath.startsWith('/')
+      ? normalizedPath.substring(1)
+      : normalizedPath;
 
   return apiRoot.resolve(relativePath).toString();
 }

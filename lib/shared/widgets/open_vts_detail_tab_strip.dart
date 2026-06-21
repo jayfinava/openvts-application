@@ -71,7 +71,7 @@ class _TabChip extends StatelessWidget {
 
     final background = isSelected
         ? (isDark ? OpenVtsColors.darkSurface : OpenVtsColors.brandInk)
-        : (isDark ? Colors.transparent : OpenVtsColors.white);
+        : Colors.transparent;
     final foreground = isSelected
         ? (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.white)
         : (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary);

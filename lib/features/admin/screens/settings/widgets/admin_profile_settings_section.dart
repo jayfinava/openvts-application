@@ -566,6 +566,7 @@ class _AvatarWithEdit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final hasUrl = (url ?? '').trim().isNotEmpty;
     final initial = name.isNotEmpty ? name[0].toUpperCase() : 'S';
 
@@ -579,8 +580,11 @@ class _AvatarWithEdit extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: OpenVtsColors.brandInk,
+              color: isDark ? OpenVtsColors.brandInk : OpenVtsColors.white,
               borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+              border: isDark
+                  ? null
+                  : Border.all(color: OpenVtsColors.border, width: 1),
               image: hasUrl
                   ? DecorationImage(
                       image: NetworkImage(url!),
@@ -594,11 +598,12 @@ class _AvatarWithEdit extends StatelessWidget {
                 ? null
                 : Text(
                     initial,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: OpenVtsTypography.primaryFontFamily,
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      color: OpenVtsColors.white,
+                      color:
+                          isDark ? OpenVtsColors.white : OpenVtsColors.brandInk,
                     ),
                   ),
           ),
@@ -606,7 +611,9 @@ class _AvatarWithEdit extends StatelessWidget {
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.45),
+                  color: isDark
+                      ? Colors.black.withValues(alpha: 0.45)
+                      : OpenVtsColors.darkTextPrimary.withValues(alpha: 0.45),
                   borderRadius: BorderRadius.circular(OpenVtsRadius.md),
                 ),
                 child: const Center(
@@ -786,34 +793,46 @@ class _VerificationRow extends StatelessWidget {
         else
           SizedBox(
             height: 30,
-            child: TextButton(
-              onPressed: busy || value.isEmpty ? null : onVerify,
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                minimumSize: const Size(0, 30),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                foregroundColor: OpenVtsColors.white,
-                backgroundColor: OpenVtsColors.brandInk,
-                side: const BorderSide(color: OpenVtsColors.white, width: 1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                ),
-                textStyle: const TextStyle(
-                  fontFamily: OpenVtsTypography.primaryFontFamily,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              child: busy
-                  ? const SizedBox(
-                      width: 14,
-                      height: 14,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation(OpenVtsColors.white),
-                      ),
-                    )
-                  : const Text('Verify'),
+            child: Builder(
+              builder: (context) {
+                final isDark = Theme.of(context).brightness == Brightness.dark;
+                return TextButton(
+                  onPressed: busy || value.isEmpty ? null : onVerify,
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    minimumSize: const Size(0, 30),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    foregroundColor:
+                        isDark ? OpenVtsColors.white : Colors.black,
+                    backgroundColor:
+                        isDark ? OpenVtsColors.brandInk : Colors.white,
+                    side: BorderSide(
+                      color: isDark ? OpenVtsColors.white : Colors.black,
+                      width: 1,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+                    ),
+                    textStyle: const TextStyle(
+                      fontFamily: OpenVtsTypography.primaryFontFamily,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  child: busy
+                      ? SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(
+                              isDark ? OpenVtsColors.white : Colors.black,
+                            ),
+                          ),
+                        )
+                      : const Text('Verify'),
+                );
+              },
             ),
           ),
       ],

@@ -190,11 +190,12 @@ class _PanelShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: isDark ? Colors.black : OpenVtsColors.white,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: Colors.white),
+        border: Border.all(color: isDark ? Colors.white : OpenVtsColors.border),
       ),
       clipBehavior: Clip.antiAlias,
       child: child,

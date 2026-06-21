@@ -115,7 +115,7 @@ class _CountryFilterChip extends StatelessWidget {
         color: selected
             ? (Theme.of(context).brightness == Brightness.dark
                 ? Colors.black
-                : Colors.white)
+                : OpenVtsColors.white)
             : Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -123,7 +123,7 @@ class _CountryFilterChip extends StatelessWidget {
               ? BorderSide(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.white
-                      : Colors.black.withValues(alpha: 0.2),
+                      : OpenVtsColors.border,
                   width: 1,
                 )
               : BorderSide.none,
@@ -143,7 +143,7 @@ class _CountryFilterChip extends StatelessWidget {
                   size: 16,
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.white
-                      : Colors.black,
+                      : OpenVtsColors.brandInk,
                 ),
                 const SizedBox(width: OpenVtsSpacing.xxs),
                 Text(
@@ -151,7 +151,7 @@ class _CountryFilterChip extends StatelessWidget {
                   style: OpenVtsTypography.meta.copyWith(
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white
-                        : Colors.black,
+                        : OpenVtsColors.brandInk,
                     fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                   ),
                 ),
@@ -161,7 +161,7 @@ class _CountryFilterChip extends StatelessWidget {
                   size: 16,
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.white
-                      : Colors.black,
+                      : OpenVtsColors.brandInk,
                 ),
               ],
             ),

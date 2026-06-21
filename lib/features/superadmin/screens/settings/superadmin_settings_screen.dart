@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,9 +34,7 @@ class _SuperadminSettingsScreenState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       unawaited(
-        ref
-            .read(superadminSettingsControllerProvider.notifier)
-            .loadInitial(),
+        ref.read(superadminSettingsControllerProvider.notifier).loadInitial(),
       );
     });
   }
@@ -89,14 +87,16 @@ class _SettingsHeader extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: isDark ? Colors.black : OpenVtsColors.brandInk,
+              color: isDark ? Colors.black : OpenVtsColors.white,
               borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-              border: isDark ? Border.all(color: Colors.white, width: 1) : null,
+              border: isDark
+                  ? Border.all(color: Colors.white, width: 1)
+                  : Border.all(color: OpenVtsColors.border, width: 1),
             ),
             child: Icon(
               Icons.tune_rounded,
               size: 18,
-              color: Colors.white,
+              color: isDark ? Colors.white : OpenVtsColors.brandInk,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),

@@ -703,7 +703,9 @@ class _CompactActionChip extends StatelessWidget {
                   : OpenVtsColors.surfaceElevated),
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
           border: Border.all(
-            color: isDark ? OpenVtsColors.white : OpenVtsColors.border,
+            color: isDark
+                ? OpenVtsColors.white
+                : (disabled ? OpenVtsColors.border : OpenVtsColors.border),
           ),
         ),
         child: Row(

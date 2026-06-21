@@ -803,7 +803,8 @@ class _CreditSheetHeader extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.close_rounded, size: 20, color: scheme.onSurface),
+                icon: Icon(Icons.close_rounded,
+                    size: 20, color: scheme.onSurface),
                 onPressed: () => Navigator.of(context).maybePop(),
                 tooltip: 'Close',
               ),

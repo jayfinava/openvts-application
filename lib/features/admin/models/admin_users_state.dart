@@ -123,7 +123,8 @@ class AdminUsersState {
 
   int get filteredCount => filteredUsers.length;
 
-  int get pageCount => math.max<int>(1, (filteredCount / recordsPerPage).ceil());
+  int get pageCount =>
+      math.max<int>(1, (filteredCount / recordsPerPage).ceil());
 
   int get safeCurrentPage => currentPage.clamp(1, pageCount);
 

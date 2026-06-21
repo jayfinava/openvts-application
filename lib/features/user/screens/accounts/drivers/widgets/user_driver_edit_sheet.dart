@@ -249,16 +249,14 @@ class _UserDriverEditSheetState extends ConsumerState<UserDriverEditSheet> {
                         _stateCode!.isNotEmpty &&
                         !_isLoadingCities &&
                         !_citiesLoadFailed,
-                    onChanged: (value) =>
-                        setState(() => _city = value),
+                    onChanged: (value) => setState(() => _city = value),
                   ),
                   if (_citiesLoadFailed &&
                       _stateCode != null &&
                       _stateCode!.isNotEmpty)
                     _RetryRow(
                       message: 'Failed to load cities',
-                      onRetry: () =>
-                          _loadCities(_countryCode, _stateCode),
+                      onRetry: () => _loadCities(_countryCode, _stateCode),
                     ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   OpenVtsTextField(
@@ -324,8 +322,7 @@ class _UserDriverEditSheetState extends ConsumerState<UserDriverEditSheet> {
             value: item.value,
             label: item.value,
             subtitle: item.countryCode.isNotEmpty ? item.countryCode : null,
-            searchText:
-                '${item.value} ${item.countryCode} ${item.label}',
+            searchText: '${item.value} ${item.countryCode} ${item.label}',
           ),
         )
         .toList(growable: false);
@@ -620,7 +617,6 @@ class _UserDriverEditSheetState extends ConsumerState<UserDriverEditSheet> {
     );
   }
 
-
   String? _optionalPasswordValidator(String? value) {
     final normalized = value?.trim() ?? '';
     if (normalized.isEmpty) {
@@ -663,7 +659,6 @@ class _UserDriverEditSheetState extends ConsumerState<UserDriverEditSheet> {
   }
 }
 
-
 class _RetryRow extends StatelessWidget {
   const _RetryRow({required this.message, required this.onRetry});
 
@@ -681,8 +676,8 @@ class _RetryRow extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: OpenVtsTypography.meta
-                  .copyWith(color: OpenVtsColors.error),
+              style:
+                  OpenVtsTypography.meta.copyWith(color: OpenVtsColors.error),
             ),
           ),
           GestureDetector(
@@ -700,4 +695,3 @@ class _RetryRow extends StatelessWidget {
     );
   }
 }
-

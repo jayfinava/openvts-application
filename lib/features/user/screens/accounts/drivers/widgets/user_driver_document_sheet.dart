@@ -563,7 +563,9 @@ class _ExpiryField extends ConsumerWidget {
                 const SizedBox(width: OpenVtsSpacing.xs),
                 Expanded(
                   child: Text(
-                    value == null ? 'No expiry' : _dateText(value, dateFormatter),
+                    value == null
+                        ? 'No expiry'
+                        : _dateText(value, dateFormatter),
                     style: OpenVtsTypography.meta.copyWith(
                       color: value == null
                           ? OpenVtsColors.textTertiary

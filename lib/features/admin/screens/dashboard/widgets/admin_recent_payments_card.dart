@@ -81,7 +81,8 @@ class _RecentPaymentRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  adminDashboardRelativeDate(payment.createdAt, formatter: formatter),
+                  adminDashboardRelativeDate(payment.createdAt,
+                      formatter: formatter),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(

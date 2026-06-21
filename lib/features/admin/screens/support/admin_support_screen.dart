@@ -24,8 +24,9 @@ class AdminSupportScreen extends ConsumerWidget {
     final state = ref.watch(adminSupportControllerProvider);
     final controller = ref.read(adminSupportControllerProvider.notifier);
     final useSplitLayout = _usesSplitLayout(context);
-    final activeTicketId =
-        state.selectedTicketTab == state.selectedTab ? state.selectedTicketId : null;
+    final activeTicketId = state.selectedTicketTab == state.selectedTab
+        ? state.selectedTicketId
+        : null;
 
     return OpenVtsPageScaffold(
       title: 'Support',
@@ -39,8 +40,9 @@ class AdminSupportScreen extends ConsumerWidget {
       actions: [
         IconButton(
           tooltip: 'Refresh tickets',
-          onPressed:
-              state.isLoadingCurrentTab ? null : () => unawaited(controller.refreshCurrentTab()),
+          onPressed: state.isLoadingCurrentTab
+              ? null
+              : () => unawaited(controller.refreshCurrentTab()),
           icon: state.isLoadingCurrentTab
               ? const SizedBox.square(
                   dimension: 18,
@@ -54,7 +56,8 @@ class AdminSupportScreen extends ConsumerWidget {
               state: state,
               controller: controller,
               activeTicketId: activeTicketId,
-              onCreatePressed: () => unawaited(_openCreatePage(context, ref, state.selectedTab)),
+              onCreatePressed: () =>
+                  unawaited(_openCreatePage(context, ref, state.selectedTab)),
               onOpenTicket: (ticket) => unawaited(
                 _openTicket(
                   context,
@@ -67,9 +70,11 @@ class AdminSupportScreen extends ConsumerWidget {
           : AdminSupportTicketListView(
               state: state,
               activeTicketId: activeTicketId,
-              onCreatePressed: () => unawaited(_openCreatePage(context, ref, state.selectedTab)),
+              onCreatePressed: () =>
+                  unawaited(_openCreatePage(context, ref, state.selectedTab)),
               onTabChanged: (tab) => unawaited(controller.selectTab(tab)),
-              onSearchChanged: (value) => controller.setSearchQuery(state.selectedTab, value),
+              onSearchChanged: (value) =>
+                  controller.setSearchQuery(state.selectedTab, value),
               onStatusChanged: (status) => unawaited(
                 controller.setStatusFilter(state.selectedTab, status),
               ),
@@ -126,7 +131,8 @@ class AdminSupportScreen extends ConsumerWidget {
 
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => AdminSupportConversationScreen(tab: tab, ticketId: ticketId),
+        builder: (_) =>
+            AdminSupportConversationScreen(tab: tab, ticketId: ticketId),
       ),
     );
   }
@@ -167,7 +173,8 @@ class _SplitSupportLayout extends StatelessWidget {
                 activeTicketId: activeTicketId,
                 onCreatePressed: onCreatePressed,
                 onTabChanged: (tab) => unawaited(controller.selectTab(tab)),
-                onSearchChanged: (value) => controller.setSearchQuery(state.selectedTab, value),
+                onSearchChanged: (value) =>
+                    controller.setSearchQuery(state.selectedTab, value),
                 onStatusChanged: (status) => unawaited(
                   controller.setStatusFilter(state.selectedTab, status),
                 ),

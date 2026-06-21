@@ -320,7 +320,9 @@ final userDashboardFleetStatusProvider = FutureProvider.autoDispose
 
 final userDashboardTopAssetsProvider = FutureProvider.autoDispose
     .family<UserDashboardTopAssets, UserDashboardTopAssetsArgs>((ref, args) {
-  return ref.watch(userDashboardControllerProvider.notifier).getTopPerformingAssets(
+  return ref
+      .watch(userDashboardControllerProvider.notifier)
+      .getTopPerformingAssets(
         from: args.from,
         to: args.to,
         limit: args.limit,
@@ -328,10 +330,12 @@ final userDashboardTopAssetsProvider = FutureProvider.autoDispose
       );
 });
 
-final userDashboardUsageProvider = FutureProvider.autoDispose
-    .family<
-        ({List<UserDashboardVehicleOption> vehicles, UserDashboardUsageLast7Days usage}),
-        UserDashboardVehicleScopedArgs>((ref, args) async {
+final userDashboardUsageProvider = FutureProvider.autoDispose.family<
+    ({
+      List<UserDashboardVehicleOption> vehicles,
+      UserDashboardUsageLast7Days usage
+    }),
+    UserDashboardVehicleScopedArgs>((ref, args) async {
   final controller = ref.watch(userDashboardControllerProvider.notifier);
   final results = await Future.wait<dynamic>([
     controller.getVehicles(forceRefresh: args.forceRefresh),
@@ -346,13 +350,12 @@ final userDashboardUsageProvider = FutureProvider.autoDispose
   );
 });
 
-final userDashboardWeeklyProvider = FutureProvider.autoDispose
-    .family<
-        ({
-          List<UserDashboardVehicleOption> vehicles,
-          UserDashboardWeeklyComparison comparison,
-        }),
-        UserDashboardVehicleScopedArgs>((ref, args) async {
+final userDashboardWeeklyProvider = FutureProvider.autoDispose.family<
+    ({
+      List<UserDashboardVehicleOption> vehicles,
+      UserDashboardWeeklyComparison comparison,
+    }),
+    UserDashboardVehicleScopedArgs>((ref, args) async {
   final controller = ref.watch(userDashboardControllerProvider.notifier);
   final results = await Future.wait<dynamic>([
     controller.getVehicles(forceRefresh: args.forceRefresh),
@@ -367,15 +370,15 @@ final userDashboardWeeklyProvider = FutureProvider.autoDispose
   );
 });
 
-final userDashboardDayNightProvider = FutureProvider.autoDispose
-    .family<
-        ({
-          List<UserDashboardVehicleOption> vehicles,
-          UserDashboardDayNightComparison comparison,
-        }),
-        UserDashboardRangeArgs>((ref, args) async {
+final userDashboardDayNightProvider = FutureProvider.autoDispose.family<
+    ({
+      List<UserDashboardVehicleOption> vehicles,
+      UserDashboardDayNightComparison comparison,
+    }),
+    UserDashboardRangeArgs>((ref, args) async {
   final controller = ref.watch(userDashboardControllerProvider.notifier);
-  final vehicles = await controller.getVehicles(forceRefresh: args.forceRefresh);
+  final vehicles =
+      await controller.getVehicles(forceRefresh: args.forceRefresh);
   final selectedVehicleId = args.vehicleId == 'all' ? null : args.vehicleId;
   final comparison = await controller.getDayNightComparison(
     vehicleId: selectedVehicleId,
@@ -385,19 +388,19 @@ final userDashboardDayNightProvider = FutureProvider.autoDispose
   return (vehicles: vehicles, comparison: comparison);
 });
 
-final userDashboardSensorHistoryProvider = FutureProvider.autoDispose
-    .family<
-        ({
-          List<UserDashboardVehicleOption> vehicles,
-          List<UserDashboardSensorOption> sensors,
-          String? selectedVehicleId,
-          String? selectedSensorId,
-          UserDashboardSensorHistory? history,
-          String? emptyMessage,
-        }),
-        UserDashboardSensorHistoryArgs>((ref, args) async {
+final userDashboardSensorHistoryProvider = FutureProvider.autoDispose.family<
+    ({
+      List<UserDashboardVehicleOption> vehicles,
+      List<UserDashboardSensorOption> sensors,
+      String? selectedVehicleId,
+      String? selectedSensorId,
+      UserDashboardSensorHistory? history,
+      String? emptyMessage,
+    }),
+    UserDashboardSensorHistoryArgs>((ref, args) async {
   final controller = ref.watch(userDashboardControllerProvider.notifier);
-  final vehicles = await controller.getVehicles(forceRefresh: args.forceRefresh);
+  final vehicles =
+      await controller.getVehicles(forceRefresh: args.forceRefresh);
   if (vehicles.isEmpty) {
     return (
       vehicles: vehicles,
@@ -417,7 +420,8 @@ final userDashboardSensorHistoryProvider = FutureProvider.autoDispose
   final sensors = await controller.getVehicleSensors(vehicleId);
   if (sensors.isEmpty) {
     final vehicleName = vehicles
-        .firstWhere((vehicle) => vehicle.id == vehicleId, orElse: () => vehicles.first)
+        .firstWhere((vehicle) => vehicle.id == vehicleId,
+            orElse: () => vehicles.first)
         .name;
     return (
       vehicles: vehicles,
@@ -451,15 +455,15 @@ final userDashboardSensorHistoryProvider = FutureProvider.autoDispose
   );
 });
 
-final userDashboardRecentAlertsProvider = FutureProvider.autoDispose
-    .family<
-        ({
-          List<UserDashboardVehicleOption> vehicles,
-          UserDashboardRecentAlertsPage page,
-        }),
-        UserDashboardVehicleScopedArgs>((ref, args) async {
+final userDashboardRecentAlertsProvider = FutureProvider.autoDispose.family<
+    ({
+      List<UserDashboardVehicleOption> vehicles,
+      UserDashboardRecentAlertsPage page,
+    }),
+    UserDashboardVehicleScopedArgs>((ref, args) async {
   final controller = ref.watch(userDashboardControllerProvider.notifier);
-  final vehicles = await controller.getVehicles(forceRefresh: args.forceRefresh);
+  final vehicles =
+      await controller.getVehicles(forceRefresh: args.forceRefresh);
   final selectedVehicleId = args.vehicleId == 'all' ? null : args.vehicleId;
   final page = await controller.getRecentAlerts(
     vehicleId: selectedVehicleId,
@@ -481,15 +485,14 @@ final userDashboardRecentAlertDetailProvider =
   },
 );
 
-final userDashboardSendCommandProvider = FutureProvider.autoDispose
-    .family<
-        ({
-          List<UserDashboardVehicleOption> allVehicles,
-          List<UserDashboardVehicleOption> vehicles,
-          List<UserDashboardCustomCommand> commands,
-          List<UserDashboardSystemVariable> variables,
-        }),
-        UserDashboardRefreshArgs>((ref, args) async {
+final userDashboardSendCommandProvider = FutureProvider.autoDispose.family<
+    ({
+      List<UserDashboardVehicleOption> allVehicles,
+      List<UserDashboardVehicleOption> vehicles,
+      List<UserDashboardCustomCommand> commands,
+      List<UserDashboardSystemVariable> variables,
+    }),
+    UserDashboardRefreshArgs>((ref, args) async {
   final controller = ref.watch(userDashboardControllerProvider.notifier);
   final results = await Future.wait<dynamic>([
     controller.getVehicles(forceRefresh: args.forceRefresh),

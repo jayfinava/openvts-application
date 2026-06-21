@@ -51,12 +51,15 @@ class UserMobilePushDiagnosticsCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: isDark ? Colors.black : OpenVtsColors.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: isDark ? OpenVtsColors.white : OpenVtsColors.border),
+              border: Border.all(
+                  color: isDark ? OpenVtsColors.white : OpenVtsColors.border),
             ),
             child: Icon(
               Icons.phone_android_rounded,
               size: 15,
-              color: isDark ? OpenVtsColors.white.withValues(alpha: 0.7) : OpenVtsColors.textSecondary,
+              color: isDark
+                  ? OpenVtsColors.white.withValues(alpha: 0.7)
+                  : OpenVtsColors.textSecondary,
             ),
           ),
           title: Text(
@@ -71,7 +74,9 @@ class UserMobilePushDiagnosticsCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.meta.copyWith(
-              color: isDark ? OpenVtsColors.white.withValues(alpha: 0.5) : OpenVtsColors.textTertiary,
+              color: isDark
+                  ? OpenVtsColors.white.withValues(alpha: 0.5)
+                  : OpenVtsColors.textTertiary,
             ),
           ),
           children: [
@@ -322,12 +327,15 @@ class _DiagnosticPill extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? Colors.black : OpenVtsColors.surfaceElevated,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: isDark ? OpenVtsColors.white : OpenVtsColors.border),
+        border: Border.all(
+            color: isDark ? OpenVtsColors.white : OpenVtsColors.border),
       ),
       child: RichText(
         text: TextSpan(
           style: OpenVtsTypography.meta.copyWith(
-            color: isDark ? OpenVtsColors.white.withValues(alpha: 0.7) : OpenVtsColors.textSecondary,
+            color: isDark
+                ? OpenVtsColors.white.withValues(alpha: 0.7)
+                : OpenVtsColors.textSecondary,
           ),
           children: [
             TextSpan(text: '$label: '),
@@ -365,10 +373,13 @@ class _CompactDiagnosticButton extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final disabled = onTap == null && !isLoading;
-    final foregroundColor =
-      disabled
-          ? (isDark ? OpenVtsColors.white.withValues(alpha: 0.5) : OpenVtsColors.textTertiary)
-          : (isDark ? OpenVtsColors.white.withValues(alpha: 0.7) : OpenVtsColors.textSecondary);
+    final foregroundColor = disabled
+        ? (isDark
+            ? OpenVtsColors.white.withValues(alpha: 0.5)
+            : OpenVtsColors.textTertiary)
+        : (isDark
+            ? OpenVtsColors.white.withValues(alpha: 0.7)
+            : OpenVtsColors.textSecondary);
 
     final child = InkWell(
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -377,11 +388,12 @@ class _CompactDiagnosticButton extends StatelessWidget {
         height: 40,
         padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.xs),
         decoration: BoxDecoration(
-            color: disabled
-                ? (isDark ? Colors.black : OpenVtsColors.surface)
-                : (isDark ? Colors.black : OpenVtsColors.surfaceElevated),
+          color: disabled
+              ? (isDark ? Colors.black : OpenVtsColors.surface)
+              : (isDark ? Colors.black : OpenVtsColors.surfaceElevated),
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-          border: Border.all(color: isDark ? OpenVtsColors.white : OpenVtsColors.border),
+          border: Border.all(
+              color: isDark ? OpenVtsColors.white : OpenVtsColors.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -402,8 +414,12 @@ class _CompactDiagnosticButton extends StatelessWidget {
               label,
               style: OpenVtsTypography.meta.copyWith(
                 color: disabled
-                    ? (isDark ? OpenVtsColors.white.withValues(alpha: 0.5) : OpenVtsColors.textTertiary)
-                    : (isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary),
+                    ? (isDark
+                        ? OpenVtsColors.white.withValues(alpha: 0.5)
+                        : OpenVtsColors.textTertiary)
+                    : (isDark
+                        ? OpenVtsColors.white
+                        : OpenVtsColors.textPrimary),
                 fontWeight: FontWeight.w600,
               ),
             ),

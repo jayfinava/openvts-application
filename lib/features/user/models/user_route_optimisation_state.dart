@@ -111,11 +111,13 @@ class UserRouteOptimisationState {
     return out.isEmpty ? orderedPoints : List.unmodifiable(out);
   }
 
-  String? get originalDistanceLabel =>
-      result == null ? null : '${result!.originalDistanceKm.toStringAsFixed(2)} km';
+  String? get originalDistanceLabel => result == null
+      ? null
+      : '${result!.originalDistanceKm.toStringAsFixed(2)} km';
 
-  String? get optimizedDistanceLabel =>
-      result == null ? null : '${result!.optimizedDistanceKm.toStringAsFixed(2)} km';
+  String? get optimizedDistanceLabel => result == null
+      ? null
+      : '${result!.optimizedDistanceKm.toStringAsFixed(2)} km';
 
   String? get improvementLabel {
     final r = result;
@@ -127,12 +129,10 @@ class UserRouteOptimisationState {
 
   /// Set of IDs currently in [points] — used to skip duplicate adds from the
   /// landmark sheet.
-  Set<String> get existingPointIds =>
-      <String>{for (final p in points) p.id};
+  Set<String> get existingPointIds => <String>{for (final p in points) p.id};
 
   /// Derived constraints object handed to the optimisation engine.
-  RouteOptimisationConstraints get constraints =>
-      RouteOptimisationConstraints(
+  RouteOptimisationConstraints get constraints => RouteOptimisationConstraints(
         startIndex: startIndex,
         endIndex: endIndex,
         roundTrip: roundTrip,

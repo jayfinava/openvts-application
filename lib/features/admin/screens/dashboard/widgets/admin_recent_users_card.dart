@@ -97,7 +97,8 @@ class _RecentUserRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  adminDashboardRelativeDate(user.createdAt, formatter: formatter),
+                  adminDashboardRelativeDate(user.createdAt,
+                      formatter: formatter),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,

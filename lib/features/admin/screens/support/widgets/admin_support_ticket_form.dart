@@ -33,10 +33,12 @@ class AdminSupportTicketForm extends ConsumerStatefulWidget {
   final double maxContentWidth;
 
   @override
-  ConsumerState<AdminSupportTicketForm> createState() => _AdminSupportTicketFormState();
+  ConsumerState<AdminSupportTicketForm> createState() =>
+      _AdminSupportTicketFormState();
 }
 
-class _AdminSupportTicketFormState extends ConsumerState<AdminSupportTicketForm> {
+class _AdminSupportTicketFormState
+    extends ConsumerState<AdminSupportTicketForm> {
   final TextEditingController _userSearchController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
@@ -111,7 +113,9 @@ class _AdminSupportTicketFormState extends ConsumerState<AdminSupportTicketForm>
   Future<void> _submit() async {
     final title = _titleController.text.trim();
     final message = _messageController.text.trim();
-    if (!_validateUser() || !_validateTitle(title) || !_validateMessage(message)) {
+    if (!_validateUser() ||
+        !_validateTitle(title) ||
+        !_validateMessage(message)) {
       return;
     }
 
@@ -149,8 +153,8 @@ class _AdminSupportTicketFormState extends ConsumerState<AdminSupportTicketForm>
       if (!mounted) {
         return;
       }
-      final error =
-          ref.read(adminSupportControllerProvider).errorMessage ?? 'Unable to create ticket.';
+      final error = ref.read(adminSupportControllerProvider).errorMessage ??
+          'Unable to create ticket.';
       ToastHelper.showError(error, context: context);
     }
   }
@@ -158,7 +162,8 @@ class _AdminSupportTicketFormState extends ConsumerState<AdminSupportTicketForm>
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(adminSupportControllerProvider);
-    final isCreating = _isUserMode ? state.isCreatingUserTicket : state.isCreatingMyTicket;
+    final isCreating =
+        _isUserMode ? state.isCreatingUserTicket : state.isCreatingMyTicket;
     final users = state.users;
     final filteredUsers = _filterUsers(users, _userSearchController.text);
     final dropdownUsers = _buildDropdownUsers(
@@ -166,7 +171,8 @@ class _AdminSupportTicketFormState extends ConsumerState<AdminSupportTicketForm>
       filteredUsers: filteredUsers,
       selectedId: _userId,
     );
-    final selectedUserId = dropdownUsers.any((user) => user.id == _userId) ? _userId : null;
+    final selectedUserId =
+        dropdownUsers.any((user) => user.id == _userId) ? _userId : null;
 
     return Column(
       children: [
@@ -232,7 +238,8 @@ class _AdminSupportTicketFormState extends ConsumerState<AdminSupportTicketForm>
       _attachments = _attachments
           .where(
             (item) =>
-                _adminSupportAttachmentIdentity(item) != _adminSupportAttachmentIdentity(file),
+                _adminSupportAttachmentIdentity(item) !=
+                _adminSupportAttachmentIdentity(file),
           )
           .toList(growable: false);
     });
@@ -333,7 +340,8 @@ class _AdminSupportTicketFormState extends ConsumerState<AdminSupportTicketForm>
     }
 
     final selectedUser = selected;
-    if (selectedUser != null && !resolved.any((user) => user.id == selectedUser.id)) {
+    if (selectedUser != null &&
+        !resolved.any((user) => user.id == selectedUser.id)) {
       resolved.insert(0, selectedUser);
     }
 
@@ -476,7 +484,8 @@ class _TicketFields extends StatelessWidget {
         LayoutBuilder(
           builder: (context, constraints) {
             final stackFields = constraints.maxWidth < 460;
-            final categoryField = DropdownButtonFormField<AdminSupportTicketCategory>(
+            final categoryField =
+                DropdownButtonFormField<AdminSupportTicketCategory>(
               initialValue: category,
               isDense: true,
               isExpanded: true,
@@ -491,7 +500,8 @@ class _TicketFields extends StatelessWidget {
                   .toList(growable: false),
               onChanged: isCreating ? null : onCategoryChanged,
             );
-            final priorityField = DropdownButtonFormField<AdminSupportTicketPriority>(
+            final priorityField =
+                DropdownButtonFormField<AdminSupportTicketPriority>(
               initialValue: priority,
               isDense: true,
               isExpanded: true,
@@ -576,6 +586,14 @@ class _TicketFormActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDark
+        ? Theme.of(context).colorScheme.surface
+        : const Color(0xFFF5F5F5);
+    final borderColor = isDark
+        ? Theme.of(context).colorScheme.outline
+        : const Color(0xFFE0E0E0);
+
     return SafeArea(
       top: false,
       child: Container(
@@ -586,8 +604,8 @@ class _TicketFormActionBar extends StatelessWidget {
           OpenVtsSpacing.md,
         ),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outline)),
+          color: backgroundColor,
+          border: Border(top: BorderSide(color: borderColor)),
         ),
         child: Align(
           alignment: Alignment.center,
@@ -595,10 +613,23 @@ class _TicketFormActionBar extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 720),
             child: Row(
               children: [
-                IconButton.filledTonal(
-                  tooltip: 'Attach files',
-                  onPressed: onAttach,
-                  icon: const Icon(Icons.attach_file_rounded, size: 18),
+                Theme(
+                  data: Theme.of(context).copyWith(
+                    iconButtonTheme: IconButtonThemeData(
+                      style: IconButton.styleFrom(
+                        backgroundColor: isDark ? null : Colors.white,
+                        foregroundColor: isDark ? null : Colors.black,
+                        side: isDark
+                            ? null
+                            : const BorderSide(color: Color(0xFFE0E0E0)),
+                      ),
+                    ),
+                  ),
+                  child: IconButton.filledTonal(
+                    tooltip: 'Attach files',
+                    onPressed: onAttach,
+                    icon: const Icon(Icons.attach_file_rounded, size: 18),
+                  ),
                 ),
                 const SizedBox(width: OpenVtsSpacing.sm),
                 Expanded(
@@ -641,7 +672,8 @@ class _DraftAttachmentWrap extends StatelessWidget {
                 end: OpenVtsSpacing.xxs,
               ),
               decoration: BoxDecoration(
-                border: Border.all(color: Theme.of(context).colorScheme.outline),
+                border:
+                    Border.all(color: Theme.of(context).colorScheme.outline),
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                 color: Theme.of(context).colorScheme.surface,
               ),
@@ -701,7 +733,8 @@ Future<List<PlatformFile>?> _pickAdminSupportAttachments(
     allowMultiple: true,
     withData: true,
     type: FileType.custom,
-    allowedExtensions: AdminSupportService.allowedExtensions.toList(growable: false),
+    allowedExtensions:
+        AdminSupportService.allowedExtensions.toList(growable: false),
   );
 
   if (!context.mounted || result == null || result.files.isEmpty) {
@@ -779,8 +812,10 @@ String _extensionFromFileName(String fileName) {
 }
 
 String _compactFileList(List<String> names) {
-  final cleaned =
-      names.map((name) => name.trim()).where((name) => name.isNotEmpty).toList(growable: false);
+  final cleaned = names
+      .map((name) => name.trim())
+      .where((name) => name.isNotEmpty)
+      .toList(growable: false);
 
   if (cleaned.isEmpty) {
     return 'Unknown file';

@@ -309,7 +309,6 @@ class _TabChips extends StatelessWidget {
   }
 }
 
-
 class _StatusPill extends StatelessWidget {
   const _StatusPill({
     required this.label,

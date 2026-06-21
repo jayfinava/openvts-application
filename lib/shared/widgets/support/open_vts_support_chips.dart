@@ -5,7 +5,8 @@ import 'package:open_vts/core/theme/open_vts_spacing.dart';
 import 'package:open_vts/core/theme/open_vts_typography.dart';
 
 class OpenVtsSupportSoftChip extends StatelessWidget {
-  const OpenVtsSupportSoftChip({required this.label, required this.color, super.key});
+  const OpenVtsSupportSoftChip(
+      {required this.label, required this.color, super.key});
 
   final String label;
   final Color color;

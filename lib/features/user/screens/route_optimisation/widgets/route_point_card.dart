@@ -52,10 +52,13 @@ class RoutePointCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor =
-        isSelected ? OpenVtsColors.brandInk : Colors.white;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final borderColor = isSelected
+        ? OpenVtsColors.brandInk
+        : (isDark ? Colors.white : OpenVtsColors.border);
+    final materialColor = isDark ? Colors.black : OpenVtsColors.white;
     return Material(
-      color: Colors.black,
+      color: materialColor,
       borderRadius: BorderRadius.circular(OpenVtsRadius.md),
       child: InkWell(
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
@@ -93,7 +96,9 @@ class RoutePointCard extends StatelessWidget {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: OpenVtsTypography.label.copyWith(
-                                  color: Colors.white,
+                                  color: isDark
+                                      ? Colors.white
+                                      : OpenVtsColors.brandInk,
                                 ),
                               ),
                             ),
@@ -108,7 +113,9 @@ class RoutePointCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: OpenVtsTypography.meta.copyWith(
-                            color: Colors.white,
+                            color: isDark
+                                ? Colors.white
+                                : OpenVtsColors.textSecondary,
                           ),
                         ),
                       ],
@@ -229,18 +236,19 @@ class _SourceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: isDark ? Colors.black : OpenVtsColors.white,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: Colors.white),
+        border: Border.all(color: isDark ? Colors.white : OpenVtsColors.border),
       ),
       child: Text(
         source.label,
         style: OpenVtsTypography.meta.copyWith(
           fontSize: 10,
-          color: Colors.white,
+          color: isDark ? Colors.white : OpenVtsColors.brandInk,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -331,6 +339,7 @@ class _MoveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final enabled = onTap != null;
     return InkWell(
       borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
@@ -340,15 +349,20 @@ class _MoveButton extends StatelessWidget {
         height: 18,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: enabled ? Colors.black : Colors.transparent,
+          color: enabled
+              ? (isDark ? Colors.black : OpenVtsColors.surfaceElevated)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-          border: enabled ? Border.all(color: Colors.white) : null,
+          border: enabled
+              ? Border.all(color: isDark ? Colors.white : OpenVtsColors.border)
+              : null,
         ),
         child: Icon(
           icon,
           size: 14,
-          color:
-              enabled ? Colors.white : OpenVtsColors.textTertiary,
+          color: enabled
+              ? (isDark ? Colors.white : OpenVtsColors.brandInk)
+              : OpenVtsColors.textTertiary,
         ),
       ),
     );
@@ -370,12 +384,13 @@ class _RowAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final enabled = onTap != null;
     final fg = !enabled
         ? OpenVtsColors.textTertiary
         : danger
             ? OpenVtsColors.error
-            : Colors.white;
+            : (isDark ? Colors.white : OpenVtsColors.brandInk);
     return InkWell(
       borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
       onTap: onTap,
@@ -389,7 +404,7 @@ class _RowAction extends StatelessWidget {
               color: enabled
                   ? (danger
                       ? OpenVtsColors.error.withValues(alpha: 0.4)
-                      : Colors.white)
+                      : (isDark ? Colors.white : OpenVtsColors.border))
                   : OpenVtsColors.border,
             ),
           ),

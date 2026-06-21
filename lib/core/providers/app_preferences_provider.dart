@@ -93,7 +93,8 @@ class AppLocalizationPreferences {
 
   bool get isRtl => layoutDirection.toUpperCase() == 'RTL';
 
-  TextDirection get textDirection => isRtl ? TextDirection.rtl : TextDirection.ltr;
+  TextDirection get textDirection =>
+      isRtl ? TextDirection.rtl : TextDirection.ltr;
 
   bool get usesMiles => units.toUpperCase() == 'MILES';
 
@@ -122,7 +123,8 @@ class AppLocalizationPreferences {
   }
 }
 
-class AppLocalizationPreferencesController extends StateNotifier<AppLocalizationPreferences> {
+class AppLocalizationPreferencesController
+    extends StateNotifier<AppLocalizationPreferences> {
   AppLocalizationPreferencesController(this._localCache, this._themeModeCtrl)
       : super(const AppLocalizationPreferences()) {
     hydrate();
@@ -132,12 +134,16 @@ class AppLocalizationPreferencesController extends StateNotifier<AppLocalization
   final ThemeModeController _themeModeCtrl;
 
   void hydrate() {
-    final languageCode = _localCache.getString(StorageKeys.appLanguageCode) ?? 'en';
-    final dateFormat = _localCache.getString(StorageKeys.appDateFormat) ?? 'DD MMM YYYY';
-    final timeFormat = _localCache.getString(StorageKeys.appTimeFormat) ?? '12h';
+    final languageCode =
+        _localCache.getString(StorageKeys.appLanguageCode) ?? 'en';
+    final dateFormat =
+        _localCache.getString(StorageKeys.appDateFormat) ?? 'DD MMM YYYY';
+    final timeFormat =
+        _localCache.getString(StorageKeys.appTimeFormat) ?? '12h';
     final timezone = _localCache.getString(StorageKeys.appTimezone) ?? '';
     final themeMode = _readThemeMode();
-    final layoutDirection = _localCache.getString(StorageKeys.appLayoutDirection) ?? 'LTR';
+    final layoutDirection =
+        _localCache.getString(StorageKeys.appLayoutDirection) ?? 'LTR';
     final units = _localCache.getString(StorageKeys.appUnits) ?? 'KM';
 
     state = AppLocalizationPreferences(
@@ -224,7 +230,8 @@ class AppLocalizationPreferencesController extends StateNotifier<AppLocalization
       timeFormat: use24Hour ? '24h' : '12h',
       timezone: timezoneOffset,
       themeMode: _parseThemeString(theme),
-      layoutDirection: _LocalizationNormalizers.normalizeDirection(layoutDirection),
+      layoutDirection:
+          _LocalizationNormalizers.normalizeDirection(layoutDirection),
       units: _LocalizationNormalizers.normalizeUnits(units),
     );
   }
@@ -244,7 +251,8 @@ class AppLocalizationPreferencesController extends StateNotifier<AppLocalization
       timeFormat: use24Hour ? '24h' : '12h',
       timezone: timezoneOffset,
       themeMode: _parseThemeString(theme),
-      layoutDirection: _LocalizationNormalizers.normalizeDirection(layoutDirection),
+      layoutDirection:
+          _LocalizationNormalizers.normalizeDirection(layoutDirection),
       units: _LocalizationNormalizers.normalizeUnits(units),
     );
   }
@@ -264,7 +272,8 @@ class AppLocalizationPreferencesController extends StateNotifier<AppLocalization
       timeFormat: timeFormat.toUpperCase() == '24H' ? '24h' : '12h',
       timezone: timezone,
       themeMode: _parseThemeString(theme),
-      layoutDirection: _LocalizationNormalizers.normalizeDirection(layoutDirection),
+      layoutDirection:
+          _LocalizationNormalizers.normalizeDirection(layoutDirection),
       units: _LocalizationNormalizers.normalizeUnits(units),
     );
   }
@@ -342,8 +351,8 @@ class AppLocalizationPreferencesController extends StateNotifier<AppLocalization
   }
 }
 
-final appLocalizationPreferencesProvider =
-    StateNotifierProvider<AppLocalizationPreferencesController, AppLocalizationPreferences>((ref) {
+final appLocalizationPreferencesProvider = StateNotifierProvider<
+    AppLocalizationPreferencesController, AppLocalizationPreferences>((ref) {
   final localCache = ref.watch(localCacheProvider);
   final themeModeCtrl = ref.watch(themeModeProvider.notifier);
   return AppLocalizationPreferencesController(localCache, themeModeCtrl);

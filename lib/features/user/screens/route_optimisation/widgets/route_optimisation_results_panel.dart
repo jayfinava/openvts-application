@@ -81,15 +81,20 @@ class _OptimisedOrderList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final order = result.optimizedOrder;
     final points = state.points as List<RouteOptimisationPoint>;
     final roundTrip = state.roundTrip as bool;
 
+    final bgColor = isDark ? Colors.black : Colors.white;
+    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
+    final textColor = isDark ? Colors.white : Colors.black;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: bgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: Colors.white),
+        border: Border.all(color: borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -107,7 +112,7 @@ class _OptimisedOrderList extends StatelessWidget {
                 Text(
                   'Optimised order',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Colors.white,
+                    color: textColor,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.4,
                   ),
@@ -120,14 +125,14 @@ class _OptimisedOrderList extends StatelessWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.black,
+                      color: bgColor,
                       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                      border: Border.all(color: Colors.white),
+                      border: Border.all(color: borderColor),
                     ),
                     child: Text(
                       'Round trip',
                       style: OpenVtsTypography.meta.copyWith(
-                        color: Colors.white,
+                        color: textColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -177,6 +182,10 @@ class _OrderRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final secondaryTextColor = isDark ? Colors.white : Colors.black54;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.sm,
@@ -202,7 +211,7 @@ class _OrderRow extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.label.copyWith(
-                          color: Colors.white,
+                          color: textColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -229,7 +238,7 @@ class _OrderRow extends StatelessWidget {
                   '${point.lat.toStringAsFixed(5)}, '
                   '${point.lon.toStringAsFixed(5)}',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Colors.white,
+                    color: secondaryTextColor,
                   ),
                 ),
               ],
@@ -246,19 +255,24 @@ class _IndexBadge extends StatelessWidget {
   final int index;
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? Colors.black : Colors.white;
+    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
+    final textColor = isDark ? Colors.white : Colors.black;
+
     return Container(
       width: 22,
       height: 22,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: bgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: Colors.white),
+        border: Border.all(color: borderColor),
       ),
       child: Text(
         '$index',
         style: OpenVtsTypography.meta.copyWith(
-          color: Colors.white,
+          color: textColor,
           fontWeight: FontWeight.w700,
           fontSize: 11,
         ),
@@ -273,6 +287,8 @@ class _Badge extends StatelessWidget {
   final Color color;
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? OpenVtsColors.white : Colors.white;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
       decoration: BoxDecoration(
@@ -282,7 +298,7 @@ class _Badge extends StatelessWidget {
       child: Text(
         text,
         style: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.white,
+          color: textColor,
           fontWeight: FontWeight.w700,
           fontSize: 10,
           letterSpacing: 0.3,
@@ -422,22 +438,31 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final enabled = onPressed != null;
     final Color bg;
     final Color fg;
     final Color border;
     if (primary) {
-      bg = enabled ? OpenVtsColors.brandInk : Colors.black;
-      fg = enabled ? Colors.black : Colors.white;
-      border = enabled ? OpenVtsColors.brandInk : Colors.white;
+      bg = enabled
+          ? OpenVtsColors.brandInk
+          : (isDark ? Colors.black : Colors.white);
+      fg = enabled ? Colors.black : (isDark ? Colors.white : Colors.black);
+      border = enabled
+          ? OpenVtsColors.brandInk
+          : (isDark ? Colors.white : OpenVtsColors.border);
     } else if (subtle) {
       bg = Colors.transparent;
-      fg = enabled ? Colors.white : OpenVtsColors.textTertiary;
+      fg = enabled
+          ? (isDark ? Colors.white : Colors.black)
+          : OpenVtsColors.textTertiary;
       border = Colors.transparent;
     } else {
-      bg = Colors.black;
-      fg = enabled ? Colors.white : OpenVtsColors.textTertiary;
-      border = Colors.white;
+      bg = isDark ? Colors.black : Colors.white;
+      fg = enabled
+          ? (isDark ? Colors.white : Colors.black)
+          : OpenVtsColors.textTertiary;
+      border = isDark ? Colors.white : OpenVtsColors.border;
     }
 
     return SizedBox(
