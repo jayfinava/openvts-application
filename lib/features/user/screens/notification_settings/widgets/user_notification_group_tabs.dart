@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -93,48 +92,49 @@ class _GroupChoiceChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final backgroundColor =
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
 
-    final selectedForeground =
-        isDark ? OpenVtsColors.white : OpenVtsColors.brandInk;
-
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 44),
-      child: ChoiceChip(
-        selected: selected,
-        showCheckmark: false,
-        avatar: Icon(
-          item.icon,
-          size: 15,
-          color: selected
-              ? selectedForeground
-              : isDark
-                  ? OpenVtsColors.white.withValues(alpha: 0.7)
-                  : OpenVtsColors.textSecondary,
-        ),
-        label: Text(item.label),
-        onSelected: (_) => onTap(),
-        materialTapTargetSize: MaterialTapTargetSize.padded,
-        selectedColor: isDark
-            ? OpenVtsColors.white.withValues(alpha: 0.15)
-            : OpenVtsColors.brandInk.withValues(alpha: 0.10),
-        backgroundColor: isDark ? Colors.black : OpenVtsColors.surfaceElevated,
-        side: BorderSide(
-          color: selected
-              ? (isDark ? OpenVtsColors.white : OpenVtsColors.brandInk)
-              : isDark
-                  ? OpenVtsColors.white
-                  : OpenVtsColors.border,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        ),
-        labelStyle: OpenVtsTypography.meta.copyWith(
-          color: selected
-              ? selectedForeground
-              : isDark
-                  ? OpenVtsColors.white.withValues(alpha: 0.7)
-                  : OpenVtsColors.textSecondary,
-          fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+        onTap: onTap,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 34),
+          padding: const EdgeInsets.symmetric(
+            horizontal: OpenVtsSpacing.sm,
+            vertical: OpenVtsSpacing.xs,
+          ),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+            border: Border.all(
+              color: borderColor,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                item.icon,
+                size: 15,
+                color: textColor,
+              ),
+              const SizedBox(width: OpenVtsSpacing.xxs),
+              Text(
+                item.label,
+                style: OpenVtsTypography.meta.copyWith(
+                  height: 1,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                  color: textColor,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

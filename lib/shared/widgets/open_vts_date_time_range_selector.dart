@@ -237,7 +237,8 @@ class OpenVtsDateTimeRangeSelector extends StatefulWidget {
                             title: title,
                             now: now,
                             scrollController: scrollController,
-                            onApply: (range) => Navigator.of(context).pop(range),
+                            onApply: (range) =>
+                                Navigator.of(context).pop(range),
                             onClear: () => Navigator.of(context).pop(
                               const OpenVtsDateTimeRange.empty(),
                             ),
@@ -662,20 +663,37 @@ class _PresetGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (compact) {
-      return SizedBox(
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      final outerBackgroundColor = isDark ? Colors.black : Colors.white;
+      final outerBorderColor =
+          isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+
+      return Container(
         height: 38,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: presets.length,
-          separatorBuilder: (_, __) => const SizedBox(width: OpenVtsSpacing.xs),
-          itemBuilder: (builderContext, index) {
-            final preset = presets[index];
-            return _PresetCompactChip(
-              preset: preset,
-              isSelected: preset.type == selectedPreset,
-              onTap: () => onSelected(preset),
-            );
-          },
+        decoration: BoxDecoration(
+          color: outerBackgroundColor,
+          border: Border.all(color: outerBorderColor, width: 1),
+          borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: presets.length,
+            separatorBuilder: (_, __) => Container(
+              width: 1,
+              height: 32,
+              color: outerBorderColor,
+            ),
+            itemBuilder: (builderContext, index) {
+              final preset = presets[index];
+              return _PresetCompactChip(
+                preset: preset,
+                isSelected: preset.type == selectedPreset,
+                onTap: () => onSelected(preset),
+              );
+            },
+          ),
         ),
       );
     }
@@ -789,36 +807,41 @@ class _PresetCompactChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final foregroundColor = isSelected ? scheme.surface : scheme.onSurface;
-    final backgroundColor = isSelected ? scheme.onSurface : scheme.surface;
-    final borderColor = isSelected ? scheme.onSurface : scheme.outlineVariant;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isSelected
+        ? (isDark ? Colors.black : Colors.white)
+        : Colors.transparent;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
 
     return Material(
       color: backgroundColor,
-      borderRadius: BorderRadius.circular(OpenVtsRadius.button),
+      borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       child: InkWell(
-        borderRadius: BorderRadius.circular(OpenVtsRadius.button),
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(
-            horizontal: OpenVtsSpacing.xs,
-            vertical: OpenVtsSpacing.xxs,
+            horizontal: OpenVtsSpacing.sm,
+            vertical: OpenVtsSpacing.xs,
           ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-            border: Border.all(color: borderColor),
-          ),
+          decoration: isSelected
+              ? BoxDecoration(
+                  borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+                  border: Border.all(color: borderColor, width: 1),
+                )
+              : null,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(preset.icon, size: 14, color: foregroundColor),
-              const SizedBox(width: 6),
+              Icon(preset.icon, size: 16, color: textColor),
+              const SizedBox(width: OpenVtsSpacing.xxs),
               Text(
                 preset.label,
                 style: OpenVtsTypography.meta.copyWith(
-                  color: foregroundColor,
-                  fontWeight: FontWeight.w600,
+                  color: textColor,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                 ),
               ),
             ],

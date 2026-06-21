@@ -207,45 +207,77 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
   }
 
   Widget _buildStatusDropdown() {
-    const options = [
-      _DropdownOption<AdminPaymentStatus?>(value: null, label: 'All'),
-      _DropdownOption(
-        value: AdminPaymentStatus.success,
-        label: 'Success',
-      ),
-      _DropdownOption(
-        value: AdminPaymentStatus.pending,
-        label: 'Pending',
-      ),
-      _DropdownOption(
-        value: AdminPaymentStatus.failed,
-        label: 'Failed',
-      ),
-    ];
+    return Builder(builder: (context) {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      final textColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
 
-    return _buildDropdownField<AdminPaymentStatus?>(
-      label: 'Status',
-      value: state.selectedStatus,
-      options: options,
-      onChanged: onStatusChanged,
-    );
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Status',
+            style: OpenVtsTypography.label.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: OpenVtsSpacing.xs),
+          _buildPillSegmentedControl<AdminPaymentStatus?>(
+            context: context,
+            segments: [
+              _PillSegment<AdminPaymentStatus?>(value: null, label: 'All'),
+              _PillSegment(
+                value: AdminPaymentStatus.success,
+                label: 'Success',
+              ),
+              _PillSegment(
+                value: AdminPaymentStatus.pending,
+                label: 'Pending',
+              ),
+              _PillSegment(
+                value: AdminPaymentStatus.failed,
+                label: 'Failed',
+              ),
+            ],
+            selectedValue: state.selectedStatus,
+            onChanged: onStatusChanged,
+          ),
+        ],
+      );
+    });
   }
 
   Widget _buildPaymentModeDropdown() {
-    final options = <_DropdownOption<AdminPaymentMode?>>[
-      const _DropdownOption<AdminPaymentMode?>(value: null, label: 'All'),
-      ...AdminPaymentMode.values.map((mode) => _DropdownOption(
-            value: mode,
-            label: mode.label,
-          )),
-    ];
+    return Builder(builder: (context) {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      final textColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
 
-    return _buildDropdownField<AdminPaymentMode?>(
-      label: 'Payment Mode',
-      value: state.selectedMode,
-      options: options,
-      onChanged: onModeChanged,
-    );
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Payment Mode',
+            style: OpenVtsTypography.label.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: OpenVtsSpacing.xs),
+          _buildPillSegmentedControl<AdminPaymentMode?>(
+            context: context,
+            segments: [
+              _PillSegment<AdminPaymentMode?>(value: null, label: 'All'),
+              ...AdminPaymentMode.values.map((mode) => _PillSegment(
+                    value: mode,
+                    label: mode.label,
+                  )),
+            ],
+            selectedValue: state.selectedMode,
+            onChanged: onModeChanged,
+          ),
+        ],
+      );
+    });
   }
 
   Widget _buildDateRangeDropdown() {
@@ -380,10 +412,110 @@ class AdminPaymentsFiltersCard extends StatelessWidget {
     final text = username.isEmpty ? user.name : '${user.name} (@$username)';
     return text;
   }
+
+  Widget _buildPillSegmentedControl<T>({
+    required BuildContext context,
+    required List<_PillSegment<T>> segments,
+    required T selectedValue,
+    required ValueChanged<T?> onChanged,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final outerBackgroundColor = isDark ? Colors.black : Colors.white;
+    final outerBorderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: outerBackgroundColor,
+        border: Border.all(color: outerBorderColor, width: 1),
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (int i = 0; i < segments.length; i++) ...[
+              Expanded(
+                child: _buildPillSegment(
+                  context: context,
+                  segment: segments[i],
+                  isSelected: segments[i].value == selectedValue,
+                  isDark: isDark,
+                  onTap: () => onChanged(segments[i].value),
+                ),
+              ),
+              if (i < segments.length - 1)
+                Container(
+                  width: 1,
+                  height: 32,
+                  color: outerBorderColor,
+                ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPillSegment<T>({
+    required BuildContext context,
+    required _PillSegment<T> segment,
+    required bool isSelected,
+    required bool isDark,
+    required VoidCallback onTap,
+  }) {
+    final backgroundColor = isSelected
+        ? (isDark ? Colors.black : Colors.white)
+        : Colors.transparent;
+
+    final textColor = isDark ? Colors.white : Colors.black;
+
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+
+    return Material(
+      color: backgroundColor,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 34),
+          padding: const EdgeInsets.symmetric(
+            horizontal: OpenVtsSpacing.sm,
+            vertical: OpenVtsSpacing.xs,
+          ),
+          decoration: isSelected
+              ? BoxDecoration(
+                  border: Border.all(color: borderColor, width: 1),
+                  borderRadius: BorderRadius.circular(OpenVtsRadius.pill - 1),
+                )
+              : null,
+          child: Center(
+            child: Text(
+              segment.label,
+              style: OpenVtsTypography.meta.copyWith(
+                color: textColor,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _DropdownOption<T> {
   const _DropdownOption({required this.value, required this.label});
+
+  final T value;
+  final String label;
+}
+
+class _PillSegment<T> {
+  const _PillSegment({required this.value, required this.label});
 
   final T value;
   final String label;

@@ -745,37 +745,34 @@ class OpenVtsListPageChoiceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final background = selected
-        ? OpenVtsListPageTheme.primaryInkColor(context)
-        : OpenVtsListPageTheme.softSurfaceColor(context);
-    final foreground = selected
-        ? Theme.of(context).colorScheme.surface
-        : OpenVtsListPageTheme.primaryInkColor(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor =
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
 
     return Material(
-      color: background,
+      color: backgroundColor,
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       child: InkWell(
         onTap: onSelected,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         child: Container(
+          constraints: const BoxConstraints(minHeight: 34),
           padding: const EdgeInsets.symmetric(
-            horizontal: OpenVtsSpacing.md,
+            horizontal: OpenVtsSpacing.sm,
             vertical: OpenVtsSpacing.xs,
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-            border: Border.all(
-              color: selected
-                  ? OpenVtsListPageTheme.primaryInkColor(context)
-                  : OpenVtsListPageTheme.softBorderColor(context),
-            ),
+            border: Border.all(color: borderColor, width: 1),
           ),
           child: Text(
             label,
             style: OpenVtsTypography.label.copyWith(
-              color: foreground,
-              fontWeight: FontWeight.w600,
+              color: textColor,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
             ),
           ),
         ),

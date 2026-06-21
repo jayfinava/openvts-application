@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/open_vts_radius.dart';
+import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 
 class AdminFilterChip extends StatelessWidget {
@@ -17,30 +18,35 @@ class AdminFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor =
-        selected ? colorScheme.primary : colorScheme.surfaceContainerHigh;
-    final foregroundColor =
-        selected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant;
-    final borderColor = selected ? colorScheme.primary : colorScheme.outline;
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
 
     return Material(
-      color: backgroundColor,
-      borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          constraints: const BoxConstraints(minHeight: 34),
+          padding: const EdgeInsets.symmetric(
+            horizontal: OpenVtsSpacing.sm,
+            vertical: OpenVtsSpacing.xs,
+          ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
             border: Border.all(color: borderColor, width: 1),
           ),
           child: Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: foregroundColor,
-              fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+              color: textColor,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
             ),
           ),
         ),

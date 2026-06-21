@@ -375,35 +375,36 @@ class _CompactChoiceChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor =
-        isDark ? Colors.black : OpenVtsColors.surfaceElevated;
-    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
-    final unselectedTextColor =
-        isDark ? Colors.white : OpenVtsColors.textPrimary;
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
 
-    return ChoiceChip(
-      selected: selected,
-      showCheckmark: false,
-      onSelected: (_) => onTap(),
-      labelPadding: const EdgeInsets.symmetric(horizontal: 2),
-      materialTapTargetSize: MaterialTapTargetSize.padded,
-      selectedColor: isDark ? Colors.white : OpenVtsColors.brandInk,
-      backgroundColor: backgroundColor,
-      side: BorderSide(
-        color: selected
-            ? (isDark ? Colors.white : Colors.transparent)
-            : borderColor,
-        width: 1,
-      ),
-      shape: RoundedRectangleBorder(
+    return Material(
+      color: backgroundColor,
+      borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+      child: InkWell(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-      ),
-      label: Text(
-        label,
-        style: OpenVtsTypography.meta.copyWith(
-          color: selected
-              ? (isDark ? Colors.black : Colors.white)
-              : unselectedTextColor,
-          fontWeight: FontWeight.w600,
+        onTap: onTap,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 34),
+          padding: const EdgeInsets.symmetric(
+            horizontal: OpenVtsSpacing.sm,
+            vertical: OpenVtsSpacing.xs,
+          ),
+          decoration: selected
+              ? BoxDecoration(
+                  borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+                  border: Border.all(color: borderColor, width: 1),
+                )
+              : null,
+          child: Text(
+            label,
+            style: OpenVtsTypography.meta.copyWith(
+              color: textColor,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+            ),
+          ),
         ),
       ),
     );

@@ -695,20 +695,40 @@ class _ChoiceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChoiceChip(
-      label: Text(label),
-      selected: selected,
-      checkmarkColor: OpenVtsColors.white,
-      selectedColor: _primaryInkColor(context),
-      backgroundColor: _softSurfaceColor(context),
-      side: BorderSide(color: _softBorderColor(context)),
-      labelStyle: OpenVtsTypography.label.copyWith(
-        color: selected
-            ? OpenVtsColors.white
-            : Theme.of(context).colorScheme.onSurfaceVariant,
-        fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor =
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+
+    return Material(
+      color: backgroundColor,
+      borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+        onTap: onSelected,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 34),
+          padding: const EdgeInsets.symmetric(
+            horizontal: OpenVtsSpacing.sm,
+            vertical: OpenVtsSpacing.xs,
+          ),
+          decoration: selected
+              ? BoxDecoration(
+                  borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+                  border: Border.all(color: borderColor, width: 1),
+                )
+              : null,
+          child: Text(
+            label,
+            style: OpenVtsTypography.label.copyWith(
+              color: textColor,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+            ),
+          ),
+        ),
       ),
-      onSelected: (_) => onSelected(),
     );
   }
 }

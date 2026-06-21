@@ -532,7 +532,9 @@ class _PrimaryCreateButton extends StatelessWidget {
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          side: isDark ? const BorderSide(color: Colors.white, width: 1) : BorderSide.none,
+          side: isDark
+              ? const BorderSide(color: Colors.white, width: 1)
+              : BorderSide.none,
         ),
         textStyle: OpenVtsTypography.label.copyWith(
           fontWeight: FontWeight.w600,
@@ -1737,37 +1739,38 @@ class _ChoiceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final background = selected
-        ? Theme.of(context).colorScheme.primary
-        : Theme.of(context).colorScheme.surfaceContainer;
-    final foreground = selected
-        ? Theme.of(context).colorScheme.onPrimary
-        : Theme.of(context).colorScheme.onSurface;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor =
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
 
     return Material(
-      color: background,
+      color: backgroundColor,
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       child: InkWell(
         onTap: onSelected,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         child: Container(
+          constraints: const BoxConstraints(minHeight: 34),
           padding: const EdgeInsets.symmetric(
-            horizontal: OpenVtsSpacing.md,
+            horizontal: OpenVtsSpacing.sm,
             vertical: OpenVtsSpacing.xs,
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
             border: Border.all(
               color: selected
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.outlineVariant,
+                  ? (isDark ? Colors.white : Colors.black)
+                  : borderColor,
             ),
           ),
           child: Text(
             label,
             style: OpenVtsTypography.label.copyWith(
-              color: foreground,
-              fontWeight: FontWeight.w600,
+              color: textColor,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
             ),
           ),
         ),

@@ -447,31 +447,36 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final primary = theme.colorScheme.primary;
-    final surface = theme.colorScheme.surface;
-    final outlineVariant = theme.colorScheme.outlineVariant;
-    final onSurfaceVariant = theme.colorScheme.onSurfaceVariant;
-    final onPrimary = theme.colorScheme.onPrimary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor =
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        constraints: const BoxConstraints(minHeight: 34),
+        padding: const EdgeInsets.symmetric(
+          horizontal: OpenVtsSpacing.sm,
+          vertical: OpenVtsSpacing.xs,
+        ),
         decoration: BoxDecoration(
-          color: selected ? primary : surface,
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
           border: Border.all(
-            color: selected ? primary : outlineVariant,
+            color:
+                selected ? (isDark ? Colors.white : Colors.black) : borderColor,
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: selected ? onPrimary : onSurfaceVariant,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+            color: textColor,
           ),
         ),
       ),

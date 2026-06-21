@@ -664,47 +664,51 @@ class _FilterPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return FilterChip(
-      selected: selected,
-      onSelected: (nextValue) => onChanged(value, nextValue),
-      avatar: Icon(
-        icon,
-        size: 14,
-        color: selected
-            ? OpenVtsColors.white
-            : (isDark
-                ? OpenVtsColors.darkTextSecondary
-                : OpenVtsColors.textSecondary),
-      ),
-      label: Text(label),
-      backgroundColor:
-          isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated,
-      selectedColor: isDark ? OpenVtsColors.white : OpenVtsColors.brandInkSoft,
-      checkmarkColor: isDark ? OpenVtsColors.brandInk : OpenVtsColors.white,
-      side: BorderSide(
-        color: selected
-            ? (isDark
-                ? OpenVtsColors.white.withValues(alpha: 0.9)
-                : OpenVtsColors.brandInkSoft.withValues(alpha: 0.9))
-            : (isDark
-                ? OpenVtsColors.darkBorder.withValues(alpha: 0.85)
-                : OpenVtsColors.border.withValues(alpha: 0.85)),
-      ),
-      labelStyle: OpenVtsTypography.meta.copyWith(
-        color: selected
-            ? (isDark ? OpenVtsColors.brandInk : OpenVtsColors.white)
-            : (isDark
-                ? OpenVtsColors.darkTextPrimary
-                : OpenVtsColors.textPrimary),
-        fontWeight: FontWeight.w600,
-      ),
-      shape: RoundedRectangleBorder(
+    final backgroundColor =
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+
+    return Container(
+      constraints: const BoxConstraints(minHeight: 34),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        border: Border.all(color: borderColor, width: 1),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
       ),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      visualDensity: VisualDensity.compact,
-      elevation: 0,
-      pressElevation: 0,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+          onTap: () => onChanged(value, !selected),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: OpenVtsSpacing.sm,
+              vertical: OpenVtsSpacing.xs,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 14,
+                  color: textColor,
+                ),
+                const SizedBox(width: OpenVtsSpacing.xxs),
+                Text(
+                  label,
+                  style: OpenVtsTypography.meta.copyWith(
+                    color: textColor,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -56,7 +56,8 @@ class AdminSupportTicketListView extends StatelessWidget {
               visibleCount: filteredTickets.length,
               totalCount: sourceTickets.length,
               hasActiveFilters: hasActiveFilters,
-              isCreating: state.isCreatingUserTicket || state.isCreatingMyTicket,
+              isCreating:
+                  state.isCreatingUserTicket || state.isCreatingMyTicket,
               onCreatePressed: onCreatePressed,
             ),
           ),
@@ -122,7 +123,8 @@ class AdminSupportTicketListView extends StatelessWidget {
           else
             SliverList.separated(
               itemCount: visibleTickets.length + (state.hasMoreVisible ? 1 : 0),
-              separatorBuilder: (_, __) => const SizedBox(height: OpenVtsSpacing.xs),
+              separatorBuilder: (_, __) =>
+                  const SizedBox(height: OpenVtsSpacing.xs),
               itemBuilder: (context, index) {
                 if (index >= visibleTickets.length) {
                   return Center(
@@ -149,7 +151,9 @@ class AdminSupportTicketListView extends StatelessWidget {
   }
 
   List<AdminSupportTicketListItem> _sourceTickets(AdminSupportState state) {
-    return state.selectedTab == AdminSupportTab.userTickets ? state.userTickets : state.myTickets;
+    return state.selectedTab == AdminSupportTab.userTickets
+        ? state.userTickets
+        : state.myTickets;
   }
 
   AdminSupportTicketStatus? _selectedStatus(AdminSupportState state) {
@@ -159,8 +163,9 @@ class AdminSupportTicketListView extends StatelessWidget {
   }
 
   bool _hasActiveFilters(AdminSupportState state) {
-    final search =
-        state.selectedTab == AdminSupportTab.userTickets ? state.userSearch : state.mySearch;
+    final search = state.selectedTab == AdminSupportTab.userTickets
+        ? state.userSearch
+        : state.mySearch;
     return _selectedStatus(state) != null || search.trim().isNotEmpty;
   }
 }

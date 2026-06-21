@@ -113,18 +113,23 @@ class _CountryFilterChip extends StatelessWidget {
       },
       child: Material(
         color: selected
-            ? OpenVtsColors.brandInk
-            : Theme.of(context).colorScheme.surface,
+            ? (Theme.of(context).brightness == Brightness.dark
+                ? Colors.black
+                : Colors.white)
+            : Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-          side: BorderSide(
-            color: selected
-                ? OpenVtsColors.brandInk
-                : Theme.of(context).colorScheme.outlineVariant,
-          ),
+          side: selected
+              ? BorderSide(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black.withValues(alpha: 0.2),
+                  width: 1,
+                )
+              : BorderSide.none,
         ),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 32),
+          constraints: const BoxConstraints(minHeight: 34),
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: OpenVtsSpacing.sm,
@@ -135,28 +140,28 @@ class _CountryFilterChip extends StatelessWidget {
               children: [
                 Icon(
                   Icons.public_rounded,
-                  size: 14,
-                  color: selected
-                      ? Theme.of(context).colorScheme.onPrimary
-                      : Theme.of(context).colorScheme.onSurface,
+                  size: 16,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
                 ),
                 const SizedBox(width: OpenVtsSpacing.xxs),
                 Text(
                   label,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: selected
-                        ? Theme.of(context).colorScheme.onPrimary
-                        : Theme.of(context).colorScheme.onSurface,
-                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                   ),
                 ),
                 const SizedBox(width: OpenVtsSpacing.xxs),
                 Icon(
                   Icons.expand_more_rounded,
                   size: 16,
-                  color: selected
-                      ? Theme.of(context).colorScheme.onPrimary
-                      : Theme.of(context).colorScheme.onSurface,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
                 ),
               ],
             ),
@@ -201,27 +206,26 @@ class _AdminFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = selected
-        ? OpenVtsColors.brandInk
-        : Theme.of(context).colorScheme.surfaceContainerHigh;
-    final foregroundColor = selected
-        ? Theme.of(context).colorScheme.onPrimary
-        : Theme.of(context).colorScheme.onSurface;
-    final borderColor = selected
-        ? OpenVtsColors.brandInk
-        : Theme.of(context).colorScheme.outline;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor =
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
 
     return Material(
       color: backgroundColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        side: BorderSide(color: borderColor, width: 1),
+        side: selected
+            ? BorderSide(color: borderColor, width: 1)
+            : BorderSide.none,
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         onTap: onTap,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 32),
+          constraints: const BoxConstraints(minHeight: 34),
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: OpenVtsSpacing.sm,
@@ -230,8 +234,8 @@ class _AdminFilterChip extends StatelessWidget {
             child: Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: foregroundColor,
-                fontWeight: FontWeight.w600,
+                color: textColor,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
               ),
             ),
           ),

@@ -155,13 +155,14 @@ class _FilterGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
     return Container(
+      constraints: const BoxConstraints(minHeight: 34),
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(
-          color: isDark ? OpenVtsColors.white : OpenVtsColors.brandInk,
-        ),
+        border: Border.all(color: borderColor),
       ),
       padding: const EdgeInsets.all(2),
       child: Row(
@@ -190,6 +191,13 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor =
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -197,21 +205,18 @@ class _FilterChip extends StatelessWidget {
         duration: const Duration(milliseconds: 140),
         padding: const EdgeInsets.symmetric(
           horizontal: OpenVtsSpacing.sm,
-          vertical: 6,
+          vertical: OpenVtsSpacing.xs,
         ),
         decoration: BoxDecoration(
-          color: selected
-              ? Theme.of(context).colorScheme.surface
-              : Colors.transparent,
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+          border: selected ? Border.all(color: borderColor) : null,
         ),
         child: Text(
           label,
           style: OpenVtsTypography.meta.copyWith(
-            color: selected
-                ? Theme.of(context).colorScheme.onSurface
-                : OpenVtsColors.white,
-            fontWeight: FontWeight.w600,
+            color: textColor,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
           ),
         ),
       ),

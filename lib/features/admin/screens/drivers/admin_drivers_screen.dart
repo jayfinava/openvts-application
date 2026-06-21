@@ -6,6 +6,7 @@ import '../../../../core/router/route_paths.dart';
 import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
+import '../../../../core/theme/open_vts_typography.dart';
 import '../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../shared/widgets/open_vts_list_page_header.dart';
@@ -105,19 +106,17 @@ class AdminDriversScreen extends ConsumerWidget {
               sections: [
                 OpenVtsListPageOptionsSection(
                   label: 'Status',
-                  child: Wrap(
-                    spacing: OpenVtsSpacing.xs,
-                    runSpacing: OpenVtsSpacing.xs,
+                  child: _PillSegmentedControl(
                     children: AdminDriverStatusFilter.values
                         .map(
-                          (option) => OpenVtsListPageChoiceChip(
+                          (option) => _PillSegment(
                             label: switch (option) {
                               AdminDriverStatusFilter.all => 'All',
                               AdminDriverStatusFilter.active => 'Active',
                               AdminDriverStatusFilter.inactive => 'Inactive',
                             },
                             selected: selectedStatus == option,
-                            onSelected: () =>
+                            onTap: () =>
                                 setSheetState(() => selectedStatus = option),
                           ),
                         )
@@ -126,12 +125,10 @@ class AdminDriversScreen extends ConsumerWidget {
                 ),
                 OpenVtsListPageOptionsSection(
                   label: 'Verification',
-                  child: Wrap(
-                    spacing: OpenVtsSpacing.xs,
-                    runSpacing: OpenVtsSpacing.xs,
+                  child: _PillSegmentedControl(
                     children: AdminDriverVerifiedFilter.values
                         .map(
-                          (option) => OpenVtsListPageChoiceChip(
+                          (option) => _PillSegment(
                             label: switch (option) {
                               AdminDriverVerifiedFilter.all => 'All',
                               AdminDriverVerifiedFilter.verified => 'Verified',
@@ -139,7 +136,7 @@ class AdminDriversScreen extends ConsumerWidget {
                                 'Unverified',
                             },
                             selected: selectedVerified == option,
-                            onSelected: () =>
+                            onTap: () =>
                                 setSheetState(() => selectedVerified = option),
                           ),
                         )
@@ -152,17 +149,17 @@ class AdminDriversScreen extends ConsumerWidget {
                     spacing: OpenVtsSpacing.xs,
                     runSpacing: OpenVtsSpacing.xs,
                     children: [
-                      OpenVtsListPageChoiceChip(
+                      _PillSegment(
                         label: 'All Countries',
                         selected: selectedCountry == null,
-                        onSelected: () =>
+                        onTap: () =>
                             setSheetState(() => selectedCountry = null),
                       ),
                       for (final code in countryCodes)
-                        OpenVtsListPageChoiceChip(
+                        _PillSegment(
                           label: code,
                           selected: selectedCountry == code,
-                          onSelected: () =>
+                          onTap: () =>
                               setSheetState(() => selectedCountry = code),
                         ),
                     ],
@@ -415,6 +412,85 @@ class _InlineErrorBanner extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _PillSegmentedControl extends StatelessWidget {
+  const _PillSegmentedControl({
+    required this.children,
+  });
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDark ? Colors.black : Colors.white;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+        border: Border.all(color: borderColor, width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: children,
+      ),
+    );
+  }
+}
+
+class _PillSegment extends StatelessWidget {
+  const _PillSegment({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor =
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
+
+    return Material(
+      color: backgroundColor,
+      borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 34),
+          padding: const EdgeInsets.symmetric(
+            horizontal: OpenVtsSpacing.sm,
+            vertical: OpenVtsSpacing.xs,
+          ),
+          decoration: selected
+              ? BoxDecoration(
+                  borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+                  border: Border.all(color: borderColor, width: 1),
+                )
+              : null,
+          child: Text(
+            label,
+            style: OpenVtsTypography.label.copyWith(
+              color: textColor,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+            ),
+          ),
+        ),
       ),
     );
   }
