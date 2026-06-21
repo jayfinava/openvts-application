@@ -16,6 +16,7 @@ import '../../controllers/user_vehicles_controller.dart';
 import '../../models/user_vehicle_model.dart';
 import '../../models/user_vehicle_state.dart';
 import 'widgets/user_vehicle_card.dart';
+import 'widgets/user_vehicle_status_segment.dart';
 
 class UserVehiclesScreen extends ConsumerWidget {
   const UserVehiclesScreen({super.key});
@@ -158,60 +159,21 @@ class _ToolbarCard extends StatelessWidget {
             onChanged: onSearchChanged,
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                for (final filter in UserVehicleStatusFilter.values) ...[
-                  _FilterChip(
-                    label: _statusFilterLabel(filter),
-                    selected: state.statusFilter == filter,
-                    onTap: () => onStatusChanged(filter),
-                  ),
-                  const SizedBox(width: OpenVtsSpacing.xs),
-                ],
-                if (typeOptions.length > 1)
-                  _TypeFilterButton(
-                    value: state.typeFilter,
-                    options: typeOptions,
-                    onChanged: onTypeChanged,
-                  ),
-              ],
-            ),
+          UserVehicleStatusSegment(
+            current: state.statusFilter,
+            onChanged: onStatusChanged,
+            counts: _calculateStatusCounts(state.vehicles),
           ),
+          if (typeOptions.length > 1) ...[
+            const SizedBox(height: OpenVtsSpacing.sm),
+            _TypeFilterButton(
+              value: state.typeFilter,
+              options: typeOptions,
+              onChanged: onTypeChanged,
+            ),
+          ],
         ],
       ),
-    );
-  }
-}
-
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return ChoiceChip(
-      label: Text(label),
-      selected: selected,
-      checkmarkColor: OpenVtsColors.brandInk,
-      selectedColor: OpenVtsColors.white,
-      backgroundColor: _softSurfaceColor(context),
-      side: BorderSide(color: _softBorderColor(context)),
-      labelStyle: OpenVtsTypography.label.copyWith(
-        color: selected
-            ? OpenVtsColors.brandInk
-            : Theme.of(context).colorScheme.onSurfaceVariant,
-        fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-      ),
-      onSelected: (_) => onTap(),
     );
   }
 }
@@ -360,13 +322,30 @@ List<_TypeFilterOption> _typeOptions(List<UserVehicleListItem> vehicles) {
   return options;
 }
 
-String _statusFilterLabel(UserVehicleStatusFilter filter) {
-  return switch (filter) {
-    UserVehicleStatusFilter.all => 'All',
-    UserVehicleStatusFilter.active => 'Active',
-    UserVehicleStatusFilter.inactive => 'Inactive',
-    UserVehicleStatusFilter.licenseBlocked => 'License Blocked',
+Map<UserVehicleStatusFilter, int> _calculateStatusCounts(
+  List<UserVehicleListItem> vehicles,
+) {
+  final counts = <UserVehicleStatusFilter, int>{
+    UserVehicleStatusFilter.all: vehicles.length,
+    UserVehicleStatusFilter.active: 0,
+    UserVehicleStatusFilter.inactive: 0,
+    UserVehicleStatusFilter.licenseBlocked: 0,
   };
+
+  for (final vehicle in vehicles) {
+    if (vehicle.isLicenseBlocked) {
+      counts[UserVehicleStatusFilter.licenseBlocked] =
+          (counts[UserVehicleStatusFilter.licenseBlocked] ?? 0) + 1;
+    } else if (vehicle.isActive) {
+      counts[UserVehicleStatusFilter.active] =
+          (counts[UserVehicleStatusFilter.active] ?? 0) + 1;
+    } else {
+      counts[UserVehicleStatusFilter.inactive] =
+          (counts[UserVehicleStatusFilter.inactive] ?? 0) + 1;
+    }
+  }
+
+  return counts;
 }
 
 Color _softSurfaceColor(BuildContext context) {

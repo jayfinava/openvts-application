@@ -42,9 +42,8 @@ class _SuperadminAdminDetailsScreenState
     // Seed initial admin and data from list item
     if (widget.initialAdmin != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final controller = ref
-            .read(superadminAdminDetailsControllerProvider(widget.adminId)
-                .notifier);
+        final controller = ref.read(
+            superadminAdminDetailsControllerProvider(widget.adminId).notifier);
         controller.seedInitialAdmin(widget.initialAdmin);
         controller.seedInitialData(
           vehicleCount: widget.initialAdmin!.totalVehicles > 0
@@ -76,6 +75,9 @@ class _SuperadminAdminDetailsScreenState
     return OpenVtsPageScaffold(
       title: title,
       headerMode: OpenVtsPageHeaderMode.closeable,
+      leading: _HeaderAvatar(
+        adminName: title,
+      ),
       onClose: () => Navigator.of(context).maybePop(),
       actions: [
         _HeaderStatusChip(isActive: isActive),
@@ -126,7 +128,8 @@ class _SuperadminAdminDetailsScreenState
   ) async {
     final provider = superadminAdminDetailsControllerProvider(widget.adminId);
     final controller = ref.read(provider.notifier);
-    final currentlyActive = ref.read(provider.select((s) => s.effectiveIsActive));
+    final currentlyActive =
+        ref.read(provider.select((s) => s.effectiveIsActive));
     final next = !currentlyActive;
     final ok = await controller.updateStatus(next);
     if (!context.mounted) return;
@@ -203,6 +206,43 @@ class _SuperadminAdminDetailsScreenState
 // ---------------------------------------------------------------------------
 // Header widgets
 // ---------------------------------------------------------------------------
+
+class _HeaderAvatar extends StatelessWidget {
+  const _HeaderAvatar({required this.adminName});
+
+  final String adminName;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final initial = adminName.trim().isNotEmpty ? adminName.trim()[0].toUpperCase() : '?';
+
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(start: OpenVtsSpacing.sm),
+      child: Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: Container(
+          height: 36,
+          width: 36,
+          decoration: BoxDecoration(
+            color: isDark ? Colors.black : Theme.of(context).colorScheme.primary,
+            borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+            border: isDark ? Border.all(color: Colors.white, width: 1) : null,
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            initial,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: isDark ? Colors.white : Theme.of(context).colorScheme.onPrimary,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _HeaderStatusChip extends StatelessWidget {
   const _HeaderStatusChip({required this.isActive});
@@ -326,9 +366,7 @@ class _MenuRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final color = isDestructive
-        ? OpenVtsColors.error
-        : scheme.onSurface;
+    final color = isDestructive ? OpenVtsColors.error : scheme.onSurface;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -487,7 +525,8 @@ class _SummaryCard extends ConsumerWidget {
         ? ref.watch(superadminAdminDetailsControllerProvider(resolvedAdminId))
         : null;
 
-    final isActive = controllerState?.effectiveIsActive ?? fallback?.isActive ?? false;
+    final isActive =
+        controllerState?.effectiveIsActive ?? fallback?.isActive ?? false;
     final isVerified = admin?.isEmailVerified ?? fallback?.isVerified ?? false;
     final credits = admin?.credits ?? fallback?.totalCredits ?? 0;
 
@@ -511,14 +550,21 @@ class _SummaryCard extends ConsumerWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black
+                      : Theme.of(context).colorScheme.surfaceContainer,
+                  border: Theme.of(context).brightness == Brightness.dark
+                      ? Border.all(color: Colors.white, width: 1)
+                      : null,
                 ),
                 child: Text(
                   initial,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -626,7 +672,8 @@ class _ContactLine extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        Icon(icon,
+            size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
@@ -660,7 +707,8 @@ class _ContactLineWithVerification extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        Icon(icon,
+            size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
         const SizedBox(width: 6),
         Flexible(
           child: Text(
@@ -678,7 +726,9 @@ class _ContactLineWithVerification extends StatelessWidget {
         Tooltip(
           message: isVerified ? 'Email verified' : 'Email unverified',
           child: Icon(
-            isVerified ? Icons.check_circle_rounded : Icons.error_outline_rounded,
+            isVerified
+                ? Icons.check_circle_rounded
+                : Icons.error_outline_rounded,
             size: 15,
             color: isVerified ? OpenVtsColors.success : OpenVtsColors.warning,
           ),

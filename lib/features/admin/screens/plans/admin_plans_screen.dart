@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
 import '../../../../shared/widgets/open_vts_bottom_sheet.dart';
@@ -193,8 +194,9 @@ class _PlansHeaderCard extends StatelessWidget {
             child: FilledButton.icon(
               onPressed: isSubmitting ? null : onAddPressed,
               style: FilledButton.styleFrom(
-                backgroundColor: colorScheme.onSurface,
-                foregroundColor: colorScheme.surface,
+                backgroundColor: OpenVtsColors.brandInk,
+                foregroundColor: OpenVtsColors.white,
+                side: const BorderSide(color: OpenVtsColors.white, width: 0.8),
               ),
               icon: const Icon(Icons.add_rounded, size: 16),
               label: const Text('Add Plan'),

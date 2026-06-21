@@ -5,6 +5,7 @@ import 'package:open_vts/core/theme/open_vts_spacing.dart';
 import 'package:open_vts/core/theme/open_vts_typography.dart';
 import 'package:open_vts/features/user/models/user_support_model.dart';
 import 'package:open_vts/features/user/models/user_support_state.dart';
+import 'package:open_vts/features/user/screens/support/widgets/user_support_status_segment.dart';
 import 'package:open_vts/features/user/screens/support/widgets/user_support_ticket_card.dart';
 import 'package:open_vts/shared/widgets/open_vts_button.dart';
 import 'package:open_vts/shared/widgets/open_vts_card.dart';
@@ -54,10 +55,10 @@ class UserSupportTicketListView extends StatelessWidget {
           ),
           const SliverToBoxAdapter(child: SizedBox(height: OpenVtsSpacing.xs)),
           SliverToBoxAdapter(
-            child: _StatusTabs(
+            child: UserSupportStatusSegment(
               selected: state.selectedStatusFilter,
-              tickets: state.tickets,
               onChanged: onStatusChanged,
+              counts: _calculateStatusCounts(state.tickets),
             ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: OpenVtsSpacing.xs)),
@@ -208,91 +209,18 @@ class _SupportHeader extends StatelessWidget {
   }
 }
 
-class _StatusTabs extends StatelessWidget {
-  const _StatusTabs({
-    required this.selected,
-    required this.tickets,
-    required this.onChanged,
-  });
+Map<UserSupportTicketStatus?, int> _calculateStatusCounts(
+  List<UserSupportTicketListItem> tickets,
+) {
+  final counts = <UserSupportTicketStatus?, int>{
+    null: tickets.length, // All tickets
+  };
 
-  final UserSupportTicketStatus? selected;
-  final List<UserSupportTicketListItem> tickets;
-  final ValueChanged<UserSupportTicketStatus?> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final counts = <UserSupportTicketStatus, int>{
-      for (final status in UserSupportTicketStatus.values)
-        status: tickets.where((ticket) => ticket.status == status).length,
-    };
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          _SupportFilterChip(
-            label: 'All',
-            count: tickets.length,
-            selected: selected == null,
-            onSelected: () => onChanged(null),
-          ),
-          const SizedBox(width: OpenVtsSpacing.xs),
-          for (final status in UserSupportTicketStatus.values) ...[
-            _SupportFilterChip(
-              label: status.label,
-              count: counts[status] ?? 0,
-              selected: selected == status,
-              onSelected: () => onChanged(status),
-            ),
-            const SizedBox(width: OpenVtsSpacing.xs),
-          ],
-        ],
-      ),
-    );
+  for (final status in UserSupportTicketStatus.values) {
+    counts[status] = tickets.where((ticket) => ticket.status == status).length;
   }
-}
 
-class _SupportFilterChip extends StatelessWidget {
-  const _SupportFilterChip({
-    required this.label,
-    required this.count,
-    required this.selected,
-    required this.onSelected,
-  });
-
-  final String label;
-  final int count;
-  final bool selected;
-  final VoidCallback onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final selectedBg = colorScheme.primary;
-    final unselectedBg = colorScheme.surfaceContainerHigh;
-    final borderColor = selected ? colorScheme.primary : colorScheme.outline;
-    final labelColor =
-        selected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant;
-
-    return ChoiceChip(
-      label: Text('$label $count'),
-      selected: selected,
-      onSelected: (_) => onSelected(),
-      visualDensity: VisualDensity.compact,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      labelPadding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.xs),
-      selectedColor: selectedBg,
-      backgroundColor: unselectedBg,
-      side: BorderSide(color: borderColor),
-      labelStyle: OpenVtsTypography.meta.copyWith(
-        color: labelColor,
-        fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-      ),
-    );
-  }
+  return counts;
 }
 
 class _SupportEmptyState extends StatelessWidget {

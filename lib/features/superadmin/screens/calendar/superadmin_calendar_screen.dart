@@ -33,7 +33,6 @@ class SuperadminCalendarScreen extends ConsumerWidget {
     return OpenVtsPageScaffold(
       title: 'Calendar',
       headerMode: OpenVtsPageHeaderMode.closeable,
-      leading: const _HeaderLogoTile(),
       padding: const EdgeInsetsDirectional.fromSTEB(
         OpenVtsSpacing.md,
         OpenVtsSpacing.md,
@@ -462,32 +461,6 @@ class SuperadminCalendarScreen extends ConsumerWidget {
   }
 }
 
-class _HeaderLogoTile extends StatelessWidget {
-  const _HeaderLogoTile();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsetsDirectional.only(start: OpenVtsSpacing.sm),
-      child: Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: Container(
-          height: 36,
-          width: 36,
-          decoration: BoxDecoration(
-            color: OpenVtsColors.brandInk,
-            borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          ),
-          child: const Icon(
-            Icons.calendar_month_outlined,
-            color: OpenVtsColors.white,
-            size: 18,
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _CalendarToolbar extends ConsumerWidget {
   const _CalendarToolbar({

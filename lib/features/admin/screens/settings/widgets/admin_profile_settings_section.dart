@@ -792,7 +792,12 @@ class _VerificationRow extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 minimumSize: const Size(0, 30),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                foregroundColor: OpenVtsColors.brandInk,
+                foregroundColor: OpenVtsColors.white,
+                backgroundColor: OpenVtsColors.brandInk,
+                side: const BorderSide(color: OpenVtsColors.white, width: 1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+                ),
                 textStyle: const TextStyle(
                   fontFamily: OpenVtsTypography.primaryFontFamily,
                   fontSize: 12,
@@ -803,7 +808,10 @@ class _VerificationRow extends StatelessWidget {
                   ? const SizedBox(
                       width: 14,
                       height: 14,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(OpenVtsColors.white),
+                      ),
                     )
                   : const Text('Verify'),
             ),

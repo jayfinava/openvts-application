@@ -114,6 +114,8 @@ class AdminTransactionsFiltersCard extends StatelessWidget {
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(44),
                     backgroundColor: OpenVtsColors.brandInk,
+                    foregroundColor: OpenVtsColors.white,
+                    side: const BorderSide(color: OpenVtsColors.white, width: 0.8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(OpenVtsRadius.md),
                     ),

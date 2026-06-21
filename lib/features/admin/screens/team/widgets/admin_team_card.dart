@@ -446,6 +446,7 @@ class _CardMetricsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final createdValue = _createdLabel(team.createdAt);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Row(
       children: [
@@ -457,8 +458,9 @@ class _CardMetricsRow extends StatelessWidget {
             label: 'Status',
             value: team.statusLabel,
             color: team.isActive
-                ? OpenVtsColors.brandInk
+                ? (isDark ? Colors.white : OpenVtsColors.brandInk)
                 : OpenVtsColors.textTertiary,
+            useValueColorForIcon: team.isActive,
           ),
         ),
         const SizedBox(width: OpenVtsSpacing.xs),
@@ -468,7 +470,9 @@ class _CardMetricsRow extends StatelessWidget {
             icon: Icons.schedule_outlined,
             label: 'Created',
             value: createdValue,
-            color: OpenVtsColors.textSecondary,
+            color: isDark
+                ? OpenVtsColors.darkTextSecondary
+                : OpenVtsColors.textSecondary,
           ),
         ),
       ],
@@ -482,15 +486,21 @@ class _MetricCell extends StatelessWidget {
     required this.label,
     required this.value,
     required this.color,
+    this.useValueColorForIcon = false,
   });
 
   final IconData icon;
   final String label;
   final String value;
   final Color color;
+  final bool useValueColorForIcon;
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultIconColor =
+        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
+
     return Container(
       padding: const EdgeInsetsDirectional.symmetric(
         horizontal: OpenVtsSpacing.sm,
@@ -510,9 +520,7 @@ class _MetricCell extends StatelessWidget {
               Icon(
                 icon,
                 size: 14,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? OpenVtsColors.darkTextSecondary
-                    : OpenVtsColors.textSecondary,
+                color: useValueColorForIcon ? color : defaultIconColor,
               ),
               const SizedBox(width: OpenVtsSpacing.xxs + 2),
               Flexible(
@@ -521,7 +529,7 @@ class _MetricCell extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).brightness == Brightness.dark
+                    color: isDark
                         ? OpenVtsColors.darkTextSecondary
                         : OpenVtsColors.textSecondary,
                     fontWeight: FontWeight.w500,

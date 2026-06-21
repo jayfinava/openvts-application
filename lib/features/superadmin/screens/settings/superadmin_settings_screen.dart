@@ -77,6 +77,7 @@ class _SettingsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return OpenVtsCard(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.md,
@@ -88,15 +89,14 @@ class _SettingsHeader extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: OpenVtsColors.brandInk,
+              color: isDark ? Colors.black : OpenVtsColors.brandInk,
               borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+              border: isDark ? Border.all(color: Colors.white, width: 1) : null,
             ),
-            child: Builder(
-              builder: (context) => Icon(
-                Icons.tune_rounded,
-                size: 18,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
+            child: Icon(
+              Icons.tune_rounded,
+              size: 18,
+              color: Colors.white,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),

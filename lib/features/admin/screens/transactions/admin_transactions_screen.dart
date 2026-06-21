@@ -260,15 +260,15 @@ class _HeaderCard extends StatelessWidget {
                 const SizedBox(width: OpenVtsSpacing.sm),
                 FilledButton.icon(
                   onPressed: onPurchaseCredits,
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.add_circle_outline_rounded,
                     size: 16,
-                    color: isDark ? Colors.white : Colors.white,
+                    color: OpenVtsColors.white,
                   ),
-                  label: Text(
+                  label: const Text(
                     'Purchase Credits',
                     style: TextStyle(
-                      color: isDark ? Colors.white : Colors.white,
+                      color: OpenVtsColors.white,
                     ),
                   ),
                   style: FilledButton.styleFrom(
@@ -276,9 +276,9 @@ class _HeaderCard extends StatelessWidget {
                       horizontal: OpenVtsSpacing.sm,
                       vertical: OpenVtsSpacing.xs,
                     ),
-                    backgroundColor:
-                        isDark ? Colors.black : OpenVtsColors.brandInk,
-                    foregroundColor: isDark ? Colors.white : Colors.white,
+                    backgroundColor: OpenVtsColors.brandInk,
+                    foregroundColor: OpenVtsColors.white,
+                    side: const BorderSide(color: OpenVtsColors.white, width: 0.8),
                   ),
                 ),
               ],

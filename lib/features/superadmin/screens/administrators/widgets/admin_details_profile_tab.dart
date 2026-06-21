@@ -56,7 +56,8 @@ class _AdminDetailsProfileTabState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref
-          .read(superadminAdminDetailsControllerProvider(widget.adminId).notifier)
+          .read(
+              superadminAdminDetailsControllerProvider(widget.adminId).notifier)
           .ensureVehicleCountLoaded();
     });
   }
@@ -65,7 +66,8 @@ class _AdminDetailsProfileTabState
   Widget build(BuildContext context) {
     final provider = superadminAdminDetailsControllerProvider(widget.adminId);
     final admin = ref.watch(provider.select((s) => s.admin));
-    final effectiveIsActive = ref.watch(provider.select((s) => s.effectiveIsActive));
+    final effectiveIsActive =
+        ref.watch(provider.select((s) => s.effectiveIsActive));
     final isUpdatingStatus =
         ref.watch(provider.select((s) => s.isUpdatingStatus));
     final isBusy = ref.watch(
@@ -168,7 +170,8 @@ class _AdminDetailsProfileTabState
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => _EditCompanySheet(adminId: widget.adminId, company: company),
+      builder: (_) =>
+          _EditCompanySheet(adminId: widget.adminId, company: company),
     );
   }
 }
@@ -211,9 +214,8 @@ class _AdminPersonalCard extends ConsumerWidget {
     );
     final resolvedLastLogin =
         controllerState.resolvedLastLogin ?? admin.recentLogin;
-    final lastLogin = resolvedLastLogin != null
-        ? fmt.formatDate(resolvedLastLogin)
-        : 'Never';
+    final lastLogin =
+        resolvedLastLogin != null ? fmt.formatDate(resolvedLastLogin) : 'Never';
     final created =
         admin.createdAt != null ? fmt.formatDate(admin.createdAt!) : '—';
 
@@ -433,7 +435,8 @@ class _CompanyCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: _colorFromName(color),
                       shape: BoxShape.circle,
-                      border: Border.all(color: scheme.outline.withValues(alpha: 0.5)),
+                      border: Border.all(
+                          color: scheme.outline.withValues(alpha: 0.5)),
                     ),
                   ),
                 )
@@ -567,18 +570,21 @@ class _Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk,
+        color: isDark ? Colors.black : OpenVtsColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+        border: isDark ? Border.all(color: Colors.white, width: 1) : null,
       ),
       alignment: Alignment.center,
       child: Text(
         _initials(name),
         style: OpenVtsTypography.label.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color:
+              isDark ? Colors.white : Theme.of(context).colorScheme.onPrimary,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -622,7 +628,8 @@ class _InfoRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 14, color: scheme.onSurface.withValues(alpha: 0.6)),
+            Icon(icon,
+                size: 14, color: scheme.onSurface.withValues(alpha: 0.6)),
             const SizedBox(width: 8),
           ],
           SizedBox(
@@ -1194,7 +1201,8 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
                 decoration: BoxDecoration(
                   color: _colorFromName(c),
                   shape: BoxShape.circle,
-                  border: Border.all(color: scheme.outline.withValues(alpha: 0.5)),
+                  border:
+                      Border.all(color: scheme.outline.withValues(alpha: 0.5)),
                 ),
               ),
               const SizedBox(width: 8),
@@ -1453,7 +1461,8 @@ class _SheetTitle extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.close_rounded, size: 20, color: scheme.onSurface),
+                icon: Icon(Icons.close_rounded,
+                    size: 20, color: scheme.onSurface),
                 onPressed: () => Navigator.of(context).maybePop(),
                 tooltip: 'Close',
               ),
@@ -1484,7 +1493,8 @@ class _SheetActions extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: scheme.outline.withValues(alpha: 0.5))),
+        border: Border(
+            top: BorderSide(color: scheme.outline.withValues(alpha: 0.5))),
       ),
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.md,

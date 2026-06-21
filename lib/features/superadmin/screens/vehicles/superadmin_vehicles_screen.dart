@@ -38,7 +38,6 @@ class _SuperadminVehiclesScreenState
     return OpenVtsPageScaffold(
       title: 'Vehicles',
       headerMode: OpenVtsPageHeaderMode.closeable,
-      leading: const _HeaderLogoTile(),
       actions: [
         Padding(
           padding: const EdgeInsetsDirectional.only(end: OpenVtsSpacing.xs),
@@ -168,34 +167,6 @@ class _SuperadminVehiclesScreenState
           .compareTo(left.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0));
     });
     return filtered;
-  }
-}
-
-class _HeaderLogoTile extends StatelessWidget {
-  const _HeaderLogoTile();
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsetsDirectional.only(start: OpenVtsSpacing.sm),
-      child: Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: Container(
-          height: 36,
-          width: 36,
-          decoration: BoxDecoration(
-            color: scheme.primary,
-            borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          ),
-          child: Icon(
-            Icons.directions_car_outlined,
-            color: scheme.onPrimary,
-            size: 18,
-          ),
-        ),
-      ),
-    );
   }
 }
 
@@ -484,17 +455,18 @@ class _VehicleIconBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       height: 44,
       width: 44,
       decoration: BoxDecoration(
-        color: scheme.primary,
+        color: isDark ? Colors.black : Theme.of(context).colorScheme.primary,
         shape: BoxShape.circle,
+        border: isDark ? Border.all(color: Colors.white, width: 1) : null,
       ),
       child: Icon(
         _vehicleIcon(type),
-        color: scheme.onPrimary,
+        color: isDark ? Colors.white : Theme.of(context).colorScheme.onPrimary,
         size: 20,
       ),
     );

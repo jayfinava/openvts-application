@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:open_vts/shared/widgets/support/open_vts_support_filter_chip.dart';
 
+import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -205,6 +206,9 @@ class _SupportHeader extends StatelessWidget {
         FilledButton.icon(
           onPressed: isCreating ? null : onCreatePressed,
           style: FilledButton.styleFrom(
+            backgroundColor: OpenVtsColors.brandInk,
+            foregroundColor: OpenVtsColors.white,
+            side: const BorderSide(color: OpenVtsColors.white, width: 0.8),
             minimumSize: const Size(0, 34),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             visualDensity: VisualDensity.compact,
@@ -216,7 +220,10 @@ class _SupportHeader extends StatelessWidget {
           icon: isCreating
               ? const SizedBox.square(
                   dimension: 15,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: OpenVtsColors.white,
+                  ),
                 )
               : const Icon(Icons.add_rounded, size: 17),
           label: const Text('Create'),

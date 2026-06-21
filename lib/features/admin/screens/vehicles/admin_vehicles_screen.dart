@@ -286,19 +286,15 @@ class _PrimaryCreateButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final background =
-        isDark ? OpenVtsColors.surfaceElevated : OpenVtsColors.brandInk;
-    final foreground = isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
-
     return ElevatedButton.icon(
       onPressed: onPressed,
       icon: const Icon(Icons.add_rounded, size: 18),
       label: const Text('New Vehicle'),
       style: ElevatedButton.styleFrom(
-        backgroundColor: background,
-        foregroundColor: foreground,
+        backgroundColor: OpenVtsColors.brandInk,
+        foregroundColor: OpenVtsColors.white,
         elevation: 0,
+        side: const BorderSide(color: OpenVtsColors.white, width: 1),
         padding: const EdgeInsets.symmetric(
           horizontal: OpenVtsSpacing.md,
           vertical: OpenVtsSpacing.sm,

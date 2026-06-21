@@ -515,9 +515,8 @@ class _PrimaryCreateButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final background =
-        isDark ? OpenVtsColors.surfaceElevated : OpenVtsColors.brandInk;
-    final foreground = isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
+    final background = isDark ? Colors.black : OpenVtsColors.brandInk;
+    final foreground = Colors.white;
 
     return ElevatedButton.icon(
       onPressed: onPressed,
@@ -533,6 +532,7 @@ class _PrimaryCreateButton extends StatelessWidget {
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+          side: isDark ? const BorderSide(color: Colors.white, width: 1) : BorderSide.none,
         ),
         textStyle: OpenVtsTypography.label.copyWith(
           fontWeight: FontWeight.w600,

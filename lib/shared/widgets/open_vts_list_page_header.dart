@@ -96,29 +96,25 @@ class OpenVtsListPageCreateButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final background =
-        isDark ? OpenVtsColors.surfaceElevated : OpenVtsColors.brandInk;
-    final foreground = isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
-
     return ElevatedButton.icon(
       onPressed: isLoading ? null : onPressed,
       icon: isLoading
-          ? SizedBox.square(
+          ? const SizedBox.square(
               dimension: 16,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: foreground,
+                color: OpenVtsColors.white,
               ),
             )
           : const Icon(Icons.add_rounded, size: 18),
       label: Text(label),
       style: ElevatedButton.styleFrom(
-        backgroundColor: background,
-        foregroundColor: foreground,
-        disabledBackgroundColor: background.withValues(alpha: 0.72),
-        disabledForegroundColor: foreground.withValues(alpha: 0.72),
+        backgroundColor: OpenVtsColors.brandInk,
+        foregroundColor: OpenVtsColors.white,
+        disabledBackgroundColor: OpenVtsColors.brandInk.withValues(alpha: 0.72),
+        disabledForegroundColor: OpenVtsColors.white.withValues(alpha: 0.72),
         elevation: 0,
+        side: const BorderSide(color: OpenVtsColors.white, width: 0.8),
         padding: const EdgeInsets.symmetric(
           horizontal: OpenVtsSpacing.md,
           vertical: OpenVtsSpacing.sm,

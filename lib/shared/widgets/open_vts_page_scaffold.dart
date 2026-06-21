@@ -113,15 +113,14 @@ class _CloseablePageHeader extends StatelessWidget
             tooltip: 'Close page',
             onPressed: onClose ?? () => _handleClose(context),
             style: IconButton.styleFrom(
-              backgroundColor:
-                  isDark ? OpenVtsColors.surfaceElevated : OpenVtsColors.brandInk,
-              foregroundColor:
-                  isDark ? OpenVtsColors.brandInk : OpenVtsColors.white,
+              backgroundColor: isDark ? Colors.black : OpenVtsColors.brandInk,
+              foregroundColor: Colors.white,
               minimumSize: const Size.square(36),
               padding: EdgeInsets.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+                side: isDark ? const BorderSide(color: Colors.white, width: 1) : BorderSide.none,
               ),
             ),
             icon: const Icon(Icons.close_rounded, size: 18),

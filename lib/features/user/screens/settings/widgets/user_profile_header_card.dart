@@ -272,9 +272,17 @@ class _AvatarInitial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'U';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      color: Theme.of(context).colorScheme.primary,
+      decoration: BoxDecoration(
+        color: isDark ? OpenVtsColors.brandInk : OpenVtsColors.brandInk,
+        border: Border.all(
+          color: isDark
+              ? OpenVtsColors.darkBorder
+              : OpenVtsColors.border,
+        ),
+      ),
       alignment: Alignment.center,
       child: Text(
         initial,

@@ -742,46 +742,74 @@ class _VerificationRow extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
-              color: OpenVtsColors.success.withValues(alpha: 0.10),
+              color: OpenVtsColors.success.withValues(alpha: 0.15),
               borderRadius:
                   BorderRadius.circular(OpenVtsRadius.pill),
               border: Border.all(
-                color: OpenVtsColors.success.withValues(alpha: 0.4),
+                color: OpenVtsColors.success,
+                width: 1,
               ),
             ),
-            child: const Text(
-              'Verified',
-              style: TextStyle(
-                fontFamily: OpenVtsTypography.primaryFontFamily,
-                fontSize: 10.5,
-                fontWeight: FontWeight.w600,
-                color: OpenVtsColors.success,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Icon(
+                  Icons.check_circle,
+                  size: 11,
+                  color: OpenVtsColors.success,
+                ),
+                SizedBox(width: 4),
+                Text(
+                  'Verified',
+                  style: TextStyle(
+                    fontFamily: OpenVtsTypography.primaryFontFamily,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                    color: OpenVtsColors.success,
+                  ),
+                ),
+              ],
             ),
           )
         else
           SizedBox(
             height: 30,
-            child: TextButton(
-              onPressed: busy || value.isEmpty ? null : onVerify,
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                minimumSize: const Size(0, 30),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                foregroundColor: OpenVtsColors.brandInk,
-                textStyle: const TextStyle(
-                  fontFamily: OpenVtsTypography.primaryFontFamily,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              child: busy
-                  ? const SizedBox(
-                      width: 14,
-                      height: 14,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Verify'),
+            child: Builder(
+              builder: (context) {
+                final isDark = Theme.of(context).brightness == Brightness.dark;
+                return ElevatedButton(
+                  onPressed: busy || value.isEmpty ? null : onVerify,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    minimumSize: const Size(0, 30),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    backgroundColor: isDark ? Colors.black : OpenVtsColors.brandInk,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+                      side: isDark
+                          ? const BorderSide(color: Colors.white, width: 1)
+                          : BorderSide.none,
+                    ),
+                    textStyle: const TextStyle(
+                      fontFamily: OpenVtsTypography.primaryFontFamily,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  child: busy
+                      ? const SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                          ),
+                        )
+                      : const Text('Verify'),
+                );
+              },
             ),
           ),
       ],
