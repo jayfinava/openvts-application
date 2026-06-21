@@ -60,10 +60,10 @@ class AdminDriverDetailsScreen extends ConsumerWidget {
         const SizedBox(width: 4),
         PopupMenuButton<_DriverMenuAction>(
           tooltip: 'Driver actions',
-          icon: const Icon(
+          icon: Icon(
             Icons.more_vert_rounded,
             size: 20,
-            color: OpenVtsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           onSelected: (value) async {
             switch (value) {
@@ -253,7 +253,9 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = destructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
+    final color = destructive
+        ? OpenVtsColors.error
+        : Theme.of(context).colorScheme.onSurface;
     return Row(
       children: [
         Icon(icon, size: 16, color: color),
@@ -393,13 +395,13 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backgroundColor = isActive
-        ? Theme.of(context).colorScheme.tertiaryContainer
+        ? Theme.of(context).colorScheme.primaryContainer
         : Theme.of(context).colorScheme.surfaceContainerHighest;
     final foregroundColor = isActive
-        ? Theme.of(context).colorScheme.onTertiaryContainer
+        ? Theme.of(context).colorScheme.onPrimaryContainer
         : Theme.of(context).colorScheme.outline;
     final borderColor = isActive
-        ? Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.25)
+        ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.25)
         : Theme.of(context).colorScheme.outlineVariant;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -411,7 +413,7 @@ class _StatusBadge extends StatelessWidget {
       child: Text(
         isActive ? 'Active' : 'Inactive',
         style: TextStyle(
-          fontSize: 10,
+          fontSize: 11,
           fontWeight: FontWeight.w600,
           color: foregroundColor,
         ),
@@ -441,7 +443,7 @@ class _SummaryEmailRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.mail_outline_rounded,
+        const Icon(Icons.mail_outline_rounded,
             size: 14, color: OpenVtsColors.textTertiary),
         const SizedBox(width: 8),
         SizedBox(
