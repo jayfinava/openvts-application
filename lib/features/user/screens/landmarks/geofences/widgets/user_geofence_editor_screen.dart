@@ -530,6 +530,12 @@ class _EditorTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.border;
+
     return Container(
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.sm,
@@ -537,23 +543,23 @@ class _EditorTopBar extends StatelessWidget {
         OpenVtsSpacing.sm,
         OpenVtsSpacing.xs,
       ),
-      decoration: const BoxDecoration(
-        color: OpenVtsColors.brandInk,
-        border: Border(bottom: BorderSide(color: OpenVtsColors.white, width: 1)),
+      decoration: BoxDecoration(
+        color: bgColor,
+        border: Border(bottom: BorderSide(color: borderColor, width: 1)),
       ),
       child: Row(
         children: [
           IconButton(
             iconSize: 18,
             onPressed: onCancel,
-            icon: const Icon(Icons.close, color: OpenVtsColors.white),
+            icon: Icon(Icons.close, color: textColor),
             tooltip: 'Cancel',
           ),
           Expanded(
             child: Text(
               title,
               style: OpenVtsTypography.titleSmall.copyWith(
-                color: OpenVtsColors.white,
+                color: textColor,
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
@@ -564,15 +570,16 @@ class _EditorTopBar extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onSave,
               style: ElevatedButton.styleFrom(
-                backgroundColor: OpenVtsColors.brandInk,
-                foregroundColor: OpenVtsColors.white,
-                side: const BorderSide(color: OpenVtsColors.white, width: 1),
-                padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.sm),
+                backgroundColor: bgColor,
+                foregroundColor: textColor,
+                side: BorderSide(color: textColor, width: 1),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.sm),
               ),
               child: Text(
                 'Save',
                 style: OpenVtsTypography.label.copyWith(
-                  color: OpenVtsColors.white,
+                  color: textColor,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -599,11 +606,16 @@ class _ModeToggleBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+    final borderColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.border;
+
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk,
+        color: bgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: OpenVtsColors.white),
+        border: Border.all(color: borderColor),
         boxShadow: const <BoxShadow>[
           BoxShadow(
             color: Color(0x14000000),
@@ -659,6 +671,14 @@ class _ModeChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final selectedBgColor =
+        isDark ? OpenVtsColors.brandInk : OpenVtsColors.textPrimary;
+    final selectedTextColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.white;
+    final unselectedTextColor =
+        isDark ? Theme.of(context).colorScheme.onSurface : OpenVtsColors.textPrimary;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -666,7 +686,7 @@ class _ModeChip extends StatelessWidget {
         duration: const Duration(milliseconds: 140),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: selected ? OpenVtsColors.brandInk : Colors.transparent,
+          color: selected ? selectedBgColor : Colors.transparent,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         ),
         child: Row(
@@ -675,17 +695,13 @@ class _ModeChip extends StatelessWidget {
             Icon(
               icon,
               size: 14,
-              color: selected
-                  ? OpenVtsColors.white
-                  : Theme.of(context).colorScheme.onSurface,
+              color: selected ? selectedTextColor : unselectedTextColor,
             ),
             const SizedBox(width: 4),
             Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: selected
-                    ? OpenVtsColors.white
-                    : Theme.of(context).colorScheme.onSurface,
+                color: selected ? selectedTextColor : unselectedTextColor,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -723,11 +739,16 @@ class _EditorMapControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+    final borderColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.border;
+
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk,
+        color: bgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.white),
+        border: Border.all(color: borderColor),
         boxShadow: const <BoxShadow>[
           BoxShadow(
             color: Color(0x14000000),
@@ -805,7 +826,15 @@ class _ControlButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final disabled = !enabled || onTap == null;
+    final activeBgColor = isDark
+        ? OpenVtsColors.brandInk.withValues(alpha: 0.08)
+        : OpenVtsColors.textPrimary.withValues(alpha: 0.08);
+    final iconColor = disabled
+        ? Theme.of(context).colorScheme.outline
+        : Theme.of(context).colorScheme.onSurface;
+
     return Tooltip(
       message: tooltip,
       child: InkWell(
@@ -814,15 +843,11 @@ class _ControlButton extends StatelessWidget {
           width: 36,
           height: 36,
           alignment: Alignment.center,
-          color: active
-              ? OpenVtsColors.brandInk.withValues(alpha: 0.08)
-              : Colors.transparent,
+          color: active ? activeBgColor : Colors.transparent,
           child: Icon(
             icon,
             size: 16,
-            color: disabled
-                ? Theme.of(context).colorScheme.outline
-                : Theme.of(context).colorScheme.onSurface,
+            color: iconColor,
           ),
         ),
       ),
@@ -838,10 +863,16 @@ class _BottomEditorPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.border;
+
     return Container(
-      decoration: const BoxDecoration(
-        color: OpenVtsColors.brandInk,
-        border: Border(top: BorderSide(color: OpenVtsColors.white)),
+      decoration: BoxDecoration(
+        color: bgColor,
+        border: Border(top: BorderSide(color: borderColor)),
       ),
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.md,
@@ -856,7 +887,7 @@ class _BottomEditorPanel extends StatelessWidget {
           Text(
             _hintFor(state.editorMode),
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.white,
+              color: textColor,
             ),
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
@@ -933,7 +964,12 @@ class _CircleControlsState extends State<_CircleControls> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.border;
     final value = widget.state.circleRadiusM ?? 0;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -958,13 +994,13 @@ class _CircleControlsState extends State<_CircleControls> {
                   decimal: true,
                 ),
                 style: OpenVtsTypography.body.copyWith(
-                  color: OpenVtsColors.white,
+                  color: textColor,
                 ),
                 decoration: InputDecoration(
                   isDense: true,
                   suffixText: 'm',
                   suffixStyle: OpenVtsTypography.body.copyWith(
-                    color: OpenVtsColors.white,
+                    color: textColor,
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -973,20 +1009,20 @@ class _CircleControlsState extends State<_CircleControls> {
                   enabled: widget.state.circleCenter != null,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                    borderSide: const BorderSide(
-                      color: OpenVtsColors.white,
+                    borderSide: BorderSide(
+                      color: borderColor,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                    borderSide: const BorderSide(
-                      color: OpenVtsColors.white,
+                    borderSide: BorderSide(
+                      color: borderColor,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                    borderSide: const BorderSide(
-                      color: OpenVtsColors.white,
+                    borderSide: BorderSide(
+                      color: borderColor,
                       width: 1.4,
                     ),
                   ),
@@ -1043,7 +1079,12 @@ class _LineControlsState extends State<_LineControls> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.border;
     final value = widget.state.toleranceM ?? 0;
+
     return Row(
       children: [
         Expanded(
@@ -1061,32 +1102,32 @@ class _LineControlsState extends State<_LineControls> {
             controller: _tolerance,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             style: OpenVtsTypography.body.copyWith(
-              color: OpenVtsColors.white,
+              color: textColor,
             ),
             decoration: InputDecoration(
               isDense: true,
               labelText: 'Tolerance',
               labelStyle: OpenVtsTypography.body.copyWith(
-                color: OpenVtsColors.white,
+                color: textColor,
               ),
               suffixText: 'm',
               suffixStyle: OpenVtsTypography.body.copyWith(
-                color: OpenVtsColors.white,
+                color: textColor,
               ),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(color: OpenVtsColors.white),
+                borderSide: BorderSide(color: borderColor),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(color: OpenVtsColors.white),
+                borderSide: BorderSide(color: borderColor),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(
-                  color: OpenVtsColors.white,
+                borderSide: BorderSide(
+                  color: borderColor,
                   width: 1.4,
                 ),
               ),
@@ -1112,8 +1153,11 @@ class _VertexControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
     final selected = state.selectedVertexIndex;
     final count = state.points.length;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1123,7 +1167,7 @@ class _VertexControls extends StatelessWidget {
             Text(
               '$count point${count == 1 ? '' : 's'}',
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.white,
+                color: textColor,
               ),
             ),
             const Spacer(),
@@ -1171,6 +1215,9 @@ class _NudgeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+
     return Padding(
       padding: const EdgeInsets.only(top: OpenVtsSpacing.xs),
       child: Row(
@@ -1178,7 +1225,7 @@ class _NudgeRow extends StatelessWidget {
           Text(
             'Nudge (${_stepM.toInt()} m)',
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.white,
+              color: textColor,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -1200,6 +1247,11 @@ class _NudgeBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.textPrimary;
+    final iconColor = isDark ? OpenVtsColors.white : OpenVtsColors.white;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+
     return Padding(
       padding: const EdgeInsets.only(left: 4),
       child: InkResponse(
@@ -1209,11 +1261,11 @@ class _NudgeBtn extends StatelessWidget {
           width: 30,
           height: 30,
           decoration: BoxDecoration(
-            color: OpenVtsColors.brandInk,
+            color: bgColor,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-            border: Border.all(color: OpenVtsColors.white),
+            border: Border.all(color: borderColor),
           ),
-          child: Icon(icon, size: 14, color: OpenVtsColors.white),
+          child: Icon(icon, size: 14, color: iconColor),
         ),
       ),
     );
@@ -1249,11 +1301,20 @@ class _SearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final hintColor = isDark
+        ? OpenVtsColors.white.withValues(alpha: 0.6)
+        : OpenVtsColors.textSecondary;
+
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk,
+        color: bgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.white),
+        border: Border.all(color: borderColor),
         boxShadow: const [
           BoxShadow(
             color: Color(0x14000000),
@@ -1271,13 +1332,13 @@ class _SearchBar extends StatelessWidget {
               controller: controller,
               onChanged: (_) => onSearch(),
               style: OpenVtsTypography.body.copyWith(
-                color: OpenVtsColors.white,
+                color: textColor,
               ),
               decoration: InputDecoration(
                 isDense: true,
                 hintText: 'Search place...',
                 hintStyle: OpenVtsTypography.body.copyWith(
-                  color: OpenVtsColors.white.withValues(alpha: 0.6),
+                  color: hintColor,
                 ),
                 prefixIcon: Icon(
                   Icons.search,
@@ -1293,15 +1354,17 @@ class _SearchBar extends StatelessWidget {
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              OpenVtsColors.brandInk.withValues(alpha: 0.6),
+                              isDark
+                                  ? OpenVtsColors.brandInk.withValues(alpha: 0.6)
+                                  : OpenVtsColors.textPrimary.withValues(alpha: 0.6),
                             ),
                           ),
                         ),
                       )
                     : controller.text.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.close,
-                                size: 18, color: OpenVtsColors.white),
+                            icon: Icon(Icons.close,
+                                size: 18, color: textColor),
                             onPressed: () {
                               controller.clear();
                               onSearch();
@@ -1310,7 +1373,7 @@ class _SearchBar extends StatelessWidget {
                         : null,
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                suffixIconColor: OpenVtsColors.white,
+                suffixIconColor: textColor,
               ),
             ),
           ),
@@ -1320,7 +1383,7 @@ class _SearchBar extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(
-                      color: OpenVtsColors.white.withValues(alpha: 0.2)),
+                      color: borderColor.withValues(alpha: 0.3)),
                 ),
               ),
               child: ListView.builder(
@@ -1340,7 +1403,7 @@ class _SearchBar extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: OpenVtsTypography.body.copyWith(
-                          color: OpenVtsColors.white,
+                          color: textColor,
                         ),
                       ),
                     ),
