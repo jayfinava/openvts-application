@@ -924,13 +924,14 @@ class _TinyTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
     return TextButton.icon(
       onPressed: isLoading ? null : onPressed,
       style: TextButton.styleFrom(
         minimumSize: const Size(0, 30),
         padding: const EdgeInsets.symmetric(horizontal: 8),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        foregroundColor: OpenVtsColors.textPrimary,
+        foregroundColor: textColor,
       ),
       icon: isLoading
           ? const SizedBox(
@@ -942,6 +943,7 @@ class _TinyTextButton extends StatelessWidget {
       label: Text(
         label,
         style: OpenVtsTypography.meta.copyWith(
+          color: textColor,
           fontSize: 11,
           fontWeight: FontWeight.w800,
         ),

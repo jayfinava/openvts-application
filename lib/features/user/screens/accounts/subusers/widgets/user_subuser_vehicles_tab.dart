@@ -244,14 +244,17 @@ class _CompactActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return SizedBox(
       height: 34,
       child: OutlinedButton.icon(
         onPressed: isLoading ? null : onPressed,
         style: OutlinedButton.styleFrom(
-          backgroundColor: OpenVtsColors.white,
-          foregroundColor: OpenVtsColors.textPrimary,
-          side: const BorderSide(color: OpenVtsColors.border),
+          backgroundColor: isDarkMode ? const Color(0xFF1A1A1A) : OpenVtsColors.white,
+          foregroundColor: isDarkMode ? Colors.white : OpenVtsColors.textPrimary,
+          side: BorderSide(
+            color: isDarkMode ? const Color(0xFF333333) : OpenVtsColors.border,
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -270,7 +273,7 @@ class _CompactActionButton extends StatelessWidget {
           style: OpenVtsTypography.meta.copyWith(
             fontSize: 11,
             fontWeight: FontWeight.w800,
-            color: OpenVtsColors.textPrimary,
+            color: isDarkMode ? Colors.white : OpenVtsColors.textPrimary,
           ),
         ),
       ),
@@ -325,7 +328,9 @@ class _AssignedVehicleCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : OpenVtsColors.textPrimary,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -376,8 +381,14 @@ class _AssignedVehicleCard extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: isUnassigning ? null : onUnassign,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: OpenVtsColors.textPrimary,
-                  side: const BorderSide(color: OpenVtsColors.border),
+                  foregroundColor: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : OpenVtsColors.textPrimary,
+                  side: BorderSide(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF333333)
+                        : OpenVtsColors.border,
+                  ),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 icon: isUnassigning
@@ -391,6 +402,9 @@ class _AssignedVehicleCard extends StatelessWidget {
                   'Unassign',
                   style: OpenVtsTypography.meta.copyWith(
                     fontWeight: FontWeight.w800,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : null,
                   ),
                 ),
               ),

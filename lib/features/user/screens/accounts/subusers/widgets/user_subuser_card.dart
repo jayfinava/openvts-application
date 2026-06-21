@@ -111,9 +111,11 @@ class UserSubUserCard extends ConsumerWidget {
                 child: Text(
                   isActive ? 'Active' : 'Inactive',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: isActive
-                        ? Theme.of(context).colorScheme.onSurfaceVariant
-                        : Theme.of(context).colorScheme.outline,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : (isActive
+                            ? Theme.of(context).colorScheme.onSurfaceVariant
+                            : Theme.of(context).colorScheme.outline),
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -122,7 +124,9 @@ class UserSubUserCard extends ConsumerWidget {
               Text(
                 'Status',
                 style: OpenVtsTypography.meta.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -138,10 +142,18 @@ class UserSubUserCard extends ConsumerWidget {
                   scale: 0.88,
                   child: Switch.adaptive(
                     value: isActive,
-                    activeThumbColor: OpenVtsColors.brandInk,
-                    activeTrackColor:
-                        OpenVtsColors.brandInk.withValues(alpha: 0.35),
-                    inactiveThumbColor: OpenVtsColors.textTertiary,
+                    activeThumbColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : OpenVtsColors.brandInk,
+                    activeTrackColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white.withValues(alpha: 0.4)
+                        : OpenVtsColors.brandInk.withValues(alpha: 0.35),
+                    inactiveThumbColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : OpenVtsColors.textTertiary,
+                    inactiveTrackColor: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF333333)
+                        : null,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     onChanged: onToggleStatus,
                   ),

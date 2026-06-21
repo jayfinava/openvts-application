@@ -303,7 +303,9 @@ class _InfoCard extends StatelessWidget {
               Text(
                 title,
                 style: OpenVtsTypography.label.copyWith(
-                  color: OpenVtsColors.textPrimary,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : OpenVtsColors.textPrimary,
                   fontWeight: FontWeight.w800,
                 ),
               ),

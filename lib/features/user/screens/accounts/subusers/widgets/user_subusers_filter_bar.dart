@@ -84,7 +84,9 @@ class _UserSubUsersFilterBarState extends State<UserSubUsersFilterBar> {
                 child: Text(
                   '${widget.visibleCount} visible • ${widget.loadedCount}/${widget.totalCount} loaded',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),

@@ -39,7 +39,9 @@ class UserDriversFilterBar extends StatelessWidget {
                 child: Text(
                   '${state.filteredDrivers.length} of ${state.drivers.length} drivers',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : OpenVtsColors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),

@@ -447,10 +447,7 @@ class _ConversationHeader extends StatelessWidget {
                 isLoading: isUpdatingStatus,
                 onSelected: onStatusChanged,
               ),
-              _MetaChip(
-                label: ticket.priority.label,
-                color: _priorityColor(ticket.priority),
-              ),
+              _MetaChip(label: ticket.priority.label),
               _MetaChip(label: ticket.category.label),
               _MetaChip(
                 label:
@@ -865,7 +862,9 @@ class _MetaChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final chipColor = color ?? colorScheme.onSurfaceVariant;
+    final textColor = isDark ? Colors.white : chipColor;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
@@ -884,7 +883,7 @@ class _MetaChip extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.meta.copyWith(
-              color: chipColor,
+              color: textColor,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -1287,13 +1286,3 @@ Color _statusColor(AdminSupportTicketStatus status) {
   }
 }
 
-Color _priorityColor(AdminSupportTicketPriority priority) {
-  switch (priority) {
-    case AdminSupportTicketPriority.high:
-      return OpenVtsColors.warning;
-    case AdminSupportTicketPriority.medium:
-      return OpenVtsColors.brandInk;
-    case AdminSupportTicketPriority.low:
-      return OpenVtsColors.success;
-  }
-}

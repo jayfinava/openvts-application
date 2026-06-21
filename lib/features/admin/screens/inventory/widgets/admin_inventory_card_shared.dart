@@ -327,12 +327,13 @@ class _CreatedPill extends StatelessWidget {
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: RichText(
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               text: TextSpan(
                 style: OpenVtsTypography.label.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
-                  height: 1.4,
+                  height: 1.3,
+                  fontSize: 12,
                 ),
                 children: [
                   const TextSpan(

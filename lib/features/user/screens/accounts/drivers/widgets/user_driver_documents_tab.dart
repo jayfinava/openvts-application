@@ -208,7 +208,9 @@ class _SummaryCard extends StatelessWidget {
                     Text(
                       'Documents',
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : OpenVtsColors.textPrimary,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -291,7 +293,9 @@ class _DocumentCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : OpenVtsColors.textPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
                       ),
@@ -319,7 +323,13 @@ class _DocumentCard extends ConsumerWidget {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Icon(Icons.more_vert_rounded, size: 18),
+                    : Icon(
+                        Icons.more_vert_rounded,
+                        size: 18,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : null,
+                      ),
                 onSelected: (action) {
                   switch (action) {
                     case _DocumentAction.view:
@@ -611,18 +621,22 @@ class _MetaPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final displayColor = isDarkMode && color == OpenVtsColors.brandInk
+        ? Colors.white
+        : color;
     return Container(
       constraints: const BoxConstraints(maxWidth: 260),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.06),
+        color: displayColor.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: color.withValues(alpha: 0.18)),
+        border: Border.all(color: displayColor.withValues(alpha: 0.18)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: color),
+          Icon(icon, size: 12, color: displayColor),
           const SizedBox(width: 4),
           Flexible(
             child: Text(
@@ -630,7 +644,7 @@ class _MetaPill extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: color,
+                color: displayColor,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
               ),
@@ -655,8 +669,10 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        isDestructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final color = isDestructive
+        ? OpenVtsColors.error
+        : (isDarkMode ? Colors.white : OpenVtsColors.textPrimary);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
