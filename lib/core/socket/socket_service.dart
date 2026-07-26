@@ -23,7 +23,9 @@ class SocketService {
 
     final options = io.OptionBuilder()
         .setPath('/socket.io')
-        .setTransports(['websocket', 'polling'])
+        // The Nest gateways intentionally expose WebSocket transport only.
+        // Advertising polling first causes avoidable failed handshakes.
+        .setTransports(['websocket'])
         .disableAutoConnect()
         .setAuth(<String, dynamic>{'token': token})
         .enableReconnection()
@@ -34,6 +36,14 @@ class SocketService {
       ..['reconnection'] = true;
 
     final socket = io.io(url, options);
+    // socket_io_client invokes a functional auth value for every connection,
+    // including reconnects. This keeps a long-lived map socket aligned with
+    // access-token refreshes without rebuilding the entire controller.
+    socket.auth = (callback) {
+      callback(<String, dynamic>{
+        'token': _tokenStorage.cachedActiveAccessToken,
+      });
+    };
 
     socket.connect();
     return _IoSocketConnection(socket);

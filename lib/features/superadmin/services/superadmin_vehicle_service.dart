@@ -12,8 +12,6 @@ import '../models/superadmin_vehicle_model.dart';
 class SuperadminVehicleService {
   SuperadminVehicleService(this._apiClient);
 
-  static bool _mapVehiclesEndpointUnavailable = false;
-
   static final Options _readOptions = normalReadOptions();
 
   final ApiClient _apiClient;
@@ -44,33 +42,8 @@ class SuperadminVehicleService {
       return _mockMapVehicles;
     }
 
-    final requestKey =
-        refreshKey ?? DateTime.now().millisecondsSinceEpoch.toString();
-
-    if (_mapVehiclesEndpointUnavailable) {
-      return _loadVehicleLocationFallback(refreshKey: requestKey);
-    }
-
-    try {
-      final response = await _apiClient.get<List<VehicleSummary>>(
-        ApiEndpoints.superadmin.mapVehicles,
-        queryParameters: <String, dynamic>{
-          'rk': requestKey,
-        },
-        options: _readOptions,
-        parser: _parseVehicleList,
-      );
-
-      return response.data;
-    } on DioException catch (error) {
-      if (!_shouldFallbackToVehicleList(error)) {
-        rethrow;
-      }
-
-      _mapVehiclesEndpointUnavailable = true;
-
-      return _loadVehicleLocationFallback(refreshKey: requestKey);
-    }
+    final telemetry = await getMapTelemetry(refreshKey: refreshKey);
+    return telemetry.vehicles;
   }
 
   Future<SuperadminMapTelemetry> getMapTelemetry({
@@ -2276,30 +2249,6 @@ class SuperadminVehicleService {
         'hasMore': true,
       },
     );
-  }
-
-  bool _shouldFallbackToVehicleList(DioException error) {
-    final statusCode = error.response?.statusCode;
-    return statusCode == 404 || statusCode == 405;
-  }
-
-  Future<List<VehicleSummary>> _loadVehicleLocationFallback({
-    required String refreshKey,
-  }) async {
-    try {
-      final response = await _apiClient.get<dynamic>(
-        ApiEndpoints.superadmin.vehicles,
-        queryParameters: <String, dynamic>{
-          'rk': refreshKey,
-        },
-        options: _readOptions,
-        parser: (json) => json,
-      );
-
-      return _parseVehicleList(response.data);
-    } catch (_) {
-      return const <VehicleSummary>[];
-    }
   }
 
   VehicleSummary? _vehicleSummaryFromJson(

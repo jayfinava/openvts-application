@@ -30,7 +30,7 @@ void main() {
     );
   }
 
-  test('resolves active role by priority user > admin > superadmin', () async {
+  test('activates the most recently authenticated role', () async {
     await saveSession(UserRole.superadmin);
     await saveSession(UserRole.admin);
 
@@ -44,6 +44,24 @@ void main() {
     expect(activeSession, isNotNull);
     expect(activeSession?.role, UserRole.user);
     expect(activeSession?.accessToken, 'access-user');
+  });
+
+  test('a newly authenticated role remains active when older roles exist',
+      () async {
+    await saveSession(UserRole.user);
+    await saveSession(UserRole.superadmin);
+
+    expect(await tokenStorage.getActiveRoleByPriority(), UserRole.superadmin);
+    expect(
+      await secureStorage.read(key: StorageKeys.activeRole),
+      UserRole.superadmin.apiValue,
+    );
+
+    final restoredStorage = TokenStorage(secureStorage);
+    expect(
+      (await restoredStorage.getActiveSession())?.role,
+      UserRole.superadmin,
+    );
   });
 
   test('clears only the selected role session and falls back by priority',

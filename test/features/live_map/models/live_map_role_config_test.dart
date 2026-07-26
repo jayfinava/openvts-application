@@ -25,4 +25,24 @@ void main() {
       );
     });
   });
+
+  group('LiveMapRoleConfig telemetry subscriptions', () {
+    test('superadmin uses the scoped batch stream', () {
+      expect(
+        LiveMapRoleConfig.superadmin().telemetrySubscribeMode,
+        LiveMapTelemetrySubscribeMode.superadminScope,
+      );
+    });
+
+    test('admin and user use explicit IMEI subscriptions', () {
+      expect(
+        LiveMapRoleConfig.admin().telemetrySubscribeMode,
+        LiveMapTelemetrySubscribeMode.imeis,
+      );
+      expect(
+        LiveMapRoleConfig.user().telemetrySubscribeMode,
+        LiveMapTelemetrySubscribeMode.imeis,
+      );
+    });
+  });
 }

@@ -29,6 +29,11 @@ class UserHomeScreen extends ConsumerWidget {
       route: RoutePaths.userMap,
     ),
     OpenVtsRoleHomeItem(
+      label: 'Reports',
+      icon: Icons.analytics_outlined,
+      route: RoutePaths.userReports,
+    ),
+    OpenVtsRoleHomeItem(
       label: 'Landmarks Studio',
       icon: Icons.place_outlined,
       route: RoutePaths.userLandmarksStudio,

@@ -68,6 +68,7 @@ import '../../features/user/screens/map/user_map_screen.dart';
 import '../../features/user/screens/notification_settings/user_notification_settings_screen.dart';
 import '../../features/user/screens/notifications/user_notification_center_screen.dart';
 import '../../features/user/screens/route_optimisation/user_route_optimisation_screen.dart';
+import '../../features/user/screens/reports/user_reports_screen.dart';
 import '../../features/user/screens/settings/user_settings_screen.dart';
 import '../../features/user/screens/support/user_create_support_ticket_screen.dart';
 import '../../features/user/screens/support/user_support_screen.dart';
@@ -95,17 +96,6 @@ final _appRouterRefreshProvider = Provider<ValueNotifier<int>>((ref) {
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final refreshNotifier = ref.watch(_appRouterRefreshProvider);
-  GoRoute placeholderRoute({
-    required String path,
-    required String title,
-    required String message,
-  }) {
-    return GoRoute(
-      path: path,
-      builder: (context, state) =>
-          PlaceholderRoleScreen(title: title, message: message),
-    );
-  }
 
   return GoRouter(
     navigatorKey: appRootNavigatorKey,
@@ -118,6 +108,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           path == RoutePaths.forgotPassword ||
           path == RoutePaths.apiBaseUrlSettings;
       final isSplash = path == RoutePaths.splash;
+      final emailedResetToken =
+          state.uri.queryParameters['reset-password']?.trim();
+      final routeToken = path == RoutePaths.forgotPassword
+          ? state.uri.queryParameters['token']?.trim()
+          : null;
+      final resetToken = emailedResetToken?.isNotEmpty == true
+          ? emailedResetToken
+          : routeToken;
+      final isResetFlow = resetToken?.isNotEmpty == true;
+
+      if (isResetFlow && path != RoutePaths.forgotPassword) {
+        return Uri(
+          path: RoutePaths.forgotPassword,
+          queryParameters: <String, String>{'token': resetToken!},
+        ).toString();
+      }
+      if (isResetFlow) {
+        return null;
+      }
 
       if (authState.status == AuthStatus.initial ||
           authState.status == AuthStatus.loading) {
@@ -154,7 +163,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RoutePaths.forgotPassword,
-        builder: (context, state) => const ForgotPasswordScreen(),
+        builder: (context, state) => ForgotPasswordScreen(
+          initialToken: state.uri.queryParameters['token'] ??
+              state.uri.queryParameters['reset-password'],
+        ),
       ),
       GoRoute(
         path: RoutePaths.apiBaseUrlSettings,
@@ -221,10 +233,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: RoutePaths.superadminReports,
-            builder: (context, state) => const PlaceholderRoleScreen(
-              title: 'Reports',
-              message: 'Reports screen placeholder.',
-            ),
+            redirect: (context, state) => RoutePaths.superadminDashboard,
           ),
           GoRoute(
             path: RoutePaths.superadminSettings,
@@ -355,10 +364,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: RoutePaths.adminReports,
-            builder: (context, state) => const PlaceholderRoleScreen(
-              title: 'Reports',
-              message: 'Reports screen placeholder.',
-            ),
+            redirect: (context, state) => RoutePaths.adminDashboard,
           ),
           GoRoute(
             path: RoutePaths.adminSettings,
@@ -428,20 +434,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: RoutePaths.userLandmarkRoutes,
             builder: (context, state) => const UserRoutesScreen(),
           ),
-          placeholderRoute(
+          GoRoute(
             path: RoutePaths.userGeofenceEditor,
-            title: 'Geofence Editor',
-            message: 'Geofence editor is not implemented yet.',
+            redirect: (context, state) => RoutePaths.userLandmarkGeofences,
           ),
-          placeholderRoute(
+          GoRoute(
             path: RoutePaths.userPoiEditor,
-            title: 'POI Editor',
-            message: 'POI editor is not implemented yet.',
+            redirect: (context, state) => RoutePaths.userLandmarkPois,
           ),
-          placeholderRoute(
+          GoRoute(
             path: RoutePaths.userRouteEditor,
-            title: 'Route Editor',
-            message: 'Route editor is not implemented yet.',
+            redirect: (context, state) => RoutePaths.userLandmarkRoutes,
           ),
           GoRoute(
             path: RoutePaths.userSupport,
@@ -491,10 +494,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: RoutePaths.userHistory,
-            builder: (context, state) => const PlaceholderRoleScreen(
-              title: 'History',
-              message: 'Vehicle history and replay screen placeholder.',
-            ),
+            redirect: (context, state) => RoutePaths.userMap,
+          ),
+          GoRoute(
+            path: RoutePaths.userReports,
+            builder: (context, state) => const UserReportsScreen(),
           ),
           GoRoute(
             path: RoutePaths.userNotifications,

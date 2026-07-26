@@ -67,10 +67,91 @@ class AuthService {
     return response.data;
   }
 
+  Future<String> requestPasswordReset(String identifier) async {
+    final normalized = identifier.trim();
+    if (normalized.isEmpty) {
+      throw const ApiException(
+        message: 'Enter your email address or username.',
+      );
+    }
+    if (AppConfig.useMockData) {
+      return 'If an account with that identifier exists, a password reset link has been sent.';
+    }
+
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      ApiEndpoints.auth.forgotPassword,
+      data: <String, dynamic>{'identifier': normalized},
+      parser: _mapPayload,
+    );
+    return response.message?.trim().isNotEmpty == true
+        ? response.message!.trim()
+        : 'If an account with that identifier exists, a password reset link has been sent.';
+  }
+
+  Future<String> resetPassword({
+    required String token,
+    required String newPassword,
+  }) async {
+    final normalizedToken = _extractResetToken(token);
+    if (normalizedToken.isEmpty) {
+      throw const ApiException(message: 'Enter a valid password reset token.');
+    }
+    if (newPassword.length < 6 || newPassword.length > 35) {
+      throw const ApiException(
+        message: 'Password must contain between 6 and 35 characters.',
+      );
+    }
+    if (AppConfig.useMockData) {
+      return 'Password has been reset successfully.';
+    }
+
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      ApiEndpoints.auth.resetPassword,
+      data: <String, dynamic>{
+        'token': normalizedToken,
+        'newPassword': newPassword,
+      },
+      parser: _mapPayload,
+    );
+    return response.message?.trim().isNotEmpty == true
+        ? response.message!.trim()
+        : 'Password has been reset successfully.';
+  }
+
   Future<void> logout() async {
     // Role logout is handled by local session removal.
     // Keep this method as a no-op to mirror web behavior.
     return;
+  }
+
+  static Map<String, dynamic> _mapPayload(dynamic json) {
+    if (json is Map<String, dynamic>) {
+      return json;
+    }
+    if (json is Map) {
+      return json.map(
+        (key, value) => MapEntry(key.toString(), value),
+      );
+    }
+    return const <String, dynamic>{};
+  }
+
+  static String _extractResetToken(String raw) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) {
+      return '';
+    }
+
+    final uri = Uri.tryParse(trimmed);
+    if (uri != null) {
+      for (final key in const ['reset-password', 'token']) {
+        final value = uri.queryParameters[key]?.trim();
+        if (value != null && value.isNotEmpty) {
+          return value;
+        }
+      }
+    }
+    return trimmed;
   }
 
   Future<CurrentUser> getProfile(CurrentUser currentUser) async {

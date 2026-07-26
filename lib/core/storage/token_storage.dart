@@ -78,11 +78,14 @@ class TokenStorage {
 
     await _migrateLegacySessionIfNeeded();
 
+    final preferredRole = await _readStoredActiveRole();
     _roleSessionCache.clear();
     for (final role in UserRole.values) {
       _roleSessionCache[role] = await _readRoleSession(role);
     }
-    _activeSessionCache = _resolveActiveSessionFromCache();
+    _activeSessionCache = _resolveActiveSessionFromCache(
+      preferredRole: preferredRole,
+    );
     _cacheHydrated = true;
     await _syncActiveRoleKeyFromCache();
   }
@@ -118,13 +121,16 @@ class TokenStorage {
     );
     await _storage.write(key: StorageKeys.activeRole, value: role.apiValue);
 
-    _roleSessionCache[role] = RoleSession(
+    final savedSession = RoleSession(
       role: role,
       accessToken: normalizedAccessToken,
       refreshToken: normalizedRefreshToken,
       user: _parseStoredUser(normalizedCurrentUserJson, role),
     );
-    _activeSessionCache = _resolveActiveSessionFromCache();
+    _roleSessionCache[role] = savedSession;
+    // A successful login or role switch is authoritative. Do not let a
+    // previously saved lower-priority role silently replace the new session.
+    _activeSessionCache = savedSession;
     _cacheHydrated = true;
     await _syncActiveRoleKeyFromCache();
   }
@@ -167,7 +173,9 @@ class TokenStorage {
     await _storage.delete(key: StorageKeys.refreshTokenForRole(role.apiValue));
     await _storage.delete(key: StorageKeys.currentUserForRole(role.apiValue));
     _roleSessionCache[role] = null;
-    _activeSessionCache = _resolveActiveSessionFromCache();
+    if (_activeSessionCache?.role == role) {
+      _activeSessionCache = _resolveActiveSessionFromCache();
+    }
     _cacheHydrated = true;
     await _syncActiveRoleKeyFromCache();
   }
@@ -361,7 +369,16 @@ class TokenStorage {
     return _fallbackUser(role);
   }
 
-  RoleSession? _resolveActiveSessionFromCache() {
+  RoleSession? _resolveActiveSessionFromCache({
+    UserRole? preferredRole,
+  }) {
+    if (preferredRole != null) {
+      final preferred = _roleSessionCache[preferredRole];
+      if (preferred != null) {
+        return preferred;
+      }
+    }
+
     for (final role in _rolePriority) {
       final session = _roleSessionCache[role];
       if (session != null) {
@@ -402,6 +419,11 @@ class TokenStorage {
   }
 
   Future<void> _syncActiveRoleKey() async {
+    final preferredRole = await _readStoredActiveRole();
+    if (preferredRole != null && await _hasSessionForRoleRaw(preferredRole)) {
+      return;
+    }
+
     for (final role in _rolePriority) {
       if (await _hasSessionForRoleRaw(role)) {
         await _storage.write(key: StorageKeys.activeRole, value: role.apiValue);
@@ -410,6 +432,23 @@ class TokenStorage {
     }
 
     await _storage.delete(key: StorageKeys.activeRole);
+  }
+
+  Future<UserRole?> _readStoredActiveRole() async {
+    final raw = (await _storage.read(key: StorageKeys.activeRole))
+        ?.trim()
+        .toLowerCase();
+    if (raw == null || raw.isEmpty) {
+      return null;
+    }
+
+    for (final role in UserRole.values) {
+      if (raw == role.apiValue) {
+        return role;
+      }
+    }
+
+    return null;
   }
 
   Future<String?> _readNonEmpty(String key) async {

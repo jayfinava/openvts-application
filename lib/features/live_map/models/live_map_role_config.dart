@@ -142,7 +142,7 @@ class LiveMapRoleConfig {
       commandSendMode: LiveMapCommandSendMode.byImei,
       notificationSubscribeMode:
           LiveMapNotificationSubscribeMode.superadminScope,
-      telemetrySubscribeMode: LiveMapTelemetrySubscribeMode.none,
+      telemetrySubscribeMode: LiveMapTelemetrySubscribeMode.superadminScope,
       visualSettingsStorageKey: StorageKeys.superadminMapVisualSettings,
       mapLayerStorageKey: StorageKeys.superadminMapLayerId,
     );

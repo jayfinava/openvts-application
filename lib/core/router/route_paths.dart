@@ -71,6 +71,7 @@ class RoutePaths {
       '/user/vehicles/$vehicleId';
 
   static const userHistory = '/user/history';
+  static const userReports = '/user/reports';
   static const userLandmarksStudio = '/user/landmarks-studio';
   static const userLandmarkGeofences = '/user/landmarks-studio/geofences';
   static const userLandmarkPois = '/user/landmarks-studio/pois';

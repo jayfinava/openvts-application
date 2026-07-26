@@ -82,6 +82,20 @@ class AuthController extends StateNotifier<AuthState> {
     });
   }
 
+  Future<String> requestPasswordReset(String identifier) {
+    return _authService.requestPasswordReset(identifier);
+  }
+
+  Future<String> resetPassword({
+    required String token,
+    required String newPassword,
+  }) {
+    return _authService.resetPassword(
+      token: token,
+      newPassword: newPassword,
+    );
+  }
+
   Future<void> setSession(LoginResponse response) {
     return OpenVtsPerf.traceAsync('auth.setSession', () async {
       await _tokenStorage.saveSessionForRole(

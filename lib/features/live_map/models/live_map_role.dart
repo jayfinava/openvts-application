@@ -31,9 +31,8 @@ enum LiveMapNotificationSubscribeMode {
 
 /// How the live map should subscribe to live telemetry updates.
 enum LiveMapTelemetrySubscribeMode {
-  /// Telemetry stream does not require an explicit subscribe message
-  /// (e.g. superadmin connects to the global firehose).
-  none,
+  /// Subscribe to the bounded, coalesced superadmin telemetry stream.
+  superadminScope,
 
   /// Subscribe explicitly with the list of vehicle IMEIs.
   imeis,

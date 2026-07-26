@@ -90,13 +90,6 @@ class AdminLogsService {
     return AdminVehicleEventDetail.fromJson(response.data);
   }
 
-  Future<void> markVehicleEventAsRead(String id) async {
-    await _apiClient.put<dynamic>(
-      ApiEndpoints.admin.logsEventRead(id),
-      parser: (json) => json,
-    );
-  }
-
   Future<AdminTelemetryLogPage> getTelemetryLogs({
     int limit = 200,
     String? beforeId,

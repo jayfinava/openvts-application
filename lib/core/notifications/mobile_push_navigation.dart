@@ -324,6 +324,7 @@ const _userStaticRoutes = <String>{
   RoutePaths.userMap,
   RoutePaths.userVehicles,
   RoutePaths.userHistory,
+  RoutePaths.userReports,
   RoutePaths.userLandmarksStudio,
   RoutePaths.userLandmarkGeofences,
   RoutePaths.userLandmarkPois,

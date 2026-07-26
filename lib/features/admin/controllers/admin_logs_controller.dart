@@ -336,26 +336,7 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
   }
 
   Future<AdminVehicleEventDetail> getVehicleEventDetail(String id) async {
-    final detail = await _service.getVehicleEventDetail(id);
-
-    if (!detail.isRead) {
-      try {
-        await _service.markVehicleEventAsRead(id);
-
-        final updatedLogs = state.vehicleLogs.map((item) {
-          if (item.id == id) {
-            return item.copyWith(isRead: true);
-          }
-          return item;
-        }).toList();
-
-        state = state.copyWith(vehicleLogs: updatedLogs);
-      } catch (e) {
-        // Silently ignore mark-as-read failures to avoid blocking the UI
-      }
-    }
-
-    return detail;
+    return _service.getVehicleEventDetail(id);
   }
 
   Future<AdminTelemetryDetail> getTelemetryDetail(String id) {

@@ -58,7 +58,6 @@ class _SuperadminEndpoints {
   String activateAdmin(String id) => '/superadmin/activateadmin/$id';
   String deleteAdmin(String id) => '/superadmin/deleteadmin/$id';
   String adminLogin(String id) => '/superadmin/adminlogin/$id';
-  String get mapVehicles => '/superadmin/map/vehicles';
   String get mapEvents => '/superadmin/map-events';
   String get mapTelemetry => '/superadmin/map-telemetry';
   String get geofences => '/superadmin/geofences';
@@ -291,8 +290,6 @@ class _AdminEndpoints {
   String get logsEvents => '/admin/logs/events';
   String logsEventById(String id) =>
       '/admin/logs/events/${Uri.encodeComponent(id)}';
-  String logsEventRead(String id) =>
-      '/admin/logs/events/${Uri.encodeComponent(id)}/read';
   String get logsTelemetry => '/admin/logs/telemetry';
   String logsTelemetryById(String id) =>
       '/admin/logs/telemetry/${Uri.encodeComponent(id)}';
@@ -379,6 +376,10 @@ class _UserEndpoints {
       '/user/subusers/${Uri.encodeComponent(id)}/vehicles/unassign';
   String vehicleDetail(String id) => '/user/vehicles/$id';
   String get history => '/user/history';
+  String get reportOptions => '/user/reports/options';
+  String reportByKey(String reportKey) =>
+      '/user/reports/${Uri.encodeComponent(reportKey)}';
+  String get reportTimelineMap => '/user/reports/timeline/map';
   String get notificationPreferences => '/user/notifications/preferences';
   String get testFcmMe => '/user/notifications/test-fcm-me';
   String get notifications => '/user/notifications';

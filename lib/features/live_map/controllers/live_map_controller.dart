@@ -19,9 +19,9 @@ import '../services/live_map_vehicle_service.dart';
 /// 1. All endpoints (REST baseline, alerts) come from [LiveMapRoleConfig],
 ///    so admin/user sessions never touch a superadmin route.
 /// 2. Socket subscription messages are role-shaped:
-///    * superadmin → `notif:subscribe { scope: 'superadmin' }`; no
-///      `telemetry:subscribe` (the server feeds the firehose).
-///    * admin / user → `telemetry:subscribe { imeis: [...] }` and
+///    * superadmin → explicit scope subscriptions with HTTP-seed snapshots
+///      disabled; live telemetry arrives in bounded batches.
+///    * admin / user → chunked `telemetry:subscribe { imeis: [...] }` and
 ///      `notif:subscribe { imeis: [...] }`, built from the REST baseline.
 ///
 /// The merge / dedupe / monotonic / 120 ms batch / 300-alert cap logic is
@@ -39,6 +39,7 @@ class LiveMapController extends StateNotifier<LiveMapState> {
         super(const LiveMapState.initial());
 
   static const String _superadminScope = 'superadmin';
+  static const int _maxImeisPerSocketSubscription = 5000;
   static const int _alertBootstrapLimit = 50;
   static const int _maxAlerts = 300;
   static const Duration _inactiveStatusThreshold = Duration(hours: 48);
@@ -157,7 +158,9 @@ class LiveMapController extends StateNotifier<LiveMapState> {
       connection.onDisconnect(_handleTelemetryDisconnected);
       connection.onError(_handleTelemetrySocketError);
       connection.on('telemetry:snapshot', _handleTelemetrySnapshot);
+      connection.on('telemetry:snapshot:chunk', _handleTelemetrySnapshotChunk);
       connection.on('telemetry:update', _handleTelemetryUpdate);
+      connection.on('telemetry:update:batch', _handleTelemetryUpdateBatch);
       connection.on('devicestatus:update', _handleDeviceStatusUpdate);
       connection.on('telemetry:error', _handleTelemetrySocketError);
 
@@ -288,6 +291,13 @@ class LiveMapController extends StateNotifier<LiveMapState> {
     }
   }
 
+  void _handleTelemetrySnapshotChunk(dynamic data) {
+    if (data is! Map) {
+      return;
+    }
+    _handleTelemetrySnapshot(data['records']);
+  }
+
   void _handleTelemetryUpdate(dynamic data) {
     if (!_hasTelemetryBaseline) {
       _bufferPendingTelemetryUpdate(data);
@@ -297,6 +307,43 @@ class LiveMapController extends StateNotifier<LiveMapState> {
     if (_applyTelemetryUpdate(data)) {
       _scheduleMergedTelemetryPublish();
     }
+  }
+
+  void _handleTelemetryUpdateBatch(dynamic data) {
+    final records = _telemetryRecords(data);
+    if (records.isEmpty) {
+      return;
+    }
+
+    var didChange = false;
+    for (final record in records) {
+      if (!_hasTelemetryBaseline) {
+        _bufferPendingTelemetryUpdate(record);
+        continue;
+      }
+      didChange = _applyTelemetryUpdate(record) || didChange;
+    }
+
+    if (didChange) {
+      _scheduleMergedTelemetryPublish();
+    }
+  }
+
+  List<dynamic> _telemetryRecords(dynamic data) {
+    if (data is List) {
+      return data;
+    }
+    if (data is! Map) {
+      return const <dynamic>[];
+    }
+
+    for (final key in const ['records', 'updates', 'items', 'data']) {
+      final nested = data[key];
+      if (nested is List) {
+        return nested;
+      }
+    }
+    return const <dynamic>[];
   }
 
   void _handleDeviceStatusUpdate(dynamic data) {
@@ -541,19 +588,42 @@ class LiveMapController extends StateNotifier<LiveMapState> {
     }
 
     switch (_config.telemetrySubscribeMode) {
-      case LiveMapTelemetrySubscribeMode.none:
-        // Superadmin path — server feeds the firehose without a subscribe
-        // message. Match the existing behavior exactly.
+      case LiveMapTelemetrySubscribeMode.superadminScope:
+        const hash = 'scope:superadmin:snapshot:false';
+        if (hash == _lastSentTelemetrySubscriptionHash) {
+          return;
+        }
+        connection.emit(
+          'telemetry:subscribe',
+          const <String, dynamic>{
+            'scope': _superadminScope,
+            'snapshot': false,
+          },
+        );
+        _lastSentTelemetrySubscriptionHash = hash;
         return;
       case LiveMapTelemetrySubscribeMode.imeis:
         final hash = 'imeis:${_baselineImeis.join(',')}';
         if (hash == _lastSentTelemetrySubscriptionHash) {
           return;
         }
-        connection.emit(
-          'telemetry:subscribe',
-          <String, dynamic>{'imeis': _baselineImeis},
-        );
+        for (var offset = 0;
+            offset < _baselineImeis.length;
+            offset += _maxImeisPerSocketSubscription) {
+          final end = math.min(
+            offset + _maxImeisPerSocketSubscription,
+            _baselineImeis.length,
+          );
+          connection.emit(
+            'telemetry:subscribe',
+            <String, dynamic>{
+              'imeis': _baselineImeis.sublist(offset, end),
+              // REST already supplied the current snapshot. Requesting a
+              // socket copy multiplies memory/network cost on large fleets.
+              'snapshot': false,
+            },
+          );
+        }
         _lastSentTelemetrySubscriptionHash = hash;
     }
   }
@@ -586,10 +656,20 @@ class LiveMapController extends StateNotifier<LiveMapState> {
         if (hash == _lastSentNotificationSubscriptionHash) {
           return;
         }
-        connection.emit(
-          'notif:subscribe',
-          <String, dynamic>{'imeis': _baselineImeis},
-        );
+        for (var offset = 0;
+            offset < _baselineImeis.length;
+            offset += _maxImeisPerSocketSubscription) {
+          final end = math.min(
+            offset + _maxImeisPerSocketSubscription,
+            _baselineImeis.length,
+          );
+          connection.emit(
+            'notif:subscribe',
+            <String, dynamic>{
+              'imeis': _baselineImeis.sublist(offset, end),
+            },
+          );
+        }
         _lastSentNotificationSubscriptionHash = hash;
     }
   }
