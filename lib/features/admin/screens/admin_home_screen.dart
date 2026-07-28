@@ -83,6 +83,11 @@ class AdminHomeScreen extends ConsumerWidget {
       icon: Icons.settings_outlined,
       route: RoutePaths.adminSettings,
     ),
+    OpenVtsRoleHomeItem(
+      label: 'Roles',
+      icon: Icons.shield_outlined,
+      route: RoutePaths.adminRoles,
+    ),
   ];
 
   @override

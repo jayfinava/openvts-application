@@ -74,6 +74,7 @@ class AdminSupportController extends StateNotifier<AdminSupportState> {
     try {
       final tickets = await _service.getUserTickets(
         refreshKey: state.userRefreshKey,
+        userId: state.userIdFilter,
       );
 
       final keepSelection =
@@ -149,6 +150,13 @@ class AdminSupportController extends StateNotifier<AdminSupportState> {
     }
 
     state = state.copyWith(myStatusFilter: status, myVisibleCount: 10);
+  }
+
+  Future<void> setUserIdFilter(String? userId) async {
+    final normalized = userId?.trim().isEmpty == true ? null : userId?.trim();
+    if (state.userIdFilter == normalized) return;
+    state = state.copyWith(userIdFilter: normalized, userVisibleCount: 10);
+    await loadUserTickets();
   }
 
   void loadMore(AdminSupportTab tab) {

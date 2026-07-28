@@ -22,6 +22,7 @@ class AdminPaymentsService {
     AdminPaymentStatus? status,
     DateTime? from,
     DateTime? to,
+    String? q,
     String? refreshKey,
   }) async {
     final query = <String, dynamic>{
@@ -31,6 +32,7 @@ class AdminPaymentsService {
       if (status != null) 'status': status.apiValue,
       if (from != null) 'from': from.toUtc().toIso8601String(),
       if (to != null) 'to': to.toUtc().toIso8601String(),
+      if ((q ?? '').trim().isNotEmpty) 'q': q!.trim(),
       if ((refreshKey ?? '').trim().isNotEmpty) 'rk': refreshKey!.trim(),
     };
 

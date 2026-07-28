@@ -113,6 +113,18 @@ class _AdminTelemetryLogsPanelState
               controller.setTelemetryFilters(packetType: 'HISTORY');
               controller.loadTelemetryLogs();
             }),
+            _chip('ALARM', state.telemetryPacketType == 'ALARM', () {
+              controller.setTelemetryFilters(packetType: 'ALARM');
+              controller.loadTelemetryLogs();
+            }),
+            _chip('HEARTBEAT', state.telemetryPacketType == 'HEARTBEAT', () {
+              controller.setTelemetryFilters(packetType: 'HEARTBEAT');
+              controller.loadTelemetryLogs();
+            }),
+            _chip('COMMAND', state.telemetryPacketType == 'COMMAND', () {
+              controller.setTelemetryFilters(packetType: 'COMMAND');
+              controller.loadTelemetryLogs();
+            }),
             _chip('EVENT', state.telemetryPacketType == 'EVENT', () {
               controller.setTelemetryFilters(packetType: 'EVENT');
               controller.loadTelemetryLogs();

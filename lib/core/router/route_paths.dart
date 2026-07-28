@@ -60,6 +60,7 @@ class RoutePaths {
   static const adminReports = '/admin/reports';
   static const adminProfile = '/admin/profile';
   static const adminSettings = '/admin/settings';
+  static const adminRoles = '/admin/roles';
 
   static const userHome = '/user';
   static const userDashboard = '/user/dashboard';

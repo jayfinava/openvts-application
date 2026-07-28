@@ -17,6 +17,7 @@ import '../../features/admin/screens/map/admin_map_screen.dart';
 import '../../features/admin/screens/notifications/admin_notifications_screen.dart';
 import '../../features/admin/screens/payments/admin_payments_screen.dart';
 import '../../features/admin/screens/plans/admin_plans_screen.dart';
+import '../../features/admin/screens/roles/admin_roles_screen.dart';
 import '../../features/admin/screens/settings/admin_settings_screen.dart';
 import '../../features/admin/screens/support/admin_create_support_ticket_screen.dart';
 import '../../features/admin/screens/support/admin_support_screen.dart';
@@ -369,6 +370,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: RoutePaths.adminSettings,
             builder: (context, state) => const AdminSettingsScreen(),
+          ),
+          GoRoute(
+            path: RoutePaths.adminRoles,
+            builder: (context, state) => const AdminRolesScreen(),
           ),
         ],
       ),

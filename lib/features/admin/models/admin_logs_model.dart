@@ -6,7 +6,15 @@ enum AdminVehicleSeverity { info, warning, critical }
 
 enum AdminReadFilter { all, read, unread }
 
-enum AdminTelemetryPacketType { location, history, event, unknown }
+enum AdminTelemetryPacketType {
+  location,
+  history,
+  alarm,
+  heartbeat,
+  command,
+  event,
+  unknown
+}
 
 class AdminLogsOptions {
   const AdminLogsOptions({

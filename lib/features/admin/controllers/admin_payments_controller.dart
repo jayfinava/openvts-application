@@ -62,7 +62,8 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
 
   Future<void> setSearchQuery(String query) async {
     state = state.copyWith(searchQuery: query);
-    state = state.copyWith(transactions: _applyLocalFilters(_serverItems));
+    // q is a server-side filter; reload from page 1
+    await _loadPayments(page: 1, append: false, refreshing: false);
   }
 
   Future<void> setRangePreset(AdminPaymentsRangePreset preset) async {
@@ -196,6 +197,7 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
         status: state.selectedStatus,
         from: range.from,
         to: range.to,
+        q: state.searchQuery.trim().isEmpty ? null : state.searchQuery.trim(),
         refreshKey: state.refreshKey.toString(),
       );
 
@@ -248,21 +250,10 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
 
   List<AdminPaymentTransaction> _applyLocalFilters(
       List<AdminPaymentTransaction> items) {
-    final q = state.searchQuery.trim().toLowerCase();
+    // mode is a client-side filter (API does not expose a mode param for /admin/payments)
     return items.where((item) {
-      final modeOk =
-          state.selectedMode == null || item.paymentMode == state.selectedMode;
-      final searchOk = q.isEmpty ||
-          <String>[
-            item.reference,
-            item.provider,
-            item.providerRef,
-            item.toUser?.name ?? '',
-            item.toUser?.username ?? '',
-            item.vehicle['name']?.toString() ?? '',
-            item.vehicle['plateNumber']?.toString() ?? '',
-          ].any((v) => v.toLowerCase().contains(q));
-      return modeOk && searchOk;
+      return state.selectedMode == null ||
+          item.paymentMode == state.selectedMode;
     }).toList(growable: true);
   }
 
