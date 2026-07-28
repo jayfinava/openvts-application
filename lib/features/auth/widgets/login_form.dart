@@ -13,11 +13,13 @@ class LoginForm extends StatefulWidget {
   const LoginForm({
     required this.isLoading,
     required this.onSubmit,
+    required this.onDemo,
     super.key,
   });
 
   final bool isLoading;
   final void Function(String email, String password) onSubmit;
+  final VoidCallback onDemo;
 
   @override
   State<LoginForm> createState() => _LoginFormState();
@@ -125,6 +127,59 @@ class _LoginFormState extends State<LoginForm> {
                 isLoading: widget.isLoading,
                 trailingIcon: Icons.arrow_forward_rounded,
                 onPressed: _submit,
+              ),
+            ),
+            const SizedBox(height: OpenVtsSpacing.md),
+            Row(
+              children: [
+                Expanded(
+                  child: Divider(
+                    color: isDark
+                        ? OpenVtsColors.darkBorder
+                        : OpenVtsColors.border,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: OpenVtsSpacing.sm,
+                  ),
+                  child: Text(
+                    'or',
+                    style: OpenVtsTypography.meta.copyWith(
+                      color: isDark
+                          ? OpenVtsColors.darkTextTertiary
+                          : OpenVtsColors.textTertiary,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Divider(
+                    color: isDark
+                        ? OpenVtsColors.darkBorder
+                        : OpenVtsColors.border,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: OpenVtsSpacing.md),
+            SizedBox(
+              width: double.infinity,
+              child: OpenVtsButton(
+                label: 'Try Demo',
+                isLoading: widget.isLoading,
+                variant: OpenVtsButtonVariant.secondary,
+                trailingIcon: Icons.play_circle_outline_rounded,
+                onPressed: widget.onDemo,
+              ),
+            ),
+            const SizedBox(height: OpenVtsSpacing.xs),
+            Text(
+              'Explore the complete live, read-only fleet experience.',
+              textAlign: TextAlign.center,
+              style: OpenVtsTypography.meta.copyWith(
+                color: isDark
+                    ? OpenVtsColors.darkTextTertiary
+                    : OpenVtsColors.textTertiary,
               ),
             ),
           ],

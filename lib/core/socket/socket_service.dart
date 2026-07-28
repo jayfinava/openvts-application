@@ -13,11 +13,17 @@ class SocketService {
   final TokenStorage _tokenStorage;
   final String _apiBaseUrl;
 
-  Future<SocketConnection> connect(String namespace) async {
-    var token = _tokenStorage.cachedActiveAccessToken;
-    if (token == null && !_tokenStorage.isCacheHydrated) {
-      await _tokenStorage.hydrateCache();
+  Future<SocketConnection> connect(
+    String namespace, {
+    bool authenticated = true,
+  }) async {
+    String? token;
+    if (authenticated) {
       token = _tokenStorage.cachedActiveAccessToken;
+      if (token == null && !_tokenStorage.isCacheHydrated) {
+        await _tokenStorage.hydrateCache();
+        token = _tokenStorage.cachedActiveAccessToken;
+      }
     }
     final url = socketUrlForApiBase(_apiBaseUrl, namespace);
 
@@ -27,7 +33,11 @@ class SocketService {
         // Advertising polling first causes avoidable failed handshakes.
         .setTransports(['websocket'])
         .disableAutoConnect()
-        .setAuth(<String, dynamic>{'token': token})
+        .setAuth(
+          authenticated
+              ? <String, dynamic>{'token': token}
+              : const <String, dynamic>{},
+        )
         .enableReconnection()
         .setReconnectionDelay(500)
         .setReconnectionDelayMax(2000)
@@ -40,9 +50,13 @@ class SocketService {
     // including reconnects. This keeps a long-lived map socket aligned with
     // access-token refreshes without rebuilding the entire controller.
     socket.auth = (callback) {
-      callback(<String, dynamic>{
-        'token': _tokenStorage.cachedActiveAccessToken,
-      });
+      callback(
+        authenticated
+            ? <String, dynamic>{
+                'token': _tokenStorage.cachedActiveAccessToken,
+              }
+            : const <String, dynamic>{},
+      );
     };
 
     socket.connect();

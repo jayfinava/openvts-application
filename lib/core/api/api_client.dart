@@ -1,13 +1,20 @@
 import 'package:dio/dio.dart';
 
+import '../demo/demo_api_policy.dart';
 import '../performance/open_vts_perf.dart';
 import 'api_exception.dart';
 import 'api_response.dart';
 
 class ApiClient {
-  ApiClient(this._dio);
+  ApiClient(
+    this._dio, {
+    DemoApiPolicy? demoPolicy,
+  }) : _demoPolicy = demoPolicy;
 
   final Dio _dio;
+  final DemoApiPolicy? _demoPolicy;
+
+  bool get isDemoMode => _demoPolicy?.isEnabled == true;
 
   Future<ApiResponse<T>> get<T>(
     String endpoint, {
@@ -16,12 +23,28 @@ class ApiClient {
     required T Function(dynamic json) parser,
   }) {
     return OpenVtsPerf.traceAsync(_apiPerfLabel('GET', endpoint), () async {
+      final resolution =
+          _demoPolicy?.resolveGet(endpoint, queryParameters) ??
+              DemoGetResolution.remote(
+                endpoint: endpoint,
+                queryParameters: queryParameters,
+              );
+      if (resolution.hasLocalPayload) {
+        return _parseLocalResponse(
+          resolution.adapt(resolution.localPayload),
+          parser,
+        );
+      }
+
       final response = await _dio.get<dynamic>(
-        endpoint,
-        queryParameters: queryParameters,
+        resolution.endpoint,
+        queryParameters: resolution.queryParameters,
         options: options,
       );
-      return _parseResponse(response, parser);
+      return _parseResponse(
+        response,
+        (json) => parser(resolution.adapt(json)),
+      );
     });
   }
 
@@ -33,6 +56,7 @@ class ApiClient {
     required T Function(dynamic json) parser,
   }) {
     return OpenVtsPerf.traceAsync(_apiPerfLabel('POST', endpoint), () async {
+      _demoPolicy?.ensureMutationAllowed('POST', endpoint);
       final response = await _dio.post<dynamic>(
         endpoint,
         data: data,
@@ -50,6 +74,7 @@ class ApiClient {
     required T Function(dynamic json) parser,
   }) {
     return OpenVtsPerf.traceAsync(_apiPerfLabel('PUT', endpoint), () async {
+      _demoPolicy?.ensureMutationAllowed('PUT', endpoint);
       final response = await _dio.put<dynamic>(
         endpoint,
         data: data,
@@ -67,6 +92,7 @@ class ApiClient {
     required T Function(dynamic json) parser,
   }) {
     return OpenVtsPerf.traceAsync(_apiPerfLabel('PATCH', endpoint), () async {
+      _demoPolicy?.ensureMutationAllowed('PATCH', endpoint);
       final response = await _dio.patch<dynamic>(
         endpoint,
         data: data,
@@ -84,6 +110,7 @@ class ApiClient {
     required T Function(dynamic json) parser,
   }) {
     return OpenVtsPerf.traceAsync(_apiPerfLabel('DELETE', endpoint), () async {
+      _demoPolicy?.ensureMutationAllowed('DELETE', endpoint);
       final response = await _dio.delete<dynamic>(
         endpoint,
         data: data,
@@ -167,6 +194,25 @@ class ApiClient {
         message: 'Invalid API response format',
         statusCode: response.statusCode,
         details: data,
+      );
+    }
+  }
+
+  ApiResponse<T> _parseLocalResponse<T>(
+    dynamic payload,
+    T Function(dynamic json) parser,
+  ) {
+    try {
+      return ApiResponse<T>(
+        success: true,
+        data: parser(payload),
+        message: 'Demo data loaded',
+      );
+    } catch (_) {
+      throw ApiException(
+        message: 'Invalid demo response format',
+        statusCode: 500,
+        details: payload,
       );
     }
   }

@@ -65,6 +65,9 @@ class _NotificationSettingsDiagnosticsBootstrapperState
       if (!mounted) {
         return;
       }
+      if (ref.read(authControllerProvider).isDemo) {
+        return;
+      }
       final controller = ref.read(mobilePushControllerProvider.notifier);
       unawaited(controller.refreshPermissionStatus());
       unawaited(controller.refreshTokenDiagnostics());
@@ -85,6 +88,7 @@ class _UserNotificationSettingsScreenBody extends ConsumerWidget {
     final mobilePushState = ref.watch(mobilePushControllerProvider);
     final mobilePushController =
         ref.read(mobilePushControllerProvider.notifier);
+    final canUseMobilePush = authState.isRealSession;
 
     Future<void> handleSaveRequest() async {
       final before = ref.read(userNotificationSettingsControllerProvider);
@@ -151,7 +155,7 @@ class _UserNotificationSettingsScreenBody extends ConsumerWidget {
     }
 
     Future<void> handleMobilePushRetry() async {
-      if (!authState.isAuthenticated) {
+      if (!canUseMobilePush) {
         return;
       }
 
@@ -204,8 +208,9 @@ class _UserNotificationSettingsScreenBody extends ConsumerWidget {
     final showSaveBar = state.isDirty || state.isSaving;
     final listBottomPadding =
         showSaveBar ? (116.0 + keyboardInset) : OpenVtsSpacing.lg;
-    final isMobilePushBusy =
-        mobilePushState.isInitializing || mobilePushState.isTesting;
+    final isMobilePushBusy = !canUseMobilePush ||
+        mobilePushState.isInitializing ||
+        mobilePushState.isTesting;
 
     Future<void> handleMenuAction(_SettingsMenuAction action) async {
       switch (action) {
@@ -320,8 +325,8 @@ class _UserNotificationSettingsScreenBody extends ConsumerWidget {
                         const SizedBox(height: OpenVtsSpacing.sm),
                         UserMobilePushDiagnosticsCard(
                           state: mobilePushState,
-                          showActions: authState.isAuthenticated,
-                          onRetryRegistration: authState.isAuthenticated &&
+                          showActions: canUseMobilePush,
+                          onRetryRegistration: canUseMobilePush &&
                                   mobilePushState.isSupported &&
                                   !isMobilePushBusy
                               ? () {
@@ -329,7 +334,7 @@ class _UserNotificationSettingsScreenBody extends ConsumerWidget {
                                 }
                               : null,
                           onSendTestNotification:
-                              authState.isAuthenticated && !isMobilePushBusy
+                              canUseMobilePush && !isMobilePushBusy
                                   ? () {
                                       unawaited(handleTestNotification());
                                     }

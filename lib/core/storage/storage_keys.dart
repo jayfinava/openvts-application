@@ -2,6 +2,8 @@ class StorageKeys {
   const StorageKeys._();
 
   static const apiBaseUrlOverride = 'openvts_api_base_url_override';
+  static const demoModeEnabled = 'openvts_demo_mode_enabled';
+  static const demoSession = 'openvts_demo_session';
 
   // Legacy global auth keys kept only for migration/fallback.
   static const accessToken = 'openvts_access_token';
@@ -60,4 +62,6 @@ class StorageKeys {
 
   static const userMapVisualSettings = 'openvts_user_map_visual_settings';
   static const userMapLayerId = 'openvts_user_map_layer_id';
+  static const demoMapVisualSettings = 'openvts_demo_map_visual_settings';
+  static const demoMapLayerId = 'openvts_demo_map_layer_id';
 }

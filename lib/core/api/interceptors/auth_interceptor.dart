@@ -12,6 +12,12 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    if (_isPublicDemoRequest(options.path)) {
+      options.headers.remove('Authorization');
+      handler.next(options);
+      return;
+    }
+
     var token = _tokenStorage.cachedActiveAccessToken;
     if (token == null && !_tokenStorage.isCacheHydrated) {
       await _tokenStorage.hydrateCache();
@@ -22,5 +28,10 @@ class AuthInterceptor extends Interceptor {
       options.headers['Authorization'] = 'Bearer $token';
     }
     handler.next(options);
+  }
+
+  bool _isPublicDemoRequest(String value) {
+    final path = Uri.tryParse(value)?.path ?? value.split('?').first;
+    return path == '/demo' || path.startsWith('/demo/');
   }
 }

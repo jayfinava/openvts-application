@@ -23,8 +23,13 @@ class RefreshTokenInterceptor extends QueuedInterceptor {
   ) async {
     final statusCode = err.response?.statusCode;
     final alreadyRetried = err.requestOptions.extra['retried'] == true;
+    final requestPath = Uri.tryParse(err.requestOptions.path)?.path ??
+        err.requestOptions.path.split('?').first;
 
-    if (statusCode != 401 || alreadyRetried) {
+    if (statusCode != 401 ||
+        alreadyRetried ||
+        requestPath == '/demo' ||
+        requestPath.startsWith('/demo/')) {
       handler.next(err);
       return;
     }

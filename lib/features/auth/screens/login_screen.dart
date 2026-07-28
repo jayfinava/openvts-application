@@ -22,7 +22,9 @@ class LoginScreen extends ConsumerWidget {
     ref.listen<AuthState>(authControllerProvider, (previous, next) {
       if (previous?.status == AuthStatus.loading &&
           next.status == AuthStatus.authenticated) {
-        ToastHelper.showSuccess('Login successful');
+        ToastHelper.showSuccess(
+          next.isDemo ? 'Demo workspace opened' : 'Login successful',
+        );
       }
 
       if (previous?.status == AuthStatus.loading &&
@@ -86,6 +88,9 @@ class LoginScreen extends ConsumerWidget {
                               identifier: identifier,
                               password: password,
                             );
+                      },
+                      onDemo: () {
+                        ref.read(authControllerProvider.notifier).enterDemo();
                       },
                     ),
                   ),
@@ -187,12 +192,14 @@ class _LoginPanel extends StatelessWidget {
   const _LoginPanel({
     required this.isLoading,
     required this.onSubmit,
+    required this.onDemo,
     this.errorMessage,
   });
 
   final bool isLoading;
   final String? errorMessage;
   final void Function(String email, String password) onSubmit;
+  final VoidCallback onDemo;
 
   @override
   Widget build(BuildContext context) {
@@ -238,6 +245,7 @@ class _LoginPanel extends StatelessWidget {
           LoginForm(
             isLoading: isLoading,
             onSubmit: onSubmit,
+            onDemo: onDemo,
           ),
           if (errorMessage != null) ...[
             const SizedBox(height: OpenVtsSpacing.md),

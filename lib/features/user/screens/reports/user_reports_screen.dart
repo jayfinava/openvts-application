@@ -12,6 +12,7 @@ import '../../../../core/api/api_exception.dart';
 import '../../../../core/platform/platform_time_zone.dart';
 import '../../../../shared/widgets/open_vts_date_time_range_selector.dart';
 import '../../../../shared/widgets/open_vts_page_scaffold.dart';
+import '../../../auth/controllers/auth_controller.dart';
 import '../../controllers/user_providers.dart';
 import '../../models/user_landmark_model.dart';
 import '../../models/user_report_model.dart';
@@ -72,7 +73,11 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
   @override
   void initState() {
     super.initState();
-    unawaited(_loadOptions());
+    if (ref.read(authControllerProvider).isDemo) {
+      _isLoadingOptions = false;
+    } else {
+      unawaited(_loadOptions());
+    }
   }
 
   @override
@@ -84,6 +89,49 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDemo = ref.watch(
+      authControllerProvider.select((state) => state.isDemo),
+    );
+    if (isDemo) {
+      return OpenVtsPageScaffold(
+        title: 'Reports',
+        body: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(28),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.lock_outline_rounded,
+                      size: 48,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Reports are restricted in demo mode',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Advanced reporting features are not available in the '
+                      'public demo. Sign in with an OpenVTS account to run, '
+                      'page, visualise, and export fleet reports.',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return OpenVtsPageScaffold(
       title: 'Reports',
       actions: [

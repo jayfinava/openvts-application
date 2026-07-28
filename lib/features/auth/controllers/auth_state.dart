@@ -8,21 +8,30 @@ class AuthState {
     required this.status,
     this.user,
     this.errorMessage,
+    this.isDemo = false,
   });
 
   const AuthState.initial() : this(status: AuthStatus.initial);
   const AuthState.loading() : this(status: AuthStatus.loading);
   const AuthState.unauthenticated({String? errorMessage})
       : this(status: AuthStatus.unauthenticated, errorMessage: errorMessage);
-  const AuthState.authenticated(CurrentUser user)
-      : this(status: AuthStatus.authenticated, user: user);
+  const AuthState.authenticated(
+    CurrentUser user, {
+    bool isDemo = false,
+  }) : this(
+          status: AuthStatus.authenticated,
+          user: user,
+          isDemo: isDemo,
+        );
 
   final AuthStatus status;
   final CurrentUser? user;
   final String? errorMessage;
+  final bool isDemo;
 
   bool get isAuthenticated =>
       status == AuthStatus.authenticated && user != null;
+  bool get isRealSession => isAuthenticated && !isDemo;
   UserRole? get activeRole => user?.role;
   UserRole? get role => user?.role;
 }

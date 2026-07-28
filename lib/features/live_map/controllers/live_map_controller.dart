@@ -39,6 +39,7 @@ class LiveMapController extends StateNotifier<LiveMapState> {
         super(const LiveMapState.initial());
 
   static const String _superadminScope = 'superadmin';
+  static const String _demoScope = 'demo';
   static const int _maxImeisPerSocketSubscription = 5000;
   static const int _alertBootstrapLimit = 50;
   static const int _maxAlerts = 300;
@@ -147,7 +148,10 @@ class LiveMapController extends StateNotifier<LiveMapState> {
     }
 
     try {
-      final connection = await _socketService.connect('/telemetry');
+      final connection = await _socketService.connect(
+        _config.telemetryNamespace,
+        authenticated: _config.socketAuthenticationRequired,
+      );
       if (!mounted) {
         connection.disconnect();
         return;
@@ -180,8 +184,18 @@ class LiveMapController extends StateNotifier<LiveMapState> {
   }
 
   Future<void> _connectNotificationsSocket() async {
+    final namespace = _config.notificationNamespace;
+    if (namespace == null ||
+        _config.notificationSubscribeMode ==
+            LiveMapNotificationSubscribeMode.disabled) {
+      return;
+    }
+
     try {
-      final connection = await _socketService.connect('/notifications');
+      final connection = await _socketService.connect(
+        namespace,
+        authenticated: _config.socketAuthenticationRequired,
+      );
       if (!mounted) {
         connection.disconnect();
         return;
@@ -625,6 +639,17 @@ class LiveMapController extends StateNotifier<LiveMapState> {
           );
         }
         _lastSentTelemetrySubscriptionHash = hash;
+        return;
+      case LiveMapTelemetrySubscribeMode.demoScope:
+        const hash = 'scope:demo';
+        if (hash == _lastSentTelemetrySubscriptionHash) {
+          return;
+        }
+        connection.emit(
+          'telemetry:subscribe',
+          const <String, dynamic>{'scope': _demoScope},
+        );
+        _lastSentTelemetrySubscriptionHash = hash;
     }
   }
 
@@ -671,6 +696,9 @@ class LiveMapController extends StateNotifier<LiveMapState> {
           );
         }
         _lastSentNotificationSubscriptionHash = hash;
+        return;
+      case LiveMapNotificationSubscribeMode.disabled:
+        return;
     }
   }
 

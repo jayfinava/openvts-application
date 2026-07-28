@@ -82,8 +82,12 @@ final liveMapControllerProvider =
 /// Role-map socket facade used by drawer widgets without reading core services.
 final liveMapSocketControllerProvider = Provider<LiveMapSocketController>(
   (ref) {
-    return LiveMapSocketController(ref.watch(socketServiceProvider));
+    return LiveMapSocketController(
+      ref.watch(socketServiceProvider),
+      ref.watch(currentLiveMapConfigProvider),
+    );
   },
+  dependencies: <ProviderOrFamily>[currentLiveMapConfigProvider],
 );
 
 /// Role-aware vehicle-details lookup keyed by IMEI.

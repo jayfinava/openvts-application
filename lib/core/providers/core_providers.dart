@@ -9,6 +9,9 @@ import '../api/interceptors/error_interceptor.dart';
 import '../api/interceptors/logging_interceptor.dart';
 import '../api/interceptors/refresh_token_interceptor.dart';
 import '../config/app_config.dart';
+import '../demo/demo_api_policy.dart';
+import '../demo/demo_mode_store.dart';
+import '../demo/demo_session_service.dart';
 import '../notifications/mobile_push_controller.dart';
 import '../notifications/mobile_push_service.dart';
 import '../notifications/mobile_push_state.dart';
@@ -33,6 +36,10 @@ final tokenStorageProvider = Provider<TokenStorage>((ref) {
 final localCacheProvider = Provider<LocalCache>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
   return LocalCache(prefs);
+});
+
+final demoModeStoreProvider = Provider<DemoModeStore>((ref) {
+  return DemoModeStore(ref.watch(localCacheProvider));
 });
 
 final themeModeProvider =
@@ -89,7 +96,15 @@ class _BodylessDeleteContentTypeInterceptor extends Interceptor {
 }
 
 final apiClientProvider = Provider<ApiClient>((ref) {
-  return ApiClient(ref.watch(dioProvider));
+  final demoModeStore = ref.watch(demoModeStoreProvider);
+  return ApiClient(
+    ref.watch(dioProvider),
+    demoPolicy: DemoApiPolicy(isDemoMode: () => demoModeStore.isEnabled),
+  );
+});
+
+final demoSessionServiceProvider = Provider<DemoSessionService>((ref) {
+  return DemoSessionService(ref.watch(apiClientProvider));
 });
 
 final mobilePushServiceProvider = Provider<MobilePushService>((ref) {

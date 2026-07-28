@@ -28,7 +28,7 @@ class MobilePushNavigation {
 
   Future<void> handleNotificationTap(MobilePushMessage message) async {
     final authState = _ref.read(authControllerProvider);
-    if (!authState.isAuthenticated || authState.activeRole == null) {
+    if (!authState.isRealSession || authState.activeRole == null) {
       await storePendingTap(message);
       return;
     }
@@ -39,7 +39,7 @@ class MobilePushNavigation {
 
   Future<void> consumePendingNotificationTapIfPossible() async {
     final authState = _ref.read(authControllerProvider);
-    if (!authState.isAuthenticated || authState.activeRole == null) {
+    if (!authState.isRealSession || authState.activeRole == null) {
       return;
     }
 
@@ -138,7 +138,7 @@ class MobilePushNavigation {
       }
 
       final latestAuthState = _ref.read(authControllerProvider);
-      if (!latestAuthState.isAuthenticated ||
+      if (!latestAuthState.isRealSession ||
           latestAuthState.activeRole != activeRole) {
         await storePendingTap(message);
         return;

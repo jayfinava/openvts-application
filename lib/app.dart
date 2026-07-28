@@ -103,13 +103,13 @@ class _MobilePushLifecycleScopeState
         final authState = ref.read(authControllerProvider);
         final controller = ref.read(mobilePushControllerProvider.notifier);
         controller.updateAuthenticationState(
-          isAuthenticated: authState.isAuthenticated,
+          isAuthenticated: authState.isRealSession,
         );
         // Hydrate cached push state only. Do not trigger remote config
         // fetches or token registration at cold startup — those are gated
         // and performed only after auth/session restore when allowed.
         unawaited(controller.initializeAfterAppStart());
-        if (authState.isAuthenticated) {
+        if (authState.isRealSession) {
           unawaited(
             _mobilePushNavigation.consumePendingNotificationTapIfPossible(),
           );
@@ -132,7 +132,7 @@ class _MobilePushLifecycleScopeState
     ref.listen<AuthState>(authControllerProvider, (previous, next) {
       final controller = ref.read(mobilePushControllerProvider.notifier);
       controller.updateAuthenticationState(
-        isAuthenticated: next.isAuthenticated,
+        isAuthenticated: next.isRealSession,
       );
 
       if (_shouldRegisterForAuthChange(previous, next)) {
@@ -142,7 +142,7 @@ class _MobilePushLifecycleScopeState
           unawaited(controller.registerTokenForCurrentSession());
         }
       }
-      if (next.isAuthenticated) {
+      if (next.isRealSession) {
         unawaited(
           _mobilePushNavigation.consumePendingNotificationTapIfPossible(),
         );
@@ -156,23 +156,23 @@ class _MobilePushLifecycleScopeState
     final authState = ref.read(authControllerProvider);
     final controller = ref.read(mobilePushControllerProvider.notifier);
     controller.updateAuthenticationState(
-      isAuthenticated: authState.isAuthenticated,
+      isAuthenticated: authState.isRealSession,
     );
 
     // Resume path must not await network work and should only attempt
     // fire-and-forget registration when cached gating allows it.
-    if (authState.isAuthenticated &&
+    if (authState.isRealSession &&
         controller.shouldAttemptBackgroundRegistration) {
       unawaited(controller.registerTokenForCurrentSession());
     }
   }
 
   bool _shouldRegisterForAuthChange(AuthState? previous, AuthState next) {
-    if (!next.isAuthenticated) {
+    if (!next.isRealSession) {
       return false;
     }
 
-    return previous?.isAuthenticated != true ||
+    return previous?.isRealSession != true ||
         previous?.user?.id != next.user?.id ||
         previous?.activeRole != next.activeRole;
   }
