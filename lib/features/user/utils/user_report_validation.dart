@@ -16,24 +16,32 @@ Map<String, String> validateReportQuery({
   final errors = <String, String>{};
 
   // --- Vehicle scope ---
+  // Sensor and logs have inline vehicle pickers that report to their own keys.
+  // All other reports use the shared scope selector keyed as 'scope'.
+  final vehicleKey = switch (reportKey) {
+    UserReportKey.sensor => 'sensorVehicle',
+    UserReportKey.logs => 'logsVehicle',
+    _ => 'scope',
+  };
+
   if (reportKey.requiresSingleVehicle) {
     if (scope.mode != ReportScopeMode.single ||
         (scope.vehicleId?.isEmpty ?? true)) {
-      errors['vehicle'] = 'reportsValidationSingleVehicleRequired';
+      errors[vehicleKey] = 'reportsValidationSingleVehicleRequired';
     }
   } else {
     switch (scope.mode) {
       case ReportScopeMode.single:
         if (scope.vehicleId?.isEmpty ?? true) {
-          errors['vehicle'] = 'reportsValidationSelectVehicle';
+          errors[vehicleKey] = 'reportsValidationSelectVehicle';
         }
       case ReportScopeMode.multiple:
         if (scope.vehicleIds.isEmpty) {
-          errors['vehicle'] = 'reportsValidationSelectAtLeastOne';
+          errors[vehicleKey] = 'reportsValidationSelectAtLeastOne';
         }
       case ReportScopeMode.group:
         if (scope.groupId?.isEmpty ?? true) {
-          errors['vehicle'] = 'reportsValidationSelectGroup';
+          errors[vehicleKey] = 'reportsValidationSelectGroup';
         }
       case ReportScopeMode.all:
         break;
@@ -96,7 +104,7 @@ Map<String, String> validateReportQuery({
   // --- Report-specific ---
   if (reportKey == UserReportKey.sensor) {
     if (sensorFilters.sensorIds.isEmpty) {
-      errors['sensor'] = 'reportsValidationSelectSensor';
+      errors['sensorSensor'] = 'reportsValidationSelectSensor';
     }
   }
 

@@ -338,7 +338,7 @@ void main() {
         sensorFilters: const SensorFilters(sensorIds: ['s1']),
         timelineFilters: const TimelineFilters(states: ['running']),
       );
-      expect(errors, containsPair('vehicle', isNotEmpty));
+      expect(errors, containsPair('sensorVehicle', isNotEmpty));
     });
 
     test('single-vehicle report with correct single scope → no vehicle error',
@@ -351,7 +351,7 @@ void main() {
         sensorFilters: const SensorFilters(sensorIds: ['s1']),
         timelineFilters: const TimelineFilters(states: ['running']),
       );
-      expect(errors.containsKey('vehicle'), isFalse);
+      expect(errors.containsKey('sensorVehicle'), isFalse);
     });
 
     test('sensor report with empty sensorIds → error on sensor', () {
@@ -363,7 +363,7 @@ void main() {
         sensorFilters: const SensorFilters(sensorIds: []),
         timelineFilters: const TimelineFilters(states: ['running']),
       );
-      expect(errors, containsPair('sensor', isNotEmpty));
+      expect(errors, containsPair('sensorSensor', isNotEmpty));
     });
 
     test('empty start date → error on startDate', () {

@@ -382,6 +382,7 @@ class _ExtraFilters extends StatelessWidget {
           filters: state.geofenceFilters,
           onChanged: notifier.setGeofenceFilters,
           geofences: state.geofences,
+          isLoading: state.isLoadingGeofences,
           disabled: disabled,
         ),
       UserReportKey.sensor => UserSensorReportFilter(
@@ -396,6 +397,7 @@ class _ExtraFilters extends StatelessWidget {
             }
           },
           onFiltersChanged: notifier.setSensorFilters,
+          isLoadingSensors: state.isLoadingSensors,
           disabled: disabled,
           vehicleError: state.validationErrors['sensorVehicle'],
           sensorError: state.validationErrors['sensorSensor'],
@@ -413,6 +415,7 @@ class _ExtraFilters extends StatelessWidget {
             if (id != null) notifier.setScope(ReportVehicleScope.single(id));
           },
           onFiltersChanged: notifier.setLogsFilters,
+          vehicleError: state.validationErrors['logsVehicle'],
           disabled: disabled,
         ),
       UserReportKey.timeline => UserTimelineReportFilter(
