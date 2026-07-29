@@ -89,8 +89,7 @@ void main() {
     expect(
       preferences.geofenceMatrix.every(
         (entry) =>
-            <int>{1, 2}.contains(entry.vehicleId) &&
-            entry.geofenceId == 1,
+            <int>{1, 2}.contains(entry.vehicleId) && entry.geofenceId == 1,
       ),
       isTrue,
     );

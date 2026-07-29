@@ -23,12 +23,11 @@ class ApiClient {
     required T Function(dynamic json) parser,
   }) {
     return OpenVtsPerf.traceAsync(_apiPerfLabel('GET', endpoint), () async {
-      final resolution =
-          _demoPolicy?.resolveGet(endpoint, queryParameters) ??
-              DemoGetResolution.remote(
-                endpoint: endpoint,
-                queryParameters: queryParameters,
-              );
+      final resolution = _demoPolicy?.resolveGet(endpoint, queryParameters) ??
+          DemoGetResolution.remote(
+            endpoint: endpoint,
+            queryParameters: queryParameters,
+          );
       if (resolution.hasLocalPayload) {
         return _parseLocalResponse(
           resolution.adapt(resolution.localPayload),

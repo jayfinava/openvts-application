@@ -1078,7 +1078,9 @@ class _VisibilityPill extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            isVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+            isVisible
+                ? Icons.visibility_outlined
+                : Icons.visibility_off_outlined,
             size: 12,
             color: pillColor,
           ),

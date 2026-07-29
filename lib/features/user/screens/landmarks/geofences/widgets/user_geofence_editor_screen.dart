@@ -533,8 +533,7 @@ class _EditorTopBar extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
     final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor =
-        isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(
@@ -608,8 +607,7 @@ class _ModeToggleBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final borderColor =
-        isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
 
     return Container(
       decoration: BoxDecoration(
@@ -676,8 +674,9 @@ class _ModeChip extends StatelessWidget {
         isDark ? OpenVtsColors.brandInk : OpenVtsColors.textPrimary;
     final selectedTextColor =
         isDark ? OpenVtsColors.white : OpenVtsColors.white;
-    final unselectedTextColor =
-        isDark ? Theme.of(context).colorScheme.onSurface : OpenVtsColors.textPrimary;
+    final unselectedTextColor = isDark
+        ? Theme.of(context).colorScheme.onSurface
+        : OpenVtsColors.textPrimary;
 
     return InkWell(
       onTap: onTap,
@@ -741,8 +740,7 @@ class _EditorMapControls extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final borderColor =
-        isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
 
     return Container(
       decoration: BoxDecoration(
@@ -866,8 +864,7 @@ class _BottomEditorPanel extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
     final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor =
-        isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
 
     return Container(
       decoration: BoxDecoration(
@@ -966,8 +963,7 @@ class _CircleControlsState extends State<_CircleControls> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor =
-        isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
     final value = widget.state.circleRadiusM ?? 0;
 
     return Column(
@@ -1081,8 +1077,7 @@ class _LineControlsState extends State<_LineControls> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor =
-        isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
     final value = widget.state.toleranceM ?? 0;
 
     return Row(
@@ -1250,7 +1245,8 @@ class _NudgeBtn extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.textPrimary;
     final iconColor = isDark ? OpenVtsColors.white : OpenVtsColors.white;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
 
     return Padding(
       padding: const EdgeInsets.only(left: 4),
@@ -1304,8 +1300,7 @@ class _SearchBar extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
     final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor =
-        isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
     final hintColor = isDark
         ? OpenVtsColors.white.withValues(alpha: 0.6)
         : OpenVtsColors.textSecondary;
@@ -1355,16 +1350,17 @@ class _SearchBar extends StatelessWidget {
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
                               isDark
-                                  ? OpenVtsColors.brandInk.withValues(alpha: 0.6)
-                                  : OpenVtsColors.textPrimary.withValues(alpha: 0.6),
+                                  ? OpenVtsColors.brandInk
+                                      .withValues(alpha: 0.6)
+                                  : OpenVtsColors.textPrimary
+                                      .withValues(alpha: 0.6),
                             ),
                           ),
                         ),
                       )
                     : controller.text.isNotEmpty
                         ? IconButton(
-                            icon: Icon(Icons.close,
-                                size: 18, color: textColor),
+                            icon: Icon(Icons.close, size: 18, color: textColor),
                             onPressed: () {
                               controller.clear();
                               onSearch();
@@ -1382,8 +1378,7 @@ class _SearchBar extends StatelessWidget {
               constraints: const BoxConstraints(maxHeight: 200),
               decoration: BoxDecoration(
                 border: Border(
-                  top: BorderSide(
-                      color: borderColor.withValues(alpha: 0.3)),
+                  top: BorderSide(color: borderColor.withValues(alpha: 0.3)),
                 ),
               ),
               child: ListView.builder(

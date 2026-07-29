@@ -40,18 +40,50 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
   }
 
   void setSearchQuery(String value) {
-    state = state.copyWith(searchQuery: value);
+    state = state.copyWith(
+      searchQuery: value,
+      currentPage: 1,
+      errorMessage: null,
+    );
     _applyFilters();
   }
 
   void setStatusFilter(AdminVehicleStatusFilter value) {
-    state = state.copyWith(statusFilter: value);
+    state = state.copyWith(
+      statusFilter: value,
+      currentPage: 1,
+      errorMessage: null,
+    );
     _applyFilters();
   }
 
   void setTypeFilter(String value) {
-    state = state.copyWith(typeFilter: value);
+    state = state.copyWith(
+      typeFilter: value,
+      currentPage: 1,
+      errorMessage: null,
+    );
     _applyFilters();
+  }
+
+  void setSortOption(AdminVehiclesSortOption value) {
+    state = state.copyWith(
+      sortOption: value,
+      currentPage: 1,
+      errorMessage: null,
+    );
+    _applyFilters();
+  }
+
+  void setRecordsPerPage(int value) {
+    state = state.copyWith(
+      recordsPerPage: value,
+      currentPage: 1,
+    );
+  }
+
+  void goToPage(int value) {
+    state = state.copyWith(currentPage: value);
   }
 
   void clearFilters() {
@@ -59,6 +91,7 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
       searchQuery: '',
       statusFilter: AdminVehicleStatusFilter.all,
       typeFilter: '',
+      currentPage: 1,
     );
     _applyFilters();
   }
@@ -229,7 +262,92 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
       return haystack.contains(query);
     }).toList(growable: false);
 
-    state = state.copyWith(filteredVehicles: filtered);
+    state = state.copyWith(
+      filteredVehicles: _sortVehicles(filtered, state.sortOption),
+    );
+  }
+
+  List<AdminVehicleListItem> _sortVehicles(
+    List<AdminVehicleListItem> vehicles,
+    AdminVehiclesSortOption sortOption,
+  ) {
+    if (vehicles.length < 2) {
+      return vehicles;
+    }
+
+    final sortedVehicles = vehicles.toList(growable: false);
+    switch (sortOption) {
+      case AdminVehiclesSortOption.newest:
+        sortedVehicles.sort((left, right) {
+          final dateCompare = _compareDates(
+            left.createdAt,
+            right.createdAt,
+            newestFirst: true,
+          );
+          return dateCompare != 0
+              ? dateCompare
+              : _sortName(left).compareTo(_sortName(right));
+        });
+      case AdminVehiclesSortOption.oldest:
+        sortedVehicles.sort((left, right) {
+          final dateCompare = _compareDates(
+            left.createdAt,
+            right.createdAt,
+            newestFirst: false,
+          );
+          return dateCompare != 0
+              ? dateCompare
+              : _sortName(left).compareTo(_sortName(right));
+        });
+      case AdminVehiclesSortOption.nameAz:
+        sortedVehicles.sort(
+          (left, right) => _sortName(left).compareTo(_sortName(right)),
+        );
+      case AdminVehiclesSortOption.nameZa:
+        sortedVehicles.sort(
+          (left, right) => _sortName(right).compareTo(_sortName(left)),
+        );
+      case AdminVehiclesSortOption.activeFirst:
+        sortedVehicles.sort((left, right) {
+          final statusCompare =
+              (right.isActive ? 1 : 0).compareTo(left.isActive ? 1 : 0);
+          if (statusCompare != 0) {
+            return statusCompare;
+          }
+          return _sortName(left).compareTo(_sortName(right));
+        });
+    }
+
+    return sortedVehicles;
+  }
+
+  int _compareDates(
+    DateTime? left,
+    DateTime? right, {
+    required bool newestFirst,
+  }) {
+    if (left == null && right == null) {
+      return 0;
+    }
+    if (left == null) {
+      return 1;
+    }
+    if (right == null) {
+      return -1;
+    }
+    return newestFirst ? right.compareTo(left) : left.compareTo(right);
+  }
+
+  String _sortName(AdminVehicleListItem vehicle) {
+    final name = vehicle.name.trim();
+    if (name.isNotEmpty) {
+      return name.toLowerCase();
+    }
+    final plate = vehicle.plateNumber.trim();
+    if (plate.isNotEmpty) {
+      return plate.toLowerCase();
+    }
+    return vehicle.imei.trim().toLowerCase();
   }
 
   String _errorMessage(Object error) {

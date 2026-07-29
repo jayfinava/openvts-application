@@ -328,9 +328,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     try {
       final message =
           await ref.read(authControllerProvider.notifier).resetPassword(
-            token: _tokenController.text,
-            newPassword: _passwordController.text,
-          );
+                token: _tokenController.text,
+                newPassword: _passwordController.text,
+              );
       if (!mounted) return;
       // The backend revokes every existing access/refresh token after a
       // successful reset. Clear matching local role sessions as one atomic

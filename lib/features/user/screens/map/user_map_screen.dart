@@ -21,8 +21,7 @@ class UserMapScreen extends ConsumerWidget {
       authControllerProvider.select((state) => state.isDemo),
     );
     return LiveMapScreen(
-      config:
-          isDemo ? LiveMapRoleConfig.demo() : LiveMapRoleConfig.user(),
+      config: isDemo ? LiveMapRoleConfig.demo() : LiveMapRoleConfig.user(),
     );
   }
 }

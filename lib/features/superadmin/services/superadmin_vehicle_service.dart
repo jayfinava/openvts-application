@@ -3552,6 +3552,8 @@ const _mockVehiclesPayload = <String, dynamic>{
       'sim': '5754123841461',
       'primaryUser': <String, dynamic>{'name': 'the user'},
       'addedBy': <String, dynamic>{'name': 'mukesh Kumar'},
+      'primaryExpiry': '2026-10-15T00:00:00Z',
+      'secondaryExpiry': '2026-09-15T00:00:00Z',
       'createdAt': '2026-04-24T19:54:00Z',
     },
     <String, dynamic>{
@@ -3564,6 +3566,8 @@ const _mockVehiclesPayload = <String, dynamic>{
       'sim': '9876543211',
       'primaryUser': <String, dynamic>{'name': 'wwwwwwwwwww...'},
       'addedBy': <String, dynamic>{'name': 'mukesh Kumar'},
+      'primaryExpiry': '2026-11-04T00:00:00Z',
+      'secondaryExpiry': '2026-10-04T00:00:00Z',
       'createdAt': '2026-05-04T15:20:00Z',
     },
     <String, dynamic>{
@@ -3576,6 +3580,8 @@ const _mockVehiclesPayload = <String, dynamic>{
       'sim': '9876543211',
       'primaryUser': <String, dynamic>{'name': 'wwwwwwwwwww...'},
       'addedBy': <String, dynamic>{'name': 'mukesh Kumar'},
+      'primaryExpiry': '2026-12-04T00:00:00Z',
+      'secondaryExpiry': '2026-11-04T00:00:00Z',
       'createdAt': '2026-05-04T15:14:00Z',
     },
     <String, dynamic>{
@@ -3600,6 +3606,8 @@ const _mockVehiclesPayload = <String, dynamic>{
       'sim': '6767656766566',
       'primaryUser': <String, dynamic>{'name': 'the user'},
       'addedBy': <String, dynamic>{'name': 'mukesh Kumar'},
+      'primaryExpiry': '2026-10-21T00:00:00Z',
+      'secondaryExpiry': '2026-09-21T00:00:00Z',
       'createdAt': '2026-04-21T12:03:00Z',
     },
   ],

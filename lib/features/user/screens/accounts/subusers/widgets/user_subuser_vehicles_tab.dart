@@ -250,8 +250,10 @@ class _CompactActionButton extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: isLoading ? null : onPressed,
         style: OutlinedButton.styleFrom(
-          backgroundColor: isDarkMode ? const Color(0xFF1A1A1A) : OpenVtsColors.white,
-          foregroundColor: isDarkMode ? Colors.white : OpenVtsColors.textPrimary,
+          backgroundColor:
+              isDarkMode ? const Color(0xFF1A1A1A) : OpenVtsColors.white,
+          foregroundColor:
+              isDarkMode ? Colors.white : OpenVtsColors.textPrimary,
           side: BorderSide(
             color: isDarkMode ? const Color(0xFF333333) : OpenVtsColors.border,
           ),
@@ -381,9 +383,10 @@ class _AssignedVehicleCard extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: isUnassigning ? null : onUnassign,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : OpenVtsColors.textPrimary,
+                  foregroundColor:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : OpenVtsColors.textPrimary,
                   side: BorderSide(
                     color: Theme.of(context).brightness == Brightness.dark
                         ? const Color(0xFF333333)

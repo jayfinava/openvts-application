@@ -503,7 +503,8 @@ class _GeometrySummaryCard extends StatelessWidget {
               ),
             ),
             onPressed: onDraw,
-            icon: Icon(Icons.edit_location_alt_outlined, size: 14, color: textColor),
+            icon: Icon(Icons.edit_location_alt_outlined,
+                size: 14, color: textColor),
             label: Text(
               geodata == null ? 'Draw' : 'Edit',
               style: OpenVtsTypography.meta.copyWith(

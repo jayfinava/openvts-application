@@ -36,8 +36,7 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
   String? _groupId;
   Set<String> _multipleVehicleIds = <String>{};
   DateTime _rangeStart = _startOfToday();
-  DateTime _rangeEndExclusive =
-      _startOfToday().add(const Duration(days: 1));
+  DateTime _rangeEndExclusive = _startOfToday().add(const Duration(days: 1));
   String _acknowledged = 'all';
   Set<String> _alertTypes = <String>{};
   Set<String> _alertSeverities = <String>{};
@@ -275,8 +274,7 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
                               }),
                     ),
                   ),
-                if (_scopeMode == 'single' ||
-                    _reportKey.requiresSingleVehicle)
+                if (_scopeMode == 'single' || _reportKey.requiresSingleVehicle)
                   OutlinedButton.icon(
                     onPressed: _isGenerating
                         ? null
@@ -297,8 +295,7 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
                           : '${_multipleVehicleIds.length} vehicles selected',
                     ),
                   ),
-                if (_scopeMode == 'group' &&
-                    !_reportKey.requiresSingleVehicle)
+                if (_scopeMode == 'group' && !_reportKey.requiresSingleVehicle)
                   SizedBox(
                     width: 240,
                     child: DropdownButtonFormField<String>(
@@ -399,9 +396,8 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
         );
       case UserReportKey.geofence:
         return OutlinedButton.icon(
-          onPressed: _isGenerating || _isLoadingGeofences
-              ? null
-              : _pickGeofences,
+          onPressed:
+              _isGenerating || _isLoadingGeofences ? null : _pickGeofences,
           icon: _isLoadingGeofences
               ? const SizedBox.square(
                   dimension: 18,
@@ -455,8 +451,7 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
                   },
                   selected: _alertSeverities,
                   enabled: !_isGenerating,
-                  onChanged: (next) =>
-                      setState(() => _alertSeverities = next),
+                  onChanged: (next) => setState(() => _alertSeverities = next),
                 ),
                 SizedBox(
                   width: 240,
@@ -675,8 +670,7 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
           _sensorId = null;
           _sensors = const <UserVehicleSensor>[];
         }
-        _multipleVehicleIds =
-            _multipleVehicleIds.intersection(validVehicleIds);
+        _multipleVehicleIds = _multipleVehicleIds.intersection(validVehicleIds);
         if (!validGroupIds.contains(_groupId)) {
           _groupId = null;
         }
@@ -735,8 +729,7 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
       lastDate: DateTime.now(),
       title: 'Select ${_reportKey.label.toLowerCase()} report range',
     );
-    final normalized =
-        selected?.normalized(dateTimeEnabled: dateTimeEnabled);
+    final normalized = selected?.normalized(dateTimeEnabled: dateTimeEnabled);
     final start = normalized?.start;
     final end = normalized?.end;
     if (start == null || end == null || !mounted) return;
@@ -820,7 +813,9 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
               : vehicles
                   .where(
                     (vehicle) =>
-                        vehicle.displayName.toLowerCase().contains(normalized) ||
+                        vehicle.displayName
+                            .toLowerCase()
+                            .contains(normalized) ||
                         vehicle.imei.toLowerCase().contains(normalized),
                   )
                   .toList(growable: false);
@@ -828,8 +823,7 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
             title: Text(multiple ? 'Select vehicles' : 'Select vehicle'),
             content: SizedBox(
               width: 560,
-              height:
-                  math.min(MediaQuery.sizeOf(context).height * 0.7, 620.0),
+              height: math.min(MediaQuery.sizeOf(context).height * 0.7, 620.0),
               child: Column(
                 children: [
                   TextField(
@@ -839,8 +833,7 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
                       labelText: 'Search name, plate or IMEI',
                       prefixIcon: Icon(Icons.search_rounded),
                     ),
-                    onChanged: (value) =>
-                        setDialogState(() => query = value),
+                    onChanged: (value) => setDialogState(() => query = value),
                   ),
                   const SizedBox(height: 8),
                   Expanded(
@@ -883,8 +876,7 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
               ),
               if (multiple)
                 FilledButton(
-                  onPressed: () =>
-                      Navigator.of(dialogContext).pop(selected),
+                  onPressed: () => Navigator.of(dialogContext).pop(selected),
                   child: Text('Use ${selected.length} selected'),
                 ),
             ],
@@ -1207,11 +1199,12 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
       _errorMessage = null;
     });
     try {
-      final points = await ref.read(userReportControllerProvider).getTimelineMap(
-            vehicleId: vehicleId,
-            from: from,
-            to: to,
-          );
+      final points =
+          await ref.read(userReportControllerProvider).getTimelineMap(
+                vehicleId: vehicleId,
+                from: from,
+                to: to,
+              );
       if (!mounted) return;
       if (points.isEmpty) {
         _setError('No valid route points were recorded for this segment.');
@@ -1707,9 +1700,8 @@ String _columnLabel(String key) {
 String _formatReportValue(String key, dynamic value) {
   if (value == null) return '—';
   if (key == 'durationSeconds' || key == 'engineHoursSeconds') {
-    final seconds = value is num
-        ? value.toInt()
-        : int.tryParse(value.toString()) ?? 0;
+    final seconds =
+        value is num ? value.toInt() : int.tryParse(value.toString()) ?? 0;
     final duration = Duration(seconds: math.max(0, seconds));
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);

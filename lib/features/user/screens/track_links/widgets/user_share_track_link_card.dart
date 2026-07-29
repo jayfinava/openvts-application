@@ -72,7 +72,9 @@ class UserShareTrackLinkCard extends ConsumerWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
-                        color: isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary,
+                        color: isDark
+                            ? OpenVtsColors.white
+                            : OpenVtsColors.textPrimary,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -84,7 +86,9 @@ class UserShareTrackLinkCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: isDark ? OpenVtsColors.white : OpenVtsColors.textSecondary,
+                        color: isDark
+                            ? OpenVtsColors.white
+                            : OpenVtsColors.textSecondary,
                         fontFamily: 'monospace',
                         fontWeight: FontWeight.w700,
                       ),
@@ -233,7 +237,8 @@ class _ActionIconButton extends StatelessWidget {
         child: IconButton(
           onPressed: onPressed,
           icon: Icon(icon, size: 17),
-          color: color ?? (isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary),
+          color: color ??
+              (isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary),
           disabledColor: OpenVtsColors.textTertiary.withValues(alpha: 0.58),
           padding: EdgeInsets.zero,
           visualDensity: VisualDensity.compact,

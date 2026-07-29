@@ -375,12 +375,9 @@ class _TicketFormActionBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDark
-        ? colorScheme.surface
-        : const Color(0xFFF5F5F5);
-    final borderColor = isDark
-        ? colorScheme.outline
-        : const Color(0xFFE0E0E0);
+    final backgroundColor =
+        isDark ? colorScheme.surface : const Color(0xFFF5F5F5);
+    final borderColor = isDark ? colorScheme.outline : const Color(0xFFE0E0E0);
 
     return SafeArea(
       top: false,

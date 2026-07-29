@@ -1285,4 +1285,3 @@ Color _statusColor(AdminSupportTicketStatus status) {
       return OpenVtsColors.textTertiary;
   }
 }
-

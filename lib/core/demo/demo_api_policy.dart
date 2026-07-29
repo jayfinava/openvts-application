@@ -37,8 +37,7 @@ class DemoApiPolicy {
   const DemoApiPolicy({required bool Function() isDemoMode})
       : _isDemoMode = isDemoMode;
 
-  static const restrictedMessage =
-      'This action is restricted in demo mode.';
+  static const restrictedMessage = 'This action is restricted in demo mode.';
 
   final bool Function() _isDemoMode;
 
@@ -437,8 +436,7 @@ class DemoApiPolicy {
           (_asInt(right['id']) ?? 0).compareTo(_asInt(left['id']) ?? 0),
     );
 
-    final requestedLimit =
-        (_asInt(query['limit']) ?? 20).clamp(1, 100).toInt();
+    final requestedLimit = (_asInt(query['limit']) ?? 20).clamp(1, 100).toInt();
     final hasMore = filtered.length > requestedLimit;
     final pageItems = filtered.take(requestedLimit).toList(growable: false);
     final unreadCount =
@@ -447,9 +445,8 @@ class DemoApiPolicy {
     return <String, dynamic>{
       'items': pageItems,
       'hasMore': hasMore,
-      'nextBeforeId': hasMore && pageItems.isNotEmpty
-          ? pageItems.last['id']
-          : null,
+      'nextBeforeId':
+          hasMore && pageItems.isNotEmpty ? pageItems.last['id'] : null,
       'unreadCount': unreadCount,
     };
   }
@@ -494,11 +491,8 @@ class DemoApiPolicy {
     }).toList(growable: false);
 
     final statusFilter = query['status']?.toString().trim().toUpperCase() ?? '';
-    final search = (query['q'] ?? query['search'])
-            ?.toString()
-            .trim()
-            .toLowerCase() ??
-        '';
+    final search =
+        (query['q'] ?? query['search'])?.toString().trim().toLowerCase() ?? '';
     final from = query['from']?.toString().trim() ?? '';
     final to = query['to']?.toString().trim() ?? '';
     final filtered = invoices.where((item) {
@@ -545,11 +539,8 @@ class DemoApiPolicy {
         .toList(growable: false);
 
     final status = query['status']?.toString().trim().toUpperCase() ?? '';
-    final search = (query['search'] ?? query['q'])
-            ?.toString()
-            .trim()
-            .toLowerCase() ??
-        '';
+    final search =
+        (query['search'] ?? query['q'])?.toString().trim().toLowerCase() ?? '';
     tickets = tickets.where((ticket) {
       if (status.isNotEmpty &&
           ticket['status']?.toString().toUpperCase() != status) {
@@ -588,8 +579,7 @@ class DemoApiPolicy {
             : 'OPEN';
     final messages = _asList(source['messages']).map((rawMessage) {
       final message = _asMap(rawMessage);
-      final senderName =
-          message['sender']?.toString().trim() ?? 'Support Team';
+      final senderName = message['sender']?.toString().trim() ?? 'Support Team';
       final fromDemoUser = senderName == 'Demo Fleet Manager';
       return <String, dynamic>{
         ...message,
@@ -640,11 +630,8 @@ class DemoApiPolicy {
     required List<String> searchKeys,
   }) {
     final source = _asMap(payload);
-    final search = (query['search'] ?? query['q'])
-            ?.toString()
-            .trim()
-            .toLowerCase() ??
-        '';
+    final search =
+        (query['search'] ?? query['q'])?.toString().trim().toLowerCase() ?? '';
     final filtered = _asList(source[sourceKey]).where((raw) {
       if (search.isEmpty) {
         return true;

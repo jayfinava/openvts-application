@@ -52,10 +52,7 @@ class PlatformTimeZone {
     if (customOffset != null) {
       final hours = int.tryParse(customOffset.group(2) ?? '');
       final minutes = int.tryParse(customOffset.group(3) ?? '0');
-      if (hours != null &&
-          minutes != null &&
-          hours <= 23 &&
-          minutes <= 59) {
+      if (hours != null && minutes != null && hours <= 23 && minutes <= 59) {
         return '${customOffset.group(1)}'
             '${hours.toString().padLeft(2, '0')}:'
             '${minutes.toString().padLeft(2, '0')}';

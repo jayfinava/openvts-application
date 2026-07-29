@@ -1,6 +1,31 @@
+import 'dart:math' as math;
+
 import 'admin_vehicle_model.dart';
 
 enum AdminVehicleStatusFilter { all, active, inactive, licenseBlocked }
+
+enum AdminVehiclesSortOption {
+  newest,
+  oldest,
+  nameAz,
+  nameZa,
+  activeFirst;
+
+  String get label {
+    switch (this) {
+      case AdminVehiclesSortOption.newest:
+        return 'Newest first';
+      case AdminVehiclesSortOption.oldest:
+        return 'Oldest first';
+      case AdminVehiclesSortOption.nameAz:
+        return 'Name A-Z';
+      case AdminVehiclesSortOption.nameZa:
+        return 'Name Z-A';
+      case AdminVehiclesSortOption.activeFirst:
+        return 'Active first';
+    }
+  }
+}
 
 enum AdminVehicleDetailsTab {
   details,
@@ -20,6 +45,9 @@ class AdminVehiclesState {
     required this.searchQuery,
     required this.statusFilter,
     required this.typeFilter,
+    required this.sortOption,
+    required this.recordsPerPage,
+    required this.currentPage,
     required this.isLoading,
     required this.isRefreshing,
     required this.isCreating,
@@ -34,6 +62,9 @@ class AdminVehiclesState {
         searchQuery: '',
         statusFilter: AdminVehicleStatusFilter.all,
         typeFilter: '',
+        sortOption: AdminVehiclesSortOption.newest,
+        recordsPerPage: 10,
+        currentPage: 1,
         isLoading: false,
         isRefreshing: false,
         isCreating: false,
@@ -47,12 +78,38 @@ class AdminVehiclesState {
   final String searchQuery;
   final AdminVehicleStatusFilter statusFilter;
   final String typeFilter;
+  final AdminVehiclesSortOption sortOption;
+  final int recordsPerPage;
+  final int currentPage;
   final bool isLoading;
   final bool isRefreshing;
   final bool isCreating;
   final Set<String> updatingIds;
   final Set<String> deletingIds;
   final String? errorMessage;
+
+  bool get hasActiveFilters =>
+      searchQuery.trim().isNotEmpty ||
+      statusFilter != AdminVehicleStatusFilter.all ||
+      typeFilter.trim().isNotEmpty;
+
+  int get filteredCount => filteredVehicles.length;
+
+  int get pageCount =>
+      math.max<int>(1, (filteredCount / recordsPerPage).ceil());
+
+  int get safeCurrentPage => currentPage.clamp(1, pageCount);
+
+  List<AdminVehicleListItem> get visibleVehicles {
+    final start = (safeCurrentPage - 1) * recordsPerPage;
+    if (start >= filteredCount) {
+      return const <AdminVehicleListItem>[];
+    }
+    return filteredVehicles
+        .skip(start)
+        .take(recordsPerPage)
+        .toList(growable: false);
+  }
 
   static const Object _unset = Object();
 
@@ -62,6 +119,9 @@ class AdminVehiclesState {
     String? searchQuery,
     AdminVehicleStatusFilter? statusFilter,
     String? typeFilter,
+    AdminVehiclesSortOption? sortOption,
+    int? recordsPerPage,
+    int? currentPage,
     bool? isLoading,
     bool? isRefreshing,
     bool? isCreating,
@@ -75,6 +135,9 @@ class AdminVehiclesState {
       searchQuery: searchQuery ?? this.searchQuery,
       statusFilter: statusFilter ?? this.statusFilter,
       typeFilter: typeFilter ?? this.typeFilter,
+      sortOption: sortOption ?? this.sortOption,
+      recordsPerPage: recordsPerPage ?? this.recordsPerPage,
+      currentPage: currentPage ?? this.currentPage,
       isLoading: isLoading ?? this.isLoading,
       isRefreshing: isRefreshing ?? this.isRefreshing,
       isCreating: isCreating ?? this.isCreating,

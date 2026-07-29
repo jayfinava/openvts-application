@@ -453,7 +453,8 @@ class _ActiveToggle extends StatelessWidget {
     final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
     final toggleBgOn = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
     final toggleBgOff = isDark ? const Color(0xFF555555) : OpenVtsColors.border;
-    final toggleThumbColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
+    final toggleThumbColor =
+        isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
     final toggleThumbBorder =
         isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
 
@@ -512,8 +513,7 @@ class _ActiveToggle extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: toggleThumbColor,
                       borderRadius: BorderRadius.circular(12),
-                      border:
-                          Border.all(color: toggleThumbBorder, width: 1),
+                      border: Border.all(color: toggleThumbBorder, width: 1),
                     ),
                     child: Icon(
                       Icons.check,
@@ -560,16 +560,20 @@ class _RouteAlertSection extends StatelessWidget {
     final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
     final toggleBgOn = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
     final toggleBgOff = isDark ? const Color(0xFF555555) : OpenVtsColors.border;
-    final toggleThumbColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
+    final toggleThumbColor =
+        isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
     final toggleThumbBorder =
         isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final chipBgUnselected =
-        isDark ? OpenVtsColors.white.withValues(alpha: 0.1) : OpenVtsColors.border;
+    final chipBgUnselected = isDark
+        ? OpenVtsColors.white.withValues(alpha: 0.1)
+        : OpenVtsColors.border;
     final chipBgSelected =
         isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final chipTextSelected = isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
-    final chipBorderUnselected =
-        isDark ? OpenVtsColors.white.withValues(alpha: 0.5) : OpenVtsColors.border;
+    final chipTextSelected =
+        isDark ? OpenVtsColors.brandInk : OpenVtsColors.white;
+    final chipBorderUnselected = isDark
+        ? OpenVtsColors.white.withValues(alpha: 0.5)
+        : OpenVtsColors.border;
     final chipBorderSelected = isDark ? OpenVtsColors.white : borderColor;
 
     return Container(
@@ -674,7 +678,8 @@ class _RouteAlertSection extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                   side: BorderSide(
-                    color: isSelected ? chipBorderSelected : chipBorderUnselected,
+                    color:
+                        isSelected ? chipBorderSelected : chipBorderUnselected,
                   ),
                 );
               }).toList(),
@@ -703,7 +708,8 @@ class _RouteAlertSection extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                   side: BorderSide(
-                    color: isSelected ? chipBorderSelected : chipBorderUnselected,
+                    color:
+                        isSelected ? chipBorderSelected : chipBorderUnselected,
                   ),
                 );
               }).toList(),

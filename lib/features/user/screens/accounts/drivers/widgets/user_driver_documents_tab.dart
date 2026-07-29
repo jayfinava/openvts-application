@@ -622,9 +622,8 @@ class _MetaPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final displayColor = isDarkMode && color == OpenVtsColors.brandInk
-        ? Colors.white
-        : color;
+    final displayColor =
+        isDarkMode && color == OpenVtsColors.brandInk ? Colors.white : color;
     return Container(
       constraints: const BoxConstraints(maxWidth: 260),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

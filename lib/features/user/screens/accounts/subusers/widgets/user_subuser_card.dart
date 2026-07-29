@@ -142,18 +142,22 @@ class UserSubUserCard extends ConsumerWidget {
                   scale: 0.88,
                   child: Switch.adaptive(
                     value: isActive,
-                    activeThumbColor: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : OpenVtsColors.brandInk,
-                    activeTrackColor: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white.withValues(alpha: 0.4)
-                        : OpenVtsColors.brandInk.withValues(alpha: 0.35),
-                    inactiveThumbColor: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : OpenVtsColors.textTertiary,
-                    inactiveTrackColor: Theme.of(context).brightness == Brightness.dark
-                        ? const Color(0xFF333333)
-                        : null,
+                    activeThumbColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : OpenVtsColors.brandInk,
+                    activeTrackColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white.withValues(alpha: 0.4)
+                            : OpenVtsColors.brandInk.withValues(alpha: 0.35),
+                    inactiveThumbColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : OpenVtsColors.textTertiary,
+                    inactiveTrackColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF333333)
+                            : null,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     onChanged: onToggleStatus,
                   ),

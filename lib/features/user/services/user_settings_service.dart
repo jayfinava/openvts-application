@@ -427,8 +427,7 @@ class UserSettingsService {
           if (line2.isNotEmpty) line2,
           if (address['city'] != null) address['city'].toString(),
           if (address['state'] != null) address['state'].toString(),
-          if (address['postalCode'] != null)
-            address['postalCode'].toString(),
+          if (address['postalCode'] != null) address['postalCode'].toString(),
         ].join(', '),
       },
     };

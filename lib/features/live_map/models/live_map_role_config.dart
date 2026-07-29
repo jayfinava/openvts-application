@@ -269,8 +269,7 @@ class LiveMapRoleConfig {
       mapEventsEndpoint: '$base/map-events',
       vehicleDetailsByImei: (imei) =>
           '$base/vehicles/by-imei/${_e(imei)}/details',
-      vehicleLogsByImei: (imei) =>
-          '$base/vehicles/by-imei/${_e(imei)}/logs',
+      vehicleLogsByImei: (imei) => '$base/vehicles/by-imei/${_e(imei)}/logs',
       vehicleEventsByImei: (imei) =>
           '$base/vehicles/by-imei/${_e(imei)}/events',
       vehicleHistoryByImei: (imei) =>
@@ -279,16 +278,14 @@ class LiveMapRoleConfig {
           '$base/vehicles/by-imei/${_e(imei)}/replay',
       vehicleSensorsByImei: (imei) =>
           '$base/vehicles/by-imei/${_e(imei)}/sensors',
-      vehicleTrailByImei: (imei) =>
-          '$base/vehicles/by-imei/${_e(imei)}/trail',
+      vehicleTrailByImei: (imei) => '$base/vehicles/by-imei/${_e(imei)}/trail',
       geofencesEndpoint: '$base/geofences',
       poisEndpoint: '$base/pois',
       routesEndpoint: '$base/routes',
       customCommandsEndpoint: '$base/customcommands',
       systemVariablesEndpoint: '$base/systemvariables',
       userSendCommandBulkEndpoint: '/user/commands/send-bulk',
-      commandStatusByCmdId: (cmdId) =>
-          '$base/commands/status/${_e(cmdId)}',
+      commandStatusByCmdId: (cmdId) => '$base/commands/status/${_e(cmdId)}',
       userCommandHistoryByVehicleId: (vehicleId) =>
           '$base/vehicles/${_e(vehicleId)}/commands',
       commandLogByCmdId: (cmdId) => '$base/commands/${_e(cmdId)}',
