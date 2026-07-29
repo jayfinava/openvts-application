@@ -1210,6 +1210,55 @@ void main() {
       expect(countDateRangeDays('2026-07-15', '2026-07-10'), 0);
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // 14. columnLabels getter
+  // ---------------------------------------------------------------------------
+
+  group('UserReportKeyMetadata.columnLabels', () {
+    test('vehicleName maps to "Vehicle" across all reports', () {
+      for (final key in UserReportKey.values) {
+        expect(key.columnLabels['vehicleName'], 'Vehicle',
+            reason: '${key.name} should label vehicleName as Vehicle');
+      }
+    });
+
+    test('distance report has distanceKm label', () {
+      expect(UserReportKey.distance.columnLabels['distanceKm'], 'Distance (km)');
+    });
+
+    test('alerts report has alertType and severity labels', () {
+      final labels = UserReportKey.alerts.columnLabels;
+      expect(labels['alertType'], 'Alert Type');
+      expect(labels['severity'], 'Severity');
+      expect(labels['acknowledged'], 'Acknowledged');
+    });
+
+    test('sensor report has sensorLabel and value labels', () {
+      final labels = UserReportKey.sensor.columnLabels;
+      expect(labels['sensorLabel'], 'Sensor');
+      expect(labels['value'], 'Value');
+      expect(labels['unit'], 'Unit');
+    });
+
+    test('details report has day/night distance labels', () {
+      final labels = UserReportKey.details.columnLabels;
+      expect(labels['dayDistanceKm'], 'Day Distance (km)');
+      expect(labels['nightDistanceKm'], 'Night Distance (km)');
+      expect(labels['totalTrips'], 'Trips');
+    });
+
+    test('preferredColumns are all present in columnLabels', () {
+      for (final key in UserReportKey.values) {
+        final missing = key.preferredColumns
+            .where((col) => !key.columnLabels.containsKey(col))
+            .toList();
+        expect(missing, isEmpty,
+            reason:
+                '${key.name}: preferredColumns $missing missing from columnLabels');
+      }
+    });
+  });
 }
 
 // ---------------------------------------------------------------------------
