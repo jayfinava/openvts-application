@@ -2,7 +2,19 @@
 
 **Date:** 2026-07-29
 **Branch:** master
-**Status:** FINAL VALIDATION COMPLETE — all tasks done, analyze clean, 314/316 tests pass (2 pre-existing failures unrelated to reports)
+**Status:** WEB PARITY COMPLETE — all phases done, analyze clean, 330/332 tests pass (2 pre-existing failures unrelated to reports)
+
+## Recovery Pass Summary (2026-07-29)
+
+| Phase | Commit | Description |
+|-------|--------|-------------|
+| Phase 3+4 | 5969ffd | Sensor timestamp parity + TimelineRow.vehicleId field |
+| Phase 5 | 412689d | Nine-report parity audit (AlertRow, SensorRow, DetailsRow fixes) |
+| Phase 6 | 445bf6d | Catalog date-mode chip labels (driven/geofence/alerts → 'Date & time') |
+| Phase 7 | — | Routes/providers/API audit — no changes needed, all correct |
+| Phase 8 | 46456ff | Export column labels added to UserReportKeyMetadata |
+| Phase 9 | 4d4840b | 6 new columnLabels tests; 142 report tests total, 330/332 suite passes |
+| Phase 10 | (this) | Checkpoint updated, patch regenerated |
 
 ---
 
@@ -154,11 +166,11 @@ Formatted 659 files (0 changed) in 1.20 seconds.
 
 ### flutter test
 ```
-316 tests run — 314 passed, 2 failed.
+332 tests run — 330 passed, 2 failed.
 Failing tests (both pre-existing, unrelated to reports):
   - superadmin_map_live_controller_test.dart (compile error, pre-existing)
   - open_vts_date_time_range_selector_test.dart: "applies a date-only preset range" (pre-existing)
-New report tests: 126 passing, 0 failing.
+New report tests: 142 passing, 0 failing.
 ```
 
 ## Web Parity Audit (Final — 2026-07-29)
