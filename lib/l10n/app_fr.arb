@@ -84,5 +84,36 @@
         "type": "String"
       }
     }
-  }
+  },
+  "reportsTitle": "Rapports",
+  "reportsSearchHint": "Rechercher des rapports…",
+  "reportsNoResultsFor": "Aucun rapport trouvé pour \"{query}\"",
+  "reportsGenerate": "Générer le rapport",
+  "reportsGenerating": "Génération…",
+  "reportsReset": "Réinitialiser",
+  "reportsConfigureHint": "Configurez le rapport ci-dessus et appuyez sur Générer.",
+  "reportsNoResults": "Aucun résultat pour les filtres sélectionnés.",
+  "reportsErrorRetry": "Réessayer",
+  "reportsRowCount": "{count} lignes chargées",
+  "reportsLoadMore": "Charger plus",
+  "reportsGeneratedAt": "Généré {time}",
+  "reportsExportTitle": "Exporter le rapport",
+  "reportsExportCsv": "CSV",
+  "reportsExportXlsx": "Excel (XLSX)",
+  "reportsExportJson": "JSON",
+  "reportsExportPdf": "PDF",
+  "reportsExportHtml": "HTML",
+  "reportsScopeAll": "Tous les véhicules",
+  "reportsScopeSingle": "Un véhicule",
+  "reportsScopeMultiple": "Plusieurs véhicules",
+  "reportsScopeGroup": "Groupe",
+  "reportsCatalogDistanceTitle": "Distance",
+  "reportsCatalogDrivenTitle": "Jours conduits",
+  "reportsCatalogDetailsTitle": "Détails du véhicule",
+  "reportsCatalogOverspeedTitle": "Excès de vitesse",
+  "reportsCatalogGeofenceTitle": "Géofence",
+  "reportsCatalogAlertsTitle": "Alertes",
+  "reportsCatalogSensorTitle": "Capteur",
+  "reportsCatalogLogsTitle": "Journaux du dispositif",
+  "reportsCatalogTimelineTitle": "Chronologie"
 }

@@ -84,5 +84,36 @@
         "type": "String"
       }
     }
-  }
+  },
+  "reportsTitle": "रिपोर्ट",
+  "reportsSearchHint": "रिपोर्ट खोजें…",
+  "reportsNoResultsFor": "\"{query}\" के लिए कोई रिपोर्ट नहीं मिली",
+  "reportsGenerate": "रिपोर्ट बनाएं",
+  "reportsGenerating": "बना रहा है…",
+  "reportsReset": "रीसेट",
+  "reportsConfigureHint": "उपर रिपोर्ट कॉन्फ़िगर करें और जनरेट दबाएं।",
+  "reportsNoResults": "चुने गए फ़िल्टर के लिए कोई परिणाम नहीं मिला।",
+  "reportsErrorRetry": "पुनः प्रयास",
+  "reportsRowCount": "{count} पंक्ति लोड की गई",
+  "reportsLoadMore": "और लोड करें",
+  "reportsGeneratedAt": "{time} को बनाया गया",
+  "reportsExportTitle": "रिपोर्ट एक्सपोर्ट",
+  "reportsExportCsv": "CSV",
+  "reportsExportXlsx": "Excel (XLSX)",
+  "reportsExportJson": "JSON",
+  "reportsExportPdf": "PDF",
+  "reportsExportHtml": "HTML",
+  "reportsScopeAll": "सभी वाहन",
+  "reportsScopeSingle": "एकल वाहन",
+  "reportsScopeMultiple": "कई वाहन",
+  "reportsScopeGroup": "समूह",
+  "reportsCatalogDistanceTitle": "दूरी",
+  "reportsCatalogDrivenTitle": "चलाए गए दिन",
+  "reportsCatalogDetailsTitle": "वाहन विवरण",
+  "reportsCatalogOverspeedTitle": "ओवरस्पीड",
+  "reportsCatalogGeofenceTitle": "जियोफेंस",
+  "reportsCatalogAlertsTitle": "अलर्ट",
+  "reportsCatalogSensorTitle": "सेंसर",
+  "reportsCatalogLogsTitle": "डिवाइस लॉग",
+  "reportsCatalogTimelineTitle": "समयरेखा"
 }

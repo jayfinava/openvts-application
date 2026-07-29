@@ -471,6 +471,684 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{tab} has unsaved edits. Discarding will lose these changes.'**
   String confirmDiscardMessage(String tab);
+
+  /// No description provided for @reportsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get reportsTitle;
+
+  /// No description provided for @reportsSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search reports…'**
+  String get reportsSearchHint;
+
+  /// No description provided for @reportsNoResultsFor.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports found for \"{query}\"'**
+  String reportsNoResultsFor(Object query);
+
+  /// No description provided for @reportsGenerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Report'**
+  String get reportsGenerate;
+
+  /// No description provided for @reportsGenerating.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating…'**
+  String get reportsGenerating;
+
+  /// No description provided for @reportsReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reportsReset;
+
+  /// No description provided for @reportsConfigureHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure your report above and tap Generate.'**
+  String get reportsConfigureHint;
+
+  /// No description provided for @reportsNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found for the selected filters.'**
+  String get reportsNoResults;
+
+  /// No description provided for @reportsErrorRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get reportsErrorRetry;
+
+  /// No description provided for @reportsRowCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} rows loaded'**
+  String reportsRowCount(Object count);
+
+  /// No description provided for @reportsLoadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Load More'**
+  String get reportsLoadMore;
+
+  /// No description provided for @reportsLoadingMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading more…'**
+  String get reportsLoadingMore;
+
+  /// No description provided for @reportsGeneratedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated {time}'**
+  String reportsGeneratedAt(Object time);
+
+  /// No description provided for @reportsExportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Report'**
+  String get reportsExportTitle;
+
+  /// No description provided for @reportsExportCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'CSV'**
+  String get reportsExportCsv;
+
+  /// No description provided for @reportsExportXlsx.
+  ///
+  /// In en, this message translates to:
+  /// **'Excel (XLSX)'**
+  String get reportsExportXlsx;
+
+  /// No description provided for @reportsExportJson.
+  ///
+  /// In en, this message translates to:
+  /// **'JSON'**
+  String get reportsExportJson;
+
+  /// No description provided for @reportsExportPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF'**
+  String get reportsExportPdf;
+
+  /// No description provided for @reportsExportHtml.
+  ///
+  /// In en, this message translates to:
+  /// **'HTML'**
+  String get reportsExportHtml;
+
+  /// No description provided for @reportsScopeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All vehicles'**
+  String get reportsScopeAll;
+
+  /// No description provided for @reportsScopeSingle.
+  ///
+  /// In en, this message translates to:
+  /// **'Single vehicle'**
+  String get reportsScopeSingle;
+
+  /// No description provided for @reportsScopeMultiple.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple vehicles'**
+  String get reportsScopeMultiple;
+
+  /// No description provided for @reportsScopeGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get reportsScopeGroup;
+
+  /// No description provided for @reportsScopeSelectVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select vehicle'**
+  String get reportsScopeSelectVehicle;
+
+  /// No description provided for @reportsScopeSelectVehicles.
+  ///
+  /// In en, this message translates to:
+  /// **'Select vehicles'**
+  String get reportsScopeSelectVehicles;
+
+  /// No description provided for @reportsScopeSelectGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Select group'**
+  String get reportsScopeSelectGroup;
+
+  /// No description provided for @reportsScopeSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, plate or IMEI…'**
+  String get reportsScopeSearchHint;
+
+  /// No description provided for @reportsScopeSelectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all visible'**
+  String get reportsScopeSelectAll;
+
+  /// No description provided for @reportsScopeDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get reportsScopeDone;
+
+  /// No description provided for @reportsScopeNVehiclesSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} vehicles selected'**
+  String reportsScopeNVehiclesSelected(Object count);
+
+  /// No description provided for @reportsDateStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get reportsDateStart;
+
+  /// No description provided for @reportsDateEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'End date'**
+  String get reportsDateEnd;
+
+  /// No description provided for @reportsDateFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get reportsDateFrom;
+
+  /// No description provided for @reportsDateTo.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
+  String get reportsDateTo;
+
+  /// No description provided for @reportsDateMaxDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Max {days} days for this report type'**
+  String reportsDateMaxDays(Object days);
+
+  /// No description provided for @reportsValidationScopeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select at least one vehicle.'**
+  String get reportsValidationScopeRequired;
+
+  /// No description provided for @reportsValidationStartRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date is required.'**
+  String get reportsValidationStartRequired;
+
+  /// No description provided for @reportsValidationEndRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'End date is required.'**
+  String get reportsValidationEndRequired;
+
+  /// No description provided for @reportsValidationStartBeforeEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Start must be before end.'**
+  String get reportsValidationStartBeforeEnd;
+
+  /// No description provided for @reportsValidationMaxDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Date range exceeds the {days}-day limit for this report.'**
+  String reportsValidationMaxDays(Object days);
+
+  /// No description provided for @reportsValidationSensorVehicleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a vehicle for the sensor report.'**
+  String get reportsValidationSensorVehicleRequired;
+
+  /// No description provided for @reportsValidationSensorRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a sensor.'**
+  String get reportsValidationSensorRequired;
+
+  /// No description provided for @reportsValidationTimelineStateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one state (Running or Stopped).'**
+  String get reportsValidationTimelineStateRequired;
+
+  /// No description provided for @reportsFilterSpeedLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed limit (km/h)'**
+  String get reportsFilterSpeedLimit;
+
+  /// No description provided for @reportsFilterSpeedCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom limit…'**
+  String get reportsFilterSpeedCustom;
+
+  /// No description provided for @reportsFilterGeofenceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search geofences…'**
+  String get reportsFilterGeofenceHint;
+
+  /// No description provided for @reportsFilterGeofenceAllNote.
+  ///
+  /// In en, this message translates to:
+  /// **'No selection includes all geofences.'**
+  String get reportsFilterGeofenceAllNote;
+
+  /// No description provided for @reportsFilterAlertType.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert type'**
+  String get reportsFilterAlertType;
+
+  /// No description provided for @reportsFilterAlertSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get reportsFilterAlertSeverity;
+
+  /// No description provided for @reportsFilterAlertAck.
+  ///
+  /// In en, this message translates to:
+  /// **'Acknowledgement'**
+  String get reportsFilterAlertAck;
+
+  /// No description provided for @reportsFilterAlertAckAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get reportsFilterAlertAckAll;
+
+  /// No description provided for @reportsFilterAlertAckAcknowledged.
+  ///
+  /// In en, this message translates to:
+  /// **'Acknowledged'**
+  String get reportsFilterAlertAckAcknowledged;
+
+  /// No description provided for @reportsFilterAlertAckUnacknowledged.
+  ///
+  /// In en, this message translates to:
+  /// **'Unacknowledged'**
+  String get reportsFilterAlertAckUnacknowledged;
+
+  /// No description provided for @reportsFilterLogsVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle'**
+  String get reportsFilterLogsVehicle;
+
+  /// No description provided for @reportsFilterLogsCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get reportsFilterLogsCategory;
+
+  /// No description provided for @reportsFilterLogsLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Level'**
+  String get reportsFilterLogsLevel;
+
+  /// No description provided for @reportsFilterTimelineRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get reportsFilterTimelineRunning;
+
+  /// No description provided for @reportsFilterTimelineStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped'**
+  String get reportsFilterTimelineStopped;
+
+  /// No description provided for @reportsFilterSensorVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle'**
+  String get reportsFilterSensorVehicle;
+
+  /// No description provided for @reportsFilterSensorSensor.
+  ///
+  /// In en, this message translates to:
+  /// **'Sensor'**
+  String get reportsFilterSensorSensor;
+
+  /// No description provided for @reportsCatalogDistanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get reportsCatalogDistanceTitle;
+
+  /// No description provided for @reportsCatalogDistanceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Total distance driven per vehicle per day with engine hours and odometer readings.'**
+  String get reportsCatalogDistanceDesc;
+
+  /// No description provided for @reportsCatalogDrivenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Driven Days'**
+  String get reportsCatalogDrivenTitle;
+
+  /// No description provided for @reportsCatalogDrivenDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily distance matrix — which vehicles moved on which days and how far.'**
+  String get reportsCatalogDrivenDesc;
+
+  /// No description provided for @reportsCatalogDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Details'**
+  String get reportsCatalogDetailsTitle;
+
+  /// No description provided for @reportsCatalogDetailsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Fleet summary: total distance, engine hours, active days, last known location per vehicle.'**
+  String get reportsCatalogDetailsDesc;
+
+  /// No description provided for @reportsCatalogOverspeedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Overspeed'**
+  String get reportsCatalogOverspeedTitle;
+
+  /// No description provided for @reportsCatalogOverspeedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Speeding events with observed speed, configured limit, excess, duration, and location.'**
+  String get reportsCatalogOverspeedDesc;
+
+  /// No description provided for @reportsCatalogGeofenceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Geofence'**
+  String get reportsCatalogGeofenceTitle;
+
+  /// No description provided for @reportsCatalogGeofenceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry and exit events for selected geofences with timestamps and dwell duration.'**
+  String get reportsCatalogGeofenceDesc;
+
+  /// No description provided for @reportsCatalogAlertsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get reportsCatalogAlertsTitle;
+
+  /// No description provided for @reportsCatalogAlertsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert events by type and severity with acknowledgement status.'**
+  String get reportsCatalogAlertsDesc;
+
+  /// No description provided for @reportsCatalogSensorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sensor'**
+  String get reportsCatalogSensorTitle;
+
+  /// No description provided for @reportsCatalogSensorDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Time-series readings for a specific sensor on a single vehicle with chart visualisation.'**
+  String get reportsCatalogSensorDesc;
+
+  /// No description provided for @reportsCatalogLogsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Device Logs'**
+  String get reportsCatalogLogsTitle;
+
+  /// No description provided for @reportsCatalogLogsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Raw communication logs from vehicle devices grouped by category and level.'**
+  String get reportsCatalogLogsDesc;
+
+  /// No description provided for @reportsCatalogTimelineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get reportsCatalogTimelineTitle;
+
+  /// No description provided for @reportsCatalogTimelineDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Running and stopped segments with duration, distance, and GPS map trace per segment.'**
+  String get reportsCatalogTimelineDesc;
+
+  /// No description provided for @reportsKpiTotalDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Distance'**
+  String get reportsKpiTotalDistance;
+
+  /// No description provided for @reportsKpiEngineHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Engine Hours'**
+  String get reportsKpiEngineHours;
+
+  /// No description provided for @reportsKpiActiveVehicles.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Vehicles'**
+  String get reportsKpiActiveVehicles;
+
+  /// No description provided for @reportsKpiAvgDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Distance'**
+  String get reportsKpiAvgDistance;
+
+  /// No description provided for @reportsKpiVehiclesDriven.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicles Driven'**
+  String get reportsKpiVehiclesDriven;
+
+  /// No description provided for @reportsKpiAvgDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Daily'**
+  String get reportsKpiAvgDaily;
+
+  /// No description provided for @reportsKpiPeakDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Peak Day'**
+  String get reportsKpiPeakDay;
+
+  /// No description provided for @reportsKpiViolations.
+  ///
+  /// In en, this message translates to:
+  /// **'Violations'**
+  String get reportsKpiViolations;
+
+  /// No description provided for @reportsKpiAffectedVehicles.
+  ///
+  /// In en, this message translates to:
+  /// **'Affected Vehicles'**
+  String get reportsKpiAffectedVehicles;
+
+  /// No description provided for @reportsKpiHighestSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest Speed'**
+  String get reportsKpiHighestSpeed;
+
+  /// No description provided for @reportsKpiTotalDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Duration'**
+  String get reportsKpiTotalDuration;
+
+  /// No description provided for @reportsKpiTotalEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Events'**
+  String get reportsKpiTotalEvents;
+
+  /// No description provided for @reportsKpiEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Entries'**
+  String get reportsKpiEntries;
+
+  /// No description provided for @reportsKpiExits.
+  ///
+  /// In en, this message translates to:
+  /// **'Exits'**
+  String get reportsKpiExits;
+
+  /// No description provided for @reportsKpiTotalAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Alerts'**
+  String get reportsKpiTotalAlerts;
+
+  /// No description provided for @reportsKpiCritical.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical'**
+  String get reportsKpiCritical;
+
+  /// No description provided for @reportsKpiAcknowledged.
+  ///
+  /// In en, this message translates to:
+  /// **'Acknowledged'**
+  String get reportsKpiAcknowledged;
+
+  /// No description provided for @reportsKpiReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'Readings'**
+  String get reportsKpiReadings;
+
+  /// No description provided for @reportsKpiOnEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'ON Events'**
+  String get reportsKpiOnEvents;
+
+  /// No description provided for @reportsKpiOffEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'OFF Events'**
+  String get reportsKpiOffEvents;
+
+  /// No description provided for @reportsKpiTotalLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Logs'**
+  String get reportsKpiTotalLogs;
+
+  /// No description provided for @reportsKpiRunningDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Running Duration'**
+  String get reportsKpiRunningDuration;
+
+  /// No description provided for @reportsKpiStoppedDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped Duration'**
+  String get reportsKpiStoppedDuration;
+
+  /// No description provided for @reportsKpiMovementDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement Distance'**
+  String get reportsKpiMovementDistance;
+
+  /// No description provided for @reportsKpiStopCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop Count'**
+  String get reportsKpiStopCount;
+
+  /// No description provided for @reportsDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Row Details'**
+  String get reportsDetailTitle;
+
+  /// No description provided for @reportsDetailRawPayload.
+  ///
+  /// In en, this message translates to:
+  /// **'Raw Payload'**
+  String get reportsDetailRawPayload;
+
+  /// No description provided for @reportsDetailCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get reportsDetailCopied;
+
+  /// No description provided for @reportsDetailCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get reportsDetailCopy;
+
+  /// No description provided for @reportsDetailTruncated.
+  ///
+  /// In en, this message translates to:
+  /// **'Payload truncated for display. Export for full data.'**
+  String get reportsDetailTruncated;
+
+  /// No description provided for @reportsRowDetailsViewMap.
+  ///
+  /// In en, this message translates to:
+  /// **'View Map'**
+  String get reportsRowDetailsViewMap;
+
+  /// No description provided for @reportsRowDetailsHideMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Map'**
+  String get reportsRowDetailsHideMap;
+
+  /// No description provided for @reportsRowDetailsNoGps.
+  ///
+  /// In en, this message translates to:
+  /// **'No GPS data available for this segment.'**
+  String get reportsRowDetailsNoGps;
+
+  /// No description provided for @reportsWarningBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning: {message}'**
+  String reportsWarningBanner(Object message);
+
+  /// No description provided for @reportsSourceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Source: {source}'**
+  String reportsSourceLabel(Object source);
 }
 
 class _AppLocalizationsDelegate

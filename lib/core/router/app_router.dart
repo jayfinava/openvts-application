@@ -69,7 +69,9 @@ import '../../features/user/screens/map/user_map_screen.dart';
 import '../../features/user/screens/notification_settings/user_notification_settings_screen.dart';
 import '../../features/user/screens/notifications/user_notification_center_screen.dart';
 import '../../features/user/screens/route_optimisation/user_route_optimisation_screen.dart';
-import '../../features/user/screens/reports/user_reports_screen.dart';
+import '../../features/user/models/user_report_model.dart';
+import '../../features/user/screens/reports/user_reports_catalog_screen.dart';
+import '../../features/user/screens/reports/user_report_workspace_screen.dart';
 import '../../features/user/screens/settings/user_settings_screen.dart';
 import '../../features/user/screens/support/user_create_support_ticket_screen.dart';
 import '../../features/user/screens/support/user_support_screen.dart';
@@ -503,7 +505,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: RoutePaths.userReports,
-            builder: (context, state) => const UserReportsScreen(),
+            builder: (context, state) => const UserReportsCatalogScreen(),
+            routes: [
+              GoRoute(
+                path: ':reportKey',
+                builder: (context, state) {
+                  final keyStr = state.pathParameters['reportKey'] ?? '';
+                  final reportKey = UserReportKey.values.firstWhere(
+                    (k) => k.name == keyStr,
+                    orElse: () => UserReportKey.distance,
+                  );
+                  return UserReportWorkspaceScreen(reportKey: reportKey);
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: RoutePaths.userNotifications,

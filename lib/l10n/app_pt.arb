@@ -84,5 +84,36 @@
         "type": "String"
       }
     }
-  }
+  },
+  "reportsTitle": "Relatórios",
+  "reportsSearchHint": "Pesquisar relatórios…",
+  "reportsNoResultsFor": "Nenhum relatório encontrado para \"{query}\"",
+  "reportsGenerate": "Gerar relatório",
+  "reportsGenerating": "Gerando…",
+  "reportsReset": "Redefinir",
+  "reportsConfigureHint": "Configure o relatório acima e toque em Gerar.",
+  "reportsNoResults": "Nenhum resultado para os filtros selecionados.",
+  "reportsErrorRetry": "Tentar novamente",
+  "reportsRowCount": "{count} linhas carregadas",
+  "reportsLoadMore": "Carregar mais",
+  "reportsGeneratedAt": "Gerado {time}",
+  "reportsExportTitle": "Exportar relatório",
+  "reportsExportCsv": "CSV",
+  "reportsExportXlsx": "Excel (XLSX)",
+  "reportsExportJson": "JSON",
+  "reportsExportPdf": "PDF",
+  "reportsExportHtml": "HTML",
+  "reportsScopeAll": "Todos os veículos",
+  "reportsScopeSingle": "Um veículo",
+  "reportsScopeMultiple": "Vários veículos",
+  "reportsScopeGroup": "Grupo",
+  "reportsCatalogDistanceTitle": "Distância",
+  "reportsCatalogDrivenTitle": "Dias dirigidos",
+  "reportsCatalogDetailsTitle": "Detalhes do veículo",
+  "reportsCatalogOverspeedTitle": "Excesso de velocidade",
+  "reportsCatalogGeofenceTitle": "Geocerca",
+  "reportsCatalogAlertsTitle": "Alertas",
+  "reportsCatalogSensorTitle": "Sensor",
+  "reportsCatalogLogsTitle": "Logs do dispositivo",
+  "reportsCatalogTimelineTitle": "Linha do tempo"
 }

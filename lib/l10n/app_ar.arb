@@ -84,5 +84,36 @@
         "type": "String"
       }
     }
-  }
+  },
+  "reportsTitle": "تقارير",
+  "reportsSearchHint": "بحث في التقارير…",
+  "reportsNoResultsFor": "لم يتم العثور على تقارير لـ \"{query}\"",
+  "reportsGenerate": "إنشاء التقرير",
+  "reportsGenerating": "جارٍ الإنشاء…",
+  "reportsReset": "إعادة تعيين",
+  "reportsConfigureHint": "قم بضبط التقرير أعلاه ثم اضغط إنشاء.",
+  "reportsNoResults": "لا توجد نتائج للمرشحات المحددة.",
+  "reportsErrorRetry": "إعادة المحاولة",
+  "reportsRowCount": "تم تحميل {count} صف",
+  "reportsLoadMore": "تحميل المزيد",
+  "reportsGeneratedAt": "تم الإنشاء {time}",
+  "reportsExportTitle": "تصدير التقرير",
+  "reportsExportCsv": "CSV",
+  "reportsExportXlsx": "Excel (XLSX)",
+  "reportsExportJson": "JSON",
+  "reportsExportPdf": "PDF",
+  "reportsExportHtml": "HTML",
+  "reportsScopeAll": "جميع المركبات",
+  "reportsScopeSingle": "مركبة واحدة",
+  "reportsScopeMultiple": "مركبات متعددة",
+  "reportsScopeGroup": "مجموعة",
+  "reportsCatalogDistanceTitle": "المسافة",
+  "reportsCatalogDrivenTitle": "أيام القيادة",
+  "reportsCatalogDetailsTitle": "تفاصيل المركبة",
+  "reportsCatalogOverspeedTitle": "تجاوز السرعة",
+  "reportsCatalogGeofenceTitle": "السياج الجغرافي",
+  "reportsCatalogAlertsTitle": "التنبيهات",
+  "reportsCatalogSensorTitle": "المستشعر",
+  "reportsCatalogLogsTitle": "سجلات الجهاز",
+  "reportsCatalogTimelineTitle": "الجدول الزمني"
 }

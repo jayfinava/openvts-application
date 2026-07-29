@@ -73,6 +73,10 @@ class RoutePaths {
 
   static const userHistory = '/user/history';
   static const userReports = '/user/reports';
+  static const userReportWorkspace = '/user/reports/:reportKey';
+
+  static String userReportWorkspacePath(String reportKey) =>
+      '/user/reports/$reportKey';
   static const userLandmarksStudio = '/user/landmarks-studio';
   static const userLandmarkGeofences = '/user/landmarks-studio/geofences';
   static const userLandmarkPois = '/user/landmarks-studio/pois';

@@ -196,4 +196,374 @@ class AppLocalizationsAr extends AppLocalizations {
   String confirmDiscardMessage(String tab) {
     return '$tab يحتوي على تعديلات غير محفوظة. التجاهل سيفقدك هذه التغييرات.';
   }
+
+  @override
+  String get reportsTitle => 'تقارير';
+
+  @override
+  String get reportsSearchHint => 'بحث في التقارير…';
+
+  @override
+  String reportsNoResultsFor(Object query) {
+    return 'لم يتم العثور على تقارير لـ \"$query\"';
+  }
+
+  @override
+  String get reportsGenerate => 'إنشاء التقرير';
+
+  @override
+  String get reportsGenerating => 'جارٍ الإنشاء…';
+
+  @override
+  String get reportsReset => 'إعادة تعيين';
+
+  @override
+  String get reportsConfigureHint => 'قم بضبط التقرير أعلاه ثم اضغط إنشاء.';
+
+  @override
+  String get reportsNoResults => 'لا توجد نتائج للمرشحات المحددة.';
+
+  @override
+  String get reportsErrorRetry => 'إعادة المحاولة';
+
+  @override
+  String reportsRowCount(Object count) {
+    return 'تم تحميل $count صف';
+  }
+
+  @override
+  String get reportsLoadMore => 'تحميل المزيد';
+
+  @override
+  String get reportsLoadingMore => 'Loading more…';
+
+  @override
+  String reportsGeneratedAt(Object time) {
+    return 'تم الإنشاء $time';
+  }
+
+  @override
+  String get reportsExportTitle => 'تصدير التقرير';
+
+  @override
+  String get reportsExportCsv => 'CSV';
+
+  @override
+  String get reportsExportXlsx => 'Excel (XLSX)';
+
+  @override
+  String get reportsExportJson => 'JSON';
+
+  @override
+  String get reportsExportPdf => 'PDF';
+
+  @override
+  String get reportsExportHtml => 'HTML';
+
+  @override
+  String get reportsScopeAll => 'جميع المركبات';
+
+  @override
+  String get reportsScopeSingle => 'مركبة واحدة';
+
+  @override
+  String get reportsScopeMultiple => 'مركبات متعددة';
+
+  @override
+  String get reportsScopeGroup => 'مجموعة';
+
+  @override
+  String get reportsScopeSelectVehicle => 'Select vehicle';
+
+  @override
+  String get reportsScopeSelectVehicles => 'Select vehicles';
+
+  @override
+  String get reportsScopeSelectGroup => 'Select group';
+
+  @override
+  String get reportsScopeSearchHint => 'Search by name, plate or IMEI…';
+
+  @override
+  String get reportsScopeSelectAll => 'Select all visible';
+
+  @override
+  String get reportsScopeDone => 'Done';
+
+  @override
+  String reportsScopeNVehiclesSelected(Object count) {
+    return '$count vehicles selected';
+  }
+
+  @override
+  String get reportsDateStart => 'Start date';
+
+  @override
+  String get reportsDateEnd => 'End date';
+
+  @override
+  String get reportsDateFrom => 'Start';
+
+  @override
+  String get reportsDateTo => 'End';
+
+  @override
+  String reportsDateMaxDays(Object days) {
+    return 'Max $days days for this report type';
+  }
+
+  @override
+  String get reportsValidationScopeRequired =>
+      'Please select at least one vehicle.';
+
+  @override
+  String get reportsValidationStartRequired => 'Start date is required.';
+
+  @override
+  String get reportsValidationEndRequired => 'End date is required.';
+
+  @override
+  String get reportsValidationStartBeforeEnd => 'Start must be before end.';
+
+  @override
+  String reportsValidationMaxDays(Object days) {
+    return 'Date range exceeds the $days-day limit for this report.';
+  }
+
+  @override
+  String get reportsValidationSensorVehicleRequired =>
+      'Please select a vehicle for the sensor report.';
+
+  @override
+  String get reportsValidationSensorRequired => 'Please select a sensor.';
+
+  @override
+  String get reportsValidationTimelineStateRequired =>
+      'Select at least one state (Running or Stopped).';
+
+  @override
+  String get reportsFilterSpeedLimit => 'Speed limit (km/h)';
+
+  @override
+  String get reportsFilterSpeedCustom => 'Custom limit…';
+
+  @override
+  String get reportsFilterGeofenceHint => 'Search geofences…';
+
+  @override
+  String get reportsFilterGeofenceAllNote =>
+      'No selection includes all geofences.';
+
+  @override
+  String get reportsFilterAlertType => 'Alert type';
+
+  @override
+  String get reportsFilterAlertSeverity => 'Severity';
+
+  @override
+  String get reportsFilterAlertAck => 'Acknowledgement';
+
+  @override
+  String get reportsFilterAlertAckAll => 'All';
+
+  @override
+  String get reportsFilterAlertAckAcknowledged => 'Acknowledged';
+
+  @override
+  String get reportsFilterAlertAckUnacknowledged => 'Unacknowledged';
+
+  @override
+  String get reportsFilterLogsVehicle => 'Vehicle';
+
+  @override
+  String get reportsFilterLogsCategory => 'Category';
+
+  @override
+  String get reportsFilterLogsLevel => 'Level';
+
+  @override
+  String get reportsFilterTimelineRunning => 'Running';
+
+  @override
+  String get reportsFilterTimelineStopped => 'Stopped';
+
+  @override
+  String get reportsFilterSensorVehicle => 'Vehicle';
+
+  @override
+  String get reportsFilterSensorSensor => 'Sensor';
+
+  @override
+  String get reportsCatalogDistanceTitle => 'المسافة';
+
+  @override
+  String get reportsCatalogDistanceDesc =>
+      'Total distance driven per vehicle per day with engine hours and odometer readings.';
+
+  @override
+  String get reportsCatalogDrivenTitle => 'أيام القيادة';
+
+  @override
+  String get reportsCatalogDrivenDesc =>
+      'Daily distance matrix — which vehicles moved on which days and how far.';
+
+  @override
+  String get reportsCatalogDetailsTitle => 'تفاصيل المركبة';
+
+  @override
+  String get reportsCatalogDetailsDesc =>
+      'Fleet summary: total distance, engine hours, active days, last known location per vehicle.';
+
+  @override
+  String get reportsCatalogOverspeedTitle => 'تجاوز السرعة';
+
+  @override
+  String get reportsCatalogOverspeedDesc =>
+      'Speeding events with observed speed, configured limit, excess, duration, and location.';
+
+  @override
+  String get reportsCatalogGeofenceTitle => 'السياج الجغرافي';
+
+  @override
+  String get reportsCatalogGeofenceDesc =>
+      'Entry and exit events for selected geofences with timestamps and dwell duration.';
+
+  @override
+  String get reportsCatalogAlertsTitle => 'التنبيهات';
+
+  @override
+  String get reportsCatalogAlertsDesc =>
+      'Alert events by type and severity with acknowledgement status.';
+
+  @override
+  String get reportsCatalogSensorTitle => 'المستشعر';
+
+  @override
+  String get reportsCatalogSensorDesc =>
+      'Time-series readings for a specific sensor on a single vehicle with chart visualisation.';
+
+  @override
+  String get reportsCatalogLogsTitle => 'سجلات الجهاز';
+
+  @override
+  String get reportsCatalogLogsDesc =>
+      'Raw communication logs from vehicle devices grouped by category and level.';
+
+  @override
+  String get reportsCatalogTimelineTitle => 'الجدول الزمني';
+
+  @override
+  String get reportsCatalogTimelineDesc =>
+      'Running and stopped segments with duration, distance, and GPS map trace per segment.';
+
+  @override
+  String get reportsKpiTotalDistance => 'Total Distance';
+
+  @override
+  String get reportsKpiEngineHours => 'Engine Hours';
+
+  @override
+  String get reportsKpiActiveVehicles => 'Active Vehicles';
+
+  @override
+  String get reportsKpiAvgDistance => 'Avg Distance';
+
+  @override
+  String get reportsKpiVehiclesDriven => 'Vehicles Driven';
+
+  @override
+  String get reportsKpiAvgDaily => 'Avg Daily';
+
+  @override
+  String get reportsKpiPeakDay => 'Peak Day';
+
+  @override
+  String get reportsKpiViolations => 'Violations';
+
+  @override
+  String get reportsKpiAffectedVehicles => 'Affected Vehicles';
+
+  @override
+  String get reportsKpiHighestSpeed => 'Highest Speed';
+
+  @override
+  String get reportsKpiTotalDuration => 'Total Duration';
+
+  @override
+  String get reportsKpiTotalEvents => 'Total Events';
+
+  @override
+  String get reportsKpiEntries => 'Entries';
+
+  @override
+  String get reportsKpiExits => 'Exits';
+
+  @override
+  String get reportsKpiTotalAlerts => 'Total Alerts';
+
+  @override
+  String get reportsKpiCritical => 'Critical';
+
+  @override
+  String get reportsKpiAcknowledged => 'Acknowledged';
+
+  @override
+  String get reportsKpiReadings => 'Readings';
+
+  @override
+  String get reportsKpiOnEvents => 'ON Events';
+
+  @override
+  String get reportsKpiOffEvents => 'OFF Events';
+
+  @override
+  String get reportsKpiTotalLogs => 'Total Logs';
+
+  @override
+  String get reportsKpiRunningDuration => 'Running Duration';
+
+  @override
+  String get reportsKpiStoppedDuration => 'Stopped Duration';
+
+  @override
+  String get reportsKpiMovementDistance => 'Movement Distance';
+
+  @override
+  String get reportsKpiStopCount => 'Stop Count';
+
+  @override
+  String get reportsDetailTitle => 'Row Details';
+
+  @override
+  String get reportsDetailRawPayload => 'Raw Payload';
+
+  @override
+  String get reportsDetailCopied => 'Copied';
+
+  @override
+  String get reportsDetailCopy => 'Copy';
+
+  @override
+  String get reportsDetailTruncated =>
+      'Payload truncated for display. Export for full data.';
+
+  @override
+  String get reportsRowDetailsViewMap => 'View Map';
+
+  @override
+  String get reportsRowDetailsHideMap => 'Hide Map';
+
+  @override
+  String get reportsRowDetailsNoGps =>
+      'No GPS data available for this segment.';
+
+  @override
+  String reportsWarningBanner(Object message) {
+    return 'Warning: $message';
+  }
+
+  @override
+  String reportsSourceLabel(Object source) {
+    return 'Source: $source';
+  }
 }
