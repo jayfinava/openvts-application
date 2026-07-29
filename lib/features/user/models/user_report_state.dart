@@ -515,6 +515,8 @@ class GeofenceRow {
 class AlertRow {
   const AlertRow(
       {required this.raw,
+      required this.id,
+      required this.vehicleId,
       required this.vehicleName,
       required this.alertType,
       required this.severity,
@@ -526,9 +528,12 @@ class AlertRow {
       this.lat,
       this.lon});
   final Map<String, dynamic> raw;
+  final String id;
+  final String vehicleId;
   final String vehicleName;
   final String alertType;
   final String severity;
+  // Web API sends 'timestamp'; legacy mobile API may send 'eventTime' — accept both.
   final String eventTime;
   final bool acknowledged;
   final String? message;
@@ -538,10 +543,13 @@ class AlertRow {
   final double? lon;
   factory AlertRow.fromMap(Map<String, dynamic> m) => AlertRow(
         raw: m,
+        id: reportText(m['id']),
+        vehicleId: reportText(m['vehicleId']),
         vehicleName: reportText(m['vehicleName'], fallback: 'Vehicle'),
         alertType: reportText(m['alertType'], fallback: 'alert'),
         severity: reportText(m['severity'], fallback: 'low'),
-        eventTime: reportText(m['eventTime']),
+        // Accept 'timestamp' (web/fixture) or 'eventTime' (legacy mobile API)
+        eventTime: reportText(m['timestamp'] ?? m['eventTime']),
         acknowledged: reportBool(m['acknowledged']),
         message: reportNullableText(m['message']),
         speedKmh: _nullDouble(m['speedKmh']),
@@ -554,26 +562,37 @@ class AlertRow {
 class SensorRow {
   const SensorRow(
       {required this.raw,
+      required this.sensorId,
       required this.vehicleName,
       required this.sensorLabel,
       required this.timestamp,
       required this.rawValue,
+      this.valueMode,
       this.unit});
   final Map<String, dynamic> raw;
+  final String sensorId;
   final String vehicleName;
   final String sensorLabel;
   final String timestamp;
   final dynamic rawValue; // num or bool
+  // 'numeric' | 'boolean' — mirrors web SensorRow.valueMode; null means infer.
+  final String? valueMode;
   final String? unit;
   factory SensorRow.fromMap(Map<String, dynamic> m) => SensorRow(
         raw: m,
+        sensorId: reportText(m['sensorId']),
         vehicleName: reportText(m['vehicleName'], fallback: 'Vehicle'),
         sensorLabel: reportText(m['sensorLabel'], fallback: 'Sensor'),
         timestamp: reportText(m['timestamp']),
         rawValue: m['value'],
+        valueMode: reportNullableText(m['valueMode']),
         unit: reportNullableText(m['unit']),
       );
-  bool get isBoolean => rawValue is bool || rawValue == 0 || rawValue == 1;
+  // valueMode='boolean' overrides raw-value heuristic when the API supplies it.
+  bool get isBoolean =>
+      valueMode == 'boolean' ||
+      (valueMode == null &&
+          (rawValue is bool || rawValue == 0 || rawValue == 1));
   double get numericValue => reportDouble(rawValue);
   // Parses ISO timestamp to ms-since-epoch for chart x-axis; null when absent.
   double? get timestampMs {

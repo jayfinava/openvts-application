@@ -667,8 +667,10 @@ void main() {
   });
 
   group('AlertRow.fromMap', () {
-    test('parses all fields correctly', () {
+    test('parses all fields correctly (legacy eventTime field)', () {
       final m = <String, dynamic>{
+        'id': 'a1',
+        'vehicleId': 'v1',
         'vehicleName': 'Lorry C',
         'alertType': 'overspeed',
         'severity': 'high',
@@ -682,6 +684,8 @@ void main() {
       };
       final row = AlertRow.fromMap(m);
 
+      expect(row.id, 'a1');
+      expect(row.vehicleId, 'v1');
       expect(row.vehicleName, 'Lorry C');
       expect(row.alertType, 'overspeed');
       expect(row.severity, 'high');
@@ -689,6 +693,33 @@ void main() {
       expect(row.acknowledged, isTrue);
       expect(row.message, 'Speed exceeded');
       expect(row.speedKmh, closeTo(95.5, 0.001));
+    });
+
+    test('parses timestamp field (web/fixture API)', () {
+      final row = AlertRow.fromMap(<String, dynamic>{
+        'id': 'a2',
+        'vehicleId': 'v2',
+        'vehicleName': 'Truck',
+        'alertType': 'geofence_exit',
+        'severity': 'medium',
+        'timestamp': '2026-07-10T10:00:00Z',
+        'acknowledged': false,
+      });
+      // 'timestamp' wins over absent 'eventTime'
+      expect(row.eventTime, '2026-07-10T10:00:00Z');
+      expect(row.vehicleId, 'v2');
+    });
+
+    test('timestamp takes precedence over eventTime when both present', () {
+      final row = AlertRow.fromMap(<String, dynamic>{
+        'vehicleName': 'Truck',
+        'alertType': 'alert',
+        'severity': 'low',
+        'timestamp': '2026-07-10T11:00:00Z',
+        'eventTime': '2026-07-10T09:00:00Z',
+        'acknowledged': false,
+      });
+      expect(row.eventTime, '2026-07-10T11:00:00Z');
     });
 
     test('acknowledged parses string "true"', () {
@@ -710,6 +741,17 @@ void main() {
         'eventTime': '2026-07-10T09:00:00Z',
       });
       expect(row.acknowledged, isFalse);
+    });
+
+    test('id and vehicleId empty string when missing', () {
+      final row = AlertRow.fromMap(<String, dynamic>{
+        'vehicleName': 'Car',
+        'alertType': 'alert',
+        'severity': 'low',
+        'eventTime': '2026-07-10T09:00:00Z',
+      });
+      expect(row.id, isEmpty);
+      expect(row.vehicleId, isEmpty);
     });
   });
 
@@ -814,6 +856,44 @@ void main() {
         'value': 1.0,
       });
       expect(row.timestampMs, isNull);
+    });
+
+    test('sensorId and valueMode parsed correctly', () {
+      final row = SensorRow.fromMap(<String, dynamic>{
+        'sensorId': 's5',
+        'vehicleName': 'Van',
+        'sensorLabel': 'Rear Door',
+        'timestamp': '2026-07-10T06:00:00Z',
+        'value': 0,
+        'valueMode': 'boolean',
+      });
+      expect(row.sensorId, 's5');
+      expect(row.valueMode, 'boolean');
+      expect(row.isBoolean, isTrue);
+    });
+
+    test('valueMode=numeric overrides raw-value heuristic for value 0', () {
+      final row = SensorRow.fromMap(<String, dynamic>{
+        'sensorId': 's1',
+        'vehicleName': 'Van',
+        'sensorLabel': 'Fuel',
+        'timestamp': '2026-07-10T06:00:00Z',
+        'value': 0,
+        'valueMode': 'numeric',
+      });
+      // valueMode explicitly numeric → isBoolean should be false
+      expect(row.valueMode, 'numeric');
+      expect(row.isBoolean, isFalse);
+    });
+
+    test('sensorId empty string when missing', () {
+      final row = SensorRow.fromMap(<String, dynamic>{
+        'vehicleName': 'Van',
+        'sensorLabel': 'Sensor',
+        'timestamp': '2026-07-10T06:00:00Z',
+        'value': 1.5,
+      });
+      expect(row.sensorId, isEmpty);
     });
 
     test('timestampMs returns null for invalid timestamp string', () {

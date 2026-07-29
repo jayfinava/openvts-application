@@ -91,15 +91,39 @@ class UserSensorReportResult extends StatelessWidget {
   List<ReportKpi> _buildKpis(List<SensorRow> rows, bool isBool) {
     if (rows.isEmpty) return [];
     if (isBool) {
-      final trueCount = rows.where((r) => r.rawValue == true).length;
-      final falseCount = rows.where((r) => r.rawValue == false).length;
-      final firstTrue = rows.firstWhereOrNull((r) => r.rawValue == true);
+      // Mirrors web BooleanSensorResult KPIs: currentState, transitions, activeDuration, lastChange
+      final currentState = rows.isNotEmpty
+          ? ((rows.last.rawValue == true || rows.last.rawValue == 1)
+              ? 'ON'
+              : 'OFF')
+          : '—';
+      int transitions = 0;
+      double activeSec = 0;
+      String lastChange = rows.isNotEmpty ? rows.first.timestamp : '—';
+      for (var i = 1; i < rows.length; i++) {
+        final prev = rows[i - 1].rawValue;
+        final curr = rows[i].rawValue;
+        if (prev != curr) {
+          transitions++;
+          lastChange = rows[i].timestamp;
+        }
+        if (curr == true || curr == 1) {
+          final prevMs =
+              DateTime.tryParse(rows[i - 1].timestamp)?.millisecondsSinceEpoch;
+          final currMs =
+              DateTime.tryParse(rows[i].timestamp)?.millisecondsSinceEpoch;
+          if (prevMs != null && currMs != null) {
+            activeSec +=
+                ((currMs - prevMs).abs() / 1000).clamp(0, double.infinity);
+          }
+        }
+      }
       return [
-        ReportKpi(label: 'Readings', value: '${rows.length}'),
-        ReportKpi(label: 'ON Events', value: '$trueCount'),
-        ReportKpi(label: 'OFF Events', value: '$falseCount'),
-        if (firstTrue != null)
-          ReportKpi(label: 'First ON', value: firstTrue.timestamp),
+        ReportKpi(label: 'Current State', value: currentState),
+        ReportKpi(label: 'Transitions', value: '$transitions'),
+        ReportKpi(
+            label: 'Active Duration', value: formatDurationSeconds(activeSec)),
+        ReportKpi(label: 'Last Change', value: lastChange),
       ];
     } else {
       final values = rows
@@ -108,11 +132,13 @@ class UserSensorReportResult extends StatelessWidget {
           .toList();
       if (values.isEmpty)
         return [ReportKpi(label: 'Readings', value: '${rows.length}')];
+      // Matches web NumericSensorResult KPIs: latest, min, max, avg
+      final latest = values.last;
       final minVal = values.reduce((a, b) => a < b ? a : b);
       final maxVal = values.reduce((a, b) => a > b ? a : b);
       final avg = values.fold(0.0, (s, v) => s + v) / values.length;
       return [
-        ReportKpi(label: 'Readings', value: '${rows.length}'),
+        ReportKpi(label: 'Latest', value: latest.toStringAsFixed(2)),
         ReportKpi(label: 'Min', value: minVal.toStringAsFixed(2)),
         ReportKpi(label: 'Max', value: maxVal.toStringAsFixed(2)),
         ReportKpi(label: 'Avg', value: avg.toStringAsFixed(2)),
@@ -362,14 +388,5 @@ class _SensorRowCard extends StatelessWidget {
       if (row.unit != null) ('Unit', row.unit!),
       if (row.rawValue != null) ('Raw', row.rawValue.toString()),
     ]);
-  }
-}
-
-extension _ListExt<T> on List<T> {
-  T? firstWhereOrNull(bool Function(T) test) {
-    for (final e in this) {
-      if (test(e)) return e;
-    }
-    return null;
   }
 }

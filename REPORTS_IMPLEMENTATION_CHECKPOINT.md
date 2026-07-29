@@ -189,11 +189,16 @@ New report tests: 126 passing, 0 failing.
 
 ---
 
-## Phases Remaining After Recovery Checkpoint
+## Phase 5 — Nine-Report Parity Audit (COMPLETE)
 
-- **Phase 3** — Sensor timestamp parity: parse ISO timestamp → real DateTime x-axis
-- **Phase 4** — Timeline vehicleId parity: expose proper field instead of raw map lookup
-- Phases 5–10 can follow if time permits
+Changes made:
+- `AlertRow`: added `id`, `vehicleId` typed fields; `fromMap` now accepts `timestamp` (web) OR `eventTime` (legacy) — `timestamp` wins when both present
+- `SensorRow`: added `sensorId`, `valueMode` fields; `isBoolean` respects `valueMode='boolean'` override, rejects false-positive when `valueMode='numeric'`
+- Boolean sensor KPIs updated to match web: `currentState`, `transitions`, `activeDuration`, `lastChange`
+- Numeric sensor KPIs updated to match web: `latest`, `min`, `max`, `avg` (was `readings`, `min`, `max`, `avg`)
+- `UserDetailsReportResult`: added Day/Night donut chart matching web `DayNightChart`; detail sheet now includes day/night breakdown fields; KPIs updated to match web (`totalDistance`, `engineHours`, `trips`, `maxSpeed`)
+- 6 new tests for AlertRow (id/vehicleId, timestamp precedence, dual-field); 3 new SensorRow tests (sensorId/valueMode, numeric override)
+- 136 tests total, all passing
 
 ---
 
