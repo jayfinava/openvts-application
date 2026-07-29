@@ -10,83 +10,71 @@ import '../../../../shared/widgets/open_vts_page_scaffold.dart';
 class AdminRolesScreen extends ConsumerWidget {
   const AdminRolesScreen({super.key});
 
+  // Static mirror data copied from the current web RolesContent page.
+  // TODO: Replace with backend-driven roles when Admin Roles APIs exist.
   static const List<_RoleDefinition> _roles = [
+    _RoleDefinition(
+      name: 'Superadmin',
+      icon: Icons.workspace_premium_outlined,
+      userCount: '1',
+      permissionSummary: 'All Access',
+      description:
+          'Platform-wide owner role shown by the current hardcoded web RolesContent page.',
+      permissionCategories: _permissionCategories,
+    ),
     _RoleDefinition(
       name: 'Admin',
       icon: Icons.admin_panel_settings_outlined,
+      userCount: '3',
+      permissionSummary: '45 Permissions',
       description:
-          'Full access to the tenant. Can manage users, vehicles, drivers, inventory, payments, support tickets, settings, and reports.',
-      permissions: [
-        'Manage users & sub-users',
-        'Manage vehicles & devices',
-        'Manage drivers',
-        'View & manage inventory',
-        'View payments & transactions',
-        'Renew vehicle subscriptions',
-        'Manage pricing plans',
-        'Manage team members',
-        'View & respond to support tickets',
-        'Configure SMTP & notifications',
-        'View activity, event & telemetry logs',
-        'Access map & live telemetry',
-        'View calendar events',
-        'Update profile & localization',
-        'Manage company branding',
-      ],
+          'Tenant administration role shown by the current hardcoded web RolesContent page.',
+      permissionCategories: _permissionCategories,
+    ),
+    _RoleDefinition(
+      name: 'Moderator',
+      icon: Icons.verified_user_outlined,
+      userCount: '8',
+      permissionSummary: '22 Permissions',
+      description:
+          'Operational moderation role shown by the current hardcoded web RolesContent page.',
+      permissionCategories: _permissionCategories,
     ),
     _RoleDefinition(
       name: 'User',
       icon: Icons.person_outline_rounded,
+      userCount: '1234',
+      permissionSummary: '12 Permissions',
       description:
-          'Fleet customer. Can view and manage assigned vehicles, geofences, routes, POIs, and reports within their account.',
-      permissions: [
-        'View assigned vehicles',
-        'Access live map',
-        'View vehicle history & replay',
-        'Manage geofences, POIs, routes',
-        'Create & manage share track links',
-        'Manage sub-users',
-        'Manage drivers',
-        'Generate reports',
-        'View transactions',
-        'Submit support tickets',
-        'Configure notification preferences',
-        'Update profile & localization',
-      ],
+          'Standard user role shown by the current hardcoded web RolesContent page.',
+      permissionCategories: _permissionCategories,
     ),
     _RoleDefinition(
-      name: 'Subuser',
-      icon: Icons.people_outline_rounded,
+      name: 'Viewer',
+      icon: Icons.visibility_outlined,
+      userCount: '567',
+      permissionSummary: '5 Permissions',
       description:
-          'Delegated identity under a User account. Access is limited to vehicles explicitly assigned by the parent user.',
-      permissions: [
-        'View assigned vehicles',
-        'Access live map (scoped)',
-        'View vehicle history & replay (scoped)',
-        'View notifications (scoped)',
-        'Geocoding lookups',
-      ],
+          'Read-only viewer role shown by the current hardcoded web RolesContent page.',
+      permissionCategories: _permissionCategories,
     ),
     _RoleDefinition(
-      name: 'Driver',
-      icon: Icons.badge_outlined,
+      name: 'Guest',
+      icon: Icons.person_add_alt_1_outlined,
+      userCount: '89',
+      permissionSummary: '2 Permissions',
       description:
-          'Driver identity. Can be linked to users and vehicles. Access is limited to geocoding and shared realtime paths.',
-      permissions: [
-        'Geocoding lookups',
-        'Realtime telemetry (linked vehicles)',
-      ],
+          'Limited guest role shown by the current hardcoded web RolesContent page.',
+      permissionCategories: _permissionCategories,
     ),
-    _RoleDefinition(
-      name: 'Team',
-      icon: Icons.groups_2_outlined,
-      description:
-          'Team member managed by the Admin. Supports shared geocoding and realtime authorization paths.',
-      permissions: [
-        'Geocoding lookups',
-        'Realtime telemetry (authorized)',
-      ],
-    ),
+  ];
+
+  static const List<String> _permissionCategories = [
+    'User Management',
+    'Vehicle Control',
+    'System Settings',
+    'Reports & Analytics',
+    'API Access',
   ];
 
   @override
@@ -167,6 +155,15 @@ class _RoleCardState extends State<_RoleCard> {
                         ),
                         const SizedBox(height: 2),
                         Text(
+                          '${widget.role.userCount} users · ${widget.role.permissionSummary}',
+                          style: OpenVtsTypography.meta.copyWith(
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.6),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
                           widget.role.description,
                           style: OpenVtsTypography.meta.copyWith(
                             color: theme.colorScheme.onSurface
@@ -203,7 +200,7 @@ class _RoleCardState extends State<_RoleCard> {
                   Divider(color: borderColor, height: 1),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   Text(
-                    'Capabilities',
+                    'Permission categories',
                     style: OpenVtsTypography.meta.copyWith(
                       fontWeight: FontWeight.w700,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
@@ -211,7 +208,7 @@ class _RoleCardState extends State<_RoleCard> {
                     ),
                   ),
                   const SizedBox(height: OpenVtsSpacing.xs),
-                  ...widget.role.permissions.map(
+                  ...widget.role.permissionCategories.map(
                     (p) => Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: OpenVtsSpacing.xs / 2),
@@ -249,12 +246,16 @@ class _RoleDefinition {
   const _RoleDefinition({
     required this.name,
     required this.icon,
+    required this.userCount,
+    required this.permissionSummary,
     required this.description,
-    required this.permissions,
+    required this.permissionCategories,
   });
 
   final String name;
   final IconData icon;
+  final String userCount;
+  final String permissionSummary;
   final String description;
-  final List<String> permissions;
+  final List<String> permissionCategories;
 }

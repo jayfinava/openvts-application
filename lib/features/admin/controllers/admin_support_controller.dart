@@ -74,6 +74,8 @@ class AdminSupportController extends StateNotifier<AdminSupportState> {
     try {
       final tickets = await _service.getUserTickets(
         refreshKey: state.userRefreshKey,
+        status: state.userStatusFilter,
+        search: state.userSearch,
         userId: state.userIdFilter,
       );
 
@@ -106,6 +108,8 @@ class AdminSupportController extends StateNotifier<AdminSupportState> {
     try {
       final tickets = await _service.getMyTickets(
         refreshKey: state.myRefreshKey,
+        status: state.myStatusFilter,
+        search: state.mySearch,
       );
 
       final keepSelection =
@@ -134,10 +138,12 @@ class AdminSupportController extends StateNotifier<AdminSupportState> {
   void setSearchQuery(AdminSupportTab tab, String value) {
     if (tab == AdminSupportTab.userTickets) {
       state = state.copyWith(userSearch: value, userVisibleCount: 10);
+      unawaited(loadUserTickets());
       return;
     }
 
     state = state.copyWith(mySearch: value, myVisibleCount: 10);
+    unawaited(loadMyTickets());
   }
 
   Future<void> setStatusFilter(
@@ -146,10 +152,12 @@ class AdminSupportController extends StateNotifier<AdminSupportState> {
   ) async {
     if (tab == AdminSupportTab.userTickets) {
       state = state.copyWith(userStatusFilter: status, userVisibleCount: 10);
+      await loadUserTickets();
       return;
     }
 
     state = state.copyWith(myStatusFilter: status, myVisibleCount: 10);
+    await loadMyTickets();
   }
 
   Future<void> setUserIdFilter(String? userId) async {

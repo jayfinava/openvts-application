@@ -142,12 +142,12 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
         source: state.vehicleSource,
         severity: state.vehicleSeverity,
         q: state.vehicleSearch,
+        isRead: _serverReadFilter(state.vehicleReadFilter),
         dedupe: state.vehicleDedupe,
       );
-      final filtered = _applyReadFilter(page.items, state.vehicleReadFilter);
       state = state.copyWith(
         isLoadingVehicle: false,
-        vehicleLogs: filtered,
+        vehicleLogs: page.items,
         vehicleNextCursorId: page.nextCursorId,
       );
     } catch (e) {
@@ -178,14 +178,14 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
         source: state.vehicleSource,
         severity: state.vehicleSeverity,
         q: state.vehicleSearch,
+        isRead: _serverReadFilter(state.vehicleReadFilter),
         dedupe: state.vehicleDedupe,
       );
-      final filtered = _applyReadFilter(page.items, state.vehicleReadFilter);
       state = state.copyWith(
         isLoadingMoreVehicle: false,
         vehicleLogs: <AdminVehicleEventLogItem>[
           ...state.vehicleLogs,
-          ...filtered
+          ...page.items
         ],
         vehicleNextCursorId: page.nextCursorId,
       );
@@ -348,17 +348,14 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
     return dt.toUtc().toIso8601String();
   }
 
-  List<AdminVehicleEventLogItem> _applyReadFilter(
-    List<AdminVehicleEventLogItem> items,
-    AdminReadFilter filter,
-  ) {
+  bool? _serverReadFilter(AdminReadFilter filter) {
     switch (filter) {
       case AdminReadFilter.all:
-        return [...items];
+        return null;
       case AdminReadFilter.read:
-        return items.where((item) => item.isReadNormalized).toList();
+        return true;
       case AdminReadFilter.unread:
-        return items.where((item) => !item.isReadNormalized).toList();
+        return false;
     }
   }
 

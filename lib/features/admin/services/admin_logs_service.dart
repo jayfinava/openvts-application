@@ -59,6 +59,7 @@ class AdminLogsService {
     String? source,
     String? severity,
     String? q,
+    bool? isRead,
     bool dedupe = true,
   }) async {
     final response = await _apiClient.get<dynamic>(
@@ -73,6 +74,7 @@ class AdminLogsService {
         if (_nz(userId)) 'userId': userId,
         if (_nz(source)) 'source': source,
         if (_nz(severity)) 'severity': severity,
+        if (isRead != null) 'isRead': isRead,
         if (_nz(q)) 'q': q,
       },
       options: _readOptions,

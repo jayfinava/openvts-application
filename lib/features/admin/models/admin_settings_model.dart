@@ -661,9 +661,6 @@ class AdminUpdateProfileRequest {
     if (countryCode != null) json['countryCode'] = countryCode;
     if (stateCode != null) json['stateCode'] = stateCode;
     if (cityName != null) json['cityName'] = cityName;
-    if (cityName != null) json['city'] = cityName;
-    if (cityId != null) json['cityId'] = cityId;
-    if (cityCode != null) json['cityCode'] = cityCode;
     if (pincode != null) json['pincode'] = pincode;
     return json;
   }
@@ -934,7 +931,6 @@ class AdminLocalizationSettings {
         'theme': theme.apiValue,
         'timezoneOffset': timezoneOffset,
         'units': units.apiValue,
-        'distanceUnit': units.apiValue,
         'defaultLat': defaultLat,
         'defaultLon': defaultLon,
         'mapZoom': mapZoom,
