@@ -77,7 +77,8 @@ class UserDrivenReportResult extends ConsumerWidget {
           warning: state.warning,
           source: state.source,
           loadMoreError: state.loadMoreError,
-          onExport: () => onExport('csv'),
+          reportKey: state.reportKey,
+          onExport: onExport,
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
         // Vehicle summary cards

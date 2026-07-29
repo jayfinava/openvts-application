@@ -15,6 +15,7 @@ class UserReportResultToolbar extends StatelessWidget {
     required this.hasMore,
     required this.isLoadingMore,
     required this.onLoadMore,
+    required this.reportKey,
     this.generatedAt,
     this.warning,
     this.source,
@@ -27,11 +28,12 @@ class UserReportResultToolbar extends StatelessWidget {
   final bool hasMore;
   final bool isLoadingMore;
   final VoidCallback onLoadMore;
+  final UserReportKey reportKey;
   final DateTime? generatedAt;
   final String? warning;
   final String? source;
   final String? loadMoreError;
-  final VoidCallback? onExport;
+  final ValueChanged<String>? onExport;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +63,11 @@ class UserReportResultToolbar extends StatelessWidget {
               IconButton(
                 tooltip: 'Export',
                 icon: const Icon(Icons.download_rounded, size: 20),
-                onPressed: onExport,
+                onPressed: () => ReportExportSheet.show(
+                  context,
+                  reportKey: reportKey,
+                  onFormat: onExport!,
+                ),
               ),
           ],
         ),
