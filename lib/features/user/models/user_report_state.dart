@@ -575,6 +575,13 @@ class SensorRow {
       );
   bool get isBoolean => rawValue is bool || rawValue == 0 || rawValue == 1;
   double get numericValue => reportDouble(rawValue);
+  // Parses ISO timestamp to ms-since-epoch for chart x-axis; null when absent.
+  double? get timestampMs {
+    if (timestamp.isEmpty) return null;
+    final dt = DateTime.tryParse(timestamp);
+    if (dt == null) return null;
+    return dt.millisecondsSinceEpoch.toDouble();
+  }
 }
 
 class LogRow {
@@ -613,6 +620,7 @@ class LogRow {
 class TimelineRow {
   const TimelineRow(
       {required this.raw,
+      required this.vehicleId,
       required this.vehicleName,
       required this.state,
       required this.startedAt,
@@ -630,6 +638,7 @@ class TimelineRow {
       this.endLat,
       this.endLon});
   final Map<String, dynamic> raw;
+  final String vehicleId;
   final String vehicleName;
   final String state; // 'running' | 'stopped'
   final String startedAt;
@@ -649,6 +658,7 @@ class TimelineRow {
   bool get isRunning => state == 'running';
   factory TimelineRow.fromMap(Map<String, dynamic> m) => TimelineRow(
         raw: m,
+        vehicleId: reportText(m['vehicleId']),
         vehicleName: reportText(m['vehicleName'], fallback: 'Vehicle'),
         state: reportText(m['state'], fallback: 'stopped'),
         startedAt: reportText(m['startedAt']),

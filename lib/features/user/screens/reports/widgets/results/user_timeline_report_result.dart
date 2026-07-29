@@ -320,7 +320,7 @@ class _TimelineRowCardState extends ConsumerState<_TimelineRowCard> {
       });
       return;
     }
-    final vehicleId = r.raw['vehicleId']?.toString() ?? '';
+    final vehicleId = r.vehicleId;
     if (vehicleId.isEmpty) {
       setState(() {
         _mapError = 'No vehicle ID in row.';

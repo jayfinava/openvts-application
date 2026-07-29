@@ -792,11 +792,45 @@ void main() {
       });
       expect(row.isBoolean, isTrue);
     });
+
+    test('timestampMs parses ISO timestamp to ms-since-epoch', () {
+      final row = SensorRow.fromMap(<String, dynamic>{
+        'vehicleName': 'Van',
+        'sensorLabel': 'Fuel',
+        'timestamp': '2026-07-10T06:00:00Z',
+        'value': 55.0,
+      });
+      expect(row.timestampMs, isNotNull);
+      final expected =
+          DateTime.utc(2026, 7, 10, 6, 0, 0).millisecondsSinceEpoch.toDouble();
+      expect(row.timestampMs, closeTo(expected, 1.0));
+    });
+
+    test('timestampMs returns null for empty timestamp', () {
+      final row = SensorRow.fromMap(<String, dynamic>{
+        'vehicleName': 'Van',
+        'sensorLabel': 'Sensor',
+        'timestamp': '',
+        'value': 1.0,
+      });
+      expect(row.timestampMs, isNull);
+    });
+
+    test('timestampMs returns null for invalid timestamp string', () {
+      final row = SensorRow.fromMap(<String, dynamic>{
+        'vehicleName': 'Van',
+        'sensorLabel': 'Sensor',
+        'timestamp': 'not-a-date',
+        'value': 1.0,
+      });
+      expect(row.timestampMs, isNull);
+    });
   });
 
   group('TimelineRow.fromMap', () {
     test('running state: isRunning == true', () {
       final m = <String, dynamic>{
+        'vehicleId': 'v1',
         'vehicleName': 'Car E',
         'state': 'running',
         'startedAt': '2026-07-10T06:00:00Z',
@@ -808,12 +842,14 @@ void main() {
       };
       final row = TimelineRow.fromMap(m);
       expect(row.isRunning, isTrue);
+      expect(row.vehicleId, 'v1');
       expect(row.durationSeconds, closeTo(3600.0, 0.001));
       expect(row.distanceKm, closeTo(50.0, 0.001));
     });
 
     test('stopped state: isRunning == false', () {
       final m = <String, dynamic>{
+        'vehicleId': 'v2',
         'vehicleName': 'Car E',
         'state': 'stopped',
         'startedAt': '2026-07-10T07:00:00Z',
@@ -822,16 +858,27 @@ void main() {
       };
       final row = TimelineRow.fromMap(m);
       expect(row.isRunning, isFalse);
+      expect(row.vehicleId, 'v2');
     });
 
     test('defaults to stopped when state missing', () {
       final row = TimelineRow.fromMap(<String, dynamic>{
+        'vehicleId': 'v3',
         'vehicleName': 'Car',
         'startedAt': '2026-07-10T06:00:00Z',
         'durationSeconds': 600.0,
       });
       expect(row.state, 'stopped');
       expect(row.isRunning, isFalse);
+    });
+
+    test('vehicleId is empty string when missing from map', () {
+      final row = TimelineRow.fromMap(<String, dynamic>{
+        'vehicleName': 'Car',
+        'startedAt': '2026-07-10T06:00:00Z',
+        'durationSeconds': 600.0,
+      });
+      expect(row.vehicleId, isEmpty);
     });
   });
 

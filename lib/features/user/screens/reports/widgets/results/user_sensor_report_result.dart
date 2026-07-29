@@ -33,18 +33,28 @@ class UserSensorReportResult extends StatelessWidget {
 
     final kpis = _buildKpis(rows, isBoolSensor);
 
-    // Downsample for chart — use index as x-position
-    final indexed =
-        rows.asMap().entries.map((e) => (index: e.key, row: e.value)).toList();
+    // Downsample for chart — use real timestamp ms when available, else index.
+    final hasTimestamps = rows.any((r) => r.timestampMs != null);
+    final indexed = rows
+        .asMap()
+        .entries
+        .map((e) => (
+              index: e.key,
+              row: e.value,
+              x: hasTimestamps
+                  ? (e.value.timestampMs ?? e.key.toDouble())
+                  : e.key.toDouble(),
+            ))
+        .toList();
     final chartIndexed = downsampleLTTB(
       data: indexed,
       maxPoints: kChartMaxPoints,
-      getX: (e) => e.index.toDouble(),
+      getX: (e) => e.x,
       getY: (e) => isBoolSensor
           ? ((e.row.rawValue as bool?) == true ? 1.0 : 0.0)
           : e.row.numericValue,
     );
-    final chartRows = chartIndexed.map((e) => e.row).toList();
+    final chartRows = chartIndexed.map((e) => (row: e.row, x: e.x)).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,11 +63,12 @@ class UserSensorReportResult extends StatelessWidget {
         const SizedBox(height: OpenVtsSpacing.sm),
         if (chartRows.isNotEmpty) ...[
           isBoolSensor
-              ? _BoolSensorChart(rows: chartRows, sensorLabel: sensorLabel)
+              ? _BoolSensorChart(entries: chartRows, sensorLabel: sensorLabel)
               : _NumericSensorChart(
-                  rows: chartRows,
+                  entries: chartRows,
                   sensorLabel: sensorLabel,
-                  unit: firstRow?.unit),
+                  unit: firstRow?.unit,
+                  hasTimestamps: hasTimestamps),
           const SizedBox(height: OpenVtsSpacing.sm),
         ],
         UserReportResultToolbar(
@@ -112,9 +123,13 @@ class UserSensorReportResult extends StatelessWidget {
 
 class _NumericSensorChart extends StatelessWidget {
   const _NumericSensorChart(
-      {required this.rows, required this.sensorLabel, this.unit});
-  final List<SensorRow> rows;
+      {required this.entries,
+      required this.sensorLabel,
+      required this.hasTimestamps,
+      this.unit});
+  final List<({SensorRow row, double x})> entries;
   final String sensorLabel;
+  final bool hasTimestamps;
   final String? unit;
 
   @override
@@ -122,11 +137,9 @@ class _NumericSensorChart extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final lineColor =
         isDark ? OpenVtsColors.info.withValues(alpha: 0.9) : OpenVtsColors.info;
-    final spots = rows
-        .asMap()
-        .entries
-        .where((e) => e.value.rawValue is num)
-        .map((e) => FlSpot(e.key.toDouble(), e.value.numericValue))
+    final spots = entries
+        .where((e) => e.row.rawValue is num)
+        .map((e) => FlSpot(e.x, e.row.numericValue))
         .toList();
     if (spots.isEmpty) return const SizedBox.shrink();
 
@@ -169,8 +182,21 @@ class _NumericSensorChart extends StatelessWidget {
                         getTitlesWidget: (v, _) => Text(v.toStringAsFixed(1),
                             style:
                                 OpenVtsTypography.meta.copyWith(fontSize: 8)))),
-                bottomTitles:
-                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                        showTitles: hasTimestamps,
+                        reservedSize: 22,
+                        getTitlesWidget: (v, meta) {
+                          if (!hasTimestamps) return const SizedBox.shrink();
+                          final dt = DateTime.fromMillisecondsSinceEpoch(
+                              v.toInt(),
+                              isUtc: true);
+                          final h = dt.hour.toString().padLeft(2, '0');
+                          final m = dt.minute.toString().padLeft(2, '0');
+                          return Text('$h:$m',
+                              style:
+                                  OpenVtsTypography.meta.copyWith(fontSize: 8));
+                        })),
                 topTitles:
                     const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 rightTitles:
@@ -192,19 +218,16 @@ class _NumericSensorChart extends StatelessWidget {
 }
 
 class _BoolSensorChart extends StatelessWidget {
-  const _BoolSensorChart({required this.rows, required this.sensorLabel});
-  final List<SensorRow> rows;
+  const _BoolSensorChart({required this.entries, required this.sensorLabel});
+  final List<({SensorRow row, double x})> entries;
   final String sensorLabel;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // Step-line: ON=1, OFF=0
-    final spots = rows
-        .asMap()
-        .entries
-        .map((e) => FlSpot(
-            e.key.toDouble(), (e.value.rawValue as bool?) == true ? 1.0 : 0.0))
+    final spots = entries
+        .map((e) => FlSpot(e.x, (e.row.rawValue as bool?) == true ? 1.0 : 0.0))
         .toList();
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
