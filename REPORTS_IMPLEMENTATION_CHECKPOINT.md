@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-29
 **Branch:** master
-**Status:** WIP — all 9 report result widgets complete, tests written, analyze clean, commit not yet created
+**Status:** FINAL VALIDATION COMPLETE — all tasks done, analyze clean, 314/316 tests pass (2 pre-existing failures unrelated to reports)
 
 ---
 
@@ -125,18 +125,34 @@ latlong2: ^0.9.1
 
 ---
 
-## flutter analyze Result (at checkpoint)
+## Final Validation Results (2026-07-29)
 
+### flutter pub get
 ```
-108 issues total — all warnings/infos only.
+Got dependencies! (75 packages have newer versions, all incompatible with constraints — expected)
+```
+
+### flutter gen-l10n
+```
+Success. 82 untranslated messages per non-English locale (known limitation — filter labels/KPI
+labels/validation messages not yet in ARBs, still hardcoded in widgets).
+```
+
+### dart format .
+```
+Formatted 659 files (0 changed) in 1.20 seconds.
+```
+
+### flutter analyze
+```
+108 issues total (107 warnings/infos, 1 error).
 1 pre-existing error (unrelated to reports):
   test/features/superadmin/controllers/superadmin_map_live_controller_test.dart:709
   _FakeSocketService.connect override mismatch — existed before this work.
-0 errors introduced by reports implementation.
+0 errors or warnings introduced by the Reports implementation.
 ```
 
-## flutter test Result (at checkpoint)
-
+### flutter test
 ```
 316 tests run — 314 passed, 2 failed.
 Failing tests (both pre-existing, unrelated to reports):
@@ -144,6 +160,20 @@ Failing tests (both pre-existing, unrelated to reports):
   - open_vts_date_time_range_selector_test.dart: "applies a date-only preset range" (pre-existing)
 New report tests: 126 passing, 0 failing.
 ```
+
+## Web Parity Audit (Final — 2026-07-29)
+
+| Report | KPIs | Charts | Rows/Cards | Detail Sheet | Filters | Pagination | Map | Export |
+|--------|------|--------|------------|--------------|---------|------------|-----|--------|
+| Distance | ✅ 4 | ✅ Bar top-8 | ✅ Address links | ✅ | — | ✅ Load More | — | ✅ CSV/XLSX/JSON/PDF/HTML |
+| Driven | ✅ 4 | ✅ Daily bar + heat strip | ✅ Vehicle rows | ✅ | — | ✅ Load More | — | ✅ |
+| Overspeed | ✅ 4 | ✅ Severity donut | ✅ Speed/duration/location | ✅ | ✅ Speed limit | ✅ Load More | — | ✅ |
+| Geofence | ✅ 4 | ✅ Event donut + per-fence bar | ✅ Event/fence/time | ✅ | ✅ Fence IDs | ✅ Load More | — | ✅ |
+| Sensor | ✅ 4 | ✅ Step-line (bool) / smooth line (numeric) | ✅ Label/value/time | ✅ | ✅ Sensor ID | ✅ Load More | — | ✅ |
+| Alerts | ✅ 4 | ✅ Severity donut + type bar | ✅ Alert/type/ack | ✅ | ✅ Types/severities/ack | ✅ Load More | — | ✅ |
+| Logs | ✅ 4 | ✅ Level donut + category bar | ✅ Event/level/payload | ✅ | ✅ Category/level/direction | ✅ Load More | — | ✅ |
+| Timeline | ✅ 4 | ✅ Run/stop donut | ✅ State/duration/distance | ✅ | ✅ State filter | ✅ Load More | ✅ FlutterMap GPS route | ✅ |
+| Details | ✅ 4 | — | ✅ Per-vehicle summary | ✅ | — | ✅ Load More | — | ✅ |
 
 ---
 
@@ -178,10 +208,11 @@ Do NOT restart implementation — all 9 reports, all screens, all tests are done
 
 ---
 
-## Commands Already Run Successfully
+## Commands Run (Both Checkpoint Passes)
 
 ```bash
 flutter pub get          # ✅ Got dependencies
+flutter gen-l10n         # ✅ Generated, 82 untranslated per non-EN locale (known)
 dart format .            # ✅ 659 files formatted, 0 changed
 flutter analyze          # ✅ 0 new errors (1 pre-existing unrelated)
 flutter test             # ✅ 314/316 pass (2 pre-existing failures unrelated)
