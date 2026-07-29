@@ -435,7 +435,8 @@ class _VehicleSearchSheetState extends State<_VehicleSearchSheet> {
     return widget.vehicles
         .where((v) =>
             v.name.toLowerCase().contains(q) ||
-            (v.plateNumber?.toLowerCase().contains(q) ?? false))
+            (v.plateNumber?.toLowerCase().contains(q) ?? false) ||
+            v.imei.toLowerCase().contains(q))
         .toList();
   }
 
@@ -663,46 +664,45 @@ class _SensorPickerSheet extends StatelessWidget {
 // Alerts filter
 // ---------------------------------------------------------------------------
 
+// Backend and web use snake_case alert type keys.
 const _kAlertTypes = [
   'overspeed',
-  'geofenceExit',
-  'geofenceEntry',
-  'ignitionOn',
-  'ignitionOff',
+  'geofence_exit',
+  'geofence_entry',
+  'ignition_on',
+  'ignition_off',
   'sensor',
-  'temperature',
   'sos',
   'alarm',
   'running',
   'stopped',
   'idle',
-  'routeDeviation',
+  'route_deviation',
   'reminder',
-  'command'
+  'command',
 ];
 const _kAlertTypeLabels = {
   'overspeed': 'Overspeed',
-  'geofenceExit': 'Geofence Exit',
-  'geofenceEntry': 'Geofence Entry',
-  'ignitionOn': 'Ignition On',
-  'ignitionOff': 'Ignition Off',
+  'geofence_exit': 'Geofence Exit',
+  'geofence_entry': 'Geofence Entry',
+  'ignition_on': 'Ignition On',
+  'ignition_off': 'Ignition Off',
   'sensor': 'Sensor',
-  'temperature': 'Temperature',
   'sos': 'SOS',
   'alarm': 'Alarm',
   'running': 'Continuous Running',
   'stopped': 'Continuous Stop',
   'idle': 'Continuous Idle',
-  'routeDeviation': 'Route Deviation',
+  'route_deviation': 'Route Deviation',
   'reminder': 'Reminder',
-  'command': 'Command'
+  'command': 'Command',
 };
-const _kSeverities = ['critical', 'high', 'medium', 'low'];
+// Web/backend severities: critical, high, low (no medium).
+const _kSeverities = ['critical', 'high', 'low'];
 const _kSeverityLabels = {
   'critical': 'Critical',
-  'high': 'Warning',
-  'medium': 'Medium',
-  'low': 'Info'
+  'high': 'High',
+  'low': 'Low',
 };
 
 class UserAlertsReportFilter extends StatelessWidget {
@@ -802,8 +802,18 @@ const _kLogLevelLabels = {
   'error': 'Error',
   'debug': 'Debug'
 };
+const _kLogDirections = [
+  'device_to_server',
+  'server_to_device',
+  'internal',
+];
+const _kLogDirectionLabels = {
+  'device_to_server': 'Device → Server',
+  'server_to_device': 'Server → Device',
+  'internal': 'Internal',
+};
 
-class UserLogsReportFilter extends StatelessWidget {
+class UserLogsReportFilter extends StatefulWidget {
   const UserLogsReportFilter({
     required this.vehicleId,
     required this.vehicles,
@@ -823,9 +833,43 @@ class UserLogsReportFilter extends StatelessWidget {
   final String? vehicleError;
   final bool disabled;
 
-  UserReportVehicleOption? get _selected => vehicleId == null
+  @override
+  State<UserLogsReportFilter> createState() => _UserLogsReportFilterState();
+}
+
+class _UserLogsReportFilterState extends State<UserLogsReportFilter> {
+  late final TextEditingController _searchCtrl;
+  String? _searchError;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchCtrl = TextEditingController(text: widget.filters.search);
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  UserReportVehicleOption? get _selected => widget.vehicleId == null
       ? null
-      : vehicles.firstWhereOrNull((v) => v.id == vehicleId);
+      : widget.vehicles.firstWhereOrNull((v) => v.id == widget.vehicleId);
+
+  void _updateFilters({
+    List<String>? categories,
+    List<String>? levels,
+    List<String>? directions,
+    String? search,
+  }) {
+    widget.onFiltersChanged(LogsFilters(
+      categories: categories ?? widget.filters.categories,
+      levels: levels ?? widget.filters.levels,
+      directions: directions ?? widget.filters.directions,
+      search: search ?? widget.filters.search,
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -839,31 +883,76 @@ class UserLogsReportFilter extends StatelessWidget {
         const SizedBox(height: 4),
         _SensorVehiclePicker(
             selected: _selected,
-            vehicles: vehicles,
-            onChanged: onVehicleChanged,
-            disabled: disabled,
-            error: vehicleError),
+            vehicles: widget.vehicles,
+            onChanged: widget.onVehicleChanged,
+            disabled: widget.disabled,
+            error: widget.vehicleError),
         const SizedBox(height: OpenVtsSpacing.sm),
         _FilterSection(
           label: 'Category',
           chips: _kLogCategories
               .map((c) => (c, _kLogCategoryLabels[c] ?? c))
               .toList(),
-          selected: filters.categories,
-          onChanged: (cats) => onFiltersChanged(
-              LogsFilters(categories: cats, levels: filters.levels)),
-          disabled: disabled,
+          selected: widget.filters.categories,
+          onChanged: (cats) => _updateFilters(categories: cats),
+          disabled: widget.disabled,
           emptyMeansAll: true,
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
         _FilterSection(
           label: 'Level',
-          chips: _kLogLevels.map((l) => (l, _kLogLevelLabels[l] ?? l)).toList(),
-          selected: filters.levels,
-          onChanged: (lvls) => onFiltersChanged(
-              LogsFilters(categories: filters.categories, levels: lvls)),
-          disabled: disabled,
+          chips:
+              _kLogLevels.map((l) => (l, _kLogLevelLabels[l] ?? l)).toList(),
+          selected: widget.filters.levels,
+          onChanged: (lvls) => _updateFilters(levels: lvls),
+          disabled: widget.disabled,
           emptyMeansAll: true,
+        ),
+        const SizedBox(height: OpenVtsSpacing.sm),
+        _FilterSection(
+          label: 'Direction',
+          chips: _kLogDirections
+              .map((d) => (d, _kLogDirectionLabels[d] ?? d))
+              .toList(),
+          selected: widget.filters.directions,
+          onChanged: (dirs) => _updateFilters(directions: dirs),
+          disabled: widget.disabled,
+          emptyMeansAll: true,
+        ),
+        const SizedBox(height: OpenVtsSpacing.sm),
+        Text('Search',
+            style: OpenVtsTypography.meta.copyWith(
+                fontWeight: FontWeight.w600,
+                color: OpenVtsColors.textSecondary)),
+        const SizedBox(height: 4),
+        TextField(
+          controller: _searchCtrl,
+          enabled: !widget.disabled,
+          decoration: InputDecoration(
+            hintText: 'Min 3 characters…',
+            isDense: true,
+            errorText: _searchError,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(OpenVtsRadius.md)),
+            suffixIcon: _searchCtrl.text.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.close_rounded, size: 16),
+                    onPressed: () {
+                      _searchCtrl.clear();
+                      setState(() => _searchError = null);
+                      _updateFilters(search: '');
+                    })
+                : null,
+          ),
+          onChanged: (v) {
+            final trimmed = v.trim();
+            setState(() {
+              _searchError = trimmed.isNotEmpty && trimmed.length < 3
+                  ? 'Enter at least 3 characters'
+                  : null;
+            });
+            _updateFilters(search: v);
+          },
         ),
       ],
     );

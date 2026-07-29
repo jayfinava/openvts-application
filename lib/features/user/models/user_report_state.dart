@@ -38,13 +38,27 @@ class ReportVehicleScope {
   Map<String, dynamic> toJson() {
     return switch (mode) {
       ReportScopeMode.all => {'mode': 'all'},
-      ReportScopeMode.single => {'mode': 'single', 'vehicleId': vehicleId},
+      ReportScopeMode.single => {
+          'mode': 'single',
+          'vehicleId': _toIntOrString(vehicleId),
+        },
       ReportScopeMode.multiple => {
           'mode': 'multiple',
-          'vehicleIds': vehicleIds
+          'vehicleIds': vehicleIds.map(_toIntOrString).toList(),
         },
-      ReportScopeMode.group => {'mode': 'group', 'groupId': groupId},
+      ReportScopeMode.group => {
+          'mode': 'group',
+          'groupId': _toIntOrString(groupId),
+        },
     };
+  }
+
+  /// Backend DTOs expect numeric IDs. Parse to int when possible so NestJS
+  /// @Type(() => Number) coercion on nested objects works reliably.
+  static dynamic _toIntOrString(String? s) {
+    if (s == null || s.isEmpty) return s;
+    final n = int.tryParse(s);
+    return n ?? s;
   }
 }
 
@@ -123,13 +137,25 @@ class LogsFilters {
   const LogsFilters({
     this.categories = const [],
     this.levels = const [],
+    this.directions = const [],
+    this.search = '',
   });
   final List<String> categories;
   final List<String> levels;
-  Map<String, dynamic> toJson() => {
-        'categories': categories,
-        'levels': levels,
-      };
+  final List<String> directions;
+  final String search;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{
+      'categories': categories,
+      'levels': levels,
+      'directions': directions,
+    };
+    // Backend requires min 3 chars; omit if shorter to avoid 400.
+    final trimmed = search.trim();
+    if (trimmed.length >= 3) map['search'] = trimmed;
+    return map;
+  }
 }
 
 class TimelineFilters {

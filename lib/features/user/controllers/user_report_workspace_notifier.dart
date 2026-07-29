@@ -313,7 +313,7 @@ class UserReportWorkspaceNotifier
 
   String _extractMessage(Object error) {
     if (error is ApiException) {
-      return error.message ?? error.toString();
+      return error.message;
     }
     return error.toString();
   }

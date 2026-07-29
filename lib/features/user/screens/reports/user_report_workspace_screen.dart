@@ -91,7 +91,7 @@ class _FilterSection extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final key = state.reportKey;
     final errors = state.validationErrors;
-    final isLoading = state.genStatus == ReportGenStatus.loading;
+    final isGenerating = state.genStatus == ReportGenStatus.loading;
 
     return Container(
       decoration: BoxDecoration(
@@ -116,15 +116,14 @@ class _FilterSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Vehicle scope
-                UserReportVehicleScopeSelector(
-                  scope: state.scope,
-                  options: state.options ??
-                      const UserReportOptions(vehicles: [], groups: []),
-                  onScopeChanged: notifier.setScope,
-                  forceSingle: key.requiresSingleVehicle,
-                  disabled: isLoading,
-                  error: errors['scope'],
+                // Vehicle scope — with loading / error / empty states
+                _OptionsWrapper(
+                  state: state,
+                  notifier: notifier,
+                  isDark: isDark,
+                  reportKey: key,
+                  isGenerating: isGenerating,
+                  scopeError: errors['scope'],
                 ),
                 const SizedBox(height: OpenVtsSpacing.sm),
                 // Date range
@@ -132,7 +131,7 @@ class _FilterSection extends StatelessWidget {
                   reportKey: key,
                   dateRange: state.dateRange,
                   onChanged: notifier.setDateRange,
-                  disabled: isLoading,
+                  disabled: isGenerating || state.isLoadingOptions,
                   startError: errors['startDate'],
                   endError: errors['endDate'],
                   rangeError: errors['dateRange'],
@@ -141,7 +140,9 @@ class _FilterSection extends StatelessWidget {
                 if (_hasExtraFilters(key)) ...[
                   const SizedBox(height: OpenVtsSpacing.sm),
                   _ExtraFilters(
-                      state: state, notifier: notifier, disabled: isLoading),
+                      state: state,
+                      notifier: notifier,
+                      disabled: isGenerating || state.isLoadingOptions),
                 ],
               ],
             ),
@@ -155,6 +156,210 @@ class _FilterSection extends StatelessWidget {
     return key != UserReportKey.distance &&
         key != UserReportKey.driven &&
         key != UserReportKey.details;
+  }
+}
+
+/// Renders the vehicle-scope selector with proper loading, error, empty, and
+/// success states. This is where the "All 0 vehicles" bug was manifested.
+class _OptionsWrapper extends StatelessWidget {
+  const _OptionsWrapper({
+    required this.state,
+    required this.notifier,
+    required this.isDark,
+    required this.reportKey,
+    required this.isGenerating,
+    this.scopeError,
+  });
+
+  final UserReportWorkspaceState state;
+  final UserReportWorkspaceNotifier notifier;
+  final bool isDark;
+  final UserReportKey reportKey;
+  final bool isGenerating;
+  final String? scopeError;
+
+  @override
+  Widget build(BuildContext context) {
+    // Case 1: still loading options for the first time.
+    if (state.isLoadingOptions && state.options == null) {
+      return _OptionsLoading(isDark: isDark);
+    }
+
+    // Case 2: options failed to load and we have no cached options.
+    if (state.optionsError != null && state.options == null) {
+      return _OptionsError(
+        message: state.optionsError!,
+        onRetry: notifier.refreshOptions,
+        isDark: isDark,
+      );
+    }
+
+    final options = state.options ?? const UserReportOptions(vehicles: [], groups: []);
+
+    // Case 3: options loaded but authenticated user has no assigned vehicles.
+    if (options.vehicles.isEmpty && !state.isLoadingOptions) {
+      return _OptionsEmpty(isDark: isDark, onRetry: notifier.refreshOptions);
+    }
+
+    // Case 4: options loaded with vehicles — render the selector.
+    return UserReportVehicleScopeSelector(
+      scope: state.scope,
+      options: options,
+      onScopeChanged: notifier.setScope,
+      forceSingle: reportKey.requiresSingleVehicle,
+      disabled: isGenerating,
+      error: scopeError,
+    );
+  }
+}
+
+class _OptionsLoading extends StatelessWidget {
+  const _OptionsLoading({required this.isDark});
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: OpenVtsSpacing.sm, vertical: 14),
+      decoration: BoxDecoration(
+        color: isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+        border: Border.all(
+            color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: isDark
+                  ? OpenVtsColors.darkTextSecondary
+                  : OpenVtsColors.textSecondary,
+            ),
+          ),
+          const SizedBox(width: OpenVtsSpacing.sm),
+          Text(
+            'Loading vehicles…',
+            style: OpenVtsTypography.body.copyWith(
+                color: isDark
+                    ? OpenVtsColors.darkTextSecondary
+                    : OpenVtsColors.textSecondary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OptionsError extends StatelessWidget {
+  const _OptionsError(
+      {required this.message, required this.onRetry, required this.isDark});
+  final String message;
+  final VoidCallback onRetry;
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(OpenVtsSpacing.sm),
+      decoration: BoxDecoration(
+        color: isDark
+            ? OpenVtsColors.darkSurface
+            : OpenVtsColors.error.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+        border: Border.all(
+            color: isDark
+                ? OpenVtsColors.darkBorder
+                : OpenVtsColors.error.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.warning_amber_rounded,
+              size: 16,
+              color:
+                  isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.error),
+          const SizedBox(width: OpenVtsSpacing.xs),
+          Expanded(
+            child: Text(
+              message,
+              style: OpenVtsTypography.meta.copyWith(
+                  color: isDark
+                      ? OpenVtsColors.darkTextSecondary
+                      : OpenVtsColors.error),
+            ),
+          ),
+          const SizedBox(width: OpenVtsSpacing.xs),
+          TextButton(
+            onPressed: onRetry,
+            style: TextButton.styleFrom(
+              visualDensity: VisualDensity.compact,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            ),
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OptionsEmpty extends StatelessWidget {
+  const _OptionsEmpty({required this.isDark, required this.onRetry});
+  final bool isDark;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(OpenVtsSpacing.sm),
+      decoration: BoxDecoration(
+        color: isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
+        borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+        border: Border.all(
+            color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.directions_car_outlined, size: 16),
+              const SizedBox(width: OpenVtsSpacing.xs),
+              Expanded(
+                child: Text(
+                  'No vehicles assigned to your account',
+                  style: OpenVtsTypography.body,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Contact your administrator to assign vehicles.',
+            style: OpenVtsTypography.meta.copyWith(
+                color: isDark
+                    ? OpenVtsColors.darkTextSecondary
+                    : OpenVtsColors.textSecondary),
+          ),
+          const SizedBox(height: 6),
+          GestureDetector(
+            onTap: onRetry,
+            child: Text(
+              'Refresh',
+              style: OpenVtsTypography.meta.copyWith(
+                  color: isDark
+                      ? OpenVtsColors.darkTextPrimary
+                      : OpenVtsColors.brandInk,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -228,16 +433,22 @@ class _ActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = state.genStatus == ReportGenStatus.loading;
+    final isGenerating = state.genStatus == ReportGenStatus.loading;
+    final optionsReady = state.options != null && state.optionsError == null;
+    final canGenerate = !isGenerating && optionsReady;
     final hasResult = state.genStatus == ReportGenStatus.success ||
         state.genStatus == ReportGenStatus.empty;
     return Row(
       children: [
         Expanded(
           child: OpenVtsButton(
-            label: isLoading ? 'Generating…' : 'Generate Report',
-            onPressed: isLoading ? null : notifier.generate,
-            isLoading: isLoading,
+            label: isGenerating
+                ? 'Generating…'
+                : state.isLoadingOptions
+                    ? 'Loading vehicles…'
+                    : 'Generate Report',
+            onPressed: canGenerate ? notifier.generate : null,
+            isLoading: isGenerating,
           ),
         ),
         if (hasResult) ...[

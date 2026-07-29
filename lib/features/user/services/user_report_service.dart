@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../../../core/api/api_client.dart';
 import '../../../core/api/api_endpoints.dart';
 import '../../../core/api/api_options.dart';
@@ -9,12 +11,21 @@ class UserReportService {
   final ApiClient _apiClient;
 
   Future<UserReportOptions> getOptions() async {
-    final response = await _apiClient.get<UserReportOptions>(
-      ApiEndpoints.user.reportOptions,
-      options: normalReadOptions(),
-      parser: UserReportOptions.fromJson,
-    );
-    return response.data;
+    debugPrint('[Reports] GET ${ApiEndpoints.user.reportOptions}');
+    try {
+      final response = await _apiClient.get<UserReportOptions>(
+        ApiEndpoints.user.reportOptions,
+        options: normalReadOptions(),
+        parser: UserReportOptions.fromJson,
+      );
+      debugPrint(
+          '[Reports] options loaded: ${response.data.vehicles.length} vehicles, '
+          '${response.data.groups.length} groups');
+      return response.data;
+    } catch (e) {
+      debugPrint('[Reports] options error: ${e.runtimeType}');
+      rethrow;
+    }
   }
 
   Future<UserReportPage> generate({
@@ -27,6 +38,9 @@ class UserReportService {
     required DateTime to,
     String? cursor,
   }) async {
+    debugPrint(
+        '[Reports] POST ${ApiEndpoints.user.reportByKey(reportKey.apiValue)} '
+        'scope=${vehicleScope['mode']} tz=$timeZone cursor=${cursor ?? 'none'}');
     final response = await _apiClient.post<UserReportPage>(
       ApiEndpoints.user.reportByKey(reportKey.apiValue),
       data: <String, dynamic>{
@@ -38,7 +52,7 @@ class UserReportService {
         'to': to.toUtc().toIso8601String(),
         if (cursor?.trim().isNotEmpty == true) 'cursor': cursor!.trim(),
       },
-      options: normalWriteOptions(),
+      options: reportGenerateOptions(),
       parser: UserReportPage.fromJson,
     );
     return response.data;
