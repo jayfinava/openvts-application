@@ -188,10 +188,10 @@ class _CatalogCard extends StatelessWidget {
 
   static const _dateChip = {
     UserReportKey.distance: 'Date range',
-    UserReportKey.driven: 'Date range',
+    UserReportKey.driven: 'Date & time',
     UserReportKey.details: 'Date range',
-    UserReportKey.geofence: 'Date range',
-    UserReportKey.alerts: 'Date range',
+    UserReportKey.geofence: 'Date & time',
+    UserReportKey.alerts: 'Date & time',
     UserReportKey.overspeed: 'Date & time',
     UserReportKey.sensor: 'Date & time',
     UserReportKey.logs: 'Date & time',
