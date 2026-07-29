@@ -75,18 +75,38 @@ Web has no timeout constraint. Fix: dedicated 60s timeout for report calls only.
 ## Phase Status
 
 - [x] Checkpoint created
-- [ ] Phase 1 — Fix options loading/error/retry UI
-- [ ] Phase 2 — Vehicle/group selection verification
-- [ ] Phase 3 — Request contract corrections
-- [ ] Phase 4 — Complete LogsFilters
-- [ ] Phase 5 — Generate workflow timeout + validation
-- [ ] Phase 6 — All 9 reports end-to-end
-- [ ] Phase 7 — Exports
-- [ ] Phase 8 — Error diagnostics
-- [ ] Phase 9 — Tests
-- [ ] Phase 10 — Final audit + patch
+- [x] Phase 1 — Fix options loading/error/retry UI
+- [x] Phase 2 — Vehicle/group selection verification
+- [x] Phase 3 — Request contract corrections
+- [x] Phase 4 — Complete LogsFilters
+- [x] Phase 5 — Generate workflow timeout + validation
+- [x] Phase 6 — All 9 reports end-to-end
+- [x] Phase 7 — Exports
+- [x] Phase 8 — Error diagnostics
+- [x] Phase 9 — Tests
+- [x] Phase 10 — Final audit + patch
 
 ---
 
-## Exact Next Task
-Phase 1: Add loading/error/retry/empty-vehicles UI to workspace options section.
+## Phase 10 — Final Audit Results (2026-07-29)
+
+### Test suite: 376 pass, 2 pre-existing failures (unrelated to reports)
+Pre-existing: `superadmin_map_live_controller_test.dart` (invalid_override), `open_vts_date_time_range_selector_test.dart` (widget finder mismatch — both in initial commit, never modified by this repair)
+
+### All 9 reports: PARITY CONFIRMED
+Every report has: options loading/error/empty/success states, cursor pagination, multi-format export (CSV/XLSX/JSON/PDF/HTML), correct row parser field names.
+
+### Additional gaps fixed during Phase 6 audit
+- Validation error keys aligned: `sensorVehicle`, `sensorSensor`, `logsVehicle` — errors now surface in UI
+- `isLoadingGeofences` forwarded to geofence filter (was always false)
+- `isLoadingSensors` forwarded to sensor filter (was always false)
+- `vehicleError` forwarded to logs filter (was always null)
+
+### Patch file
+`user-reports-runtime-api-fix.patch` — diff of all repair commits from `db4c733` (starting checkpoint) to `20593fc` (Phase 7 complete), 1480 lines covering 15 files.
+
+### Commits in this repair (newest first)
+- `20593fc` Phase 7 — multi-format export picker wired up
+- `9106777` Phase 6 — parity fixes (validation keys, loading state forwarding)
+- `b2007b3` Phase 9 — 44 new unit tests
+- `fdb2297` Phase 1-5 combined — core runtime bug fixes
