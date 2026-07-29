@@ -177,29 +177,37 @@ New report tests: 126 passing, 0 failing.
 
 ---
 
-## Known Limitations
+## Known Limitations (Updated 2026-07-29 Recovery Pass)
 
-1. **Sensor chart x-axis**: Uses list index as x-coordinate (not real Unix timestamp) because `SensorRow.timestampMs` does not exist on the API model. Chart shape is correct; time-axis labels are omitted. The web does the same when timestamps are unavailable.
+1. **Sensor chart x-axis** *(FIXED in Phase 3)*: Now parses `SensorRow.timestamp` (ISO string) to real `DateTime` and uses milliseconds-since-epoch as chart x-coordinate. Falls back to index when timestamp is empty.
 
-2. **Timeline GPS map vehicle ID**: Requires `vehicleId` in `row.raw['vehicleId']`. If the API omits it from the row payload, the map shows "No vehicle ID in row." — same fallback as web's no-GPS state.
+2. **Timeline GPS map vehicle ID** *(FIXED in Phase 4)*: `TimelineRow` now exposes `vehicleId` as a proper typed field (parsed from `raw['vehicleId']`). `_fetchMap()` uses `r.vehicleId` directly.
 
 3. **Export on web platform**: Export service uses `share_plus`/`path_provider` which behave differently on Flutter web vs mobile. PDF delegates to the `printing` package's share sheet. Untested on web platform.
 
-4. **Localization depth**: Non-English ARBs (ar, es, fr, hi, pt) have 31 keys each (titles + catalog descriptions). The remaining 82 English keys (filter labels, KPI labels, validation messages, toolbar text) are hardcoded strings in the widgets pending full i18n sweep.
+4. **Localization depth**: Non-English ARBs (ar, es, fr, hi, pt) have 31 keys each (titles + catalog descriptions). The remaining 82 English keys (filter labels, KPI labels, validation messages, toolbar text) are hardcoded strings in the widgets pending full i18n sweep. *(Phase 2 deferred — out of scope for this recovery pass)*
 
 ---
 
-## Next Task (if resuming)
+## Phases Remaining After Recovery Checkpoint
 
-All implementation tasks are complete. The only remaining action is to verify the patch file exists:
+- **Phase 3** — Sensor timestamp parity: parse ISO timestamp → real DateTime x-axis
+- **Phase 4** — Timeline vehicleId parity: expose proper field instead of raw map lookup
+- Phases 5–10 can follow if time permits
 
-```
-D:\Development\openvts-application\user-reports-full-web-parity.patch
-```
+---
 
-If missing, regenerate with:
+## Next Task (if resuming after Phase 4)
+
+Run final validation:
 ```bash
-cd "D:\Development\openvts-application"
+flutter gen-l10n
+dart format .
+flutter analyze
+flutter test
+```
+Then generate patch:
+```bash
 git diff HEAD > user-reports-full-web-parity.patch
 ```
 
