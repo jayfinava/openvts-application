@@ -286,7 +286,7 @@ class _ReportResult extends StatelessWidget {
       reportKey: state.reportKey,
       rows: state.rows,
       allColumns: state.reportKey.preferredColumns,
-      columnLabels: {},
+      columnLabels: state.reportKey.columnLabels,
       format: format,
       generatedAt: state.generatedAt,
       warning: state.warning,
