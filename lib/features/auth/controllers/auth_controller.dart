@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -88,9 +89,49 @@ class AuthController extends StateNotifier<AuthState> {
         );
         await setSession(response);
       } catch (error) {
-        _setUnauthenticated(errorMessage: error.toString());
+        _setUnauthenticated(errorMessage: _friendlyLoginError(error));
       }
     });
+  }
+
+  static String _friendlyLoginError(Object error) {
+    if (error is DioException) {
+      if (error.type == DioExceptionType.connectionError ||
+          error.type == DioExceptionType.unknown) {
+        final msg = error.message ?? '';
+        if (msg.contains('XMLHttpRequest') ||
+            msg.contains('connection error') ||
+            msg.toLowerCase().contains('cors') ||
+            msg.contains('Failed to fetch')) {
+          return 'Cannot reach the server. '
+              'If you are using the web app, the server must allow cross-origin '
+              'requests (CORS). Check the Server URL in settings and ensure '
+              'the server is reachable from this device.';
+        }
+        return 'Could not connect to the server. '
+            'Check the Server URL in settings and your network connection.';
+      }
+      if (error.type == DioExceptionType.connectionTimeout ||
+          error.type == DioExceptionType.receiveTimeout ||
+          error.type == DioExceptionType.sendTimeout) {
+        return 'Connection timed out. '
+            'Check the Server URL in settings and your network connection.';
+      }
+      if (error.type == DioExceptionType.badResponse) {
+        final status = error.response?.statusCode;
+        if (status == 401 || status == 403) {
+          return 'Incorrect username or password.';
+        }
+        if (status != null && status >= 500) {
+          return 'The server returned an error ($status). '
+              'Try again or contact your administrator.';
+        }
+      }
+    }
+    final raw = error.toString();
+    final cleaned =
+        raw.replaceFirst(RegExp(r'^(ApiException\(\d+\)|DioException[^:]*): '), '');
+    return cleaned.isNotEmpty ? cleaned : raw;
   }
 
   Future<void> enterDemo() {

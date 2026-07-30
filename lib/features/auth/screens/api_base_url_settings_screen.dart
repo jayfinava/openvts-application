@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,62 +24,52 @@ class ApiBaseUrlSettingsScreen extends ConsumerStatefulWidget {
 class _ApiBaseUrlSettingsScreenState
     extends ConsumerState<ApiBaseUrlSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _customUrlController;
+  late final TextEditingController _urlController;
 
   @override
   void initState() {
     super.initState();
-    final currentUrl = ref.read(apiBaseUrlProvider);
-    _customUrlController = TextEditingController(
-      text: currentUrl == AppConfig.defaultApiBaseUrl ? '' : currentUrl,
-    );
+    _urlController =
+        TextEditingController(text: ref.read(apiBaseUrlProvider));
   }
 
   @override
   void dispose() {
-    _customUrlController.dispose();
+    _urlController.dispose();
     super.dispose();
   }
 
   Future<void> _save() async {
-    if (_formKey.currentState?.validate() != true) {
-      return;
-    }
+    if (_formKey.currentState?.validate() != true) return;
 
-    final notifier = ref.read(apiBaseUrlProvider.notifier);
-    await notifier.saveCustomUrl(_customUrlController.text);
+    await ref
+        .read(apiBaseUrlProvider.notifier)
+        .saveCustomUrl(_urlController.text);
 
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
 
-    ToastHelper.show(context, 'API base URL updated');
+    ToastHelper.show(context, 'Server URL updated');
     Navigator.of(context).pop();
   }
 
   Future<void> _reset() async {
-    final notifier = ref.read(apiBaseUrlProvider.notifier);
-    await notifier.resetToDefault();
-    _customUrlController.clear();
+    await ref.read(apiBaseUrlProvider.notifier).resetToDefault();
+    _urlController.text = AppConfig.defaultApiBaseUrl;
 
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
 
-    ToastHelper.show(context, 'API base URL reset to default');
+    ToastHelper.show(context, 'Server URL reset to default');
   }
 
-  String? _validateCustomUrl(String? value) {
-    final trimmedValue = value?.trim() ?? '';
-    if (trimmedValue.isEmpty) {
-      return 'Enter a custom URL';
-    }
+  String? _validateUrl(String? value) {
+    final trimmed = value?.trim() ?? '';
+    if (trimmed.isEmpty) return 'Enter a server URL';
 
-    final uri = Uri.tryParse(trimmedValue);
+    final uri = Uri.tryParse(trimmed);
     final hasValidScheme = uri?.scheme == 'http' || uri?.scheme == 'https';
 
     if (uri == null || !uri.isAbsolute || !hasValidScheme || uri.host.isEmpty) {
-      return 'Enter a valid API URL';
+      return 'Enter a valid URL (e.g. http://192.168.1.10:3000/api)';
     }
 
     return null;
@@ -90,7 +81,7 @@ class _ApiBaseUrlSettingsScreenState
     final isUsingDefault = activeUrl == AppConfig.defaultApiBaseUrl;
 
     return OpenVtsPageScaffold(
-      title: 'Base URL Settings',
+      title: 'Server URL',
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -101,116 +92,52 @@ class _ApiBaseUrlSettingsScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        const Text(
-                          'Default',
-                          style: OpenVtsTypography.titleSmall,
-                        ),
-                        const Spacer(),
-                        if (isUsingDefault)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: OpenVtsSpacing.sm,
-                              vertical: OpenVtsSpacing.xs,
-                            ),
-                            decoration: BoxDecoration(
-                              color: OpenVtsColors.surface,
-                              borderRadius: BorderRadius.circular(999),
-                              border: Border.all(color: OpenVtsColors.border),
-                            ),
-                            child: Text(
-                              'Active',
-                              style: OpenVtsTypography.meta.copyWith(
-                                color: OpenVtsColors.textSecondary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: OpenVtsSpacing.sm),
-                    SelectableText(
-                      AppConfig.defaultApiBaseUrl,
-                      style: OpenVtsTypography.body.copyWith(
-                        color: OpenVtsColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: OpenVtsSpacing.md),
-              OpenVtsCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Text(
-                          'Custom URL',
-                          style: OpenVtsTypography.titleSmall,
-                        ),
-                        const Spacer(),
-                        if (!isUsingDefault)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: OpenVtsSpacing.sm,
-                              vertical: OpenVtsSpacing.xs,
-                            ),
-                            decoration: BoxDecoration(
-                              color: OpenVtsColors.surface,
-                              borderRadius: BorderRadius.circular(999),
-                              border: Border.all(color: OpenVtsColors.border),
-                            ),
-                            child: Text(
-                              'Active',
-                              style: OpenVtsTypography.meta.copyWith(
-                                color: OpenVtsColors.textSecondary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: OpenVtsSpacing.md),
                     OpenVtsTextField(
-                      label: 'Custom URL',
-                      controller: _customUrlController,
-                      hintText: 'https://your-server.com/api',
+                      label: 'Server URL',
+                      controller: _urlController,
+                      hintText: 'http://192.168.1.10:3000/api',
                       keyboardType: TextInputType.url,
                       textInputAction: TextInputAction.done,
-                      prefixIcon: Icons.link_rounded,
-                      validator: _validateCustomUrl,
+                      prefixIcon: Icons.dns_rounded,
+                      validator: _validateUrl,
                       onFieldSubmitted: (_) => _save(),
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     Text(
-                      'Current: $activeUrl',
+                      'Include the full path, e.g. http://192.168.1.10:3000/api',
                       style: OpenVtsTypography.meta.copyWith(
                         color: OpenVtsColors.textSecondary,
                       ),
                     ),
+                    if (kIsWeb) ...[
+                      const SizedBox(height: OpenVtsSpacing.xs),
+                      Text(
+                        'Web browsers require the server to allow cross-origin requests (CORS). If login fails with a connection error, enable CORS on your server.',
+                        style: OpenVtsTypography.meta.copyWith(
+                          color: OpenVtsColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                    if (!isUsingDefault) ...[
+                      const SizedBox(height: OpenVtsSpacing.sm),
+                      GestureDetector(
+                        onTap: _reset,
+                        child: Text(
+                          'Reset to default (${AppConfig.defaultApiBaseUrl})',
+                          style: OpenVtsTypography.meta.copyWith(
+                            color: OpenVtsColors.textSecondary,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
               const SizedBox(height: OpenVtsSpacing.lg),
-              Row(
-                children: [
-                  Expanded(
-                    child: OpenVtsButton(
-                      label: 'Reset',
-                      variant: OpenVtsButtonVariant.secondary,
-                      onPressed: _reset,
-                    ),
-                  ),
-                  const SizedBox(width: OpenVtsSpacing.md),
-                  Expanded(
-                    child: OpenVtsButton(
-                      label: 'Save',
-                      onPressed: _save,
-                    ),
-                  ),
-                ],
+              OpenVtsButton(
+                label: 'Save',
+                onPressed: _save,
               ),
             ],
           ),
