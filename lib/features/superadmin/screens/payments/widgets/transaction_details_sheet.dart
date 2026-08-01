@@ -65,7 +65,7 @@ class TransactionDetailsSheet extends StatelessWidget {
                       child: Text(
                         'Transaction Details',
                         style: OpenVtsTypography.titleSmall.copyWith(
-                          color: OpenVtsColors.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -98,7 +98,7 @@ class TransactionDetailsSheet extends StatelessWidget {
                               headerAmount,
                               style: OpenVtsTypography.numeric.copyWith(
                                 fontSize: 26,
-                                color: OpenVtsColors.textPrimary,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -337,7 +337,7 @@ class _StatusChip extends StatelessWidget {
       child: Text(
         label,
         style: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.textPrimary,
+          color: Theme.of(context).colorScheme.onSurface,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -477,7 +477,7 @@ class _DetailRow extends StatelessWidget {
             overflow:
                 row.multiline ? TextOverflow.visible : TextOverflow.ellipsis,
             style: OpenVtsTypography.body.copyWith(
-              color: OpenVtsColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),

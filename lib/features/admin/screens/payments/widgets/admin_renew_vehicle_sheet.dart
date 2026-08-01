@@ -82,31 +82,34 @@ class _AdminRenewVehicleSheetState
                     .toList(growable: false),
                 onChanged: (value) => _selectUser(value),
               ),
-              const SizedBox(height: OpenVtsSpacing.sm),
-              OpenVtsSearchField(
-                hintText: 'Search vehicles by name, plate, plan...',
-                onChanged: (v) => setState(() => _search = v),
-              ),
-              const SizedBox(height: OpenVtsSpacing.sm),
-              Row(
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _selected
-                          ..clear()
-                          ..addAll(filtered.map((e) => e.id));
-                      });
-                    },
-                    child: const Text('Select all filtered'),
+              if (_loadingVehicles) ...[
+                const SizedBox(height: OpenVtsSpacing.sm),
+                const LinearProgressIndicator(minHeight: 2),
+              ],
+              if (_userId != null && !_loadingVehicles) ...[
+                const SizedBox(height: OpenVtsSpacing.sm),
+                OpenVtsSearchField(
+                  hintText: 'Search vehicles by name, plate, plan...',
+                  onChanged: (v) => setState(() => _search = v),
+                ),
+                if (filtered.length > 1) ...[
+                  const SizedBox(height: OpenVtsSpacing.xs),
+                  Row(
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _selected
+                              ..clear()
+                              ..addAll(filtered.map((e) => e.id));
+                          });
+                        },
+                        child: const Text('Select all filtered'),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-              if (_loadingVehicles)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: OpenVtsSpacing.sm),
-                  child: LinearProgressIndicator(minHeight: 2),
-                ),
+              ],
               ...filtered.map((vehicle) {
                 final checked = _selected.contains(vehicle.id);
                 return CheckboxListTile(

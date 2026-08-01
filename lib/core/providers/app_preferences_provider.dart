@@ -171,6 +171,25 @@ class AppLocalizationPreferencesController
     String? layoutDirection,
     String? units,
   }) async {
+    // Update state immediately so the UI (locale, theme, direction) reacts
+    // before the async cache writes complete — especially important on mobile
+    // where SharedPreferences writes can take a few frames.
+    state = state.copyWith(
+      languageCode: languageCode,
+      dateFormat: dateFormat,
+      timeFormat: timeFormat,
+      timezone: timezone,
+      themeMode: themeMode,
+      layoutDirection: layoutDirection?.toUpperCase(),
+      units: units?.toUpperCase(),
+    );
+
+    updateGlobalDateFormatConfig(
+      datePattern: state.dateFormat,
+      use24Hour: state.use24Hour,
+    );
+
+    // Persist in the background after the state has already been applied.
     if (languageCode != null) {
       await _localCache.setString(StorageKeys.appLanguageCode, languageCode);
     }
@@ -198,21 +217,6 @@ class AppLocalizationPreferencesController
         units.toUpperCase(),
       );
     }
-
-    state = state.copyWith(
-      languageCode: languageCode,
-      dateFormat: dateFormat,
-      timeFormat: timeFormat,
-      timezone: timezone,
-      themeMode: themeMode,
-      layoutDirection: layoutDirection?.toUpperCase(),
-      units: units?.toUpperCase(),
-    );
-
-    updateGlobalDateFormatConfig(
-      datePattern: state.dateFormat,
-      use24Hour: state.use24Hour,
-    );
   }
 
   Future<void> applyFromSuperadminSettings({

@@ -97,13 +97,15 @@ class AdminPaymentsService {
         .toList(growable: false);
   }
 
-  Future<void> renewVehicles(AdminRenewPaymentRequest request) async {
-    await _apiClient.post<void>(
+  Future<AdminPaymentTransaction?> renewVehicles(
+      AdminRenewPaymentRequest request) async {
+    final response = await _apiClient.post<dynamic>(
       ApiEndpoints.admin.renewVehiclesPayment,
       data: request.toJson(),
       options: _mutationOptions,
-      parser: (_) {},
+      parser: (json) => json,
     );
+    return parseRenewalTransaction(response.data);
   }
 
   List<dynamic> _extractList(dynamic json) {

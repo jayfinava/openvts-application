@@ -5,11 +5,14 @@ import '../models/admin_vehicle_state.dart';
 import '../services/admin_vehicle_service.dart';
 
 class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
-  AdminVehiclesController({required AdminVehicleService service})
-      : _service = service,
+  AdminVehiclesController({
+    required AdminVehicleService service,
+    this.onDashboardRefresh,
+  })  : _service = service,
         super(AdminVehiclesState.initial());
 
   final AdminVehicleService _service;
+  final void Function()? onDashboardRefresh;
 
   Future<void> load() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
@@ -105,6 +108,7 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
       }
       state = state.copyWith(isCreating: false);
       await refresh();
+      onDashboardRefresh?.call();
     } catch (error) {
       if (!mounted) {
         return;
@@ -180,6 +184,7 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
       await _service.updateVehicleStatus(id: id, isActive: isActive);
       state = state.copyWith(updatingIds: {...state.updatingIds}..remove(id));
       _applyFilters();
+      onDashboardRefresh?.call();
       return true;
     } catch (error) {
       state = state.copyWith(
@@ -202,6 +207,7 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
       state = state.copyWith(
           deletingIds: {...state.deletingIds}..remove(id), vehicles: vehicles);
       _applyFilters();
+      onDashboardRefresh?.call();
       return true;
     } catch (error) {
       state = state.copyWith(

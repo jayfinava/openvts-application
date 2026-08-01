@@ -136,9 +136,20 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
   Future<bool> renewVehicles(AdminRenewPaymentRequest request) async {
     state = state.copyWith(isRenewing: true, errorMessage: null);
     try {
-      await _service.renewVehicles(request);
+      final renewed = await _service.renewVehicles(request);
       if (!mounted) return false;
-      state = state.copyWith(isRenewing: false);
+      // Optimistically prepend the returned transaction before the full
+      // refresh so the list updates immediately even if the reload is slow.
+      if (renewed != null) {
+        final merged = _mergeById(_serverItems, [renewed]);
+        _serverItems = merged;
+        state = state.copyWith(
+          transactions: _applyLocalFilters(merged),
+          isRenewing: false,
+        );
+      } else {
+        state = state.copyWith(isRenewing: false);
+      }
       await refresh();
       return true;
     } catch (error) {

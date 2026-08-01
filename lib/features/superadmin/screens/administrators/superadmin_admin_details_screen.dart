@@ -255,8 +255,10 @@ class _HeaderStatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        isActive ? OpenVtsColors.brandInk : OpenVtsColors.textTertiary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = isActive
+        ? (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk)
+        : (isDark ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary);
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -611,8 +613,12 @@ class _SummaryCard extends ConsumerWidget {
                   _Pill(
                     label: isActive ? 'Active' : 'Inactive',
                     color: isActive
-                        ? OpenVtsColors.brandInk
-                        : OpenVtsColors.textTertiary,
+                        ? (Theme.of(context).brightness == Brightness.dark
+                            ? OpenVtsColors.darkTextPrimary
+                            : OpenVtsColors.brandInk)
+                        : (Theme.of(context).brightness == Brightness.dark
+                            ? OpenVtsColors.darkTextTertiary
+                            : OpenVtsColors.textTertiary),
                   ),
                   if (isVerified) ...[
                     const SizedBox(height: 4),

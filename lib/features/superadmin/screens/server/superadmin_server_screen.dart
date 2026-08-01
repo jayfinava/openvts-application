@@ -319,15 +319,18 @@ class _ImportantBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textPrimary =
-        isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
     final scheme = Theme.of(context).colorScheme;
+    final bannerBg = isDark ? scheme.errorContainer : OpenVtsColors.white;
+    final bannerBorder = isDark
+        ? scheme.error.withValues(alpha: 0.3)
+        : OpenVtsColors.textPrimary;
+    final bannerText = isDark ? OpenVtsColors.darkTextPrimary : scheme.error;
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       decoration: BoxDecoration(
-        color: scheme.errorContainer,
+        color: bannerBg,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-        border: Border.all(color: scheme.error.withValues(alpha: 0.3)),
+        border: Border.all(color: bannerBorder),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,7 +340,7 @@ class _ImportantBanner extends StatelessWidget {
             child: Icon(
               Icons.warning_amber_rounded,
               size: 18,
-              color: scheme.error,
+              color: bannerText,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -348,7 +351,7 @@ class _ImportantBanner extends StatelessWidget {
                 Text(
                   'Important',
                   style: OpenVtsTypography.label.copyWith(
-                    color: textPrimary,
+                    color: bannerText,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -356,7 +359,7 @@ class _ImportantBanner extends StatelessWidget {
                 Text(
                   'Stopping Frontend/Backend/Listener can lock you out of the application. This page allows Start and Restart for those services, but Stop is disabled.',
                   style: OpenVtsTypography.body.copyWith(
-                    color: textPrimary,
+                    color: bannerText,
                   ),
                 ),
               ],
@@ -647,15 +650,26 @@ class _ServicesSection extends StatelessWidget {
               ),
               Builder(
                 builder: (context) {
-                  final scheme = Theme.of(context).colorScheme;
+                  final chipIsDark =
+                      Theme.of(context).brightness == Brightness.dark;
+                  final chipBg = chipIsDark
+                      ? OpenVtsColors.darkSurfaceElevated
+                      : OpenVtsColors.white;
+                  final chipFg = chipIsDark
+                      ? OpenVtsColors.darkTextPrimary
+                      : OpenVtsColors.textPrimary;
+                  final chipBorder = chipIsDark
+                      ? OpenVtsColors.darkBorder
+                      : OpenVtsColors.textPrimary;
                   return Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: OpenVtsSpacing.sm,
                       vertical: OpenVtsSpacing.xs,
                     ),
                     decoration: BoxDecoration(
-                      color: scheme.primaryContainer,
+                      color: chipBg,
                       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+                      border: Border.all(color: chipBorder),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -663,13 +677,13 @@ class _ServicesSection extends StatelessWidget {
                         Icon(
                           Icons.bubble_chart_rounded,
                           size: 12,
-                          color: scheme.primary,
+                          color: chipFg,
                         ),
                         const SizedBox(width: 6),
                         Text(
                           'System Metrics',
                           style: OpenVtsTypography.meta.copyWith(
-                            color: scheme.primary,
+                            color: chipFg,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -1012,8 +1026,11 @@ class _ServiceStatusPill extends StatelessWidget {
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: isDark ? OpenVtsColors.darkSurfaceElevated : OpenVtsColors.white,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+        border: Border.all(
+          color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

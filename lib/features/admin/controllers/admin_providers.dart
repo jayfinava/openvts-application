@@ -130,6 +130,12 @@ final adminVehiclesControllerProvider = StateNotifierProvider.autoDispose<
     AdminVehiclesController, AdminVehiclesState>((ref) {
   final controller = AdminVehiclesController(
     service: ref.watch(adminVehicleServiceProvider),
+    onDashboardRefresh: () {
+      try {
+        ref.read(adminDashboardControllerProvider.notifier).refresh();
+        // ignore: empty_catches
+      } catch (_) {}
+    },
   );
   controller.load();
   return controller;
@@ -142,6 +148,12 @@ final adminUsersControllerProvider =
   final controller = AdminUsersController(
     service: ref.watch(adminUsersServiceProvider),
     authController: ref.read(authControllerProvider.notifier),
+    onDashboardRefresh: () {
+      try {
+        ref.read(adminDashboardControllerProvider.notifier).refresh();
+        // ignore: empty_catches
+      } catch (_) {}
+    },
   );
   controller.load();
   return controller;

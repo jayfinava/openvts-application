@@ -150,12 +150,19 @@ class _SupportHeader extends StatelessWidget {
         final createButton = FilledButton.icon(
           onPressed: isCreating ? null : onCreatePressed,
           style: FilledButton.styleFrom(
-            minimumSize: const Size(0, 34),
+            minimumSize: const Size(0, 42),
             backgroundColor: OpenVtsColors.brandInk,
             foregroundColor: OpenVtsColors.white,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            visualDensity: VisualDensity.compact,
-            padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.sm),
+            padding: const EdgeInsets.symmetric(
+              horizontal: OpenVtsSpacing.md,
+              vertical: OpenVtsSpacing.sm,
+            ),
+            textStyle: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.1,
+            ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
             ),
@@ -165,7 +172,7 @@ class _SupportHeader extends StatelessWidget {
                   dimension: 15,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Icon(Icons.add_rounded, size: 17),
+              : const Icon(Icons.add_rounded, size: 18),
           label: const Text('Create'),
         );
 

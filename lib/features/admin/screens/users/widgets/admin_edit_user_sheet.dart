@@ -48,6 +48,8 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
   var _isLoadingDetails = false;
   var _isLoadingStates = false;
   var _isLoadingCities = false;
+  var _statesLoaded = false;
+  var _citiesLoaded = false;
 
   @override
   void initState() {
@@ -210,22 +212,38 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
                       label: 'State',
                       value: _stateCode,
                       options: _stateOptions,
-                      hintText: 'Select state',
+                      hintText: _countryCode == null
+                          ? 'Select a country first'
+                          : (_statesLoaded && _states.isEmpty)
+                              ? 'No states available'
+                              : 'Select state',
                       prefixIcon: Icons.map_outlined,
                       isLoading: _isLoadingStates,
-                      validator: requiredDropdown,
-                      onChanged: _countryCode == null ? null : _onStateChanged,
+                      validator: (_statesLoaded && _states.isNotEmpty)
+                          ? requiredDropdown
+                          : null,
+                      onChanged: (_countryCode == null ||
+                              (_statesLoaded && _states.isEmpty))
+                          ? null
+                          : _onStateChanged,
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     AdminUserDropdownField(
                       label: 'City',
                       value: _city,
                       options: _cityOptions,
-                      hintText: 'Select city',
+                      hintText: _stateCode == null
+                          ? 'Select a state first'
+                          : (_citiesLoaded && _cities.isEmpty)
+                              ? 'No cities available'
+                              : 'Select city',
                       prefixIcon: Icons.location_city_rounded,
                       isLoading: _isLoadingCities,
-                      validator: requiredDropdown,
-                      onChanged: _stateCode == null
+                      validator: (_citiesLoaded && _cities.isNotEmpty)
+                          ? requiredDropdown
+                          : null,
+                      onChanged: (_stateCode == null ||
+                              (_citiesLoaded && _cities.isEmpty))
                           ? null
                           : (value) => setState(() => _city = value),
                     ),
@@ -379,6 +397,8 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
       _city = null;
       _states = const <AdminUserStateOption>[];
       _cities = const <AdminUserCityOption>[];
+      _statesLoaded = false;
+      _citiesLoaded = false;
     });
 
     await _loadStates(value, clearSelection: true);
@@ -393,6 +413,7 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
       _stateCode = value;
       _city = null;
       _cities = const <AdminUserCityOption>[];
+      _citiesLoaded = false;
     });
 
     await _loadCities(_countryCode, value, clearSelection: true);
@@ -418,6 +439,7 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
 
       setState(() {
         _states = states;
+        _statesLoaded = true;
         if (clearSelection) {
           _stateCode = null;
         }
@@ -461,6 +483,7 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
 
       setState(() {
         _cities = cities;
+        _citiesLoaded = true;
         if (clearSelection) {
           _city = null;
         }

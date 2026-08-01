@@ -244,7 +244,7 @@ class _SummaryRow extends StatelessWidget {
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: _SummaryTile(
-            label: 'Expiring',
+            label: 'Expired',
             value: expiring.toString(),
             icon: Icons.schedule_outlined,
           ),
@@ -412,7 +412,7 @@ class _FilterChips extends StatelessWidget {
     (_VehicleFilter.all, 'All'),
     (_VehicleFilter.activeLicense, 'Active'),
     (_VehicleFilter.blockedLicense, 'Blocked'),
-    (_VehicleFilter.expiring, 'Expiring'),
+    (_VehicleFilter.expiring, 'Expired'),
   ];
 
   @override

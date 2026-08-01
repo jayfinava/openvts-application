@@ -882,7 +882,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
                           ],
-                          validator: Validators.pincodeRequired,
+                          validator: Validators.pincodeOptional,
                         ),
                         const SizedBox(height: OpenVtsSpacing.md),
                         const _FormSectionLabel(label: 'LOCATION'),

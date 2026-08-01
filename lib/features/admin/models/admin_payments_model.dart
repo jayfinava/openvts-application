@@ -170,6 +170,65 @@ class AdminPaymentTransaction {
     return c.isEmpty ? a : '$c $a';
   }
 
+  /// Vehicle display name, resolved from backend-alias fallback list.
+  String get vehicleDisplayName => _vehicleFirstNonEmpty(const [
+        'name',
+        'vehicleName',
+        'vehicle_name',
+        'plateNumber',
+        'plate_number',
+      ]);
+
+  /// Vehicle IMEI, resolved from direct fields then nested device object.
+  String get vehicleImei {
+    final direct = _vehicleFirstNonEmpty(const [
+      'imei',
+      'IMEI',
+      'deviceImei',
+      'device_imei',
+      'imeiNumber',
+      'imei_number',
+      'trackerImei',
+      'tracker_imei',
+    ]);
+    if (direct.isNotEmpty) return direct;
+    final rawDevice =
+        vehicle['device'] ?? vehicle['gpsDevice'] ?? vehicle['tracker'];
+    if (rawDevice is Map) {
+      for (final key in const ['imei', 'IMEI', 'deviceImei', 'imeiNumber']) {
+        final v = rawDevice[key]?.toString().trim();
+        if (v != null && v.isNotEmpty) return v;
+      }
+    }
+    return '';
+  }
+
+  /// Plan name, resolved from the nested vehicle.plan object.
+  String get planDisplayName {
+    final planMap = vehicle['plan'];
+    if (planMap is Map) {
+      for (final key in const [
+        'name',
+        'planName',
+        'plan_name',
+        'title',
+        'label'
+      ]) {
+        final v = planMap[key]?.toString().trim();
+        if (v != null && v.isNotEmpty) return v;
+      }
+    }
+    return '';
+  }
+
+  String _vehicleFirstNonEmpty(List<String> keys) {
+    for (final key in keys) {
+      final v = vehicle[key]?.toString().trim();
+      if (v != null && v.isNotEmpty && v.toLowerCase() != 'null') return v;
+    }
+    return '';
+  }
+
   factory AdminPaymentTransaction.fromJson(dynamic json) {
     final source = _asMap(json);
     final createdAtValue =
@@ -233,8 +292,16 @@ class AdminPaymentTransaction {
           ? null
           : AdminPaymentsUserRef.fromJson(
               _firstMap(source, const ['recordedBy', 'recorded_by'])),
-      vehicle:
-          _firstMap(source, const ['vehicle']) ?? const <String, dynamic>{},
+      vehicle: _firstMap(source, const [
+            'vehicle',
+            'vehicleInfo',
+            'vehicle_info',
+            'linkedVehicle',
+            'linked_vehicle',
+            'vehicleData',
+            'vehicle_data',
+          ]) ??
+          const <String, dynamic>{},
       meta: _firstMap(source, const ['meta', 'metadata']) ??
           const <String, dynamic>{},
       failureCode:
@@ -507,6 +574,43 @@ class AdminRenewVehicleOption {
     return <String>[name, plateNumber, planName]
         .any((v) => v.toLowerCase().contains(q));
   }
+}
+
+/// Parses the renewal response `{transaction, updatedVehicles, validationWarnings}`.
+/// Returns the `transaction` object as an [AdminPaymentTransaction], or null
+/// when the backend shape does not include a parseable transaction.
+AdminPaymentTransaction? parseRenewalTransaction(dynamic json) {
+  if (json == null) return null;
+  final root = _asMap(json);
+  if (root.isEmpty) return null;
+
+  // Try each candidate map in order: root → data → data.data
+  for (final candidate in _renewalCandidates(root)) {
+    final txMap =
+        _firstMap(candidate, const ['transaction', 'tx', 'payment', 'record']);
+    if (txMap != null && txMap.isNotEmpty) {
+      final tx = AdminPaymentTransaction.fromJson(txMap);
+      if (tx.id.trim().isNotEmpty) return tx;
+    }
+    // Candidate itself may be the transaction.
+    if (candidate.containsKey('id') &&
+        (candidate.containsKey('amount') || candidate.containsKey('status'))) {
+      final tx = AdminPaymentTransaction.fromJson(candidate);
+      if (tx.id.trim().isNotEmpty) return tx;
+    }
+  }
+  return null;
+}
+
+List<Map<String, dynamic>> _renewalCandidates(Map<String, dynamic> root) {
+  final candidates = <Map<String, dynamic>>[root];
+  final data = _asMap(root['data']);
+  if (data.isNotEmpty) {
+    candidates.add(data);
+    final nested = _asMap(data['data']);
+    if (nested.isNotEmpty) candidates.add(nested);
+  }
+  return candidates;
 }
 
 class AdminRenewPaymentRequest {

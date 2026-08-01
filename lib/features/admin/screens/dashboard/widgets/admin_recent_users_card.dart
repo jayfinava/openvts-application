@@ -85,16 +85,17 @@ class _RecentUserRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  '0 vehicles',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
-                  style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontWeight: FontWeight.w800,
+                if (user.vehicleCount != null)
+                  Text(
+                    '${user.vehicleCount} ${user.vehicleCount == 1 ? 'vehicle' : 'vehicles'}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
+                    style: OpenVtsTypography.meta.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
                 const SizedBox(height: 2),
                 Text(
                   adminDashboardRelativeDate(user.createdAt,

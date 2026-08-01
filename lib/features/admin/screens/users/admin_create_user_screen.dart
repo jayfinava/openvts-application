@@ -54,6 +54,8 @@ class _AdminCreateUserScreenState extends ConsumerState<AdminCreateUserScreen> {
   bool _isCatalogLoading = true;
   bool _isLoadingStates = false;
   bool _isLoadingCities = false;
+  bool _statesLoaded = false;
+  bool _citiesLoaded = false;
   String? _catalogError;
 
   bool _catalogPrepared = false;
@@ -436,6 +438,8 @@ class _AdminCreateUserScreenState extends ConsumerState<AdminCreateUserScreen> {
               _selectedCityName = null;
               _states = const <AdminUserStateOption>[];
               _cities = const <AdminUserCityOption>[];
+              _statesLoaded = false;
+              _citiesLoaded = false;
               _selectedMobilePrefix = _mobilePrefixes
                   .where((item) => item.countryCode == value)
                   .map((item) => item.value)
@@ -450,25 +454,33 @@ class _AdminCreateUserScreenState extends ConsumerState<AdminCreateUserScreen> {
         ),
         OpenVtsSearchableDropdown<String>(
           label: 'State',
-          required: true,
-          enabled: _selectedCountryCode != null,
+          required: _statesLoaded && _states.isNotEmpty,
+          enabled: _selectedCountryCode != null &&
+              _statesLoaded &&
+              _states.isNotEmpty,
           hintText: _selectedCountryCode == null
               ? 'Select a country first'
-              : 'Select a state',
+              : (_statesLoaded && _states.isEmpty)
+                  ? 'No states available'
+                  : 'Select a state',
           searchHintText: 'Search state',
           sheetTitle: 'Select state',
           leadingIcon: Icons.map_outlined,
           options: stateOptions,
           value: _selectedStateCode,
-          isLoading: _isLoadingStates && stateOptions.isEmpty,
-          validator: (value) => value == null || value.trim().isEmpty
-              ? 'State is required'
-              : null,
+          isLoading: _isLoadingStates,
+          validator: (value) {
+            if (!_statesLoaded || _states.isEmpty) return null;
+            return value == null || value.trim().isEmpty
+                ? 'State is required'
+                : null;
+          },
           onChanged: (value) async {
             setState(() {
               _selectedStateCode = value;
               _selectedCityName = null;
               _cities = const <AdminUserCityOption>[];
+              _citiesLoaded = false;
             });
 
             if (_selectedCountryCode != null && value != null) {
@@ -478,19 +490,26 @@ class _AdminCreateUserScreenState extends ConsumerState<AdminCreateUserScreen> {
         ),
         OpenVtsSearchableDropdown<String>(
           label: 'City',
-          required: true,
-          enabled: _selectedStateCode != null,
+          required: _citiesLoaded && _cities.isNotEmpty,
+          enabled:
+              _selectedStateCode != null && _citiesLoaded && _cities.isNotEmpty,
           hintText: _selectedStateCode == null
               ? 'Select a state first'
-              : 'Select a city',
+              : (_citiesLoaded && _cities.isEmpty)
+                  ? 'No cities available'
+                  : 'Select a city',
           searchHintText: 'Search city',
           sheetTitle: 'Select city',
           leadingIcon: Icons.location_city_outlined,
           options: cityOptions,
           value: _selectedCityName,
-          isLoading: _isLoadingCities && cityOptions.isEmpty,
-          validator: (value) =>
-              value == null || value.trim().isEmpty ? 'City is required' : null,
+          isLoading: _isLoadingCities,
+          validator: (value) {
+            if (!_citiesLoaded || _cities.isEmpty) return null;
+            return value == null || value.trim().isEmpty
+                ? 'City is required'
+                : null;
+          },
           onChanged: (value) => setState(() => _selectedCityName = value),
         ),
         OpenVtsTextField(
@@ -527,6 +546,7 @@ class _AdminCreateUserScreenState extends ConsumerState<AdminCreateUserScreen> {
       }
       setState(() {
         _states = states;
+        _statesLoaded = true;
         _isLoadingStates = false;
       });
     } catch (error) {
@@ -557,6 +577,7 @@ class _AdminCreateUserScreenState extends ConsumerState<AdminCreateUserScreen> {
       }
       setState(() {
         _cities = cities;
+        _citiesLoaded = true;
         _isLoadingCities = false;
       });
     } catch (error) {
@@ -578,11 +599,25 @@ class _AdminCreateUserScreenState extends ConsumerState<AdminCreateUserScreen> {
       return;
     }
 
-    if (_selectedCountryCode == null ||
-        _selectedStateCode == null ||
-        _selectedCityName == null) {
+    if (_selectedCountryCode == null) {
       ToastHelper.showError(
-        'Country, state, and city are required.',
+        'Country is required.',
+        context: context,
+      );
+      return;
+    }
+
+    if (_statesLoaded && _states.isNotEmpty && _selectedStateCode == null) {
+      ToastHelper.showError(
+        'State is required.',
+        context: context,
+      );
+      return;
+    }
+
+    if (_citiesLoaded && _cities.isNotEmpty && _selectedCityName == null) {
+      ToastHelper.showError(
+        'City is required.',
         context: context,
       );
       return;
@@ -600,8 +635,8 @@ class _AdminCreateUserScreenState extends ConsumerState<AdminCreateUserScreen> {
               companyName: _companyController.text,
               address: _addressController.text,
               countryCode: _selectedCountryCode!,
-              stateCode: _selectedStateCode!,
-              city: _selectedCityName!,
+              stateCode: _selectedStateCode ?? '',
+              city: _selectedCityName ?? '',
               pincode: _pincodeController.text,
             ),
           );

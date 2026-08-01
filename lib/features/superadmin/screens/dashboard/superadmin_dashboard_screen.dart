@@ -210,6 +210,7 @@ class _SuperadminDashboardScreenState
         var selectedActorId = state.selectedActorId;
         var fromDate = state.fromDate;
         var toDate = state.toDate;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
         final actors =
             state.dashboard?.activityActors ?? const <SuperadminActorOption>[];
 
@@ -231,14 +232,18 @@ class _SuperadminDashboardScreenState
                     Text(
                       'Filter Activity Logs',
                       style: OpenVtsTypography.titleSmall.copyWith(
-                        color: OpenVtsColors.textPrimary,
+                        color: isDark
+                            ? OpenVtsColors.darkTextPrimary
+                            : OpenVtsColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: OpenVtsSpacing.xs),
                     Text(
                       'Filter by administrator and date range.',
                       style: OpenVtsTypography.body.copyWith(
-                        color: OpenVtsColors.textSecondary,
+                        color: isDark
+                            ? OpenVtsColors.darkTextSecondary
+                            : OpenVtsColors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: OpenVtsSpacing.md),

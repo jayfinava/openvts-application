@@ -611,7 +611,10 @@ class SuperadminUpdateProfileRequest {
     if (addressLine != null) json['addressLine'] = addressLine;
     if (countryCode != null) json['countryCode'] = countryCode;
     if (stateCode != null) json['stateCode'] = stateCode;
-    if (cityName != null) json['cityName'] = cityName;
+    if (cityName != null) {
+      json['city'] = cityName;
+      json['cityName'] = cityName;
+    }
     if (pincode != null) json['pincode'] = pincode;
     return json;
   }
@@ -881,6 +884,8 @@ class SuperadminLocalizationSettings {
         'use24Hour': use24Hour,
         'theme': theme.apiValue,
         'timezoneOffset': timezoneOffset,
+        'units': units.apiValue,
+        'distanceUnit': units.apiValue,
         'defaultLat': defaultLat,
         'defaultLon': defaultLon,
         'mapZoom': mapZoom,

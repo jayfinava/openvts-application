@@ -870,11 +870,12 @@ class _AddressCard extends StatelessWidget {
             value: stateCode,
             icon: Icons.map_outlined,
           ),
-        _InfoRow(
-          label: 'City',
-          value: city.trim().isNotEmpty ? city : '—',
-          icon: Icons.location_city_outlined,
-        ),
+        if (city.trim().isNotEmpty)
+          _InfoRow(
+            label: 'City',
+            value: city,
+            icon: Icons.location_city_outlined,
+          ),
         if (pincode.trim().isNotEmpty)
           _InfoRow(
             label: 'Pincode',
@@ -1403,7 +1404,6 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
   bool _isInitializingProfileLocation = true;
 
   String? _initialCityName;
-  String? _initialCityValue;
 
   @override
   void initState() {
@@ -1424,7 +1424,6 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     _initialCityName = a?.cityDisplayName?.trim().isNotEmpty == true
         ? a!.cityDisplayName
         : (p.cityName?.trim().isNotEmpty == true ? p.cityName : null);
-    _initialCityValue = a?.cityValue;
     _cityName = _initialCityName;
 
     unawaited(_loadCatalogs());
@@ -1508,22 +1507,10 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         _loadingCities = false;
       });
 
-      // Try to match initial city using multiple strategies
+      // Try to match saved city name against the loaded list
       SuperadminCityOption? matchedOption;
 
-      if (_initialCityValue != null && _initialCityValue!.isNotEmpty) {
-        try {
-          matchedOption = _cities.firstWhere(
-            (c) => c.name.toLowerCase() == _initialCityValue!.toLowerCase(),
-          );
-        } catch (_) {
-          matchedOption = null;
-        }
-      }
-
-      if (matchedOption == null &&
-          _initialCityName != null &&
-          _initialCityName!.isNotEmpty) {
+      if (_initialCityName != null && _initialCityName!.isNotEmpty) {
         try {
           matchedOption = _cities.firstWhere(
             (c) => c.name.toLowerCase() == _initialCityName!.toLowerCase(),

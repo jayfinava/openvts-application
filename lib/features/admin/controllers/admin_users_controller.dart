@@ -11,12 +11,14 @@ class AdminUsersController extends StateNotifier<AdminUsersState> {
   AdminUsersController({
     required AdminUsersService service,
     required AuthController authController,
+    this.onDashboardRefresh,
   })  : _service = service,
         _authController = authController,
         super(const AdminUsersState.initial());
 
   final AdminUsersService _service;
   final AuthController _authController;
+  final void Function()? onDashboardRefresh;
 
   Future<void> load() async {
     await _fetchUsers(
@@ -147,6 +149,7 @@ class AdminUsersController extends StateNotifier<AdminUsersState> {
 
       state = state.copyWith(isCreating: false);
       await refresh();
+      onDashboardRefresh?.call();
       return createdUser;
     } catch (error) {
       if (!mounted) {
@@ -183,6 +186,7 @@ class AdminUsersController extends StateNotifier<AdminUsersState> {
           errorMessage: null,
         ),
       );
+      onDashboardRefresh?.call();
     } catch (error) {
       if (!mounted) {
         return;
@@ -216,6 +220,7 @@ class AdminUsersController extends StateNotifier<AdminUsersState> {
         updatingIds: _removeId(state.updatingIds, id),
         errorMessage: null,
       );
+      onDashboardRefresh?.call();
     } catch (error) {
       if (!mounted) {
         return;
@@ -251,6 +256,7 @@ class AdminUsersController extends StateNotifier<AdminUsersState> {
           errorMessage: null,
         ),
       );
+      onDashboardRefresh?.call();
     } catch (error) {
       if (!mounted) {
         return;

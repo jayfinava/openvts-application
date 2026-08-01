@@ -124,10 +124,12 @@ class _AdminDetailsActivityTabState
   }
 
   void _openDetailSheet(SuperadminAdminActivityLog log) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: OpenVtsColors.surfaceElevated,
+      backgroundColor:
+          isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -627,6 +629,7 @@ class _ActivityDetailSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const formatter = DateTimeFormatter();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final timeLabel = log.createdAt != null
         ? formatter.formatDateTime(log.createdAt!.toLocal())
         : null;
@@ -660,7 +663,9 @@ class _ActivityDetailSheet extends StatelessWidget {
                   width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: OpenVtsColors.border,
+                    color: isDark
+                        ? OpenVtsColors.darkBorder
+                        : OpenVtsColors.border,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -672,9 +677,15 @@ class _ActivityDetailSheet extends StatelessWidget {
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: OpenVtsColors.surface,
+                      color: isDark
+                          ? OpenVtsColors.darkSurfaceElevated
+                          : OpenVtsColors.surface,
                       borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                      border: Border.all(color: OpenVtsColors.border),
+                      border: Border.all(
+                        color: isDark
+                            ? OpenVtsColors.darkBorder
+                            : OpenVtsColors.border,
+                      ),
                     ),
                     alignment: Alignment.center,
                     child: Icon(
@@ -742,12 +753,14 @@ class _ActivityDetailSheet extends StatelessWidget {
                       const SizedBox(height: OpenVtsSpacing.md),
                       Row(
                         children: [
-                          const Text(
+                          Text(
                             'Metadata',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: OpenVtsColors.textSecondary,
+                              color: isDark
+                                  ? OpenVtsColors.darkTextSecondary
+                                  : OpenVtsColors.textSecondary,
                             ),
                           ),
                           const Spacer(),
