@@ -748,10 +748,9 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
       final page = await _service.getActivityLogs(
         userId: _userId,
         limit: limit,
-        q: state.logSearch,
-        actionPrefix: state.logActionPrefix,
-        from: _formatDateForApi(state.logFrom),
-        to: _formatDateForApi(state.logTo),
+        q: _effectiveLogQuery(state),
+        from: _formatDateTimeForApi(state.logFrom),
+        to: _formatDateTimeForApi(state.logTo),
       );
       _loadedTabs.add(AdminUserDetailsTab.logs);
       state = state.copyWith(
@@ -778,10 +777,9 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
         userId: _userId,
         limit: limit,
         cursorId: state.logsNextCursorId,
-        q: state.logSearch,
-        actionPrefix: state.logActionPrefix,
-        from: _formatDateForApi(state.logFrom),
-        to: _formatDateForApi(state.logTo),
+        q: _effectiveLogQuery(state),
+        from: _formatDateTimeForApi(state.logFrom),
+        to: _formatDateTimeForApi(state.logTo),
       );
       state = state.copyWith(
         logs: <AdminUserActivityLog>[
@@ -810,6 +808,8 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
   }) {
     state = state.copyWith(
       logSearch: q ?? state.logSearch,
+      // logActionPrefix stores the selected quick-chip keyword; reused field name
+      // so state shape stays unchanged.
       logActionPrefix: actionPrefix ?? state.logActionPrefix,
       logFrom: clearFrom ? null : from ?? state.logFrom,
       logTo: clearTo ? null : to ?? state.logTo,
@@ -819,6 +819,17 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
       sectionErrorMessage: null,
     );
     _loadedTabs.remove(AdminUserDetailsTab.logs);
+  }
+
+  /// Merges manual search text and the selected quick-chip keyword into a single
+  /// `q` value that the backend treats as a contains search against action and
+  /// entity.  Manual text takes priority over the chip keyword.
+  static String? _effectiveLogQuery(AdminUserDetailsState s) {
+    final manual = s.logSearch.trim();
+    if (manual.isNotEmpty) return manual;
+    final keyword = s.logActionPrefix.trim();
+    if (keyword.isNotEmpty) return keyword;
+    return null;
   }
 
   List<AdminUserTicket> _replaceTicket(
@@ -851,6 +862,14 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
     final month = value.month.toString().padLeft(2, '0');
     final day = value.day.toString().padLeft(2, '0');
     return '$year-$month-$day';
+  }
+
+  /// Serializes a date-time value to a full ISO 8601 string, preserving the
+  /// selected time and converting to UTC so the backend receives an unambiguous
+  /// boundary.  Used for the logs date-time range filter.
+  static String? _formatDateTimeForApi(DateTime? value) {
+    if (value == null) return null;
+    return value.toUtc().toIso8601String();
   }
 
   String _errorMessage(Object error) {
