@@ -18,6 +18,7 @@ import '../../controllers/admin_providers.dart';
 import '../../controllers/admin_users_controller.dart';
 import '../../models/admin_users_model.dart';
 import '../../models/admin_users_state.dart';
+import '../../utils/location_label_resolver.dart';
 import 'widgets/admin_edit_user_sheet.dart';
 import 'widgets/admin_user_card.dart';
 import 'widgets/admin_user_delete_sheet.dart';
@@ -104,7 +105,13 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     var selectedStatus = state.statusFilter;
     var selectedVerified = state.verifiedFilter;
     var selectedCountry = state.countryFilter;
-    final countryCodes = _countryCodes(state.users);
+
+    // Build resolved options from the full user list, using the cached API
+    // options so we never rely solely on the current page.
+    final countryOptions = LocationLabelResolver.resolvedCountryOptions(
+      state.users.map((u) => u.countryCode),
+      apiOptions: state.countryOptions,
+    );
 
     await showModalBottomSheet<void>(
       context: context,
@@ -168,12 +175,14 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                         onSelected: () =>
                             setSheetState(() => selectedCountry = null),
                       ),
-                      for (final country in countryCodes)
+                      // Display readable label; keep canonical code as value.
+                      for (final option in countryOptions)
                         _ChoiceChip(
-                          label: country,
-                          selected: selectedCountry == country,
-                          onSelected: () =>
-                              setSheetState(() => selectedCountry = country),
+                          label: option.label,
+                          selected: selectedCountry == option.value,
+                          onSelected: () => setSheetState(
+                            () => selectedCountry = option.value,
+                          ),
                         ),
                     ],
                   ),
@@ -183,6 +192,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
               onPrimaryAction: () {
                 controller.setStatusFilter(selectedStatus);
                 controller.setVerifiedFilter(selectedVerified);
+                // selectedCountry is already a canonical code (or null).
                 controller.setCountryFilter(selectedCountry);
                 Navigator.of(sheetContext).pop();
               },
@@ -403,16 +413,6 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
         _showDeleteUserSheet(user);
     }
   }
-
-  List<String> _countryCodes(List<AdminUserListItem> users) {
-    final codes = <String>{
-      for (final user in users)
-        if (user.countryCode.trim().isNotEmpty)
-          user.countryCode.trim().toUpperCase(),
-    }.toList()
-      ..sort();
-    return codes;
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -499,6 +499,7 @@ class _UsersBody extends StatelessWidget {
                         isUpdating: state.isUpdating(user.id),
                         isDeleting: state.isDeleting(user.id),
                         isLoggingIn: state.isLoggingIn(user.id),
+                        countryOptions: state.countryOptions,
                         onTap: () => onOpenDetails(user),
                         onStatusChanged: (value) =>
                             onStatusChanged(user, value),

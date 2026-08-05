@@ -16,6 +16,7 @@ import '../../../controllers/admin_providers.dart';
 import '../../../controllers/admin_user_details_controller.dart';
 import '../../../models/admin_user_details_model.dart';
 import '../../../models/admin_users_model.dart' as admin_users;
+import '../../../utils/location_label_resolver.dart';
 import 'admin_user_form_fields.dart';
 
 // =============================================================================
@@ -409,12 +410,12 @@ class _AccountCard extends StatelessWidget {
         ),
         _InfoRow(
           label: 'Country',
-          value: profile.countryCode,
+          value: _resolveCountryLabel(profile),
           icon: Icons.public_outlined,
         ),
         _InfoRow(
           label: 'State',
-          value: profile.stateCode,
+          value: _resolveStateLabel(profile),
           icon: Icons.map_outlined,
         ),
         _InfoRow(
@@ -2015,6 +2016,35 @@ String _displayValue(String value) {
   final normalized = value.trim();
   if (normalized.isEmpty || normalized == '-') return '—';
   return normalized;
+}
+
+/// Returns the best available country label for a profile snapshot.
+/// Priority: countryName > resolved name from LocationData > countryCode > '—'
+String _resolveCountryLabel(_ProfileSnapshot profile) {
+  final name = profile.countryName.trim();
+  if (name.isNotEmpty) return name;
+
+  final code = profile.countryCode.trim();
+  if (code.isEmpty) return '—';
+
+  final resolved = LocationLabelResolver.resolveCountry(code);
+  return resolved.isNotEmpty ? resolved : code;
+}
+
+/// Returns the best available state label for a profile snapshot.
+/// Priority: stateName > resolved name from LocationData > stateCode > '—'
+String _resolveStateLabel(_ProfileSnapshot profile) {
+  final name = profile.stateName.trim();
+  if (name.isNotEmpty) return name;
+
+  final stateCode = profile.stateCode.trim();
+  if (stateCode.isEmpty) return '—';
+
+  final resolved = LocationLabelResolver.resolveState(
+    profile.countryCode,
+    stateCode,
+  );
+  return resolved.isNotEmpty ? resolved : stateCode;
 }
 
 String _initialText(String? value) {

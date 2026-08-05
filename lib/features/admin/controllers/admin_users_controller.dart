@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,6 +23,9 @@ class AdminUsersController extends StateNotifier<AdminUsersState> {
   final void Function()? onDashboardRefresh;
 
   Future<void> load() async {
+    // Fire country options load in parallel with the user list; errors are
+    // swallowed inside ensureCountryOptionsLoaded so neither blocks the other.
+    unawaited(ensureCountryOptionsLoaded());
     await _fetchUsers(
       refreshKey: state.refreshKey == 0 ? null : state.refreshKey.toString(),
       refreshing: state.hasUsers,
@@ -118,6 +123,19 @@ class AdminUsersController extends StateNotifier<AdminUsersState> {
 
   Future<List<AdminUserCountryOption>> getCountries() {
     return _service.getCountries();
+  }
+
+  /// Ensures country options are loaded into state exactly once.
+  /// Safe to call multiple times; subsequent calls are no-ops if already loaded.
+  Future<void> ensureCountryOptionsLoaded() async {
+    if (state.countryOptions.isNotEmpty) return;
+    try {
+      final options = await _service.getCountries();
+      if (!mounted) return;
+      state = state.copyWith(countryOptions: options);
+    } catch (_) {
+      // Silently ignore; UI falls back to LocationData hardcoded list.
+    }
   }
 
   Future<List<AdminUserMobilePrefixOption>> getMobilePrefixes() {

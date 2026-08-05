@@ -4,6 +4,7 @@ import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../models/admin_users_model.dart';
 import '../../../models/admin_users_state.dart';
 
 class AdminUsersFilterChips extends StatelessWidget {
@@ -11,7 +12,7 @@ class AdminUsersFilterChips extends StatelessWidget {
     required this.statusFilter,
     required this.verifiedFilter,
     required this.countryFilter,
-    required this.countryCodes,
+    required this.countryOptions,
     required this.onStatusChanged,
     required this.onVerifiedChanged,
     required this.onCountryChanged,
@@ -20,15 +21,21 @@ class AdminUsersFilterChips extends StatelessWidget {
 
   final AdminUserStatusFilter statusFilter;
   final AdminUserVerifiedFilter verifiedFilter;
+
+  /// The currently selected country code (canonical, e.g. "IN"), or null.
   final String? countryFilter;
-  final List<String> countryCodes;
+
+  /// Resolved [AdminUserCountryOption] list — value is the canonical code,
+  /// label is the readable name. Built once by the screen and passed down.
+  final List<AdminUserCountryOption> countryOptions;
+
   final ValueChanged<AdminUserStatusFilter> onStatusChanged;
   final ValueChanged<AdminUserVerifiedFilter> onVerifiedChanged;
   final ValueChanged<String?> onCountryChanged;
 
   @override
   Widget build(BuildContext context) {
-    final showCountryFilters = countryCodes.length > 1;
+    final showCountryFilters = countryOptions.length > 1;
 
     return SizedBox(
       height: 34,
@@ -75,7 +82,7 @@ class AdminUsersFilterChips extends StatelessWidget {
             const SizedBox(width: OpenVtsSpacing.xs),
             _CountryFilterChip(
               countryFilter: countryFilter,
-              countryCodes: countryCodes,
+              countryOptions: countryOptions,
               onCountryChanged: onCountryChanged,
             ),
           ],
@@ -88,18 +95,34 @@ class AdminUsersFilterChips extends StatelessWidget {
 class _CountryFilterChip extends StatelessWidget {
   const _CountryFilterChip({
     required this.countryFilter,
-    required this.countryCodes,
+    required this.countryOptions,
     required this.onCountryChanged,
   });
 
+  /// Canonical country code currently selected, or null for "All Countries".
   final String? countryFilter;
-  final List<String> countryCodes;
+
+  /// Resolved options: [AdminUserCountryOption.value] is the canonical code,
+  /// [AdminUserCountryOption.label] is the readable name.
+  final List<AdminUserCountryOption> countryOptions;
+
   final ValueChanged<String?> onCountryChanged;
 
   @override
   Widget build(BuildContext context) {
     final selected = countryFilter != null;
-    final label = selected ? countryFilter! : 'All Countries';
+
+    // Display the readable label for the selected code; fall back to the
+    // code itself if for some reason no option matches.
+    String label;
+    if (selected) {
+      final match = countryOptions.where(
+        (o) => o.value == countryFilter,
+      );
+      label = match.isNotEmpty ? match.first.label : countryFilter!;
+    } else {
+      label = 'All Countries';
+    }
 
     return PopupMenuButton<String>(
       tooltip: 'Country filter',
@@ -107,8 +130,9 @@ class _CountryFilterChip extends StatelessWidget {
       itemBuilder: (context) {
         return [
           _menuItem('', 'All Countries', countryFilter == null),
-          for (final countryCode in countryCodes)
-            _menuItem(countryCode, countryCode, countryFilter == countryCode),
+          for (final option in countryOptions)
+            _menuItem(
+                option.value, option.label, countryFilter == option.value),
         ];
       },
       child: Material(
