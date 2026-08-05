@@ -701,6 +701,7 @@ class AdminVehicleDocument {
     required this.docTypeId,
     required this.docTypeName,
     required this.url,
+    required this.filePath,
     required this.fileName,
     required this.isVisible,
     required this.tags,
@@ -713,7 +714,14 @@ class AdminVehicleDocument {
   final String title;
   final String docTypeId;
   final String docTypeName;
+
+  /// Absolute HTTP/HTTPS URL when the backend returns one directly.
   final String url;
+
+  /// Relative server path returned by the backend (e.g. `/uploads/doc.pdf`).
+  /// Use [VehicleDocumentUrlResolver.resolve] to build the final openable URL.
+  final String filePath;
+
   final String fileName;
   final bool isVisible;
   final String tags;
@@ -724,6 +732,13 @@ class AdminVehicleDocument {
   factory AdminVehicleDocument.fromJson(dynamic json) {
     final source = _asMap(json);
     final docType = _firstMap(source, const ['docType', 'documentType']);
+
+    // Absolute URL fields take priority; filePath is kept separately.
+    final absoluteUrl =
+        _firstString(source, const ['url', 'fileUrl', 'file_url']) ?? '';
+    final relativePath =
+        _firstString(source, const ['filePath', 'file_path']) ?? '';
+
     return AdminVehicleDocument(
       id: _firstString(source, const ['id', '_id']) ?? '',
       title: _firstString(source, const ['title', 'name']) ?? '',
@@ -734,13 +749,13 @@ class AdminVehicleDocument {
               source, const ['docTypeName', 'doc_type_name']) ??
           _firstString(docType ?? const <String, dynamic>{}, const ['name']) ??
           '',
-      url: _firstString(source, const ['url', 'fileUrl', 'file_url']) ?? '',
+      url: absoluteUrl,
+      filePath: relativePath,
       fileName: _firstString(source, const [
             'fileName',
             'file_name',
             'originalName',
             'original_name',
-            'name'
           ]) ??
           '',
       isVisible: _firstBool(source, const ['isVisible', 'is_visible']) ?? true,

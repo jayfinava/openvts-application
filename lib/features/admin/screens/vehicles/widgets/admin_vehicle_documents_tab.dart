@@ -10,6 +10,7 @@ import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../models/admin_vehicle_model.dart';
+import '../../../utils/vehicle_document_url_resolver.dart';
 import 'admin_vehicle_document_sheet.dart';
 
 class AdminVehicleDocumentsTab extends ConsumerWidget {
@@ -170,7 +171,11 @@ class AdminVehicleDocumentsTab extends ConsumerWidget {
   }
 
   Future<void> _openFile(BuildContext context, AdminVehicleDocument doc) async {
-    final uri = _resolveFileUri(doc.url, apiBaseUrl);
+    final uri = VehicleDocumentUrlResolver.resolve(
+      url: doc.url,
+      filePath: doc.filePath,
+      apiBaseUrl: apiBaseUrl,
+    );
     if (uri == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Document URL is unavailable.')),
@@ -184,17 +189,6 @@ class AdminVehicleDocumentsTab extends ConsumerWidget {
         const SnackBar(content: Text('Could not open document.')),
       );
     }
-  }
-
-  Uri? _resolveFileUri(String filePath, String baseUrl) {
-    final path = filePath.trim();
-    if (path.isEmpty) return null;
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-      return Uri.tryParse(path);
-    }
-    final base = baseUrl.trim().replaceAll(RegExp(r'/+$'), '');
-    final relative = path.startsWith('/') ? path : '/$path';
-    return Uri.tryParse('$base$relative');
   }
 
   String _safe(String value) => value.trim().isEmpty ? '-' : value.trim();
