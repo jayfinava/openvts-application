@@ -771,18 +771,20 @@ class _FilePickerField extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(OpenVtsSpacing.sm),
           decoration: BoxDecoration(
-            color: OpenVtsColors.surface,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
             border: Border.all(
-              color: showError ? OpenVtsColors.error : OpenVtsColors.border,
+              color: showError
+                  ? OpenVtsColors.error
+                  : Theme.of(context).colorScheme.outlineVariant,
             ),
           ),
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.attach_file_rounded,
                 size: 18,
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
               Expanded(
@@ -860,16 +862,17 @@ class _ExpiryField extends StatelessWidget {
               vertical: OpenVtsSpacing.xs,
             ),
             decoration: BoxDecoration(
-              color: OpenVtsColors.surface,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: OpenVtsColors.border),
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant),
             ),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.event_outlined,
                   size: 18,
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: OpenVtsSpacing.xs),
                 Expanded(
@@ -895,10 +898,10 @@ class _ExpiryField extends StatelessWidget {
                     ),
                   )
                 else
-                  const Icon(
+                  Icon(
                     Icons.expand_more_rounded,
                     size: 18,
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
               ],
             ),
@@ -923,16 +926,16 @@ class _VisibilityToggle extends StatelessWidget {
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Row(
         children: [
           Icon(
             value ? Icons.visibility_outlined : Icons.visibility_off_outlined,
             size: 18,
-            color: OpenVtsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -1263,14 +1266,14 @@ class _EmptyCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Text(
         label,
         style: OpenVtsTypography.meta.copyWith(
-          color: OpenVtsColors.textSecondary,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
           fontWeight: FontWeight.w700,
         ),
       ),
