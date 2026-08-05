@@ -13,6 +13,7 @@ import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
+import '../../../../admin/utils/location_label_resolver.dart';
 import '../../../controllers/superadmin_admin_details_controller.dart';
 import '../../../controllers/superadmin_providers.dart';
 import '../../../models/superadmin_admin_details_model.dart';
@@ -204,8 +205,6 @@ class _AdminPersonalCard extends ConsumerWidget {
     final address = admin.address;
     final addressLine = address?.addressLine ?? admin.location;
     final city = address?.cityName ?? admin.cityName;
-    final stateCode = address?.stateCode ?? admin.stateCode;
-    final countryCode = address?.countryCode ?? admin.countryCode;
     final pincode = address?.pincode ?? admin.pincode;
 
     // Get resolved last login from controller state
@@ -279,8 +278,13 @@ class _AdminPersonalCard extends ConsumerWidget {
         _InfoRow(
             label: 'Address', value: addressLine, icon: Icons.home_outlined),
         _InfoRow(
-            label: 'Country', value: countryCode, icon: Icons.public_outlined),
-        _InfoRow(label: 'State', value: stateCode, icon: Icons.map_outlined),
+            label: 'Country',
+            value: _resolveProfileCountry(admin, address),
+            icon: Icons.public_outlined),
+        _InfoRow(
+            label: 'State',
+            value: _resolveProfileState(admin, address),
+            icon: Icons.map_outlined),
         _InfoRow(
             label: 'City', value: city, icon: Icons.location_city_outlined),
         _InfoRow(
@@ -668,6 +672,46 @@ String _displayValue(String value) {
     return '—';
   }
   return normalized;
+}
+
+String _resolveProfileCountry(
+  SuperadminAdminDetails admin,
+  SuperadminAdminAddress? address,
+) {
+  final name = address?.countryName.trim().isNotEmpty == true
+      ? address!.countryName.trim()
+      : admin.countryName.trim().isNotEmpty
+          ? admin.countryName.trim()
+          : null;
+  if (name != null) return name;
+  final code = (address?.countryCode.trim().isNotEmpty == true
+          ? address!.countryCode
+          : admin.countryCode)
+      .trim();
+  if (code.isEmpty) return '—';
+  return LocationLabelResolver.resolveCountry(code);
+}
+
+String _resolveProfileState(
+  SuperadminAdminDetails admin,
+  SuperadminAdminAddress? address,
+) {
+  final name = address?.stateName.trim().isNotEmpty == true
+      ? address!.stateName.trim()
+      : admin.stateName.trim().isNotEmpty
+          ? admin.stateName.trim()
+          : null;
+  if (name != null) return name;
+  final countryCode = (address?.countryCode.trim().isNotEmpty == true
+          ? address!.countryCode
+          : admin.countryCode)
+      .trim();
+  final stateCode = (address?.stateCode.trim().isNotEmpty == true
+          ? address!.stateCode
+          : admin.stateCode)
+      .trim();
+  if (stateCode.isEmpty) return '—';
+  return LocationLabelResolver.resolveState(countryCode, stateCode);
 }
 
 // =============================================================================

@@ -15,6 +15,7 @@ import '../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../shared/widgets/open_vts_page_scaffold.dart';
+import '../../../admin/utils/location_label_resolver.dart';
 import '../../../auth/controllers/auth_controller.dart';
 import '../../../auth/models/current_user.dart';
 import '../../../auth/models/login_response.dart';
@@ -1218,9 +1219,7 @@ class _CardInfoGrid extends StatelessWidget {
     final phoneValue = administrator.phoneDisplay;
     final companyValue = _displayValue(administrator.companyName);
     final countryValue = _displayValue(
-      administrator.countryCode.trim().isNotEmpty
-          ? administrator.countryCode.trim().toUpperCase()
-          : administrator.countryName,
+      _resolveAdminCountryLabel(administrator),
     );
 
     return LayoutBuilder(
@@ -1898,4 +1897,12 @@ Color _primaryInkColor(BuildContext context) {
 String _displayValue(String value) {
   final normalized = value.trim();
   return normalized.isEmpty ? '\u2014' : normalized;
+}
+
+String _resolveAdminCountryLabel(SuperadminAdministrator administrator) {
+  final name = administrator.countryName.trim();
+  if (name.isNotEmpty) return name;
+  final code = administrator.countryCode.trim();
+  if (code.isEmpty) return '';
+  return LocationLabelResolver.resolveCountry(code);
 }

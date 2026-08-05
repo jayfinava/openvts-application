@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,6 +27,7 @@ class SuperadminAdministratorsController
 
     try {
       final page = await _service.getAdministrators();
+      unawaited(ensureCountriesLoaded());
 
       state = state.copyWith(
         administrators: page.items,
@@ -42,6 +45,17 @@ class SuperadminAdministratorsController
   }
 
   Future<void> refresh() => load(refresh: true);
+
+  Future<void> ensureCountriesLoaded() async {
+    if (state.countries.isNotEmpty) return;
+    try {
+      final countries = await _service.getCountries();
+      if (!mounted) return;
+      state = state.copyWith(countries: countries);
+    } catch (_) {
+      // Silently ignore; UI falls back to LocationData hardcoded list.
+    }
+  }
 
   Future<void> prepareCreateForm() async {
     state = state.copyWith(

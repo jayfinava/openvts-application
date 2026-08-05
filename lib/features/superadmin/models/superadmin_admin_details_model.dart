@@ -26,7 +26,9 @@ class SuperadminAdminDetails {
     required this.hasExplicitActiveStatus,
     required this.isEmailVerified,
     required this.countryCode,
+    required this.countryName,
     required this.stateCode,
+    required this.stateName,
     required this.cityName,
     required this.pincode,
     required this.organization,
@@ -51,7 +53,9 @@ class SuperadminAdminDetails {
   final bool hasExplicitActiveStatus;
   final bool isEmailVerified;
   final String countryCode;
+  final String countryName;
   final String stateCode;
+  final String stateName;
   final String cityName;
   final String pincode;
   final String organization;
@@ -110,6 +114,35 @@ class SuperadminAdminDetails {
     final mobileDisplay =
         _firstString(source, const ['mobileDisplay', 'mobile_display']) ??
             _composePhone(mobilePrefix, mobileNumber);
+
+    final rawCountryCode = _firstString(source, const [
+          'countryCode',
+          'country_code',
+          'countrycode',
+        ]) ??
+        '';
+    final rawCountryGeneric = _firstString(source, const ['country']) ?? '';
+    final detailsCountryCode = rawCountryCode.isNotEmpty
+        ? rawCountryCode.toUpperCase()
+        : (rawCountryGeneric.trim().length <= 2
+            ? rawCountryGeneric.trim().toUpperCase()
+            : '');
+    final detailsCountryName =
+        rawCountryCode.isEmpty && rawCountryGeneric.trim().length > 2
+            ? rawCountryGeneric.trim()
+            : '';
+
+    final rawStateCode =
+        _firstString(source, const ['stateCode', 'state_code', 'statecode']) ??
+            '';
+    final rawStateGeneric = _firstString(source, const ['state']) ?? '';
+    final detailsStateCode = rawStateCode.isNotEmpty
+        ? rawStateCode
+        : (rawStateGeneric.trim().length <= 4 ? rawStateGeneric.trim() : '');
+    final detailsStateName =
+        rawStateCode.isEmpty && rawStateGeneric.trim().length > 4
+            ? rawStateGeneric.trim()
+            : '';
 
     return SuperadminAdminDetails(
       id: _firstString(source, const [
@@ -230,17 +263,10 @@ class SuperadminAdminDetails {
                 source['email_verified'],
           ) ??
           false,
-      countryCode: (_firstString(source, const [
-                'countrycode',
-                'countryCode',
-                'country_code',
-                'country',
-              ]) ??
-              '')
-          .toUpperCase(),
-      stateCode: _firstString(
-              source, const ['stateCode', 'state_code', 'statecode']) ??
-          '',
+      countryCode: detailsCountryCode,
+      countryName: detailsCountryName,
+      stateCode: detailsStateCode,
+      stateName: detailsStateName,
       cityName: _firstString(source, const [
             'cityName',
             'city_name',
@@ -304,7 +330,9 @@ class SuperadminAdminDetails {
           hasExplicitActiveStatus ?? this.hasExplicitActiveStatus,
       isEmailVerified: isEmailVerified,
       countryCode: countryCode,
+      countryName: countryName,
       stateCode: stateCode,
+      stateName: stateName,
       cityName: cityName,
       pincode: pincode,
       organization: organization,
@@ -411,7 +439,9 @@ class SuperadminAdminAddress {
     required this.id,
     required this.addressLine,
     required this.countryCode,
+    required this.countryName,
     required this.stateCode,
+    required this.stateName,
     required this.cityId,
     required this.cityName,
     required this.pincode,
@@ -421,7 +451,9 @@ class SuperadminAdminAddress {
   final String id;
   final String addressLine;
   final String countryCode;
+  final String countryName;
   final String stateCode;
+  final String stateName;
   final String cityId;
   final String cityName;
   final String pincode;
@@ -429,6 +461,36 @@ class SuperadminAdminAddress {
 
   factory SuperadminAdminAddress.fromJson(dynamic json) {
     final source = _asMap(json);
+
+    final addrRawCountryCode = _firstString(source, const [
+          'countryCode',
+          'country_code',
+        ]) ??
+        '';
+    final addrRawCountryGeneric = _firstString(source, const ['country']) ?? '';
+    final addrCountryCode = addrRawCountryCode.isNotEmpty
+        ? addrRawCountryCode.toUpperCase()
+        : (addrRawCountryGeneric.trim().length <= 2
+            ? addrRawCountryGeneric.trim().toUpperCase()
+            : '');
+    final addrCountryName =
+        addrRawCountryCode.isEmpty && addrRawCountryGeneric.trim().length > 2
+            ? addrRawCountryGeneric.trim()
+            : _firstString(source, const ['countryName', 'country_name']) ?? '';
+
+    final addrRawStateCode =
+        _firstString(source, const ['stateCode', 'state_code']) ?? '';
+    final addrRawStateGeneric = _firstString(source, const ['state']) ?? '';
+    final addrStateCode = addrRawStateCode.isNotEmpty
+        ? addrRawStateCode
+        : (addrRawStateGeneric.trim().length <= 4
+            ? addrRawStateGeneric.trim()
+            : '');
+    final addrStateName =
+        addrRawStateCode.isEmpty && addrRawStateGeneric.trim().length > 4
+            ? addrRawStateGeneric.trim()
+            : _firstString(source, const ['stateName', 'state_name']) ?? '';
+
     return SuperadminAdminAddress(
       id: _firstString(source, const ['id', '_id', 'addressId']) ?? '',
       addressLine: _firstString(source, const [
@@ -438,16 +500,10 @@ class SuperadminAdminAddress {
             'line1',
           ]) ??
           '',
-      countryCode: (_firstString(source, const [
-                'countryCode',
-                'country_code',
-                'country',
-              ]) ??
-              '')
-          .toUpperCase(),
-      stateCode:
-          _firstString(source, const ['stateCode', 'state_code', 'state']) ??
-              '',
+      countryCode: addrCountryCode,
+      countryName: addrCountryName,
+      stateCode: addrStateCode,
+      stateName: addrStateName,
       cityId: _firstString(source, const [
             'cityId',
             'city_id',
