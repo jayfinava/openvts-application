@@ -115,13 +115,17 @@ class _AdminUserPaymentsTabState extends ConsumerState<AdminUserPaymentsTab> {
   }
 
   Future<void> _showPaymentDetails(AdminUserPayment payment) {
+    final state = ref.read(adminUserDetailsControllerProvider(widget.userId));
     return OpenVtsBottomSheet.show<void>(
       context: context,
       title: 'Transaction Details',
       initialChildSize: 0.78,
       minChildSize: 0.46,
       maxChildSize: 0.94,
-      child: _PaymentDetailsSheet(payment: payment),
+      child: _PaymentDetailsSheet(
+        payment: payment,
+        linkedVehicles: state.linkedVehicles,
+      ),
     );
   }
 }
@@ -320,6 +324,76 @@ class _PaymentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+
+    return OpenVtsCard(
+      onTap: onTap,
+      padding: const EdgeInsets.all(OpenVtsSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _paymentAmount(payment),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: OpenVtsTypography.label.copyWith(
+                        color: colors.onSurface,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      _joinParts([payment.paymentMode, payment.paymentType]),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: OpenVtsTypography.meta.copyWith(
+                        color: colors.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: OpenVtsSpacing.xs),
+              _StatusPill(status: payment.status),
+            ],
+          ),
+          const SizedBox(height: OpenVtsSpacing.sm),
+          if (payment.isRenewal)
+            _RenewalVehicleChips(
+              summaries: payment.renewalVehicles,
+              linkedVehicles: linkedVehicles,
+            )
+          else
+            _StandardPaymentChips(
+              payment: payment,
+              linkedVehicles: linkedVehicles,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Chips for a standard (non-renewal) payment that has top-level vehicle/plan.
+class _StandardPaymentChips extends StatelessWidget {
+  const _StandardPaymentChips({
+    required this.payment,
+    required this.linkedVehicles,
+  });
+
+  final AdminUserPayment payment;
+  final List<AdminUserVehicle> linkedVehicles;
+
+  @override
+  Widget build(BuildContext context) {
     final vehicle = _mapLabel(payment.vehicle, const [
       'name',
       'vehicleName',
@@ -369,75 +443,129 @@ class _PaymentCard extends StatelessWidget {
       'label',
     ]);
 
-    return OpenVtsCard(
-      onTap: onTap,
-      padding: const EdgeInsets.all(OpenVtsSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _paymentAmount(payment),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: OpenVtsTypography.label.copyWith(
-                        color: colors.onSurface,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      _joinParts([payment.paymentMode, payment.paymentType]),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: OpenVtsTypography.meta.copyWith(
-                        color: colors.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
+    return Wrap(
+      spacing: OpenVtsSpacing.sm,
+      runSpacing: OpenVtsSpacing.sm,
+      children: [
+        _LabeledMetaItem(
+          icon: Icons.directions_car_filled_outlined,
+          label: 'Vehicle',
+          value: _displayValue(vehicle),
+        ),
+        _LabeledMetaItem(
+          icon: Icons.workspace_premium_outlined,
+          label: 'Default plan',
+          value: _displayValue(plan),
+        ),
+        _LabeledMetaItem(
+          icon: Icons.calendar_today_outlined,
+          label: 'Created at',
+          value: _dateTimeText(payment.createdAt),
+        ),
+        _LabeledMetaItem(
+          icon: Icons.memory_outlined,
+          label: 'IMEI',
+          value: _displayValue(imei),
+        ),
+      ],
+    );
+  }
+}
+
+/// Chips for a renewal transaction — one compact row per renewed vehicle.
+class _RenewalVehicleChips extends StatelessWidget {
+  const _RenewalVehicleChips({
+    required this.summaries,
+    required this.linkedVehicles,
+  });
+
+  final List<AdminRenewalVehicleSummary> summaries;
+  final List<AdminUserVehicle> linkedVehicles;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.autorenew_rounded,
+              size: 13,
+              color: colors.onSurfaceVariant,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              summaries.length == 1
+                  ? 'Renewal — 1 vehicle'
+                  : 'Renewal — ${summaries.length} vehicles',
+              style: OpenVtsTypography.meta.copyWith(
+                color: colors.onSurfaceVariant,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
               ),
-              const SizedBox(width: OpenVtsSpacing.xs),
-              _StatusPill(status: payment.status),
-            ],
+            ),
+          ],
+        ),
+        const SizedBox(height: OpenVtsSpacing.xs),
+        for (final summary in summaries) ...[
+          _RenewalVehicleRow(
+            summary: summary,
+            linkedVehicles: linkedVehicles,
           ),
-          const SizedBox(height: OpenVtsSpacing.sm),
-          Wrap(
-            spacing: OpenVtsSpacing.sm,
-            runSpacing: OpenVtsSpacing.sm,
-            children: [
-              _LabeledMetaItem(
-                icon: Icons.directions_car_filled_outlined,
-                label: 'Vehicle',
-                value: _displayValue(vehicle),
-              ),
-              _LabeledMetaItem(
-                icon: Icons.workspace_premium_outlined,
-                label: 'Default plan',
-                value: _displayValue(plan),
-              ),
-              _LabeledMetaItem(
-                icon: Icons.calendar_today_outlined,
-                label: 'Created at',
-                value: _dateTimeText(payment.createdAt),
-              ),
-              _LabeledMetaItem(
-                icon: Icons.memory_outlined,
-                label: 'IMEI',
-                value: _displayValue(imei),
-              ),
-            ],
-          ),
+          if (summary != summaries.last)
+            const SizedBox(height: OpenVtsSpacing.xs),
         ],
-      ),
+      ],
+    );
+  }
+}
+
+/// One row of chips per renewal vehicle summary.
+class _RenewalVehicleRow extends StatelessWidget {
+  const _RenewalVehicleRow({
+    required this.summary,
+    required this.linkedVehicles,
+  });
+
+  final AdminRenewalVehicleSummary summary;
+  final List<AdminUserVehicle> linkedVehicles;
+
+  @override
+  Widget build(BuildContext context) {
+    final matched = summary.vehicleId.isNotEmpty
+        ? _matchVehicleById(summary.vehicleId, linkedVehicles)
+        : null;
+    final imei = _firstNonEmpty([
+      if (matched != null) matched.imei,
+    ]);
+    final vehicleName = _firstNonEmpty([
+      summary.name,
+      if (matched != null) _firstNonEmpty([matched.name, matched.plateNumber]),
+    ]);
+    final planName = _firstNonEmpty([summary.planName]);
+
+    return Wrap(
+      spacing: OpenVtsSpacing.sm,
+      runSpacing: OpenVtsSpacing.sm,
+      children: [
+        _LabeledMetaItem(
+          icon: Icons.directions_car_filled_outlined,
+          label: 'Vehicle',
+          value: _displayValue(vehicleName),
+        ),
+        _LabeledMetaItem(
+          icon: Icons.workspace_premium_outlined,
+          label: 'Plan',
+          value: _displayValue(planName),
+        ),
+        _LabeledMetaItem(
+          icon: Icons.memory_outlined,
+          label: 'IMEI',
+          value: _displayValue(imei),
+        ),
+      ],
     );
   }
 }
@@ -854,9 +982,13 @@ class _SelectableVehicleTile extends StatelessWidget {
 }
 
 class _PaymentDetailsSheet extends StatelessWidget {
-  const _PaymentDetailsSheet({required this.payment});
+  const _PaymentDetailsSheet({
+    required this.payment,
+    this.linkedVehicles = const [],
+  });
 
   final AdminUserPayment payment;
+  final List<AdminUserVehicle> linkedVehicles;
 
   @override
   Widget build(BuildContext context) {
@@ -901,37 +1033,128 @@ class _PaymentDetailsSheet extends StatelessWidget {
           ],
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
-        _DetailsCard(
-          title: 'Vehicle / Plan',
-          rows: [
-            _DetailRowData(
-              'Vehicle',
-              _displayValue(
-                _mapLabel(payment.vehicle, const [
-                  'name',
-                  'vehicleName',
-                  'plateNumber',
-                  'imei',
-                ]),
+        if (payment.isRenewal)
+          _RenewalDetailsSection(
+            summaries: payment.renewalVehicles,
+            linkedVehicles: linkedVehicles,
+          )
+        else
+          _DetailsCard(
+            title: 'Vehicle / Plan',
+            rows: [
+              _DetailRowData(
+                'Vehicle',
+                _displayValue(
+                  _mapLabel(payment.vehicle, const [
+                    'name',
+                    'vehicleName',
+                    'plateNumber',
+                    'imei',
+                  ]),
+                ),
               ),
-            ),
-            _DetailRowData(
-              'Plan',
-              _displayValue(
-                _mapLabel(payment.plan, const [
-                  'name',
-                  'planName',
-                  'plan_name',
-                  'title',
-                ]),
+              _DetailRowData(
+                'Plan',
+                _displayValue(
+                  _mapLabel(payment.plan, const [
+                    'name',
+                    'planName',
+                    'plan_name',
+                    'title',
+                  ]),
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
         if (payment.meta.isNotEmpty) ...[
           const SizedBox(height: OpenVtsSpacing.sm),
           _MetaJsonCard(meta: payment.meta),
         ],
+      ],
+    );
+  }
+}
+
+class _RenewalDetailsSection extends StatelessWidget {
+  const _RenewalDetailsSection({
+    required this.summaries,
+    required this.linkedVehicles,
+  });
+
+  final List<AdminRenewalVehicleSummary> summaries;
+  final List<AdminUserVehicle> linkedVehicles;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return OpenVtsCard(
+      padding: const EdgeInsets.all(OpenVtsSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Renewed Vehicles (${summaries.length})',
+            style: OpenVtsTypography.label.copyWith(
+              color: colors.onSurface,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: OpenVtsSpacing.sm),
+          for (int i = 0; i < summaries.length; i++) ...[
+            if (i > 0) ...[
+              const Divider(height: OpenVtsSpacing.md),
+            ],
+            _RenewalVehicleDetails(
+              index: i + 1,
+              summary: summaries[i],
+              linkedVehicles: linkedVehicles,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _RenewalVehicleDetails extends StatelessWidget {
+  const _RenewalVehicleDetails({
+    required this.index,
+    required this.summary,
+    required this.linkedVehicles,
+  });
+
+  final int index;
+  final AdminRenewalVehicleSummary summary;
+  final List<AdminUserVehicle> linkedVehicles;
+
+  @override
+  Widget build(BuildContext context) {
+    final matched = summary.vehicleId.isNotEmpty
+        ? _matchVehicleById(summary.vehicleId, linkedVehicles)
+        : null;
+    final imei = matched?.imei ?? '';
+    final vehicleName = _firstNonEmpty([
+      summary.name,
+      if (matched != null) _firstNonEmpty([matched.name, matched.plateNumber]),
+    ]);
+    final planName = summary.planName;
+
+    return Column(
+      children: [
+        _DetailRow(
+            row: _DetailRowData('Vehicle $index', _displayValue(vehicleName))),
+        _DetailRow(row: _DetailRowData('IMEI', _displayValue(imei))),
+        _DetailRow(row: _DetailRowData('Plan', _displayValue(planName))),
+        if (summary.price != '0' && summary.price.isNotEmpty)
+          _DetailRow(
+              row: _DetailRowData('Price', _formatAmount(summary.price))),
+        if (summary.durationDays != null)
+          _DetailRow(
+              row: _DetailRowData('Duration', '${summary.durationDays} days')),
+        if (summary.newSecondaryExpiry != null)
+          _DetailRow(
+              row: _DetailRowData(
+                  'New Expiry', _dateText(summary.newSecondaryExpiry))),
       ],
     );
   }
@@ -1527,6 +1750,28 @@ String _firstNonEmpty(List<String> values) {
     }
   }
   return '';
+}
+
+/// Matches a vehicle by plain string ID against [linkedVehicles].
+/// Compares both as-is and trimmed; also handles int/string mismatches by
+/// comparing the numeric-string representation.
+AdminUserVehicle? _matchVehicleById(
+  String vehicleId,
+  List<AdminUserVehicle> linkedVehicles,
+) {
+  if (vehicleId.isEmpty || linkedVehicles.isEmpty) return null;
+  final normalized = vehicleId.trim();
+  for (final v in linkedVehicles) {
+    if (v.id.trim() == normalized) return v;
+  }
+  // Numeric fallback: "123" == "123.0" or "123" == 123
+  final asInt = int.tryParse(normalized);
+  if (asInt != null) {
+    for (final v in linkedVehicles) {
+      if (int.tryParse(v.id.trim()) == asInt) return v;
+    }
+  }
+  return null;
 }
 
 AdminUserVehicle? _matchVehicle(

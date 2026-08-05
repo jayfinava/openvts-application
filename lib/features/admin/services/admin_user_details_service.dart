@@ -352,18 +352,19 @@ class AdminUserDetailsService {
     );
   }
 
-  Future<void> renewVehiclesPayment(
+  Future<AdminRenewVehiclesPaymentResult> renewVehiclesPayment(
     AdminRenewVehiclesPaymentRequest request,
   ) async {
     if (request.vehicleIds.isEmpty) {
       throw ArgumentError('Select at least one vehicle.');
     }
-    await _apiClient.post<void>(
+    final response = await _apiClient.post<dynamic>(
       ApiEndpoints.admin.renewVehiclesPayment,
       data: request.toJson(),
       options: _mutationOptions,
-      parser: (_) {},
+      parser: (json) => json,
     );
+    return AdminRenewVehiclesPaymentResult.fromJson(response.data);
   }
 
   Future<AdminUserActivityLogPage> getActivityLogs({

@@ -1070,6 +1070,115 @@ class AdminUserTicketMessage {
   }
 }
 
+/// Vehicle summary stored in `transaction.meta.vehicles[]` for renewal
+/// transactions where `vehicleId` and `planId` are null at the top level.
+class AdminRenewalVehicleSummary {
+  const AdminRenewalVehicleSummary({
+    required this.vehicleId,
+    required this.name,
+    required this.planId,
+    required this.planName,
+    required this.price,
+    required this.durationDays,
+    required this.oldSecondaryExpiry,
+    required this.newSecondaryExpiry,
+  });
+
+  final String vehicleId;
+  final String name;
+  final String planId;
+  final String planName;
+  final String price;
+  final int? durationDays;
+  final DateTime? oldSecondaryExpiry;
+  final DateTime? newSecondaryExpiry;
+
+  bool get hasVehicleId => vehicleId.isNotEmpty;
+
+  factory AdminRenewalVehicleSummary.fromJson(dynamic json) {
+    final source = _asMap(json);
+    return AdminRenewalVehicleSummary(
+      vehicleId: _firstString(
+              source, const ['vehicleId', 'vehicle_id', 'id', '_id']) ??
+          '',
+      name: _firstString(source, const [
+            'name',
+            'vehicleName',
+            'vehicle_name',
+            'plateNumber',
+            'plate_number',
+          ]) ??
+          '',
+      planId:
+          _firstString(source, const ['planId', 'plan_id', 'subscriptionId']) ??
+              '',
+      planName: _firstString(source, const [
+            'planName',
+            'plan_name',
+            'planTitle',
+            'plan',
+          ]) ??
+          '',
+      price: _amountString(
+        _firstValue(source, const ['price', 'amount', 'planPrice', 'cost']),
+      ),
+      durationDays: _firstInt(source, const [
+        'durationDays',
+        'duration_days',
+        'duration',
+        'days',
+      ]),
+      oldSecondaryExpiry: _firstDate(source, const [
+        'oldSecondaryExpiry',
+        'old_secondary_expiry',
+        'previousExpiry',
+        'old_expiry',
+      ]),
+      newSecondaryExpiry: _firstDate(source, const [
+        'newSecondaryExpiry',
+        'new_secondary_expiry',
+        'newExpiry',
+        'expiry',
+      ]),
+    );
+  }
+}
+
+/// Parsed result of a successful POST /admin/payments/renew response.
+class AdminRenewVehiclesPaymentResult {
+  const AdminRenewVehiclesPaymentResult({
+    required this.transaction,
+    required this.validationWarnings,
+  });
+
+  final AdminUserPayment? transaction;
+  final List<String> validationWarnings;
+
+  factory AdminRenewVehiclesPaymentResult.fromJson(dynamic json) {
+    final source = _asMap(json);
+
+    // Top-level envelope: { action, message, data } OR { transaction, ... }
+    final data = _firstMap(source, const ['data', 'result', 'payload']);
+    final root = data ?? source;
+
+    final txMap = _firstMap(root, const ['transaction', 'tx', 'payment']);
+    final warnings = _firstList(root, const [
+          'validationWarnings',
+          'validation_warnings',
+          'warnings',
+        ])
+            ?.map((item) => item?.toString().trim() ?? '')
+            .where((w) => w.isNotEmpty)
+            .toList(growable: false) ??
+        const <String>[];
+
+    return AdminRenewVehiclesPaymentResult(
+      transaction: txMap == null ? null : AdminUserPayment.fromJson(txMap),
+      validationWarnings: warnings,
+    );
+  }
+}
+
 class AdminUserPayment {
   const AdminUserPayment({
     required this.id,
@@ -1088,6 +1197,7 @@ class AdminUserPayment {
     required this.vehicle,
     required this.plan,
     required this.meta,
+    required this.renewalVehicles,
   });
 
   final String id;
@@ -1107,6 +1217,12 @@ class AdminUserPayment {
   final Map<String, dynamic> plan;
   final Map<String, dynamic> meta;
 
+  /// Non-empty only for renewal transactions where the backend stores per-
+  /// vehicle details in `meta.vehicles[]` instead of the top-level vehicle/plan.
+  final List<AdminRenewalVehicleSummary> renewalVehicles;
+
+  bool get isRenewal => renewalVehicles.isNotEmpty;
+
   factory AdminUserPayment.fromJson(dynamic json) {
     final source = _asMap(json);
     final fromUserMap =
@@ -1118,6 +1234,18 @@ class AdminUserPayment {
       'recordedByUser',
       'createdBy',
     ]);
+
+    final metaMap = _firstMap(source, const ['meta', 'metadata']) ??
+        const <String, dynamic>{};
+
+    // Parse meta.vehicles[] for renewal transactions.
+    final metaVehiclesRaw =
+        _firstList(metaMap, const ['vehicles', 'renewedVehicles', 'items']);
+    final renewalVehicles = metaVehiclesRaw
+            ?.map(AdminRenewalVehicleSummary.fromJson)
+            .where((v) => v.vehicleId.isNotEmpty || v.name.isNotEmpty)
+            .toList(growable: false) ??
+        const <AdminRenewalVehicleSummary>[];
 
     return AdminUserPayment(
       id: _firstString(
@@ -1153,8 +1281,8 @@ class AdminUserPayment {
       vehicle:
           _firstMap(source, const ['vehicle']) ?? const <String, dynamic>{},
       plan: _firstMap(source, const ['plan']) ?? const <String, dynamic>{},
-      meta: _firstMap(source, const ['meta', 'metadata']) ??
-          const <String, dynamic>{},
+      meta: metaMap,
+      renewalVehicles: renewalVehicles,
     );
   }
 }
