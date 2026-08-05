@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../shared/widgets/open_vts_text_field.dart';
 
 class AdminUserDropdownOption {
   const AdminUserDropdownOption({
@@ -53,6 +54,7 @@ class AdminUserDropdownField extends StatelessWidget {
     this.prefixIcon,
     this.validator,
     this.isLoading = false,
+    this.selectedLabel,
     super.key,
   });
 
@@ -65,6 +67,11 @@ class AdminUserDropdownField extends StatelessWidget {
   final String? Function(String?)? validator;
   final bool isLoading;
 
+  /// When non-null, overrides the text shown in the closed field for the
+  /// selected value. The full [AdminUserDropdownOption.label] is still shown
+  /// in the open menu. Has no effect on other dropdowns.
+  final String? Function(String value)? selectedLabel;
+
   @override
   Widget build(BuildContext context) {
     final normalizedValue = _normalized(value);
@@ -73,6 +80,8 @@ class AdminUserDropdownField extends StatelessWidget {
         ? normalizedValue
         : null;
     final optionSignature = menuItems.map((item) => item.value ?? '').join('|');
+
+    final resolvedSelectedLabel = selectedLabel;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,6 +96,24 @@ class AdminUserDropdownField extends StatelessWidget {
           onChanged: isLoading ? null : onChanged,
           validator: validator,
           dropdownColor: Theme.of(context).colorScheme.surface,
+          selectedItemBuilder: resolvedSelectedLabel == null
+              ? null
+              : (context) => menuItems.map((item) {
+                    final compact = item.value == null
+                        ? ''
+                        : (resolvedSelectedLabel(item.value!) ?? item.value!);
+                    return Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Text(
+                        compact,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: OpenVtsTypography.body.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    );
+                  }).toList(growable: false),
           decoration: InputDecoration(
             hintText: hintText,
             prefixIcon: prefixIcon == null
@@ -160,6 +187,86 @@ class AdminUserDropdownField extends StatelessWidget {
           ),
         )
         .toList(growable: false);
+  }
+}
+
+/// A responsive prefix + number row used by both edit-profile forms.
+///
+/// At ≥ 300 logical pixels it places the dropdown and text field side-by-side.
+/// On narrower widths they stack vertically. The dropdown uses [selectedLabel]
+/// so the closed field shows only the dial code (e.g. +91) while the open menu
+/// still shows the full "+91 IN" label.
+class AdminUserPrefixPhoneRow extends StatelessWidget {
+  const AdminUserPrefixPhoneRow({
+    required this.prefixValue,
+    required this.prefixOptions,
+    required this.onPrefixChanged,
+    required this.phoneController,
+    required this.phoneValidator,
+    this.isLoading = false,
+    super.key,
+  });
+
+  final String? prefixValue;
+  final List<AdminUserDropdownOption> prefixOptions;
+  final ValueChanged<String?> onPrefixChanged;
+  final TextEditingController phoneController;
+  final String? Function(String?)? phoneValidator;
+  final bool isLoading;
+
+  static const double _breakpoint = 300;
+  static const double _prefixFlex = 0.38;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final wide = constraints.maxWidth >= _breakpoint;
+
+        final prefixField = AdminUserDropdownField(
+          label: 'Mobile Prefix',
+          value: prefixValue,
+          options: prefixOptions,
+          hintText: '+91',
+          prefixIcon: Icons.phone_android_rounded,
+          isLoading: isLoading,
+          validator: requiredDropdown,
+          selectedLabel: (v) => v,
+          onChanged: onPrefixChanged,
+        );
+
+        final numberField = OpenVtsTextField(
+          label: 'Mobile Number',
+          controller: phoneController,
+          keyboardType: TextInputType.phone,
+          textInputAction: TextInputAction.next,
+          prefixIcon: Icons.phone_rounded,
+          validator: phoneValidator,
+        );
+
+        if (wide) {
+          final prefixWidth =
+              (constraints.maxWidth * _prefixFlex).clamp(90.0, 160.0);
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(width: prefixWidth, child: prefixField),
+              const SizedBox(width: OpenVtsSpacing.sm),
+              Expanded(child: numberField),
+            ],
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            prefixField,
+            const SizedBox(height: OpenVtsSpacing.sm),
+            numberField,
+          ],
+        );
+      },
+    );
   }
 }
 

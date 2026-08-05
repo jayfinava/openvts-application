@@ -125,36 +125,14 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
                       validator: Validators.email,
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 124,
-                          child: AdminUserDropdownField(
-                            label: 'Mobile Prefix',
-                            value: _mobilePrefix,
-                            options: _mobilePrefixOptions,
-                            hintText: '+91',
-                            prefixIcon: Icons.phone_android_rounded,
-                            isLoading: _isLoadingReferences,
-                            validator: requiredDropdown,
-                            onChanged: (value) {
-                              setState(() => _mobilePrefix = value);
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: OpenVtsSpacing.sm),
-                        Expanded(
-                          child: OpenVtsTextField(
-                            label: 'Mobile Number',
-                            controller: _mobileNumberController,
-                            keyboardType: TextInputType.phone,
-                            textInputAction: TextInputAction.next,
-                            prefixIcon: Icons.phone_rounded,
-                            validator: Validators.mobileNumber,
-                          ),
-                        ),
-                      ],
+                    AdminUserPrefixPhoneRow(
+                      prefixValue: _mobilePrefix,
+                      prefixOptions: _mobilePrefixOptions,
+                      isLoading: _isLoadingReferences,
+                      onPrefixChanged: (value) =>
+                          setState(() => _mobilePrefix = value),
+                      phoneController: _mobileNumberController,
+                      phoneValidator: Validators.mobileNumber,
                     ),
                   ],
                 ),
