@@ -77,12 +77,18 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
     final canSaveCurrentTab =
         isProfileTab ? state.canSaveProfile : state.canSaveLocalization;
 
+    // Toolbar refresh indicator reflects only the current tab's busy state, not
+    // every background Settings operation.
+    final currentTabRefreshBusy = isProfileTab
+        ? state.isProfileRefreshBusy
+        : state.isLocalizationRefreshBusy;
+
     final listBottomPadding = currentTabDirty || currentTabSaving
         ? 116.0 + MediaQuery.paddingOf(context).bottom
         : OpenVtsSpacing.md;
 
     Future<void> onRefreshCurrentTab() async {
-      if (state.hasAnyBusyState) {
+      if (currentTabRefreshBusy) {
         return;
       }
 
@@ -156,12 +162,12 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
         IconButton(
           tooltip: 'Refresh current tab',
           constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-          onPressed: state.hasAnyBusyState
+          onPressed: currentTabRefreshBusy
               ? null
               : () {
                   unawaited(onRefreshCurrentTab());
                 },
-          icon: state.hasAnyBusyState
+          icon: currentTabRefreshBusy
               ? const SizedBox.square(
                   dimension: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),

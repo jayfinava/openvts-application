@@ -36,7 +36,13 @@ class _UserLocalizationSettingsTabState
   final TextEditingController _longitudeController = TextEditingController();
   final TextEditingController _mapZoomController = TextEditingController();
 
+  // Guards _onChanged callbacks while we're programmatically updating text.
   bool _isHydrating = false;
+
+  // Tracks the epoch we last hydrated from. When the epoch advances we
+  // re-sync the text controllers; all other state changes are ignored.
+  int _hydratedEpoch = -1;
+
   String? _latitudeError;
   String? _longitudeError;
   String? _mapZoomError;
@@ -49,13 +55,25 @@ class _UserLocalizationSettingsTabState
   @override
   void initState() {
     super.initState();
+    // Hydrate once from the current epoch — this is the single initial sync.
     _hydrateMapControllers(_draft, clearErrors: true);
+    _hydratedEpoch = widget.state.localizationHydrationEpoch;
   }
 
   @override
   void didUpdateWidget(covariant UserLocalizationSettingsTab oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _hydrateMapControllers(_draft, clearErrors: true);
+
+    final newEpoch = widget.state.localizationHydrationEpoch;
+    if (newEpoch != _hydratedEpoch) {
+      // A deliberate hydration event occurred (initial load, refresh, reset,
+      // preset, successful save). Re-sync the text controllers.
+      _hydrateMapControllers(_draft, clearErrors: true);
+      _hydratedEpoch = newEpoch;
+    }
+    // All other widget updates (loading flags, reference changes, error
+    // changes, theme/language edits, etc.) are intentionally ignored here
+    // so that the user's in-progress typed text is preserved.
   }
 
   @override
@@ -268,6 +286,8 @@ class _UserLocalizationSettingsTabState
     );
   }
 
+  // ── Pickers ───────────────────────────────────────────────────────────────
+
   Future<void> _pickLanguage(
     List<UserLocalizationOption<String>> options,
   ) async {
@@ -279,10 +299,7 @@ class _UserLocalizationSettingsTabState
       searchHintText: 'Search language',
     );
 
-    if (selected == null || !mounted) {
-      return;
-    }
-
+    if (selected == null || !mounted) return;
     widget.controller.patchDraftLocalization(language: selected);
   }
 
@@ -297,10 +314,7 @@ class _UserLocalizationSettingsTabState
       searchHintText: 'Search date format',
     );
 
-    if (selected == null || !mounted) {
-      return;
-    }
-
+    if (selected == null || !mounted) return;
     widget.controller.patchDraftLocalization(dateFormat: selected);
   }
 
@@ -315,17 +329,14 @@ class _UserLocalizationSettingsTabState
       searchHintText: 'Search timezone',
     );
 
-    if (selected == null || !mounted) {
-      return;
-    }
-
+    if (selected == null || !mounted) return;
     widget.controller.patchDraftLocalization(timezoneOffset: selected);
   }
 
+  // ── Map field handlers ────────────────────────────────────────────────────
+
   void _handleLatitudeChanged(String raw) {
-    if (_isHydrating) {
-      return;
-    }
+    if (_isHydrating) return;
 
     final value = raw.trim();
     if (value.isEmpty) {
@@ -349,9 +360,7 @@ class _UserLocalizationSettingsTabState
   }
 
   void _handleLongitudeChanged(String raw) {
-    if (_isHydrating) {
-      return;
-    }
+    if (_isHydrating) return;
 
     final value = raw.trim();
     if (value.isEmpty) {
@@ -375,9 +384,7 @@ class _UserLocalizationSettingsTabState
   }
 
   void _handleMapZoomChanged(String raw) {
-    if (_isHydrating) {
-      return;
-    }
+    if (_isHydrating) return;
 
     final value = raw.trim();
     if (value.isEmpty) {
@@ -400,6 +407,8 @@ class _UserLocalizationSettingsTabState
     widget.controller.patchDraftLocalization(mapZoom: parsed);
   }
 
+  // Preset applies values immediately and bumps epoch via controller so any
+  // future sibling widget also re-syncs if needed.
   void _applyPreset(UserLocationPreset preset) {
     _isHydrating = true;
     _setText(_latitudeController, _formatDouble(preset.latitude));
@@ -415,6 +424,8 @@ class _UserLocalizationSettingsTabState
     );
   }
 
+  // ── Hydration ─────────────────────────────────────────────────────────────
+
   void _hydrateMapControllers(
     UserLocalizationSettings settings, {
     required bool clearErrors,
@@ -425,47 +436,32 @@ class _UserLocalizationSettingsTabState
     _setText(_mapZoomController, settings.mapZoom.toString());
     _isHydrating = false;
 
-    if (clearErrors) {
-      _clearMapErrors();
-    }
+    if (clearErrors) _clearMapErrors();
   }
 
   void _setText(TextEditingController controller, String value) {
-    if (controller.text == value) {
-      return;
-    }
-
+    if (controller.text == value) return;
     controller.value = TextEditingValue(
       text: value,
       selection: TextSelection.collapsed(offset: value.length),
     );
   }
 
+  // ── Error helpers ─────────────────────────────────────────────────────────
+
   void _setLatitudeError(String? error) {
-    if (_latitudeError == error) {
-      return;
-    }
-    setState(() {
-      _latitudeError = error;
-    });
+    if (_latitudeError == error) return;
+    setState(() => _latitudeError = error);
   }
 
   void _setLongitudeError(String? error) {
-    if (_longitudeError == error) {
-      return;
-    }
-    setState(() {
-      _longitudeError = error;
-    });
+    if (_longitudeError == error) return;
+    setState(() => _longitudeError = error);
   }
 
   void _setMapZoomError(String? error) {
-    if (_mapZoomError == error) {
-      return;
-    }
-    setState(() {
-      _mapZoomError = error;
-    });
+    if (_mapZoomError == error) return;
+    setState(() => _mapZoomError = error);
   }
 
   void _clearMapErrors() {
@@ -474,13 +470,14 @@ class _UserLocalizationSettingsTabState
         _mapZoomError == null) {
       return;
     }
-
     setState(() {
       _latitudeError = null;
       _longitudeError = null;
       _mapZoomError = null;
     });
   }
+
+  // ── Option builders ───────────────────────────────────────────────────────
 
   List<UserLocalizationOption<String>> _buildLanguageOptions(
     UserLocalizationSettings draft,
@@ -599,15 +596,11 @@ class _UserLocalizationSettingsTabState
     required String fallback,
   }) {
     for (final option in options) {
-      if (option.value == value) {
-        return option.label;
-      }
+      if (option.value == value) return option.label;
     }
 
     final normalized = value.trim();
-    if (normalized.isNotEmpty) {
-      return normalized;
-    }
+    if (normalized.isNotEmpty) return normalized;
 
     return fallback;
   }
@@ -619,14 +612,10 @@ class _UserLocalizationSettingsTabState
     required String Function(UserLocalizationOption<String>) matcher,
   }) {
     final normalized = value.trim();
-    if (normalized.isEmpty) {
-      return;
-    }
+    if (normalized.isEmpty) return;
 
     final exists = options.any((item) => matcher(item) == normalized);
-    if (exists) {
-      return;
-    }
+    if (exists) return;
 
     options.insert(
       0,
@@ -647,9 +636,7 @@ class _UserLocalizationSettingsTabState
 
     for (final item in options) {
       final key = keyOf(item);
-      if (seen.contains(key)) {
-        continue;
-      }
+      if (seen.contains(key)) continue;
       seen.add(key);
       distinct.add(item);
     }
@@ -676,14 +663,14 @@ class _UserLocalizationSettingsTabState
           (settings.defaultLon - preset.longitude).abs() <= 0.0001;
       final zoomMatches = settings.mapZoom == preset.zoom;
 
-      if (latMatches && lonMatches && zoomMatches) {
-        return preset.label;
-      }
+      if (latMatches && lonMatches && zoomMatches) return preset.label;
     }
 
     return null;
   }
 }
+
+// ── Private supporting widgets ─────────────────────────────────────────────
 
 class _SegmentedField<T> extends StatelessWidget {
   const _SegmentedField({
@@ -758,7 +745,8 @@ class _ReferenceFallbackWarning extends StatelessWidget {
               Expanded(
                 child: Text(
                   normalizedMessage == null || normalizedMessage.isEmpty
-                      ? 'Reference options are unavailable right now. Fallback options are shown.'
+                      ? 'Reference options are unavailable right now. '
+                          'Fallback options are shown.'
                       : 'Reference options unavailable. $normalizedMessage',
                   style: OpenVtsTypography.meta.copyWith(
                     color: OpenVtsColors.warning,

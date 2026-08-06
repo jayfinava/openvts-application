@@ -58,19 +58,26 @@ class _UserProfileSettingsTabState
   @override
   void initState() {
     super.initState();
+    // The provider's loadInitial() already covers reference data and email
+    // subscription. This post-frame guard is kept only as a safety net for
+    // cases where the Profile tab is opened directly after a partial failure
+    // (e.g. references timed out). The controller's own idempotency flags
+    // prevent duplicate network requests.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
 
       final needsProfileReferences =
           widget.state.countries.isEmpty || widget.state.mobilePrefixes.isEmpty;
-      if (needsProfileReferences && !widget.state.isLoadingReferences) {
+      if (needsProfileReferences &&
+          !widget.state.isLoadingReferences &&
+          !widget.state.isLoadingInitial) {
         unawaited(widget.controller.loadReferenceData());
       }
 
       final needsSubscription = widget.state.emailSubscription == null;
-      if (needsSubscription && !widget.state.isLoadingEmailSubscription) {
+      if (needsSubscription &&
+          !widget.state.isLoadingEmailSubscription &&
+          !widget.state.isLoadingInitial) {
         unawaited(widget.controller.loadEmailSubscription());
       }
     });
