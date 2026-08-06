@@ -348,6 +348,7 @@ class AdminVehicleDeviceMini {
     required this.liveOdometer,
     required this.liveEngineHours,
     required this.createdAt,
+    this.deviceTypeId,
   });
 
   final String id;
@@ -361,6 +362,7 @@ class AdminVehicleDeviceMini {
   final bool? liveOdometer;
   final bool? liveEngineHours;
   final DateTime? createdAt;
+  final int? deviceTypeId;
 
   factory AdminVehicleDeviceMini.fromJson(dynamic json) {
     final source = _asMap(json);
@@ -386,8 +388,23 @@ class AdminVehicleDeviceMini {
       liveEngineHours:
           _firstBool(source, const ['liveEngineHours', 'live_engine_hours']),
       createdAt: _firstDate(source, const ['createdAt', 'created_at']),
+      deviceTypeId:
+          _firstOptionalInt(source, const ['deviceTypeId', 'device_type_id']),
     );
   }
+}
+
+int? _firstOptionalInt(Map<String, dynamic> source, List<String> keys) {
+  for (final key in keys) {
+    final value = source[key];
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) {
+      final parsed = int.tryParse(value.trim());
+      if (parsed != null) return parsed;
+    }
+  }
+  return null;
 }
 
 class AdminVehicleUserMini {

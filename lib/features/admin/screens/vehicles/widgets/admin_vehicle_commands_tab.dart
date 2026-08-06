@@ -51,6 +51,7 @@ class _AdminVehicleCommandsTabState extends State<AdminVehicleCommandsTab> {
   final TextEditingController _noteController = TextEditingController();
 
   String? _selectedTemplateId;
+  int _dropdownEpoch = 0;
   String _latestStatus = '-';
   bool _polling = false;
 
@@ -61,6 +62,21 @@ class _AdminVehicleCommandsTabState extends State<AdminVehicleCommandsTab> {
     'TIMEOUT',
     'ERROR',
   };
+
+  @override
+  void didUpdateWidget(AdminVehicleCommandsTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_selectedTemplateId != null) {
+      final stillExists =
+          widget.customCommands.any((cmd) => cmd.id == _selectedTemplateId);
+      if (!stillExists) {
+        setState(() {
+          _selectedTemplateId = null;
+          _dropdownEpoch++;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -96,6 +112,7 @@ class _AdminVehicleCommandsTabState extends State<AdminVehicleCommandsTab> {
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               DropdownButtonFormField<String>(
+                key: ValueKey(_dropdownEpoch),
                 initialValue: _selectedTemplateId,
                 decoration: const InputDecoration(
                   labelText: 'Template',

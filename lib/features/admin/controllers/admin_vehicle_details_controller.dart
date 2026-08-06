@@ -6,6 +6,7 @@ import '../models/admin_vehicle_model.dart';
 import '../models/admin_vehicle_state.dart';
 import '../services/admin_vehicle_service.dart';
 import '../services/admin_vehicle_timestamp_storage.dart';
+import '../utils/admin_command_template_utils.dart';
 
 class AdminVehicleDetailsController
     extends StateNotifier<AdminVehicleDetailsState> {
@@ -319,16 +320,21 @@ class AdminVehicleDetailsController
     if (imei.isEmpty) return;
     state = state.copyWith(isLoadingCommands: true, sectionErrorMessage: null);
     try {
+      final deviceTypeId = state.vehicle?.device?.deviceTypeId;
       final results = await Future.wait<dynamic>([
         _service.getCommandHistoryByImei(imei: imei),
-        _service.getCustomCommands(activeOnly: true),
+        _service.getCustomCommands(
+          activeOnly: true,
+          deviceTypeId: deviceTypeId,
+        ),
         _service.getSystemVariables(),
       ]);
       final page = results[0] as AdminVehicleCommandHistoryPage;
       _loadedTabs.add(AdminVehicleDetailsTab.commands);
+      final rawCommands = results[1] as List<AdminCustomCommand>;
       state = state.copyWith(
         commandHistory: page.items,
-        customCommands: results[1] as List<AdminCustomCommand>,
+        customCommands: deduplicateAndSortCommands(rawCommands),
         systemVariables: results[2] as List<AdminSystemVariable>,
         isLoadingCommands: false,
       );

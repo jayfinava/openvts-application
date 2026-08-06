@@ -254,11 +254,16 @@ class AdminVehicleService {
         imei: imei, requestedLimit: limit);
   }
 
-  Future<List<AdminCustomCommand>> getCustomCommands(
-      {bool activeOnly = true}) async {
+  Future<List<AdminCustomCommand>> getCustomCommands({
+    bool activeOnly = true,
+    int? deviceTypeId,
+  }) async {
     final response = await _apiClient.get<dynamic>(
       ApiEndpoints.admin.customCommands,
-      queryParameters: <String, dynamic>{'activeOnly': activeOnly},
+      queryParameters: <String, dynamic>{
+        'activeOnly': activeOnly,
+        if (deviceTypeId != null) 'deviceTypeId': deviceTypeId,
+      },
       options: _readOptions,
       parser: (json) => json,
     );
