@@ -4359,8 +4359,21 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
 
     try {
       final service = ref.read(liveMapVehicleControllerProvider);
+
+      // Prefer deviceTypeId from the live telemetry summary.  When it is
+      // absent (e.g. the telemetry stream omits device metadata), fall back
+      // to the vehicle-details provider which is already cached from the
+      // Details tab and carries the full device record.
+      final imei = _imei;
+      int? resolvedDeviceTypeId = widget.vehicle.deviceTypeId;
+      if (resolvedDeviceTypeId == null && imei.isNotEmpty) {
+        final details =
+            ref.read(liveMapVehicleDetailsProvider(imei)).asData?.value;
+        resolvedDeviceTypeId = details?.deviceTypeId;
+      }
+
       final commands = await service.getCustomCommands(
-        deviceTypeId: widget.vehicle.deviceTypeId,
+        deviceTypeId: resolvedDeviceTypeId,
         activeOnly: true,
       );
       var variables = const <SuperadminSystemVariable>[];
@@ -4375,7 +4388,7 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
 
       final activeCommands = deduplicateLiveMapCommandCatalogue(
         commands,
-        selectedDeviceTypeId: widget.vehicle.deviceTypeId,
+        selectedDeviceTypeId: resolvedDeviceTypeId,
       );
 
       // Validate any previous selection — the new catalogue may have a

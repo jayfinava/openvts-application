@@ -2825,6 +2825,19 @@ class SuperadminVehicleService {
       latitude: coordinates?.latitude,
       longitude: coordinates?.longitude,
       sections: _buildVehicleDetailsSections(source),
+      deviceTypeId: _firstIntByKeyPriority(candidateMaps, const [
+            'deviceTypeId',
+            'device_type_id',
+            'trackerDeviceTypeId',
+            'tracker_device_type_id',
+          ]) ??
+          _firstInt(_asMap(source['deviceType']), const ['id']) ??
+          _firstInt(_asMap(source['device_type']), const ['id']) ??
+          _firstInt(_asMap(_asMap(source['device'])['type']), const ['id']) ??
+          _firstInt(
+              _asMap(_asMap(source['device'])['deviceType']), const ['id']) ??
+          _firstInt(
+              _asMap(_asMap(source['device'])['device_type']), const ['id']),
     );
   }
 
@@ -3475,6 +3488,7 @@ class SuperadminVehicleDetails {
     required this.latitude,
     required this.longitude,
     required this.sections,
+    this.deviceTypeId,
   });
 
   const SuperadminVehicleDetails.empty({this.imei = ''})
@@ -3486,7 +3500,8 @@ class SuperadminVehicleDetails {
         updatedAt = null,
         latitude = null,
         longitude = null,
-        sections = const <SuperadminVehicleDetailsSection>[];
+        sections = const <SuperadminVehicleDetailsSection>[],
+        deviceTypeId = null;
 
   final String imei;
   final String name;
@@ -3498,6 +3513,7 @@ class SuperadminVehicleDetails {
   final double? latitude;
   final double? longitude;
   final List<SuperadminVehicleDetailsSection> sections;
+  final int? deviceTypeId;
 
   bool get hasCoordinates => latitude != null && longitude != null;
 }
