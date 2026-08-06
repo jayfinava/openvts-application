@@ -1081,7 +1081,9 @@ class SuperadminCustomCommand {
     this.deviceTypeName,
     String? protocol,
     String? deviceProtocol,
-  }) : protocol = protocol ?? deviceProtocol;
+    String? stableKey,
+  })  : protocol = protocol ?? deviceProtocol,
+        stableKey = stableKey ?? id;
 
   final String id;
   final String command;
@@ -1092,6 +1094,14 @@ class SuperadminCustomCommand {
   final String? commandTypeDescription;
   final String? deviceTypeName;
   final String? protocol;
+
+  /// Unique selection key assigned by [deduplicateLiveMapCommandCatalogue].
+  ///
+  /// Defaults to [id].  Safe to use as [DropdownMenuItem.value] because the
+  /// deduplication helper guarantees uniqueness across the returned list even
+  /// when the backend returns repeated IDs or falls back to command text for
+  /// the ID field.
+  final String stableKey;
 
   String? get deviceProtocol => protocol;
 
@@ -1105,6 +1115,22 @@ class SuperadminCustomCommand {
     return text.isEmpty ? 'Command' : text;
   }
 
+  /// Concise label for the closed (selected) dropdown field.
+  ///
+  /// Shows "CommandType — payload" when both are available and different, so
+  /// two commands with the same type name but different payloads remain
+  /// distinguishable even when the dropdown is closed.
+  String get displaySelectedLabel {
+    final type = commandTypeName?.trim() ?? '';
+    final payload = command.trim();
+    if (type.isEmpty) return payload.isEmpty ? 'Command' : payload;
+    if (payload.isEmpty || type == payload) return type;
+    // Truncate long payloads for the closed field.
+    final short =
+        payload.length > 40 ? '${payload.substring(0, 38)}…' : payload;
+    return '$type — $short';
+  }
+
   String get displaySubtitle {
     final device = deviceTypeName?.trim() ?? '';
     final protocolValue = protocol?.trim() ?? '';
@@ -1113,6 +1139,22 @@ class SuperadminCustomCommand {
       if (protocolValue.isNotEmpty) protocolValue,
     ];
     return parts.join(' · ');
+  }
+
+  /// Returns a copy of this command with [stableKey] replaced.
+  SuperadminCustomCommand withStableKey(String key) {
+    return SuperadminCustomCommand(
+      id: id,
+      command: command,
+      isActive: isActive,
+      deviceTypeId: deviceTypeId,
+      commandTypeId: commandTypeId,
+      commandTypeName: commandTypeName,
+      commandTypeDescription: commandTypeDescription,
+      deviceTypeName: deviceTypeName,
+      protocol: protocol,
+      stableKey: key,
+    );
   }
 
   static SuperadminCustomCommand? tryParse(dynamic raw) {

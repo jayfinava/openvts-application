@@ -59,11 +59,26 @@ class VehicleSummary {
     final name = json['name']?.toString().trim() ?? '';
     final deviceType = json['deviceType'];
     final deviceTypeSnake = json['device_type'];
+    // Resolve device.type.id (web shape: dbVehicle?.device?.type?.id)
+    final deviceMap = json['device'];
+    final deviceTypeViaDevice = deviceMap is Map
+        ? (deviceMap['type'] is Map
+            ? deviceMap['type']
+            : (deviceMap['deviceType'] is Map
+                ? deviceMap['deviceType']
+                : (deviceMap['device_type'] is Map
+                    ? deviceMap['device_type']
+                    : null)))
+        : null;
     final deviceTypeId = _asInt(
       json['deviceTypeId'] ??
           json['device_type_id'] ??
           (deviceType is Map ? deviceType['id'] : null) ??
-          (deviceTypeSnake is Map ? deviceTypeSnake['id'] : null),
+          (deviceTypeSnake is Map ? deviceTypeSnake['id'] : null) ??
+          (deviceTypeViaDevice is Map ? deviceTypeViaDevice['id'] : null) ??
+          (deviceMap is Map
+              ? (deviceMap['deviceTypeId'] ?? deviceMap['device_type_id'])
+              : null),
     );
 
     return VehicleSummary(

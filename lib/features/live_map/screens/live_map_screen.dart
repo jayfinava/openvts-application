@@ -4161,7 +4161,7 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
   var _systemVariables = const <SuperadminSystemVariable>[];
   var _apiHistory = const <SuperadminVehicleCommandEntry>[];
   var _localHistory = const <SuperadminVehicleCommandEntry>[];
-  String? _selectedCommandId;
+  String? _selectedCommandKey;
   String? _nextCursorId;
   bool _catalogLoaded = false;
   bool _historyLoaded = false;
@@ -4317,7 +4317,7 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
       _systemVariables = const <SuperadminSystemVariable>[];
       _apiHistory = const <SuperadminVehicleCommandEntry>[];
       _localHistory = const <SuperadminVehicleCommandEntry>[];
-      _selectedCommandId = null;
+      _selectedCommandKey = null;
       _nextCursorId = null;
       _catalogLoaded = false;
       _historyLoaded = false;
@@ -4374,17 +4374,27 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
       }
 
       final activeCommands = deduplicateLiveMapCommandCatalogue(
-        commands.where((command) => command.isActive).toList(growable: false),
+        commands,
+        selectedDeviceTypeId: widget.vehicle.deviceTypeId,
       );
+
+      // Validate any previous selection — the new catalogue may have a
+      // different set of stableKeys after a vehicle or device-type change.
+      final previousKey = _selectedCommandKey;
+      final previousStillValid = previousKey != null &&
+          activeCommands.any((cmd) => cmd.stableKey == previousKey);
 
       setState(() {
         _customCommands = activeCommands;
         _systemVariables = variables;
         _loadingCatalog = false;
         _catalogLoaded = true;
+        if (!previousStillValid) {
+          _selectedCommandKey = null;
+        }
       });
 
-      if (_selectedCommandId == null && activeCommands.isNotEmpty) {
+      if (_selectedCommandKey == null && activeCommands.isNotEmpty) {
         _selectCommand(activeCommands.first);
       }
     } catch (error) {
@@ -4578,7 +4588,7 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
       _commandDefaultValues(widget.vehicle, _systemVariables),
     );
     setState(() {
-      _selectedCommandId = command.id;
+      _selectedCommandKey = command.stableKey;
       _commandController.text = resolved;
       _commandController.selection = TextSelection.collapsed(
         offset: _commandController.text.length,
@@ -4878,10 +4888,10 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
     final scheme = Theme.of(context).colorScheme;
     final imei = _imei;
     final history = _visibleHistory;
-    final selectedCommand = _selectedCommandId == null
+    final selectedCommand = _selectedCommandKey == null
         ? null
         : _customCommands.cast<SuperadminCustomCommand?>().firstWhere(
-              (command) => command?.id == _selectedCommandId,
+              (command) => command?.stableKey == _selectedCommandKey,
               orElse: () => null,
             );
     final payloadLength = _commandController.text.trim().length;
@@ -4900,7 +4910,7 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
           padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
           child: _VehicleCommandComposerCard(
             commands: _customCommands,
-            selectedCommandId: _selectedCommandId,
+            selectedCommandKey: _selectedCommandKey,
             selectedCommand: selectedCommand,
             loading: _loadingCatalog,
             sending: _sending,
@@ -4908,10 +4918,10 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
             payloadLength: payloadLength,
             maxPayloadLength: _maxPayloadLength,
             controller: _commandController,
-            onCommandChanged: (commandId) {
+            onCommandChanged: (stableKey) {
               final command =
                   _customCommands.cast<SuperadminCustomCommand?>().firstWhere(
-                        (item) => item?.id == commandId,
+                        (item) => item?.stableKey == stableKey,
                         orElse: () => null,
                       );
               if (command != null) _selectCommand(command);
@@ -5173,7 +5183,7 @@ class _VehicleCommandConnectionChip extends StatelessWidget {
 class _VehicleCommandComposerCard extends StatelessWidget {
   const _VehicleCommandComposerCard({
     required this.commands,
-    required this.selectedCommandId,
+    required this.selectedCommandKey,
     required this.selectedCommand,
     required this.loading,
     required this.sending,
@@ -5186,7 +5196,7 @@ class _VehicleCommandComposerCard extends StatelessWidget {
   });
 
   final List<SuperadminCustomCommand> commands;
-  final String? selectedCommandId;
+  final String? selectedCommandKey;
   final SuperadminCustomCommand? selectedCommand;
   final bool loading;
   final bool sending;
@@ -5232,14 +5242,14 @@ class _VehicleCommandComposerCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              initialValue: selectedCommandId,
+              initialValue: selectedCommandKey,
               isExpanded: true,
               selectedItemBuilder: (context) {
                 return commands.map((command) {
                   return Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      command.displayTitle,
+                      command.displaySelectedLabel,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -5281,14 +5291,16 @@ class _VehicleCommandComposerCard extends StatelessWidget {
                 ),
               ),
               items: commands.map((command) {
+                final payload = command.command.trim();
+                final title = command.displayTitle;
                 return DropdownMenuItem<String>(
-                  value: command.id,
+                  value: command.stableKey,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        command.displayTitle,
+                        title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -5297,10 +5309,10 @@ class _VehicleCommandComposerCard extends StatelessWidget {
                           color: scheme.onSurface,
                         ),
                       ),
-                      if (command.command.trim() != command.displayTitle) ...[
+                      if (payload.isNotEmpty && payload != title) ...[
                         const SizedBox(height: 1),
                         Text(
-                          command.command.trim(),
+                          payload,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -5308,6 +5320,20 @@ class _VehicleCommandComposerCard extends StatelessWidget {
                             fontWeight: FontWeight.w700,
                             fontFamily: 'monospace',
                             color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                      if (command.displaySubtitle.isNotEmpty) ...[
+                        const SizedBox(height: 1),
+                        Text(
+                          command.displaySubtitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 8,
+                            fontWeight: FontWeight.w700,
+                            color:
+                                scheme.onSurfaceVariant.withValues(alpha: 0.70),
                           ),
                         ),
                       ],
