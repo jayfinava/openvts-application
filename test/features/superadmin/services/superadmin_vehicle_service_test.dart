@@ -827,6 +827,41 @@ void main() {
 
       expect(replay.points.single.odometer, 1026.6);
     });
+
+    // -----------------------------------------------------------------------
+    // parseVehicleDetailsPayload — deviceTypeId paths
+    // -----------------------------------------------------------------------
+
+    test('parses deviceTypeId from vehicle.device.type.id', () {
+      // The backend nests device metadata under vehicle.device.type when the
+      // vehicle record comes back from the details endpoint.  The parser reads
+      // source['device']['type']['id'] where source is the top-level map (or
+      // the unwrapped vehicle map when the payload is flat).
+      final details = service.parseVehicleDetailsPayload(<String, dynamic>{
+        'imei': 'imei-1',
+        'device': <String, dynamic>{
+          'type': <String, dynamic>{'id': 42, 'name': 'AL900'},
+        },
+      });
+      expect(details.deviceTypeId, 42);
+    });
+
+    test('parses deviceTypeId from flat deviceTypeId field', () {
+      final details = service.parseVehicleDetailsPayload(<String, dynamic>{
+        'vehicle': <String, dynamic>{
+          'imei': 'imei-1',
+          'deviceTypeId': 7,
+        },
+      });
+      expect(details.deviceTypeId, 7);
+    });
+
+    test('deviceTypeId is null when no device-type field present', () {
+      final details = service.parseVehicleDetailsPayload(<String, dynamic>{
+        'vehicle': <String, dynamic>{'imei': 'imei-1'},
+      });
+      expect(details.deviceTypeId, isNull);
+    });
   });
 }
 

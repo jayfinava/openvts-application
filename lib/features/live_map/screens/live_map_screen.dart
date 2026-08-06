@@ -4360,16 +4360,51 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
     try {
       final service = ref.read(liveMapVehicleControllerProvider);
 
-      // Prefer deviceTypeId from the live telemetry summary.  When it is
-      // absent (e.g. the telemetry stream omits device metadata), fall back
-      // to the vehicle-details provider which is already cached from the
-      // Details tab and carries the full device record.
+      // Resolve the device type ID before issuing the catalogue request.
+      //
+      // Priority:
+      //   1. widget.vehicle.deviceTypeId — set when the telemetry row carries
+      //      device metadata (superadmin role; always preferred).
+      //   2. liveMapVehicleDetailsProvider — fetched (or served from cache)
+      //      asynchronously; carries the full device record including
+      //      device.type.id even when the telemetry stream omits it.
+      //
+      // An unfiltered catalogue request (deviceTypeId == null) must never be
+      // issued because it returns commands for every device type in the
+      // database, filling the dropdown with unrelated commands.
       final imei = _imei;
       int? resolvedDeviceTypeId = widget.vehicle.deviceTypeId;
       if (resolvedDeviceTypeId == null && imei.isNotEmpty) {
-        final details =
-            ref.read(liveMapVehicleDetailsProvider(imei)).asData?.value;
-        resolvedDeviceTypeId = details?.deviceTypeId;
+        // Try the sync cache first to avoid a round trip when the Details tab
+        // has already loaded this vehicle.
+        resolvedDeviceTypeId = ref
+            .read(liveMapVehicleDetailsProvider(imei))
+            .asData
+            ?.value
+            .deviceTypeId;
+
+        // Cache miss — await the full fetch so we don't fall through to an
+        // unfiltered request.
+        if (resolvedDeviceTypeId == null) {
+          final details =
+              await ref.read(liveMapVehicleDetailsProvider(imei).future);
+          resolvedDeviceTypeId = details.deviceTypeId;
+        }
+      }
+
+      if (!mounted || generation != _catalogRequestGeneration) {
+        return;
+      }
+
+      if (resolvedDeviceTypeId == null) {
+        setState(() {
+          _loadingCatalog = false;
+          _catalogLoaded = true;
+          _commandsUnavailable = false;
+          _catalogError =
+              'Device type could not be determined for this vehicle.';
+        });
+        return;
       }
 
       final commands = await service.getCustomCommands(

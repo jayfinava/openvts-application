@@ -207,4 +207,63 @@ void main() {
       expect(deduplicateLiveMapCommandCatalogue(raw).length, 1);
     });
   });
+
+  // -----------------------------------------------------------------------
+  // Device-type filter: two records with same title, different deviceTypeId
+  // -----------------------------------------------------------------------
+
+  group('device-type filter with selectedDeviceTypeId', () {
+    test('retains only the command matching selectedDeviceTypeId', () {
+      final raw = [
+        _cmd(
+          id: 'a',
+          command: 'AT+TRACK=ON',
+          commandTypeName: 'Tracking',
+          deviceTypeId: 5,
+        ),
+        _cmd(
+          id: 'b',
+          command: 'AT+TRACK=ON',
+          commandTypeName: 'Tracking',
+          deviceTypeId: 99,
+        ),
+      ];
+      final result = deduplicateLiveMapCommandCatalogue(
+        raw,
+        selectedDeviceTypeId: 5,
+      );
+      expect(result.length, 1);
+      expect(result.first.deviceTypeId, 5);
+    });
+
+    test('drops commands with non-null deviceTypeId that does not match', () {
+      final raw = [
+        _cmd(id: 'a', command: 'AT+X', deviceTypeId: 1),
+        _cmd(id: 'b', command: 'AT+Y', deviceTypeId: 2),
+        _cmd(id: 'c', command: 'AT+Z', deviceTypeId: 1),
+      ];
+      final result = deduplicateLiveMapCommandCatalogue(
+        raw,
+        selectedDeviceTypeId: 1,
+      );
+      expect(result.length, 2);
+      expect(result.every((cmd) => cmd.deviceTypeId == 1), isTrue);
+    });
+
+    test('keeps null-deviceTypeId commands regardless of selected type', () {
+      final raw = [
+        _cmd(id: 'a', command: 'AT+UNIVERSAL'),
+        _cmd(id: 'b', command: 'AT+TYPED', deviceTypeId: 5),
+        _cmd(id: 'c', command: 'AT+OTHER', deviceTypeId: 99),
+      ];
+      final result = deduplicateLiveMapCommandCatalogue(
+        raw,
+        selectedDeviceTypeId: 5,
+      );
+      expect(result.length, 2);
+      final ids = result.map((cmd) => cmd.id).toSet();
+      expect(ids.contains('a'), isTrue);
+      expect(ids.contains('b'), isTrue);
+    });
+  });
 }
