@@ -194,7 +194,8 @@ class _OptionsWrapper extends StatelessWidget {
       );
     }
 
-    final options = state.options ?? const UserReportOptions(vehicles: [], groups: []);
+    final options =
+        state.options ?? const UserReportOptions(vehicles: [], groups: []);
 
     // Case 3: options loaded but authenticated user has no assigned vehicles.
     if (options.vehicles.isEmpty && !state.isLoadingOptions) {
@@ -279,8 +280,9 @@ class _OptionsError extends StatelessWidget {
         children: [
           Icon(Icons.warning_amber_rounded,
               size: 16,
-              color:
-                  isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.error),
+              color: isDark
+                  ? OpenVtsColors.darkTextSecondary
+                  : OpenVtsColors.error),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
@@ -296,8 +298,7 @@ class _OptionsError extends StatelessWidget {
             onPressed: onRetry,
             style: TextButton.styleFrom(
               visualDensity: VisualDensity.compact,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             ),
             child: const Text('Retry'),
           ),

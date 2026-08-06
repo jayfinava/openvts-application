@@ -901,8 +901,7 @@ class _UserLogsReportFilterState extends State<UserLogsReportFilter> {
         const SizedBox(height: OpenVtsSpacing.sm),
         _FilterSection(
           label: 'Level',
-          chips:
-              _kLogLevels.map((l) => (l, _kLogLevelLabels[l] ?? l)).toList(),
+          chips: _kLogLevels.map((l) => (l, _kLogLevelLabels[l] ?? l)).toList(),
           selected: widget.filters.levels,
           onChanged: (lvls) => _updateFilters(levels: lvls),
           disabled: widget.disabled,

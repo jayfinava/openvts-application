@@ -258,7 +258,9 @@ class _HeaderStatusChip extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final color = isActive
         ? (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk)
-        : (isDark ? OpenVtsColors.darkTextTertiary : OpenVtsColors.textTertiary);
+        : (isDark
+            ? OpenVtsColors.darkTextTertiary
+            : OpenVtsColors.textTertiary);
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),

@@ -29,8 +29,7 @@ class _ApiBaseUrlSettingsScreenState
   @override
   void initState() {
     super.initState();
-    _urlController =
-        TextEditingController(text: ref.read(apiBaseUrlProvider));
+    _urlController = TextEditingController(text: ref.read(apiBaseUrlProvider));
   }
 
   @override

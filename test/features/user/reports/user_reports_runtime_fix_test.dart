@@ -166,15 +166,15 @@ void main() {
     });
 
     test('multiple mode: vehicleIds are ints when parseable', () {
-      final json =
-          const ReportVehicleScope.multiple(['1', '2', '3']).toJson();
+      final json = const ReportVehicleScope.multiple(['1', '2', '3']).toJson();
       expect(json['mode'], 'multiple');
       final ids = json['vehicleIds'] as List<dynamic>;
       expect(ids, everyElement(isA<int>()));
       expect(ids, containsAllInOrder([1, 2, 3]));
     });
 
-    test('multiple mode: mixed ids — numeric parsed, non-numeric kept as string',
+    test(
+        'multiple mode: mixed ids — numeric parsed, non-numeric kept as string',
         () {
       final json =
           const ReportVehicleScope.multiple(['10', 'abc', '20']).toJson();
@@ -264,8 +264,10 @@ void main() {
         'internal',
       ]);
       final json = f.toJson();
-      expect(json['directions'],
-          containsAllInOrder(['device_to_server', 'server_to_device', 'internal']));
+      expect(
+          json['directions'],
+          containsAllInOrder(
+              ['device_to_server', 'server_to_device', 'internal']));
     });
   });
 
@@ -331,11 +333,13 @@ void main() {
       }
     });
 
-    test('severity values are backend-contract compliant: critical, high, low', () {
+    test('severity values are backend-contract compliant: critical, high, low',
+        () {
       // Backend accepts: critical, high, low (not medium)
       const f = AlertsFilters(severities: ['critical', 'high', 'low']);
       final json = f.toJson();
-      expect(json['severities'], containsAllInOrder(['critical', 'high', 'low']));
+      expect(
+          json['severities'], containsAllInOrder(['critical', 'high', 'low']));
     });
 
     test('acknowledged values serialise correctly', () {
@@ -490,16 +494,14 @@ void main() {
     });
 
     test('geofenceIds serialised correctly', () {
-      final json =
-          const GeofenceFilters(geofenceIds: ['g1', 'g2']).toJson();
+      final json = const GeofenceFilters(geofenceIds: ['g1', 'g2']).toJson();
       expect(json['geofenceIds'], ['g1', 'g2']);
     });
   });
 
   group('SensorFilters.toJson', () {
     test('single sensorId serialised', () {
-      final json =
-          const SensorFilters(sensorIds: ['s5']).toJson();
+      final json = const SensorFilters(sensorIds: ['s5']).toJson();
       expect(json['sensorIds'], ['s5']);
     });
   });
@@ -511,8 +513,7 @@ void main() {
     });
 
     test('running-only', () {
-      final json =
-          const TimelineFilters(states: ['running']).toJson();
+      final json = const TimelineFilters(states: ['running']).toJson();
       expect(json['states'], ['running']);
     });
   });

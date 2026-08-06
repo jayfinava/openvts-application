@@ -1224,7 +1224,8 @@ void main() {
     });
 
     test('distance report has distanceKm label', () {
-      expect(UserReportKey.distance.columnLabels['distanceKm'], 'Distance (km)');
+      expect(
+          UserReportKey.distance.columnLabels['distanceKm'], 'Distance (km)');
     });
 
     test('alerts report has alertType and severity labels', () {

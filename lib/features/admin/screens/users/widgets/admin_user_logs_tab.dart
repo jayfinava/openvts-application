@@ -293,14 +293,16 @@ class _ActionGroupChips extends StatelessWidget {
               borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
               onTap: () => onChanged(group.prefix),
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                child: Text(
-                  group.label,
-                  style: OpenVtsTypography.meta.copyWith(
-                    color: foregroundColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Center(
+                  child: Text(
+                    group.label,
+                    style: OpenVtsTypography.meta.copyWith(
+                      color: foregroundColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      height: 1,
+                    ),
                   ),
                 ),
               ),

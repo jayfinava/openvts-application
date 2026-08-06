@@ -129,8 +129,8 @@ class AuthController extends StateNotifier<AuthState> {
       }
     }
     final raw = error.toString();
-    final cleaned =
-        raw.replaceFirst(RegExp(r'^(ApiException\(\d+\)|DioException[^:]*): '), '');
+    final cleaned = raw.replaceFirst(
+        RegExp(r'^(ApiException\(\d+\)|DioException[^:]*): '), '');
     return cleaned.isNotEmpty ? cleaned : raw;
   }
 
