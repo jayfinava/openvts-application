@@ -18,6 +18,7 @@ import '../../../core/utils/date_time_formatter.dart';
 import '../../../core/utils/unit_formatter.dart';
 import '../../../shared/helpers/toast_helper.dart';
 import '../../../shared/models/vehicle_summary.dart';
+import '../../../shared/utils/command_catalogue_utils.dart';
 import '../../../shared/widgets/open_vts_bottom_sheet.dart';
 import '../../../shared/widgets/open_vts_button.dart';
 import '../../../shared/widgets/open_vts_date_time_range_selector.dart';
@@ -4372,8 +4373,9 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
         return;
       }
 
-      final activeCommands =
-          commands.where((command) => command.isActive).toList(growable: false);
+      final activeCommands = deduplicateLiveMapCommandCatalogue(
+        commands.where((command) => command.isActive).toList(growable: false),
+      );
 
       setState(() {
         _customCommands = activeCommands;
@@ -4907,11 +4909,12 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
             maxPayloadLength: _maxPayloadLength,
             controller: _commandController,
             onCommandChanged: (commandId) {
-              final command = _customCommands.firstWhere(
-                (item) => item.id == commandId,
-                orElse: () => _customCommands.first,
-              );
-              _selectCommand(command);
+              final command =
+                  _customCommands.cast<SuperadminCustomCommand?>().firstWhere(
+                        (item) => item?.id == commandId,
+                        orElse: () => null,
+                      );
+              if (command != null) _selectCommand(command);
             },
             onSend: _sendCommand,
           ),
