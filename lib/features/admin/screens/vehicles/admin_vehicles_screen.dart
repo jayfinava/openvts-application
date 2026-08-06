@@ -892,8 +892,8 @@ class _OptionsSheet extends StatelessWidget {
               ElevatedButton(
                 onPressed: onPrimaryAction,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryInkColor(context),
-                  foregroundColor: OpenVtsColors.white,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(
                     vertical: OpenVtsSpacing.sm,

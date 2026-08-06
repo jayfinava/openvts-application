@@ -2,7 +2,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -347,17 +346,18 @@ class _FilePickerField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fileName = file?.name ?? existingFileName;
+    final cs = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: isPicking ? null : onPick,
       child: Container(
         padding: const EdgeInsets.all(OpenVtsSpacing.md),
         decoration: BoxDecoration(
           border: Border.all(
-            color: showError ? OpenVtsColors.error : OpenVtsColors.border,
+            color: showError ? cs.error : cs.outlineVariant,
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          color: OpenVtsColors.surface,
+          color: cs.surfaceContainerHighest,
         ),
         child: Row(
           children: [
@@ -365,8 +365,8 @@ class _FilePickerField extends StatelessWidget {
               Icons.upload_file_rounded,
               size: 20,
               color: isPicking
-                  ? OpenVtsColors.textTertiary
-                  : OpenVtsColors.textSecondary,
+                  ? cs.onSurfaceVariant.withValues(alpha: 0.5)
+                  : cs.onSurfaceVariant,
             ),
             const SizedBox(width: OpenVtsSpacing.sm),
             Expanded(
@@ -376,7 +376,7 @@ class _FilePickerField extends StatelessWidget {
                   Text(
                     'File',
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.textSecondary,
+                      color: cs.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -386,6 +386,9 @@ class _FilePickerField extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600,
+                          color: fileName != null
+                              ? cs.onSurface
+                              : cs.onSurfaceVariant,
                         ),
                   ),
                 ],
@@ -397,10 +400,10 @@ class _FilePickerField extends StatelessWidget {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             else
-              const Icon(
+              Icon(
                 Icons.folder_open_rounded,
                 size: 18,
-                color: OpenVtsColors.brandInk,
+                color: cs.primary,
               ),
           ],
         ),
@@ -423,20 +426,20 @@ class _ExpiryField extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatter = ref.watch(appDateFormatterProvider);
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
         vertical: OpenVtsSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.background,
+        color: cs.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border.withValues(alpha: 0.7)),
+        border: Border.all(color: cs.outlineVariant),
       ),
       child: Row(
         children: [
-          const Icon(Icons.event_rounded,
-              size: 18, color: OpenVtsColors.textSecondary),
+          Icon(Icons.event_rounded, size: 18, color: cs.onSurfaceVariant),
           const SizedBox(width: OpenVtsSpacing.sm),
           Expanded(
             child: Column(
@@ -446,7 +449,7 @@ class _ExpiryField extends ConsumerWidget {
                 Text(
                   'Expiry Date',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: cs.onSurfaceVariant,
                     fontSize: 12,
                   ),
                 ),
@@ -455,6 +458,8 @@ class _ExpiryField extends ConsumerWidget {
                   value == null ? 'Optional' : formatter.formatDateTime(value!),
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
+                        color:
+                            value == null ? cs.onSurfaceVariant : cs.onSurface,
                       ),
                 ),
               ],
@@ -465,7 +470,7 @@ class _ExpiryField extends ConsumerWidget {
             child: Text(
               value == null ? 'Select' : 'Clear',
               style: OpenVtsTypography.label.copyWith(
-                color: OpenVtsColors.brandInk,
+                color: cs.primary,
               ),
             ),
           ),
@@ -486,15 +491,16 @@ class _VisibilityToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: OpenVtsSpacing.sm,
         vertical: OpenVtsSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.background,
+        color: cs.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border.withValues(alpha: 0.7)),
+        border: Border.all(color: cs.outlineVariant),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -504,7 +510,7 @@ class _VisibilityToggle extends StatelessWidget {
               Icon(
                 value ? Icons.visibility_rounded : Icons.visibility_off_rounded,
                 size: 18,
-                color: OpenVtsColors.textSecondary,
+                color: cs.onSurfaceVariant,
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
               Column(
@@ -514,7 +520,7 @@ class _VisibilityToggle extends StatelessWidget {
                   Text(
                     'Visibility',
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.textSecondary,
+                      color: cs.onSurfaceVariant,
                       fontSize: 12,
                     ),
                   ),
@@ -523,6 +529,7 @@ class _VisibilityToggle extends StatelessWidget {
                     value ? 'Visible' : 'Hidden',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600,
+                          color: cs.onSurface,
                         ),
                   ),
                 ],

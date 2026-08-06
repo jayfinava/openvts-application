@@ -80,7 +80,7 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
               Text(
                 'Date Range',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: OpenVtsColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
               ),
               const SizedBox(height: OpenVtsSpacing.xs),
@@ -92,16 +92,18 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
                     vertical: OpenVtsSpacing.sm,
                   ),
                   decoration: BoxDecoration(
-                    border: Border.all(color: OpenVtsColors.border),
+                    border: Border.all(
+                        color: Theme.of(context).colorScheme.outlineVariant),
                     borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                    color: OpenVtsColors.surface,
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.calendar_month_rounded,
                         size: 18,
-                        color: OpenVtsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: OpenVtsSpacing.sm),
                       Expanded(
@@ -110,10 +112,10 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.chevron_right_rounded,
                         size: 18,
-                        color: OpenVtsColors.textTertiary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ],
                   ),
