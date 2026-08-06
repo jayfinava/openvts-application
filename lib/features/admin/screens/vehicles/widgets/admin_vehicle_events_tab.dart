@@ -24,6 +24,7 @@ class AdminVehicleEventsTab extends StatefulWidget {
     required this.onLoad,
     required this.onLoadMore,
     required this.onApplyFilters,
+    required this.onClearFilters,
   });
 
   final String imei;
@@ -39,23 +40,21 @@ class AdminVehicleEventsTab extends StatefulWidget {
     String? source,
     String? severity,
   }) onApplyFilters;
+  final Future<void> Function() onClearFilters;
 
   @override
   State<AdminVehicleEventsTab> createState() => _AdminVehicleEventsTabState();
 }
 
 class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
-  late DateTime _rangeStart;
-  late DateTime _rangeEnd;
+  DateTime? _rangeStart;
+  DateTime? _rangeEnd;
   String _source = '';
   String _severity = '';
 
   @override
   void initState() {
     super.initState();
-    final now = DateTime.now();
-    _rangeStart = DateTime(now.year, now.month, now.day);
-    _rangeEnd = DateTime(now.year, now.month, now.day);
   }
 
   @override
@@ -67,7 +66,9 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
       );
     }
 
-    final rangeDisplay = _formatDateRange(_rangeStart, _rangeEnd);
+    final rangeDisplay = _rangeStart != null
+        ? _formatDateRange(_rangeStart!, _rangeEnd ?? _rangeStart!)
+        : 'All dates';
 
     return Column(
       children: [
@@ -153,6 +154,9 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
                             value: 'SYSTEM', child: Text('SYSTEM')),
                         DropdownMenuItem(
                             value: 'GEOFENCE', child: Text('GEOFENCE')),
+                        DropdownMenuItem(value: 'ROUTE', child: Text('ROUTE')),
+                        DropdownMenuItem(
+                            value: 'MOTION', child: Text('MOTION')),
                         DropdownMenuItem(
                             value: 'OVERSPEED', child: Text('OVERSPEED')),
                         DropdownMenuItem(
@@ -203,7 +207,8 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
                     child: OpenVtsButton(
                       label: 'Apply',
                       height: 36,
-                      onPressed: _applyFilters,
+                      isLoading: widget.isLoading,
+                      onPressed: widget.isLoading ? null : _applyFilters,
                     ),
                   ),
                   const SizedBox(width: OpenVtsSpacing.xs),
@@ -211,7 +216,7 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
                     child: OpenVtsButton(
                       label: 'Clear',
                       height: 36,
-                      onPressed: _reset,
+                      onPressed: widget.isLoading ? null : _reset,
                       variant: OpenVtsButtonVariant.secondary,
                     ),
                   ),
@@ -251,11 +256,13 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
   }
 
   Future<void> _openDateRangePicker(BuildContext context) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     return showDialog<void>(
       context: context,
       builder: (context) => _DateRangePickerDialog(
-        initialStart: _rangeStart,
-        initialEnd: _rangeEnd,
+        initialStart: _rangeStart ?? today,
+        initialEnd: _rangeEnd ?? today,
         onApply: (start, end) {
           Navigator.of(context).pop();
           setState(() {
@@ -268,23 +275,28 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
   }
 
   Future<void> _applyFilters() {
+    if (widget.isLoading) return Future.value();
+    DateTime? toInclusive;
+    if (_rangeEnd != null) {
+      toInclusive = DateTime(
+          _rangeEnd!.year, _rangeEnd!.month, _rangeEnd!.day, 23, 59, 59, 999);
+    }
     return widget.onApplyFilters(
       from: _rangeStart,
-      to: _rangeEnd,
+      to: toInclusive,
       source: _source.trim().isEmpty ? null : _source.trim(),
       severity: _severity.trim().isEmpty ? null : _severity.trim(),
     );
   }
 
   Future<void> _reset() async {
-    final now = DateTime.now();
     setState(() {
-      _rangeStart = DateTime(now.year, now.month, now.day);
-      _rangeEnd = DateTime(now.year, now.month, now.day);
+      _rangeStart = null;
+      _rangeEnd = null;
       _source = '';
       _severity = '';
     });
-    await widget.onLoad();
+    await widget.onClearFilters();
   }
 
   Future<void> _openDetails(AdminVehicleEventItem event) {

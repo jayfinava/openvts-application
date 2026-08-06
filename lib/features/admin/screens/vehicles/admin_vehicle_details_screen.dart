@@ -156,12 +156,13 @@ class _AdminVehicleDetailsScreenState
                   String? source,
                   String? severity,
                 }) =>
-                    controller.setEventFilters(
+                    controller.applyEventFilters(
                   from: from,
                   to: to,
                   source: source,
                   severity: severity,
                 ),
+                onClearEventFilters: controller.clearEventFilters,
                 onLoadCommands: controller.loadCommands,
                 onSendCommand: ({
                   required String command,
@@ -781,6 +782,7 @@ class _TabBody extends StatelessWidget {
     required this.onLoadEvents,
     required this.onLoadMoreEvents,
     required this.onSetEventFilters,
+    required this.onClearEventFilters,
     required this.onLoadCommands,
     required this.onSendCommand,
     required this.onPollCommandStatus,
@@ -817,6 +819,7 @@ class _TabBody extends StatelessWidget {
     String? source,
     String? severity,
   }) onSetEventFilters;
+  final Future<void> Function() onClearEventFilters;
   final Future<void> Function() onLoadCommands;
   final Future<void> Function({
     required String command,
@@ -970,6 +973,7 @@ class _TabBody extends StatelessWidget {
             source: source,
             severity: severity,
           ),
+          onClearFilters: onClearEventFilters,
         );
     }
   }

@@ -264,18 +264,18 @@ class AdminVehicleDetailsController
     await loadLogs(from: from, to: to);
   }
 
-  Future<void> loadEvents(
-      {DateTime? from, DateTime? to, String? source, String? severity}) async {
+  Future<void> loadEvents() async {
     final imei = state.vehicle?.imei.trim() ?? '';
     if (imei.isEmpty) return;
+    final filters = state.eventFilters;
     state = state.copyWith(isLoadingEvents: true, sectionErrorMessage: null);
     try {
       final page = await _service.getVehicleEventsByImei(
         imei: imei,
-        from: from,
-        to: to,
-        source: source,
-        severity: severity,
+        from: filters.from,
+        to: filters.to,
+        source: filters.source,
+        severity: filters.severity,
       );
       _loadedTabs.add(AdminVehicleDetailsTab.events);
       state = state.copyWith(
@@ -285,7 +285,11 @@ class AdminVehicleDetailsController
       );
     } catch (error) {
       state = state.copyWith(
-          isLoadingEvents: false, sectionErrorMessage: _errorMessage(error));
+        isLoadingEvents: false,
+        events: const <AdminVehicleEventItem>[],
+        eventNextCursor: null,
+        sectionErrorMessage: _errorMessage(error),
+      );
     }
   }
 
@@ -293,11 +297,18 @@ class AdminVehicleDetailsController
     final imei = state.vehicle?.imei.trim() ?? '';
     final cursor = state.eventNextCursor?.trim() ?? '';
     if (imei.isEmpty || cursor.isEmpty || state.isLoadingMoreEvents) return;
+    final filters = state.eventFilters;
     state =
         state.copyWith(isLoadingMoreEvents: true, sectionErrorMessage: null);
     try {
-      final page =
-          await _service.getVehicleEventsByImei(imei: imei, beforeId: cursor);
+      final page = await _service.getVehicleEventsByImei(
+        imei: imei,
+        beforeId: cursor,
+        from: filters.from,
+        to: filters.to,
+        source: filters.source,
+        severity: filters.severity,
+      );
       state = state.copyWith(
         events: <AdminVehicleEventItem>[...state.events, ...page.items],
         eventNextCursor: page.nextCursor,
@@ -310,9 +321,39 @@ class AdminVehicleDetailsController
     }
   }
 
+  Future<void> applyEventFilters({
+    DateTime? from,
+    DateTime? to,
+    String? source,
+    String? severity,
+  }) async {
+    if (state.isLoadingEvents) return;
+    state = state.copyWith(
+      eventFilters: AdminVehicleEventFilters(
+        from: from,
+        to: to,
+        source: source?.trim().isEmpty == true ? null : source?.trim(),
+        severity: severity?.trim().isEmpty == true ? null : severity?.trim(),
+      ),
+      events: const <AdminVehicleEventItem>[],
+      eventNextCursor: null,
+    );
+    await loadEvents();
+  }
+
+  Future<void> clearEventFilters() async {
+    state = state.copyWith(
+      eventFilters: const AdminVehicleEventFilters.empty(),
+      events: const <AdminVehicleEventItem>[],
+      eventNextCursor: null,
+    );
+    await loadEvents();
+  }
+
   Future<void> setEventFilters(
       {DateTime? from, DateTime? to, String? source, String? severity}) async {
-    await loadEvents(from: from, to: to, source: source, severity: severity);
+    await applyEventFilters(
+        from: from, to: to, source: source, severity: severity);
   }
 
   Future<void> loadCommands() async {

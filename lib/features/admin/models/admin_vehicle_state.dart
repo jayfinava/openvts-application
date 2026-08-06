@@ -2,6 +2,46 @@ import 'dart:math' as math;
 
 import 'admin_vehicle_model.dart';
 
+class AdminVehicleEventFilters {
+  const AdminVehicleEventFilters({
+    this.from,
+    this.to,
+    this.source,
+    this.severity,
+  });
+
+  const AdminVehicleEventFilters.empty()
+      : from = null,
+        to = null,
+        source = null,
+        severity = null;
+
+  final DateTime? from;
+  final DateTime? to;
+  final String? source;
+  final String? severity;
+
+  bool get isEmpty =>
+      from == null && to == null && source == null && severity == null;
+
+  AdminVehicleEventFilters copyWith({
+    Object? from = _unset,
+    Object? to = _unset,
+    Object? source = _unset,
+    Object? severity = _unset,
+  }) {
+    return AdminVehicleEventFilters(
+      from: identical(from, _unset) ? this.from : from as DateTime?,
+      to: identical(to, _unset) ? this.to : to as DateTime?,
+      source: identical(source, _unset) ? this.source : source as String?,
+      severity:
+          identical(severity, _unset) ? this.severity : severity as String?,
+    );
+  }
+
+  static const Object _unset = Object();
+}
+
 enum AdminVehicleStatusFilter { all, active, inactive, licenseBlocked }
 
 enum AdminVehiclesSortOption {
@@ -162,6 +202,7 @@ class AdminVehicleDetailsState {
     required this.logNextCursor,
     required this.events,
     required this.eventNextCursor,
+    required this.eventFilters,
     required this.commandHistory,
     required this.sensors,
     required this.documents,
@@ -216,6 +257,7 @@ class AdminVehicleDetailsState {
       logNextCursor: null,
       events: const <AdminVehicleEventItem>[],
       eventNextCursor: null,
+      eventFilters: const AdminVehicleEventFilters.empty(),
       commandHistory: const <AdminVehicleCommandItem>[],
       sensors: const <AdminVehicleSensor>[],
       documents: const <AdminVehicleDocument>[],
@@ -266,6 +308,7 @@ class AdminVehicleDetailsState {
   final String? logNextCursor;
   final List<AdminVehicleEventItem> events;
   final String? eventNextCursor;
+  final AdminVehicleEventFilters eventFilters;
   final List<AdminVehicleCommandItem> commandHistory;
   final List<AdminVehicleSensor> sensors;
   final List<AdminVehicleDocument> documents;
@@ -319,6 +362,7 @@ class AdminVehicleDetailsState {
     Object? logNextCursor = _unset,
     List<AdminVehicleEventItem>? events,
     Object? eventNextCursor = _unset,
+    AdminVehicleEventFilters? eventFilters,
     List<AdminVehicleCommandItem>? commandHistory,
     List<AdminVehicleSensor>? sensors,
     List<AdminVehicleDocument>? documents,
@@ -376,6 +420,7 @@ class AdminVehicleDetailsState {
       eventNextCursor: identical(eventNextCursor, _unset)
           ? this.eventNextCursor
           : eventNextCursor as String?,
+      eventFilters: eventFilters ?? this.eventFilters,
       commandHistory: commandHistory ?? this.commandHistory,
       sensors: sensors ?? this.sensors,
       documents: documents ?? this.documents,
