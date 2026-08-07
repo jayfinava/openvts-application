@@ -36,6 +36,7 @@ class AdminInventorySimCardWidget extends StatelessWidget {
             isActive: simCard.isActive,
             onEdit: onEdit,
             isEditing: isEditing,
+            showActiveBadge: false,
           ),
           const SizedBox(height: OpenVtsSpacing.md),
           AdminInventoryInfoGrid(

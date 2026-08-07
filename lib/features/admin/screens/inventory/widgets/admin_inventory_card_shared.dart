@@ -35,6 +35,7 @@ class AdminInventoryCardHeader extends StatelessWidget {
     required this.isActive,
     required this.onEdit,
     required this.isEditing,
+    this.showActiveBadge = true,
     super.key,
   });
 
@@ -43,6 +44,7 @@ class AdminInventoryCardHeader extends StatelessWidget {
   final bool isActive;
   final VoidCallback onEdit;
   final bool isEditing;
+  final bool showActiveBadge;
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +83,12 @@ class AdminInventoryCardHeader extends StatelessWidget {
           onPressed: isEditing ? null : onEdit,
           isLoading: isEditing,
         ),
-        const SizedBox(width: OpenVtsSpacing.xxs),
-        AdminInventoryStatusBadge(
-          label: isActive ? 'Active' : 'Inactive',
-        ),
+        if (showActiveBadge) ...[
+          const SizedBox(width: OpenVtsSpacing.xxs),
+          AdminInventoryStatusBadge(
+            label: isActive ? 'Active' : 'Inactive',
+          ),
+        ],
       ],
     );
   }
