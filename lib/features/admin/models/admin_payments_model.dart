@@ -673,6 +673,7 @@ class AdminRenewPaymentRequest {
     required this.paymentMode,
     this.reference,
     this.amountOverride,
+    this.vehicleHints = const <String, Map<String, dynamic>>{},
   });
 
   final String userId;
@@ -680,6 +681,11 @@ class AdminRenewPaymentRequest {
   final AdminPaymentMode paymentMode;
   final String? reference;
   final String? amountOverride;
+
+  /// Client-only: maps vehicle ID → display fields (name, plateNumber).
+  /// Never sent to the server — used to populate the transaction card when
+  /// the API response contains no vehicle data.
+  final Map<String, Map<String, dynamic>> vehicleHints;
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{

@@ -282,12 +282,21 @@ class _AdminRenewVehicleSheetState
       return;
     }
 
+    final hints = <String, Map<String, dynamic>>{
+      for (final v in _vehicles.where((v) => _selected.contains(v.id)))
+        v.id: {
+          'name': v.name,
+          'plateNumber': v.plateNumber,
+        },
+    };
+
     final request = AdminRenewPaymentRequest(
       userId: _userId!,
       vehicleIds: _selected.toList(growable: false),
       paymentMode: _mode!,
       reference: refText,
       amountOverride: amount,
+      vehicleHints: hints,
     );
 
     final ok = await ref

@@ -136,8 +136,18 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
   Future<bool> renewVehicles(AdminRenewPaymentRequest request) async {
     state = state.copyWith(isRenewing: true, errorMessage: null);
     try {
-      final renewed = await _service.renewVehicles(request);
+      var renewed = await _service.renewVehicles(request);
       if (!mounted) return false;
+
+      // If the API response carried no vehicle info, inject it from the
+      // client-side hints the sheet provided (selected vehicle names/plates).
+      if (renewed != null &&
+          renewed.vehicleDisplayName.isEmpty &&
+          request.vehicleHints.isNotEmpty) {
+        final hint = request.vehicleHints.values.first;
+        renewed = renewed.copyWithVehicle(hint);
+      }
+
       // Optimistically prepend the returned transaction before the full
       // refresh so the list updates immediately even if the reload is slow.
       if (renewed != null) {
