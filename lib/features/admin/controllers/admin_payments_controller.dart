@@ -212,8 +212,10 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
         refreshKey: state.refreshKey.toString(),
       );
 
-      final merged =
-          append ? _mergeById(_serverItems, response.items) : response.items;
+      // Always merge so that vehicle/display info enriched by prior operations
+      // (e.g. the renewal response's updatedVehicles) is not wiped when the
+      // server returns the same transaction without a vehicle field.
+      final merged = _mergeById(_serverItems, response.items);
       _serverItems = merged;
 
       state = state.copyWith(
