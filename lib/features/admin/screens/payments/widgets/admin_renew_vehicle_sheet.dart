@@ -107,7 +107,10 @@ class _AdminRenewVehicleSheetState
                   const SizedBox(height: OpenVtsSpacing.xs),
                   Row(
                     children: [
-                      TextButton(
+                      OpenVtsButton(
+                        label: 'Select all filtered',
+                        variant: OpenVtsButtonVariant.secondary,
+                        height: 36,
                         onPressed: () {
                           setState(() {
                             _selected
@@ -115,7 +118,6 @@ class _AdminRenewVehicleSheetState
                               ..addAll(filtered.map((e) => e.id));
                           });
                         },
-                        child: const Text('Select all filtered'),
                       ),
                     ],
                   ),
