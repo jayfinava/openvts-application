@@ -105,22 +105,30 @@ class _AdminRenewVehicleSheetState
                 ),
                 if (filtered.length > 1) ...[
                   const SizedBox(height: OpenVtsSpacing.xs),
-                  Row(
-                    children: [
-                      OpenVtsButton(
-                        label: 'Select all filtered',
-                        variant: OpenVtsButtonVariant.secondary,
-                        height: 36,
-                        onPressed: () {
-                          setState(() {
-                            _selected
-                              ..clear()
-                              ..addAll(filtered.map((e) => e.id));
-                          });
-                        },
-                      ),
-                    ],
-                  ),
+                  Builder(builder: (context) {
+                    final allSelected =
+                        filtered.every((v) => _selected.contains(v.id));
+                    return Row(
+                      children: [
+                        OpenVtsButton(
+                          label: allSelected
+                              ? 'Deselect all filtered'
+                              : 'Select all filtered',
+                          variant: OpenVtsButtonVariant.secondary,
+                          height: 36,
+                          onPressed: () {
+                            setState(() {
+                              if (allSelected) {
+                                _selected.removeAll(filtered.map((e) => e.id));
+                              } else {
+                                _selected.addAll(filtered.map((e) => e.id));
+                              }
+                            });
+                          },
+                        ),
+                      ],
+                    );
+                  }),
                 ],
               ],
               ...filtered.map((vehicle) {
