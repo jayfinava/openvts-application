@@ -57,9 +57,9 @@ class AdminPaymentTransactionCard extends StatelessWidget {
           _row('User', item.fromUser?.displayName ?? '-'),
           _row(
               'Vehicle',
-              item.vehicle['name']?.toString().trim().isNotEmpty == true
-                  ? item.vehicle['name'].toString()
-                  : (item.vehicle['plateNumber']?.toString() ?? '-')),
+              item.vehicleDisplayName.trim().isEmpty
+                  ? '-'
+                  : item.vehicleDisplayName),
           _row('Recorded By', item.recordedBy?.displayName ?? '-'),
         ],
       ),
