@@ -7,8 +7,8 @@ import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_search_field.dart';
+import '../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
-import '../../../../../shared/widgets/searchable_dropdown_field.dart';
 import '../../../controllers/admin_providers.dart';
 import '../../../models/admin_payments_model.dart';
 
@@ -72,17 +72,23 @@ class _AdminRenewVehicleSheetState
             controller: PrimaryScrollController.maybeOf(context),
             padding: const EdgeInsets.all(OpenVtsSpacing.md),
             children: [
-              SearchableDropdownField<String>(
+              OpenVtsSearchableDropdown<String>(
                 label: 'User',
                 hintText: 'Select user',
-                searchHint: 'Search by name, username or email…',
-                initialValue: _userId,
-                items: users
-                    .map((u) => SearchableDropdownItem<String>(
+                searchHintText: 'Search by name, username or email…',
+                sheetTitle: 'Select user',
+                value: _userId,
+                options: users
+                    .map((u) => OpenVtsDropdownOption<String>(
                           value: u.id,
-                          label: u.name,
-                          subtitle: '${u.username} • ${u.email}',
-                          searchTerms: <String>[u.username, u.email],
+                          label: u.name.trim().isEmpty ? u.username : u.name,
+                          subtitle: [
+                            if (u.email.trim().isNotEmpty) u.email,
+                            if (u.mobileDisplay.trim().isNotEmpty)
+                              u.mobileDisplay,
+                          ].join(' • '),
+                          searchText:
+                              '${u.name} ${u.username} ${u.email} ${u.mobileDisplay}',
                         ))
                     .toList(growable: false),
                 onChanged: (value) => _selectUser(value),
