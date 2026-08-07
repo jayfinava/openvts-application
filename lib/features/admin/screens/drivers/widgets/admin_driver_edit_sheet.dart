@@ -68,27 +68,22 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
     super.initState();
     final driver = ref.read(widget.provider).driver;
     _name = TextEditingController(text: driver?.name ?? '');
-    _email = TextEditingController(
-      text: driver?.email == '-' ? '' : (driver?.email ?? ''),
+    _email = TextEditingController(text: _editText(driver?.email));
+    _mobile = TextEditingController(
+      text: _stripPrefix(driver?.mobile, driver?.mobilePrefix),
     );
-    _mobile = TextEditingController(text: driver?.mobile ?? '');
     _username = TextEditingController(text: driver?.username ?? '');
     _address = TextEditingController(
-      text: driver?.address.addressLine == '-'
-          ? ''
-          : (driver?.address.addressLine ?? ''),
+      text: _editText(driver?.address.addressLine),
     );
     _pincode = TextEditingController(
-      text:
-          driver?.address.pincode == '-' ? '' : (driver?.address.pincode ?? ''),
+      text: _editText(driver?.address.pincode),
     );
 
-    _mobilePrefix = driver?.mobilePrefix == '-' ? null : driver?.mobilePrefix;
-    _countryCode =
-        driver?.address.countryCode == '-' ? null : driver?.address.countryCode;
-    _stateCode =
-        driver?.address.stateCode == '-' ? null : driver?.address.stateCode;
-    _cityValue = driver?.address.cityId == '-' ? null : driver?.address.cityId;
+    _mobilePrefix = _editValue(driver?.mobilePrefix);
+    _countryCode = _editValue(driver?.address.countryCode);
+    _stateCode = _editValue(driver?.address.stateCode);
+    _cityValue = _editValue(driver?.address.cityId);
 
     final attrs = driver?.attributes ?? const <String, dynamic>{};
     if (attrs.isEmpty) {
@@ -488,6 +483,39 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
       );
     }
   }
+}
+
+/// Strips a leading country/mobile prefix from a mobile number so the Mobile
+/// field shows only the subscriber number, not the composed "+91 9986546544"
+/// form that some API responses place in the `mobile` key.
+String _stripPrefix(String? mobile, String? prefix) {
+  final raw = mobile?.trim() ?? '';
+  if (raw.isEmpty || raw == '-') return '';
+  final p = prefix?.trim() ?? '';
+  if (p.isNotEmpty && raw.startsWith(p)) {
+    return raw.substring(p.length).trimLeft();
+  }
+  // Also strip a bare leading '+' followed by digits if no explicit prefix was
+  // matched but the value looks like a full E.164 number (+919986546544).
+  if (raw.startsWith('+') && raw.length > 4) {
+    // Only strip when the stored prefix is non-empty and matches the start.
+    // Without a known prefix we cannot safely strip — return as-is.
+  }
+  return raw;
+}
+
+/// Returns a blank string for edit-field prefill when the stored value is
+/// absent, the legacy `'-'` sentinel, or pure whitespace.
+String _editText(String? raw) {
+  final v = raw?.trim() ?? '';
+  return (v.isEmpty || v == '-') ? '' : v;
+}
+
+/// Returns null for dropdown prefill when the stored value is absent,
+/// the legacy `'-'` sentinel, or pure whitespace.
+String? _editValue(String? raw) {
+  final v = raw?.trim() ?? '';
+  return (v.isEmpty || v == '-') ? null : v;
 }
 
 class _AttrRow {

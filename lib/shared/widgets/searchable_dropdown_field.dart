@@ -145,16 +145,7 @@ class _SearchableDropdownTileState<T>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final hasError = widget.errorText != null;
     final disabledColor = theme.disabledColor;
-
-    final borderColor = hasError
-        ? theme.colorScheme.error
-        : _open
-            ? theme.colorScheme.primary
-            : theme.inputDecorationTheme.enabledBorder?.borderSide.color ??
-                theme.colorScheme.outline;
-    final borderWidth = _open || hasError ? 2.0 : 1.0;
 
     return GestureDetector(
       key: _key,
@@ -163,6 +154,7 @@ class _SearchableDropdownTileState<T>
         decoration: InputDecoration(
           labelText: widget.label,
           errorText: widget.errorText,
+          enabled: widget.enabled,
           suffixIcon: AnimatedRotation(
             turns: _open ? 0.5 : 0,
             duration: const Duration(milliseconds: 200),
@@ -171,28 +163,7 @@ class _SearchableDropdownTileState<T>
               color: widget.enabled ? null : disabledColor,
             ),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: borderColor, width: borderWidth),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: theme.colorScheme.error),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: theme.colorScheme.error, width: 2),
-          ),
-          disabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: disabledColor),
-          ),
         ),
-        // Always isFocused so the label floats above and never overlaps the text.
         isFocused: _open,
         isEmpty: false,
         child: Text(

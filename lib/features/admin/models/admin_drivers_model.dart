@@ -227,8 +227,11 @@ class AdminDriverListItem {
     ].any((value) => value.toLowerCase().contains(normalized));
   }
 
+  static const Object _unset = Object();
+
   AdminDriverListItem copyWith({
     bool? isActive,
+    Object? updatedAt = _unset,
   }) {
     return AdminDriverListItem(
       id: id,
@@ -250,7 +253,9 @@ class AdminDriverListItem {
       isActive: isActive ?? this.isActive,
       statusLabel: (isActive ?? this.isActive) ? 'Active' : 'Inactive',
       createdAt: createdAt,
-      updatedAt: updatedAt,
+      updatedAt: identical(updatedAt, _unset)
+          ? this.updatedAt
+          : updatedAt as DateTime?,
     );
   }
 }

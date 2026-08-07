@@ -4369,9 +4369,18 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
       //      asynchronously; carries the full device record including
       //      device.type.id even when the telemetry stream omits it.
       //
-      // An unfiltered catalogue request (deviceTypeId == null) must never be
-      // issued because it returns commands for every device type in the
-      // database, filling the dropdown with unrelated commands.
+      // Resolve the device type ID before issuing the catalogue request.
+      //
+      // Priority:
+      //   1. widget.vehicle.deviceTypeId — set when the telemetry row carries
+      //      device metadata (superadmin role; always preferred).
+      //   2. liveMapVehicleDetailsProvider — fetched (or served from cache)
+      //      asynchronously; carries the full device record including
+      //      vehicle.device.type.id even when the telemetry stream omits it.
+      //   3. Fallback — load the full active catalogue without a deviceTypeId
+      //      filter so the dropdown stays usable.  The dedup helper still
+      //      removes inactive entries; the ambiguity notice is shown when the
+      //      user selects a type that has more than one incompatible payload.
       final imei = _imei;
       int? resolvedDeviceTypeId = widget.vehicle.deviceTypeId;
       if (resolvedDeviceTypeId == null && imei.isNotEmpty) {
@@ -4383,8 +4392,7 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
             ?.value
             .deviceTypeId;
 
-        // Cache miss — await the full fetch so we don't fall through to an
-        // unfiltered request.
+        // Cache miss — await the full fetch.
         if (resolvedDeviceTypeId == null) {
           final details =
               await ref.read(liveMapVehicleDetailsProvider(imei).future);
@@ -4396,16 +4404,10 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
         return;
       }
 
-      if (resolvedDeviceTypeId == null) {
-        setState(() {
-          _loadingCatalog = false;
-          _catalogLoaded = true;
-          _commandsUnavailable = false;
-          _catalogError =
-              'Device type could not be determined for this vehicle.';
-        });
-        return;
-      }
+      // When device type is still unknown after the details fetch, proceed
+      // with an unfiltered request so the dropdown remains usable.
+      // The missing-device-type notice is shown below (not as a hard error).
+      final deviceTypeUnknown = resolvedDeviceTypeId == null;
 
       final commands = await service.getCustomCommands(
         deviceTypeId: resolvedDeviceTypeId,
@@ -4437,6 +4439,11 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
         _systemVariables = variables;
         _loadingCatalog = false;
         _catalogLoaded = true;
+        // Soft informational notice when device type is absent — the
+        // dropdown stays enabled but the user is told filtering is limited.
+        _catalogError = deviceTypeUnknown
+            ? 'Device type could not be determined. Commands shown are unfiltered.'
+            : null;
         if (!previousStillValid) {
           _selectedCommandKey = null;
         }
@@ -5331,7 +5338,11 @@ class _VehicleCommandComposerCard extends StatelessWidget {
                 ),
               ),
               hint: Text(
-                commands.isEmpty ? 'No custom commands' : 'Select command',
+                loading
+                    ? 'Loading commands…'
+                    : commands.isEmpty
+                        ? 'No compatible commands'
+                        : 'Select command',
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,

@@ -862,6 +862,56 @@ void main() {
       });
       expect(details.deviceTypeId, isNull);
     });
+
+    test(
+        'parses deviceTypeId from nested vehicle.device.type.id (backend shape)',
+        () {
+      // Actual unwrapped backend response: data.vehicle.device.type.id where
+      // ApiClient strips the outer {action, message, data} envelope and the
+      // parser receives the data object directly.
+      final details = service.parseVehicleDetailsPayload(<String, dynamic>{
+        'vehicle': <String, dynamic>{
+          'device': <String, dynamic>{
+            'type': <String, dynamic>{
+              'id': 37,
+              'name': 'Example Tracker',
+              'protocol': 'example',
+            },
+          },
+        },
+        'telemetry': null,
+        'deviceStatus': null,
+        'lastConnectionAt': null,
+      });
+      expect(details.deviceTypeId, 37);
+    });
+
+    test('parser does not require extra outer data wrapper', () {
+      // Confirm parser works without source["data"]["vehicle"] nesting —
+      // ApiClient already unwraps the envelope.
+      final details = service.parseVehicleDetailsPayload(<String, dynamic>{
+        'vehicle': <String, dynamic>{
+          'imei': 'imei-test',
+          'device': <String, dynamic>{
+            'type': <String, dynamic>{'id': 99},
+          },
+        },
+      });
+      expect(details.deviceTypeId, 99);
+    });
+
+    test('nested vehicle.device.type.id takes priority over absent flat field',
+        () {
+      final details = service.parseVehicleDetailsPayload(<String, dynamic>{
+        'vehicle': <String, dynamic>{
+          'imei': 'imei-1',
+          'device': <String, dynamic>{
+            'type': <String, dynamic>{'id': 55, 'name': 'TrackerX'},
+          },
+        },
+      });
+      expect(details.deviceTypeId, 55);
+    });
   });
 }
 

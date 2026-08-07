@@ -2833,11 +2833,22 @@ class SuperadminVehicleService {
           ]) ??
           _firstInt(_asMap(source['deviceType']), const ['id']) ??
           _firstInt(_asMap(source['device_type']), const ['id']) ??
+          // Flat shape: source.device.type.id
           _firstInt(_asMap(_asMap(source['device'])['type']), const ['id']) ??
           _firstInt(
               _asMap(_asMap(source['device'])['deviceType']), const ['id']) ??
           _firstInt(
-              _asMap(_asMap(source['device'])['device_type']), const ['id']),
+              _asMap(_asMap(source['device'])['device_type']), const ['id']) ??
+          // Nested backend shape: source.vehicle.device.type.id
+          _firstInt(_asMap(_asMap(_asMap(source['vehicle'])['device'])['type']),
+              const ['id']) ??
+          _firstInt(
+              _asMap(_asMap(_asMap(source['vehicle'])['device'])['deviceType']),
+              const ['id']) ??
+          _firstInt(
+              _asMap(
+                  _asMap(_asMap(source['vehicle'])['device'])['device_type']),
+              const ['id']),
     );
   }
 

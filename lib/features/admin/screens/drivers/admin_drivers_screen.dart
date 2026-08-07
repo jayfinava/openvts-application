@@ -16,6 +16,8 @@ import '../../controllers/admin_drivers_controller.dart';
 import '../../controllers/admin_providers.dart';
 import '../../models/admin_drivers_model.dart';
 import '../../models/admin_drivers_state.dart';
+import '../../models/admin_users_model.dart';
+import '../../utils/location_label_resolver.dart';
 import 'widgets/admin_driver_card.dart';
 import 'widgets/admin_driver_create_sheet.dart';
 
@@ -61,12 +63,27 @@ class AdminDriversScreen extends ConsumerWidget {
                   onCreate: () => _showCreateDriverSheet(context),
                   onOpenFilters: () => _showFilterSheet(context, ref),
                   onOpenSort: () => _showSortSheet(context, ref),
-                  onOpenDetails: (driver) => context.push(
-                    RoutePaths.adminDriverDetailsPath(driver.id),
-                    extra: driver,
+                  onOpenDetails: (driver) => _openDriverDetails(
+                    context,
+                    driver,
+                    ref.read(adminDriversControllerProvider.notifier),
                   ),
                 ),
     );
+  }
+
+  Future<void> _openDriverDetails(
+    BuildContext context,
+    AdminDriverListItem driver,
+    AdminDriversController controller,
+  ) async {
+    await context.push(
+      RoutePaths.adminDriverDetailsPath(driver.id),
+      extra: driver,
+    );
+    if (context.mounted) {
+      await controller.refresh();
+    }
   }
 
   Future<void> _showCreateDriverSheet(BuildContext context) {
@@ -83,10 +100,19 @@ class AdminDriversScreen extends ConsumerWidget {
     final controller = ref.read(adminDriversControllerProvider.notifier);
     final state = ref.read(adminDriversControllerProvider);
 
+    // Ensure country options are cached (no-op if already loaded).
+    await ref
+        .read(adminUsersControllerProvider.notifier)
+        .ensureCountryOptionsLoaded();
+    final cachedCountryOptions =
+        ref.read(adminUsersControllerProvider).countryOptions;
+
+    if (!context.mounted) return;
+
     var selectedStatus = state.statusFilter;
     var selectedVerified = state.verifiedFilter;
     var selectedCountry = state.countryFilter;
-    final countryCodes = _countryCodes(state.drivers);
+    final countryOptions = _countryOptions(state.drivers, cachedCountryOptions);
 
     await showModalBottomSheet<void>(
       context: context,
@@ -155,12 +181,13 @@ class AdminDriversScreen extends ConsumerWidget {
                         onTap: () =>
                             setSheetState(() => selectedCountry = null),
                       ),
-                      for (final code in countryCodes)
+                      for (final option in countryOptions)
                         _PillSegment(
-                          label: code,
-                          selected: selectedCountry == code,
-                          onTap: () =>
-                              setSheetState(() => selectedCountry = code),
+                          label: option.label,
+                          selected: selectedCountry == option.value,
+                          onTap: () => setSheetState(
+                            () => selectedCountry = option.value,
+                          ),
                         ),
                     ],
                   ),
@@ -234,15 +261,20 @@ class AdminDriversScreen extends ConsumerWidget {
     );
   }
 
-  List<String> _countryCodes(List<AdminDriverListItem> drivers) {
+  List<AdminUserCountryOption> _countryOptions(
+    List<AdminDriverListItem> drivers,
+    List<AdminUserCountryOption> cachedOptions,
+  ) {
     final codes = <String>{
       for (final driver in drivers)
         if (driver.countryCode.trim().isNotEmpty &&
             driver.countryCode.trim() != '-')
           driver.countryCode.trim().toUpperCase(),
-    }.toList()
-      ..sort();
-    return codes;
+    };
+    return LocationLabelResolver.resolvedCountryOptions(
+      codes,
+      apiOptions: cachedOptions,
+    );
   }
 }
 

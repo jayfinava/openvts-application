@@ -271,7 +271,9 @@ void main() {
       expect(result[1].stableKey, result[1].id);
     });
 
-    test('duplicate backend id but different payload: ID collision wins, second dropped', () {
+    test(
+        'duplicate backend id but different payload: ID collision wins, second dropped',
+        () {
       // Step C (ID dedup) fires before step D (payload dedup).
       // The second record is dropped by ID dedup even though its payload differs.
       final raw = [

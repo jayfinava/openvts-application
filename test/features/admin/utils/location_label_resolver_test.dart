@@ -204,4 +204,158 @@ void main() {
       expect(result, 'Lagos');
     });
   });
+
+  // -------------------------------------------------------------------------
+  // Driver filter — canonical code stored, readable label displayed
+  // -------------------------------------------------------------------------
+
+  group('driver country filter: canonical value vs readable label', () {
+    test('resolvedCountryOptions preserves canonical code as value', () {
+      final options =
+          LocationLabelResolver.resolvedCountryOptions(['IN', 'NG']);
+      for (final opt in options) {
+        expect(opt.value, equals(opt.value.toUpperCase()),
+            reason: 'value must be uppercase canonical code');
+      }
+      expect(options.map((o) => o.value), containsAll(['IN', 'NG']));
+    });
+
+    test('readable label differs from code for known countries', () {
+      final options =
+          LocationLabelResolver.resolvedCountryOptions(['IN', 'NG']);
+      final inOpt = options.firstWhere((o) => o.value == 'IN');
+      final ngOpt = options.firstWhere((o) => o.value == 'NG');
+      expect(inOpt.label, isNot(equals('IN')));
+      expect(ngOpt.label, isNot(equals('NG')));
+    });
+
+    test('filter apply preserves canonical code, not the label', () {
+      // Simulate: user sees "India" but the filter stores "IN".
+      final options = LocationLabelResolver.resolvedCountryOptions(
+        ['IN'],
+        apiOptions: [
+          const AdminUserCountryOption(value: 'IN', label: 'India'),
+        ],
+      );
+      final selected = options.first;
+      expect(selected.label, 'India');
+      // The value sent to the controller/API must be the canonical code.
+      expect(selected.value, 'IN');
+    });
+
+    test(
+        'unknown code in driver list appears with code as both value and label',
+        () {
+      final options = LocationLabelResolver.resolvedCountryOptions(['XX']);
+      expect(options.first.value, 'XX');
+      expect(options.first.label, 'XX');
+    });
+
+    test('empty codes are excluded from filter options', () {
+      final options =
+          LocationLabelResolver.resolvedCountryOptions(['IN', '', '  ']);
+      expect(options.length, 1);
+      expect(options.first.value, 'IN');
+    });
+
+    test('duplicate codes produce a single filter pill', () {
+      final options =
+          LocationLabelResolver.resolvedCountryOptions(['IN', 'IN', 'IN']);
+      expect(options.where((o) => o.value == 'IN').length, 1);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Driver profile — resolved country and state labels
+  // -------------------------------------------------------------------------
+
+  group('driver profile: resolved country and state labels', () {
+    test('resolveCountry returns readable name for profile country code', () {
+      expect(LocationLabelResolver.resolveCountry('IN'), 'India');
+      expect(LocationLabelResolver.resolveCountry('NG'), 'Nigeria');
+    });
+
+    test('resolveState returns readable name for profile state code', () {
+      expect(LocationLabelResolver.resolveState('NG', 'LA'), 'Lagos');
+      expect(LocationLabelResolver.resolveState('IN', 'MH'), 'Maharashtra');
+    });
+
+    test('unknown country code degrades to raw code (not empty, not null)', () {
+      final result = LocationLabelResolver.resolveCountry('ZZ');
+      expect(result, isNotEmpty);
+      expect(result, 'ZZ');
+    });
+
+    test('unknown state code degrades to raw code (not empty, not null)', () {
+      final result = LocationLabelResolver.resolveState('IN', 'ZZ');
+      expect(result, isNotEmpty);
+      expect(result, 'ZZ');
+    });
+
+    test('empty country code returns empty string, not null', () {
+      final result = LocationLabelResolver.resolveCountry('');
+      expect(result, '');
+    });
+
+    test('empty state code returns empty string, not null', () {
+      final result = LocationLabelResolver.resolveState('IN', '');
+      expect(result, '');
+    });
+
+    test('API state options override hardcoded for profile display', () {
+      final stateOpts = [
+        const AdminUserStateOption(value: 'MH', label: 'Maharashtra (API)'),
+      ];
+      final label = LocationLabelResolver.resolveState(
+        'IN',
+        'MH',
+        apiOptions: stateOpts,
+      );
+      expect(label, 'Maharashtra (API)');
+    });
+
+    test('profile country resolution is case-insensitive', () {
+      expect(LocationLabelResolver.resolveCountry('in'), 'India');
+      expect(LocationLabelResolver.resolveCountry('IN'), 'India');
+    });
+
+    test('profile state resolution is case-insensitive', () {
+      expect(LocationLabelResolver.resolveState('NG', 'la'), 'Lagos');
+      expect(LocationLabelResolver.resolveState('NG', 'LA'), 'Lagos');
+    });
+
+    test('dash placeholder "-" resolves to dash (not a country name)', () {
+      // "-" is used as a sentinel value in AdminDriverAddress.
+      final result = LocationLabelResolver.resolveCountry('-');
+      // "-" is not a valid ISO code so it falls back to itself.
+      expect(result, '-');
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // One state-options load per country (stateless resolver contract)
+  // -------------------------------------------------------------------------
+
+  group('stateless resolver — no per-row side effects', () {
+    test('resolveCountry called N times for N drivers never accumulates state',
+        () {
+      // Calling the pure resolver multiple times with the same code must
+      // always return the same value (no mutable cache that could drift).
+      const codes = ['IN', 'NG', 'IN', 'NG', 'IN'];
+      final results = codes.map(LocationLabelResolver.resolveCountry).toList();
+      expect(results[0], results[2]);
+      expect(results[2], results[4]);
+      expect(results[1], results[3]);
+    });
+
+    test('resolveState called N times for N drivers never accumulates state',
+        () {
+      const pairs = [('NG', 'LA'), ('NG', 'LA'), ('IN', 'MH')];
+      final r0 = LocationLabelResolver.resolveState(pairs[0].$1, pairs[0].$2);
+      final r1 = LocationLabelResolver.resolveState(pairs[1].$1, pairs[1].$2);
+      final r2 = LocationLabelResolver.resolveState(pairs[2].$1, pairs[2].$2);
+      expect(r0, r1);
+      expect(r2, 'Maharashtra');
+    });
+  });
 }

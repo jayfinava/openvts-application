@@ -10,12 +10,15 @@ import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../controllers/admin_driver_details_controller.dart';
+import '../../../controllers/admin_providers.dart';
 import '../../../models/admin_driver_details_model.dart';
 import '../../../models/admin_driver_details_state.dart';
+import '../../../models/admin_users_model.dart';
+import '../../../utils/location_label_resolver.dart';
 import 'admin_driver_edit_sheet.dart';
 import 'admin_driver_password_sheet.dart';
 
-class AdminDriverProfileTab extends ConsumerWidget {
+class AdminDriverProfileTab extends ConsumerStatefulWidget {
   const AdminDriverProfileTab({
     required this.provider,
     required this.state,
@@ -27,9 +30,58 @@ class AdminDriverProfileTab extends ConsumerWidget {
   final AdminDriverDetailsState state;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.read(provider.notifier);
+  ConsumerState<AdminDriverProfileTab> createState() =>
+      _AdminDriverProfileTabState();
+}
+
+class _AdminDriverProfileTabState extends ConsumerState<AdminDriverProfileTab> {
+  List<AdminUserStateOption> _stateOptions = const [];
+  String? _loadedCountryCode;
+
+  @override
+  void initState() {
+    super.initState();
+    _ensureCountryOptions();
+    _loadStateOptionsIfNeeded(widget.state.driver?.countryCode);
+  }
+
+  @override
+  void didUpdateWidget(AdminDriverProfileTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final newCountry = widget.state.driver?.countryCode;
+    _loadStateOptionsIfNeeded(newCountry);
+  }
+
+  Future<void> _ensureCountryOptions() async {
+    await ref
+        .read(adminUsersControllerProvider.notifier)
+        .ensureCountryOptionsLoaded();
+  }
+
+  Future<void> _loadStateOptionsIfNeeded(String? countryCode) async {
+    final normalized = countryCode?.trim().toUpperCase() ?? '';
+    if (normalized.isEmpty ||
+        normalized == '-' ||
+        normalized == _loadedCountryCode) {
+      return;
+    }
+    _loadedCountryCode = normalized;
+    try {
+      final options = await ref
+          .read(adminUsersControllerProvider.notifier)
+          .getStates(normalized);
+      if (mounted) setState(() => _stateOptions = options);
+    } catch (_) {
+      // Resolver falls back to hardcoded data; ignore load errors.
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = ref.read(widget.provider.notifier);
+    final state = widget.state;
     final driver = state.driver;
+
     if (driver == null) {
       return const OpenVtsCard(
         child: Padding(
@@ -39,6 +91,25 @@ class AdminDriverProfileTab extends ConsumerWidget {
       );
     }
 
+    final countryOptions =
+        ref.watch(adminUsersControllerProvider).countryOptions;
+
+    final rawCountry = driver.address.countryCode.isNotEmpty &&
+            driver.address.countryCode != '-'
+        ? driver.address.countryCode
+        : driver.countryCode;
+    final resolvedCountry = LocationLabelResolver.resolveCountry(
+      rawCountry,
+      apiOptions: countryOptions,
+    );
+
+    final rawState = driver.address.stateCode;
+    final resolvedState = LocationLabelResolver.resolveState(
+      rawCountry,
+      rawState,
+      apiOptions: _stateOptions,
+    );
+
     final isBusy = state.isSavingProfile || state.isUpdatingPassword;
 
     return Column(
@@ -46,7 +117,10 @@ class AdminDriverProfileTab extends ConsumerWidget {
       children: [
         _IdentityCard(
           driver: driver,
+          resolvedCountry: resolvedCountry,
+          resolvedState: resolvedState,
           isUpdatingStatus: state.isUpdatingStatus,
+          profileUpdatedAt: state.profileUpdatedAt,
           onToggleStatus: () async {
             final ok = await controller.updateStatus(!driver.isActive);
             if (!context.mounted) return;
@@ -57,7 +131,7 @@ class AdminDriverProfileTab extends ConsumerWidget {
               );
             } else {
               ToastHelper.showError(
-                ref.read(provider).sectionErrorMessage ??
+                ref.read(widget.provider).sectionErrorMessage ??
                     'Unable to update status.',
                 context: context,
               );
@@ -81,11 +155,11 @@ class AdminDriverProfileTab extends ConsumerWidget {
   }
 
   Future<void> _openEditProfile(BuildContext context) {
-    return showDriverEditSheet(context: context, provider: provider);
+    return showDriverEditSheet(context: context, provider: widget.provider);
   }
 
   Future<void> _openChangePassword(BuildContext context) {
-    return showDriverPasswordSheet(context: context, provider: provider);
+    return showDriverPasswordSheet(context: context, provider: widget.provider);
   }
 }
 
@@ -271,13 +345,21 @@ class _DriverAvatar extends StatelessWidget {
 class _IdentityCard extends StatelessWidget {
   const _IdentityCard({
     required this.driver,
+    required this.resolvedCountry,
+    required this.resolvedState,
     required this.isUpdatingStatus,
     required this.onToggleStatus,
+    this.profileUpdatedAt,
   });
 
   final AdminDriverDetails driver;
+  final String resolvedCountry;
+  final String resolvedState;
   final bool isUpdatingStatus;
   final VoidCallback onToggleStatus;
+
+  /// Effective Driver Updated timestamp (server → persisted → createdAt).
+  final DateTime? profileUpdatedAt;
 
   @override
   Widget build(BuildContext context) {
@@ -285,16 +367,18 @@ class _IdentityCard extends StatelessWidget {
     final created = driver.createdAt != null
         ? formatter.formatDate(driver.createdAt!)
         : '—';
-    final updated = driver.updatedAt != null
-        ? formatter.formatDate(driver.updatedAt!)
+    // profileUpdatedAt is the fully-resolved effective timestamp (set by
+    // loadProfile and updateProfile): server updatedAt → persisted → createdAt.
+    final updated = profileUpdatedAt != null
+        ? formatter.formatDateTime(profileUpdatedAt!)
         : '—';
     final address = driver.address;
     final fullAddress = address.fullAddress.trim();
     final composedLine = [
       address.addressLine,
       address.cityId,
-      address.stateCode,
-      address.countryCode,
+      resolvedState,
+      resolvedCountry,
       address.pincode,
     ].where((v) => v.trim().isNotEmpty && v.trim() != '-').join(', ');
 
@@ -361,14 +445,12 @@ class _IdentityCard extends StatelessWidget {
         ),
         _InfoRow(
           label: 'Country',
-          value: address.countryCode.isNotEmpty
-              ? address.countryCode
-              : driver.countryCode,
+          value: resolvedCountry,
           icon: Icons.public_outlined,
         ),
         _InfoRow(
           label: 'State',
-          value: address.stateCode,
+          value: resolvedState,
           icon: Icons.map_outlined,
         ),
         _InfoRow(
@@ -381,9 +463,7 @@ class _IdentityCard extends StatelessWidget {
           value: address.pincode,
           icon: Icons.local_post_office_outlined,
         ),
-        if (fullAddress.isNotEmpty &&
-            fullAddress != '-' &&
-            fullAddress != composedLine)
+        if (fullAddress.isNotEmpty && fullAddress != composedLine)
           _InfoRow(
             label: 'Full address',
             value: fullAddress,

@@ -28,6 +28,7 @@ class AdminDriverDetailsState {
     required this.unassigningUserIds,
     required this.errorMessage,
     required this.sectionErrorMessage,
+    this.profileUpdatedAt,
   });
 
   const AdminDriverDetailsState.initial({required this.driverId})
@@ -52,7 +53,8 @@ class AdminDriverDetailsState {
         isAssigningUser = false,
         unassigningUserIds = const <String>{},
         errorMessage = null,
-        sectionErrorMessage = null;
+        sectionErrorMessage = null,
+        profileUpdatedAt = null;
 
   static const Object _unset = Object();
 
@@ -79,6 +81,12 @@ class AdminDriverDetailsState {
   final Set<String> unassigningUserIds;
   final String? errorMessage;
   final String? sectionErrorMessage;
+
+  /// Effective Driver Updated timestamp resolved as:
+  ///   server updatedAt → persisted local edit time → createdAt.
+  /// Persisted via AdminDriverTimestampStorage so it survives provider
+  /// recreation and app restart. Restored during every loadProfile call.
+  final DateTime? profileUpdatedAt;
 
   bool get hasDriver => driver != null;
 
@@ -117,6 +125,7 @@ class AdminDriverDetailsState {
     Set<String>? unassigningUserIds,
     Object? errorMessage = _unset,
     Object? sectionErrorMessage = _unset,
+    Object? profileUpdatedAt = _unset,
   }) {
     return AdminDriverDetailsState(
       driverId: driverId,
@@ -152,6 +161,9 @@ class AdminDriverDetailsState {
       sectionErrorMessage: identical(sectionErrorMessage, _unset)
           ? this.sectionErrorMessage
           : sectionErrorMessage as String?,
+      profileUpdatedAt: identical(profileUpdatedAt, _unset)
+          ? this.profileUpdatedAt
+          : profileUpdatedAt as DateTime?,
     );
   }
 }

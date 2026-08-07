@@ -172,6 +172,11 @@ class _DocCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final f = const DateTimeFormatter();
+    final onSurfaceVariant = Theme.of(context).colorScheme.onSurfaceVariant;
+    // Show type name only when it differs from the title and is meaningful.
+    final showType = doc.docTypeName != '-' && doc.docTypeName != doc.title;
+    // Show filename only when it is meaningful and not a placeholder.
+    final showFileName = doc.fileName != '-' && doc.fileName.isNotEmpty;
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -184,28 +189,52 @@ class _DocCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Title: allow wrapping so long licence names are readable.
                     Text(
                       doc.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.label.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      doc.docTypeName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: OpenVtsTypography.meta.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    if (showType) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        doc.docTypeName,
+                        style: OpenVtsTypography.meta.copyWith(
+                          color: onSurfaceVariant,
+                        ),
                       ),
-                    ),
+                    ],
+                    if (showFileName) ...[
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.insert_drive_file_outlined,
+                            size: 11,
+                            color: onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 3),
+                          Flexible(
+                            child: Text(
+                              doc.fileName,
+                              style: OpenVtsTypography.meta.copyWith(
+                                color: onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
               PopupMenuButton<_DocAction>(
                 tooltip: 'Document actions',
+                icon: Icon(
+                  Icons.more_vert_rounded,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 onSelected: (value) {
                   switch (value) {
                     case _DocAction.view:
@@ -252,21 +281,16 @@ class _DocCard extends StatelessWidget {
                 label: doc.status,
                 color: _statusColor(doc.status),
               ),
-              _MetaPill(
-                icon: Icons.insert_drive_file_outlined,
-                label: doc.fileName,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
               if (doc.createdAt != null)
                 _MetaPill(
                   icon: Icons.calendar_today_rounded,
                   label: f.formatDate(doc.createdAt!),
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: onSurfaceVariant,
                 ),
               if (doc.expiryAt != null)
                 _MetaPill(
                   icon: Icons.event_busy_rounded,
-                  label: f.formatDate(doc.expiryAt!),
+                  label: 'Exp: ${f.formatDate(doc.expiryAt!)}',
                   color: OpenVtsColors.warning,
                 ),
               _MetaPill(
@@ -274,7 +298,7 @@ class _DocCard extends StatelessWidget {
                     ? Icons.visibility_rounded
                     : Icons.visibility_off_rounded,
                 label: doc.isVisible ? 'Visible' : 'Hidden',
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: onSurfaceVariant,
               ),
             ],
           ),
@@ -311,8 +335,9 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        isDestructive ? OpenVtsColors.error : OpenVtsColors.textPrimary;
+    final color = isDestructive
+        ? OpenVtsColors.error
+        : Theme.of(context).colorScheme.onSurface;
     return Row(
       children: [
         Icon(icon, size: 16, color: color),
@@ -342,23 +367,23 @@ class _MetaPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.06),
+        color: color.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: color.withOpacity(0.22)),
+        border: Border.all(color: color.withValues(alpha: 0.22)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 12, color: color),
           const SizedBox(width: 4),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: OpenVtsTypography.meta.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-              fontSize: 10,
+          Flexible(
+            child: Text(
+              label,
+              style: OpenVtsTypography.meta.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+                fontSize: 10,
+              ),
             ),
           ),
         ],
