@@ -27,6 +27,7 @@ class _AdminRenewVehicleSheetState
   final Set<String> _selected = <String>{};
   String _search = '';
   AdminPaymentMode? _mode;
+  bool _modeError = false;
   final _amountController = TextEditingController();
   final _referenceController = TextEditingController();
   bool _loadingVehicles = false;
@@ -166,12 +167,18 @@ class _AdminRenewVehicleSheetState
               const SizedBox(height: OpenVtsSpacing.sm),
               DropdownButtonFormField<AdminPaymentMode>(
                 initialValue: _mode,
-                decoration: const InputDecoration(labelText: 'Payment Mode'),
+                decoration: InputDecoration(
+                  labelText: 'Payment Mode',
+                  errorText: _modeError ? 'Payment mode is required' : null,
+                ),
                 items: AdminPaymentMode.values
                     .map((m) => DropdownMenuItem<AdminPaymentMode>(
                         value: m, child: Text(m.label)))
                     .toList(growable: false),
-                onChanged: (value) => setState(() => _mode = value),
+                onChanged: (value) => setState(() {
+                  _mode = value;
+                  _modeError = false;
+                }),
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               Text(
@@ -249,7 +256,7 @@ class _AdminRenewVehicleSheetState
       return;
     }
     if (_mode == null) {
-      ToastHelper.showError('Payment mode is required', context: context);
+      setState(() => _modeError = true);
       return;
     }
 

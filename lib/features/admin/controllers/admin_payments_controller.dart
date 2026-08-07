@@ -246,7 +246,16 @@ class AdminPaymentsController extends StateNotifier<AdminPaymentsState> {
 
     for (final item in incoming) {
       final key = item.id.isEmpty ? _fallbackKey(item) : item.id;
-      merged[key] = item;
+      // If the incoming item has no vehicle info but the cached copy does,
+      // preserve the cached vehicle map so it isn't wiped by a stale refresh.
+      final existing = merged[key];
+      if (existing != null &&
+          item.vehicleDisplayName.isEmpty &&
+          existing.vehicleDisplayName.isNotEmpty) {
+        merged[key] = item.copyWithVehicle(existing.vehicle);
+      } else {
+        merged[key] = item;
+      }
     }
 
     final values = merged.values.toList(growable: true)

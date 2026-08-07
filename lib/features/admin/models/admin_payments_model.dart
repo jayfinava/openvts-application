@@ -229,6 +229,30 @@ class AdminPaymentTransaction {
     return '';
   }
 
+  AdminPaymentTransaction copyWithVehicle(Map<String, dynamic> vehicleMap) {
+    return AdminPaymentTransaction(
+      id: id,
+      amount: amount,
+      currency: currency,
+      statusRaw: statusRaw,
+      paymentModeRaw: paymentModeRaw,
+      paymentType: paymentType,
+      reference: reference,
+      provider: provider,
+      providerRef: providerRef,
+      createdAt: createdAt,
+      createdAtRaw: createdAtRaw,
+      fromUser: fromUser,
+      toUser: toUser,
+      recordedBy: recordedBy,
+      vehicle: vehicleMap,
+      meta: meta,
+      failureCode: failureCode,
+      failureMessage: failureMessage,
+      idempotencyKey: idempotencyKey,
+    );
+  }
+
   factory AdminPaymentTransaction.fromJson(dynamic json) {
     final source = _asMap(json);
     final createdAtValue =
@@ -586,20 +610,49 @@ AdminPaymentTransaction? parseRenewalTransaction(dynamic json) {
 
   // Try each candidate map in order: root → data → data.data
   for (final candidate in _renewalCandidates(root)) {
+    AdminPaymentTransaction? tx;
+
     final txMap =
         _firstMap(candidate, const ['transaction', 'tx', 'payment', 'record']);
     if (txMap != null && txMap.isNotEmpty) {
-      final tx = AdminPaymentTransaction.fromJson(txMap);
-      if (tx.id.trim().isNotEmpty) return tx;
+      final parsed = AdminPaymentTransaction.fromJson(txMap);
+      if (parsed.id.trim().isNotEmpty) tx = parsed;
     }
+
     // Candidate itself may be the transaction.
-    if (candidate.containsKey('id') &&
+    if (tx == null &&
+        candidate.containsKey('id') &&
         (candidate.containsKey('amount') || candidate.containsKey('status'))) {
-      final tx = AdminPaymentTransaction.fromJson(candidate);
-      if (tx.id.trim().isNotEmpty) return tx;
+      final parsed = AdminPaymentTransaction.fromJson(candidate);
+      if (parsed.id.trim().isNotEmpty) tx = parsed;
     }
+
+    if (tx == null) continue;
+
+    // If the transaction has no vehicle info, try to back-fill it from the
+    // updatedVehicles list that the renewal endpoint returns alongside the tx.
+    if (tx.vehicleDisplayName.isEmpty) {
+      final vehicleMap = _extractFirstUpdatedVehicle(candidate);
+      if (vehicleMap.isNotEmpty) tx = tx.copyWithVehicle(vehicleMap);
+    }
+
+    return tx;
   }
   return null;
+}
+
+/// Extracts the first entry of `updatedVehicles` as a plain Map so it can be
+/// stored in `AdminPaymentTransaction.vehicle` for display purposes.
+Map<String, dynamic> _extractFirstUpdatedVehicle(
+    Map<String, dynamic> candidate) {
+  for (final key in const ['updatedVehicles', 'updated_vehicles', 'vehicles']) {
+    final raw = candidate[key];
+    if (raw is List && raw.isNotEmpty) {
+      final first = _asMap(raw.first);
+      if (first.isNotEmpty) return first;
+    }
+  }
+  return const <String, dynamic>{};
 }
 
 List<Map<String, dynamic>> _renewalCandidates(Map<String, dynamic> root) {
