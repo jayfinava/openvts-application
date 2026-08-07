@@ -8,6 +8,7 @@ import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
+import '../../../../../shared/widgets/searchable_dropdown_field.dart';
 import '../../../controllers/admin_providers.dart';
 import '../../../models/admin_inventory_model.dart';
 
@@ -83,26 +84,24 @@ class _AdminInventoryAddSheetState
                         validator: _validateImei,
                       ),
                       const SizedBox(height: OpenVtsSpacing.sm),
-                      DropdownButtonFormField<String>(
-                        isExpanded: true,
+                      SearchableDropdownField<String>(
+                        label: 'Device Type',
+                        hintText: 'Select device type',
+                        searchHint: 'Search device type…',
                         initialValue: _deviceTypeId,
                         items: _deviceTypes
-                            .map((item) => DropdownMenuItem<String>(
+                            .map((item) => SearchableDropdownItem<String>(
                                   value: item.id,
-                                  child: Text(item.name,
-                                      overflow: TextOverflow.ellipsis),
+                                  label: item.name,
                                 ))
                             .toList(growable: false),
-                        decoration:
-                            const InputDecoration(labelText: 'Device Type'),
-                        onChanged: isSubmitting
-                            ? null
-                            : (v) => setState(() => _deviceTypeId = v),
+                        enabled: !isSubmitting,
                         validator: _mode == AdminInventoryAddMode.sim
                             ? null
                             : (value) => (value == null || value.isEmpty)
                                 ? 'Device type is required'
                                 : null,
+                        onChanged: (v) => setState(() => _deviceTypeId = v),
                       ),
                       const SizedBox(height: OpenVtsSpacing.sm),
                     ],
@@ -132,23 +131,22 @@ class _AdminInventoryAddSheetState
                         validator: _validateIccid,
                       ),
                       const SizedBox(height: OpenVtsSpacing.sm),
-                      DropdownButtonFormField<String>(
-                        isExpanded: true,
+                      SearchableDropdownField<String>(
+                        label: 'SIM Provider (optional)',
+                        hintText: 'Select provider',
+                        searchHint: 'Search provider…',
                         initialValue: _providerId,
                         items: [
-                          const DropdownMenuItem<String>(
-                              value: '', child: Text('No Provider')),
-                          ..._providers.map((item) => DropdownMenuItem<String>(
-                                value: item.id,
-                                child: Text(item.name,
-                                    overflow: TextOverflow.ellipsis),
-                              )),
+                          const SearchableDropdownItem<String>(
+                              value: '', label: 'No Provider'),
+                          ..._providers
+                              .map((item) => SearchableDropdownItem<String>(
+                                    value: item.id,
+                                    label: item.name,
+                                  )),
                         ],
-                        decoration: const InputDecoration(
-                            labelText: 'SIM Provider (optional)'),
-                        onChanged: isSubmitting
-                            ? null
-                            : (v) => setState(() => _providerId = v),
+                        enabled: !isSubmitting,
+                        onChanged: (v) => setState(() => _providerId = v),
                       ),
                     ],
                   ],

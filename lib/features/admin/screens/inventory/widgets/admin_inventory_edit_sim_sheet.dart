@@ -6,6 +6,7 @@ import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
+import '../../../../../shared/widgets/searchable_dropdown_field.dart';
 import '../../../controllers/admin_providers.dart';
 import '../../../models/admin_inventory_model.dart';
 
@@ -83,22 +84,21 @@ class _AdminInventoryEditSimSheetState
                 const SizedBox(height: OpenVtsSpacing.sm),
                 OpenVtsTextField(label: 'ICCID', controller: _iccidController),
                 const SizedBox(height: OpenVtsSpacing.sm),
-                DropdownButtonFormField<String>(
-                  isExpanded: true,
+                SearchableDropdownField<String>(
+                  label: 'SIM Provider',
+                  hintText: 'Select provider',
+                  searchHint: 'Search provider…',
                   initialValue: _providerId,
                   items: [
-                    const DropdownMenuItem(
-                        value: '', child: Text('No Provider')),
-                    ..._providers.map((item) => DropdownMenuItem<String>(
+                    const SearchableDropdownItem<String>(
+                        value: '', label: 'No Provider'),
+                    ..._providers.map((item) => SearchableDropdownItem<String>(
                           value: item.id,
-                          child:
-                              Text(item.name, overflow: TextOverflow.ellipsis),
+                          label: item.name,
                         )),
                   ],
-                  decoration: const InputDecoration(labelText: 'SIM Provider'),
-                  onChanged: isSubmitting
-                      ? null
-                      : (v) => setState(() => _providerId = v),
+                  enabled: !isSubmitting,
+                  onChanged: (v) => setState(() => _providerId = v),
                 ),
                 const SizedBox(height: OpenVtsSpacing.sm),
                 DropdownButtonFormField<String>(
