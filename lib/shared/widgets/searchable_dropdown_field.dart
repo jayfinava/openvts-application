@@ -3,10 +3,29 @@ import 'package:flutter/material.dart';
 import '../../core/theme/open_vts_spacing.dart';
 
 class SearchableDropdownItem<T> {
-  const SearchableDropdownItem({required this.value, required this.label});
+  const SearchableDropdownItem({
+    required this.value,
+    required this.label,
+    this.subtitle,
+    this.searchTerms = const <String>[],
+  });
 
   final T value;
   final String label;
+
+  /// Optional second line shown in the search sheet list tile.
+  final String? subtitle;
+
+  /// Extra strings searched alongside [label] (e.g. email, username).
+  /// Not displayed — used only for filtering.
+  final List<String> searchTerms;
+
+  bool matchesQuery(String q) {
+    if (q.isEmpty) return true;
+    if (label.toLowerCase().contains(q)) return true;
+    if (subtitle != null && subtitle!.toLowerCase().contains(q)) return true;
+    return searchTerms.any((t) => t.toLowerCase().contains(q));
+  }
 }
 
 /// A [FormField] that shows the selected label in a tappable outlined tile
@@ -192,11 +211,8 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
   void _onQuery() {
     final q = _controller.text.trim().toLowerCase();
     setState(() {
-      _filtered = q.isEmpty
-          ? widget.items
-          : widget.items
-              .where((i) => i.label.toLowerCase().contains(q))
-              .toList(growable: false);
+      _filtered =
+          widget.items.where((i) => i.matchesQuery(q)).toList(growable: false);
     });
   }
 
@@ -277,6 +293,13 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
                         return ListTile(
                           dense: true,
                           title: Text(item.label),
+                          subtitle: item.subtitle != null
+                              ? Text(
+                                  item.subtitle!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                )
+                              : null,
                           onTap: () => Navigator.of(context).pop(item.value),
                         );
                       },

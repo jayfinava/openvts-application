@@ -8,6 +8,7 @@ import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_search_field.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
+import '../../../../../shared/widgets/searchable_dropdown_field.dart';
 import '../../../controllers/admin_providers.dart';
 import '../../../models/admin_payments_model.dart';
 
@@ -71,13 +72,17 @@ class _AdminRenewVehicleSheetState
             controller: PrimaryScrollController.maybeOf(context),
             padding: const EdgeInsets.all(OpenVtsSpacing.md),
             children: [
-              DropdownButtonFormField<String>(
+              SearchableDropdownField<String>(
+                label: 'User',
+                hintText: 'Select user',
+                searchHint: 'Search by name, username or email…',
                 initialValue: _userId,
-                decoration: const InputDecoration(labelText: 'User'),
                 items: users
-                    .map((u) => DropdownMenuItem<String>(
+                    .map((u) => SearchableDropdownItem<String>(
                           value: u.id,
-                          child: Text(u.name, overflow: TextOverflow.ellipsis),
+                          label: u.name,
+                          subtitle: '${u.username} • ${u.email}',
+                          searchTerms: <String>[u.username, u.email],
                         ))
                     .toList(growable: false),
                 onChanged: (value) => _selectUser(value),
