@@ -354,6 +354,87 @@ class _CreatedPill extends StatelessWidget {
   }
 }
 
+class AdminInventorySimCardFooter extends StatelessWidget {
+  const AdminInventorySimCardFooter({
+    required this.isActive,
+    required this.statusLabel,
+    super.key,
+  });
+
+  final bool isActive;
+  final String statusLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _ActivePill(isActive: isActive),
+        ),
+        const SizedBox(width: OpenVtsSpacing.sm),
+        _StockStatusPill(label: statusLabel),
+      ],
+    );
+  }
+}
+
+class _ActivePill extends StatelessWidget {
+  const _ActivePill({required this.isActive});
+
+  final bool isActive;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = isActive ? 'Active' : 'Inactive';
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: OpenVtsSpacing.sm,
+        vertical: OpenVtsSpacing.xs + 2,
+      ),
+      decoration: BoxDecoration(
+        color: inventorySoftSurfaceColor(context),
+        borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+        border: Border.all(color: inventorySoftBorderColor(context)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            isActive
+                ? Icons.radio_button_checked_rounded
+                : Icons.radio_button_unchecked_rounded,
+            size: 16,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: OpenVtsSpacing.xs),
+          Expanded(
+            child: RichText(
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(
+                style: OpenVtsTypography.label.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  height: 1.3,
+                  fontSize: 12,
+                ),
+                children: [
+                  const TextSpan(
+                    text: 'Status : ',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  TextSpan(
+                    text: label,
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _StockStatusPill extends StatelessWidget {
   const _StockStatusPill({required this.label});
 
