@@ -13,7 +13,7 @@ class SearchableDropdownItem<T> {
   final T value;
   final String label;
 
-  /// Optional second line shown in the search sheet list tile.
+  /// Optional second line shown in the dropdown list tile.
   final String? subtitle;
 
   /// Extra strings searched alongside [label] (e.g. email, username).
@@ -28,8 +28,9 @@ class SearchableDropdownItem<T> {
   }
 }
 
-/// A [FormField] that shows the selected label in a tappable outlined tile
-/// and opens a bottom-sheet with a live search bar + scrollable item list.
+/// A [FormField] that looks like a standard outlined dropdown field.
+/// Tapping opens a menu that drops down from the field, containing a live
+/// search bar at the top and a scrollable list of items below it.
 class SearchableDropdownField<T> extends FormField<T> {
   SearchableDropdownField({
     required String label,
@@ -65,7 +66,7 @@ class SearchableDropdownField<T> extends FormField<T> {
         );
 }
 
-class _SearchableDropdownTile<T> extends StatelessWidget {
+class _SearchableDropdownTile<T> extends StatefulWidget {
   const _SearchableDropdownTile({
     required this.label,
     required this.hintText,
@@ -88,112 +89,149 @@ class _SearchableDropdownTile<T> extends StatelessWidget {
   final ValueChanged<T?> onSelected;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final hasError = errorText != null;
-    final borderColor = hasError
-        ? theme.colorScheme.error
-        : theme.inputDecorationTheme.enabledBorder?.borderSide.color ??
-            theme.colorScheme.outline;
-    final focusColor =
-        hasError ? theme.colorScheme.error : theme.colorScheme.primary;
-    final disabledColor = theme.disabledColor;
+  State<_SearchableDropdownTile<T>> createState() =>
+      _SearchableDropdownTileState<T>();
+}
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        InkWell(
-          onTap: enabled ? () => _openSheet(context) : null,
-          borderRadius: BorderRadius.circular(8),
-          child: InputDecorator(
-            decoration: InputDecoration(
-              labelText: label,
-              errorText: errorText,
-              suffixIcon: Icon(
-                Icons.arrow_drop_down,
-                color: enabled ? null : disabledColor,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: borderColor),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: focusColor, width: 2),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: theme.colorScheme.error),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: theme.colorScheme.error, width: 2),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: disabledColor),
-              ),
-            ),
-            isEmpty: selectedLabel == null,
-            child: Text(
-              selectedLabel ?? hintText,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: enabled
-                    ? (selectedLabel == null
-                        ? theme.hintColor
-                        : theme.colorScheme.onSurface)
-                    : disabledColor,
-              ),
-            ),
+class _SearchableDropdownTileState<T>
+    extends State<_SearchableDropdownTile<T>> {
+  final _key = GlobalKey();
+  bool _open = false;
+
+  Future<void> _openDropdown() async {
+    final box = _key.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null) return;
+
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final offset = box.localToGlobal(Offset.zero, ancestor: overlay);
+    final size = box.size;
+
+    setState(() => _open = true);
+
+    final result = await showMenu<T>(
+      context: context,
+      // Position menu directly below the field.
+      position: RelativeRect.fromLTRB(
+        offset.dx,
+        offset.dy + size.height,
+        overlay.size.width - offset.dx - size.width,
+        0,
+      ),
+      constraints: BoxConstraints(
+        minWidth: size.width,
+        maxWidth: size.width,
+        maxHeight: 320,
+      ),
+      items: [
+        PopupMenuItem<T>(
+          enabled: false,
+          padding: EdgeInsets.zero,
+          child: _SearchMenuContent<T>(
+            searchHint: widget.searchHint,
+            items: widget.items,
+            onSelected: (v) => Navigator.of(context).pop(v),
           ),
         ),
       ],
     );
+
+    if (!mounted) return;
+    setState(() => _open = false);
+    if (result != null) {
+      widget.onSelected(result);
+    }
   }
 
-  Future<void> _openSheet(BuildContext context) async {
-    final result = await showModalBottomSheet<T>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (_) => _SearchSheet<T>(
-        title: label,
-        searchHint: searchHint,
-        items: items,
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final hasError = widget.errorText != null;
+    final disabledColor = theme.disabledColor;
+
+    final borderColor = hasError
+        ? theme.colorScheme.error
+        : _open
+            ? theme.colorScheme.primary
+            : theme.inputDecorationTheme.enabledBorder?.borderSide.color ??
+                theme.colorScheme.outline;
+    final borderWidth = _open || hasError ? 2.0 : 1.0;
+
+    return GestureDetector(
+      key: _key,
+      onTap: widget.enabled ? _openDropdown : null,
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: widget.label,
+          errorText: widget.errorText,
+          suffixIcon: AnimatedRotation(
+            turns: _open ? 0.5 : 0,
+            duration: const Duration(milliseconds: 200),
+            child: Icon(
+              Icons.arrow_drop_down,
+              color: widget.enabled ? null : disabledColor,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: borderColor, width: borderWidth),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: theme.colorScheme.error),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: theme.colorScheme.error, width: 2),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: disabledColor),
+          ),
+        ),
+        // Always isFocused so the label floats above and never overlaps the text.
+        isFocused: _open,
+        isEmpty: false,
+        child: Text(
+          widget.selectedLabel ?? widget.hintText,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: widget.enabled
+                ? (widget.selectedLabel == null
+                    ? theme.hintColor
+                    : theme.colorScheme.onSurface)
+                : disabledColor,
+          ),
+        ),
       ),
     );
-    if (result != null) {
-      onSelected(result);
-    }
   }
 }
 
-class _SearchSheet<T> extends StatefulWidget {
-  const _SearchSheet({
-    required this.title,
+/// The content rendered inside the popup menu — a search field + filtered list.
+class _SearchMenuContent<T> extends StatefulWidget {
+  const _SearchMenuContent({
     required this.searchHint,
     required this.items,
+    required this.onSelected,
     super.key,
   });
 
-  final String title;
   final String searchHint;
   final List<SearchableDropdownItem<T>> items;
+  final ValueChanged<T> onSelected;
 
   @override
-  State<_SearchSheet<T>> createState() => _SearchSheetState<T>();
+  State<_SearchMenuContent<T>> createState() => _SearchMenuContentState<T>();
 }
 
-class _SearchSheetState<T> extends State<_SearchSheet<T>> {
+class _SearchMenuContentState<T> extends State<_SearchMenuContent<T>> {
   final _controller = TextEditingController();
-  List<SearchableDropdownItem<T>> _filtered = const [];
+  late List<SearchableDropdownItem<T>> _filtered;
 
   @override
   void initState() {
@@ -218,79 +256,62 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.6,
-      minChildSize: 0.4,
-      maxChildSize: 0.92,
-      expand: false,
-      builder: (context, scrollController) {
-        return Column(
-          children: [
-            const SizedBox(height: OpenVtsSpacing.xs),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
+    return SizedBox(
+      // Fill the constrained width of the PopupMenuItem.
+      width: double.maxFinite,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              OpenVtsSpacing.sm,
+              OpenVtsSpacing.sm,
+              OpenVtsSpacing.sm,
+              OpenVtsSpacing.xs,
             ),
-            const SizedBox(height: OpenVtsSpacing.sm),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.md),
-              child: Text(
-                widget.title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
-            ),
-            const SizedBox(height: OpenVtsSpacing.sm),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.md),
-              child: TextField(
-                controller: _controller,
-                autofocus: true,
-                decoration: InputDecoration(
-                  hintText: widget.searchHint,
-                  prefixIcon: const Icon(Icons.search, size: 20),
-                  suffixIcon: ValueListenableBuilder<TextEditingValue>(
-                    valueListenable: _controller,
-                    builder: (_, val, __) => val.text.isEmpty
-                        ? const SizedBox.shrink()
-                        : IconButton(
-                            icon: const Icon(Icons.clear, size: 18),
-                            onPressed: _controller.clear,
-                          ),
-                  ),
-                  isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: OpenVtsSpacing.sm,
-                    vertical: OpenVtsSpacing.sm,
-                  ),
+            child: TextField(
+              controller: _controller,
+              autofocus: true,
+              decoration: InputDecoration(
+                hintText: widget.searchHint,
+                prefixIcon: const Icon(Icons.search, size: 20),
+                suffixIcon: ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: _controller,
+                  builder: (_, val, __) => val.text.isEmpty
+                      ? const SizedBox.shrink()
+                      : IconButton(
+                          icon: const Icon(Icons.clear, size: 18),
+                          onPressed: _controller.clear,
+                        ),
+                ),
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: OpenVtsSpacing.sm,
+                  vertical: OpenVtsSpacing.sm,
                 ),
               ),
             ),
-            const SizedBox(height: OpenVtsSpacing.xs),
-            const Divider(height: 1),
-            Expanded(
-              child: _filtered.isEmpty
-                  ? Center(
-                      child: Text(
-                        'No results',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.outline,
-                            ),
-                      ),
-                    )
-                  : ListView.builder(
-                      controller: scrollController,
-                      itemCount: _filtered.length,
-                      itemBuilder: (_, i) {
-                        final item = _filtered[i];
-                        return ListTile(
+          ),
+          const Divider(height: 1),
+          if (_filtered.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(OpenVtsSpacing.md),
+              child: Text(
+                'No results',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+              ),
+            )
+          else
+            // Constrained scrollable list — maxHeight is set on the menu.
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: _filtered
+                      .map(
+                        (item) => ListTile(
                           dense: true,
                           title: Text(item.label),
                           subtitle: item.subtitle != null
@@ -300,14 +321,15 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
                                   overflow: TextOverflow.ellipsis,
                                 )
                               : null,
-                          onTap: () => Navigator.of(context).pop(item.value),
-                        );
-                      },
-                    ),
+                          onTap: () => widget.onSelected(item.value),
+                        ),
+                      )
+                      .toList(growable: false),
+                ),
+              ),
             ),
-          ],
-        );
-      },
+        ],
+      ),
     );
   }
 }
