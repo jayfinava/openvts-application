@@ -84,6 +84,7 @@ class _AdminInventoryAddSheetState
                       ),
                       const SizedBox(height: OpenVtsSpacing.sm),
                       DropdownButtonFormField<String>(
+                        isExpanded: true,
                         initialValue: _deviceTypeId,
                         items: _deviceTypes
                             .map((item) => DropdownMenuItem<String>(
@@ -132,6 +133,7 @@ class _AdminInventoryAddSheetState
                       ),
                       const SizedBox(height: OpenVtsSpacing.sm),
                       DropdownButtonFormField<String>(
+                        isExpanded: true,
                         initialValue: _providerId,
                         items: [
                           const DropdownMenuItem<String>(

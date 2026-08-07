@@ -55,10 +55,14 @@ class _AdminInventoryEditDeviceSheetState
                 const SizedBox(height: OpenVtsSpacing.sm),
               ],
               DropdownButtonFormField<String>(
+                isExpanded: true,
                 initialValue: _deviceTypeId,
                 items: _deviceTypes
                     .map((item) => DropdownMenuItem<String>(
-                        value: item.id, child: Text(item.name)))
+                          value: item.id,
+                          child:
+                              Text(item.name, overflow: TextOverflow.ellipsis),
+                        ))
                     .toList(growable: false),
                 decoration: const InputDecoration(labelText: 'Device Type'),
                 onChanged: isSubmitting

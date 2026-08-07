@@ -84,12 +84,16 @@ class _AdminInventoryEditSimSheetState
                 OpenVtsTextField(label: 'ICCID', controller: _iccidController),
                 const SizedBox(height: OpenVtsSpacing.sm),
                 DropdownButtonFormField<String>(
+                  isExpanded: true,
                   initialValue: _providerId,
                   items: [
                     const DropdownMenuItem(
                         value: '', child: Text('No Provider')),
                     ..._providers.map((item) => DropdownMenuItem<String>(
-                        value: item.id, child: Text(item.name))),
+                          value: item.id,
+                          child:
+                              Text(item.name, overflow: TextOverflow.ellipsis),
+                        )),
                   ],
                   decoration: const InputDecoration(labelText: 'SIM Provider'),
                   onChanged: isSubmitting
