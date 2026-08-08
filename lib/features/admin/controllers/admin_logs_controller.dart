@@ -12,11 +12,12 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
   AdminLogsController({required AdminLogsService service})
       : _service = service,
         super(const AdminLogsState.initial()) {
-    // Make the default 24h window visible in the date-range picker so the user
-    // knows why results are bounded.  The backend applies the same default when
-    // `from` is absent, so this just surfaces what was already happening.
+    // Surface default date windows in the pickers so users know why results are
+    // bounded.  The backend applies the same defaults when `from` is absent.
+    final now = DateTime.now();
     state = state.copyWith(
-      vehicleFrom: DateTime.now().subtract(const Duration(hours: 24)),
+      vehicleFrom: now.subtract(const Duration(hours: 24)),
+      telemetryFrom: now.subtract(const Duration(hours: 1)),
     );
     unawaited(loadInitial());
   }
@@ -204,11 +205,9 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
       telemetryNextCursor: null,
     );
     try {
-      final now = DateTime.now();
-      final fromDefault = now.subtract(const Duration(hours: 1));
       final page = await _service.getTelemetryLogs(
         limit: 200,
-        from: _fmt(state.telemetryFrom ?? fromDefault),
+        from: _fmt(state.telemetryFrom),
         to: _fmt(state.telemetryTo),
         vehicleId: state.telemetryVehicleId,
         imei: state.telemetryImeiSearch,
@@ -235,12 +234,10 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
     }
     state = state.copyWith(isLoadingMoreTelemetry: true);
     try {
-      final now = DateTime.now();
-      final fromDefault = now.subtract(const Duration(hours: 1));
       final page = await _service.getTelemetryLogs(
         limit: 200,
         beforeId: state.telemetryNextCursor,
-        from: _fmt(state.telemetryFrom ?? fromDefault),
+        from: _fmt(state.telemetryFrom),
         to: _fmt(state.telemetryTo),
         vehicleId: state.telemetryVehicleId,
         imei: state.telemetryImeiSearch,
@@ -324,11 +321,13 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
     DateTime? from,
     DateTime? to,
     AdminReadFilter? readFilter,
+    bool clearVehicleId = false,
     bool clearFrom = false,
     bool clearTo = false,
   }) {
     state = state.copyWith(
-      telemetryVehicleId: vehicleId ?? state.telemetryVehicleId,
+      telemetryVehicleId:
+          clearVehicleId ? null : vehicleId ?? state.telemetryVehicleId,
       telemetryPacketType: packetType ?? state.telemetryPacketType,
       telemetryImeiSearch: imeiSearch ?? state.telemetryImeiSearch,
       telemetryFrom: clearFrom ? null : from ?? state.telemetryFrom,

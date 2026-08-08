@@ -72,7 +72,11 @@ class _AdminTelemetryLogsPanelState
                 )),
           ],
           onChanged: (v) {
-            controller.setTelemetryFilters(vehicleId: v, imeiSearch: '');
+            controller.setTelemetryFilters(
+              vehicleId: v,
+              clearVehicleId: v == null,
+              imeiSearch: '',
+            );
             unawaited(controller.loadTelemetryLogs());
           },
         ),
