@@ -78,7 +78,10 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
                 )),
           ],
           onChanged: (v) {
-            controller.setVehicleFilters(vehicleId: v);
+            controller.setVehicleFilters(
+              vehicleId: v,
+              clearVehicleId: v == null,
+            );
             unawaited(controller.loadVehicleLogs());
           },
         ),
@@ -95,7 +98,10 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
                 )),
           ],
           onChanged: (v) {
-            controller.setVehicleFilters(userId: v);
+            controller.setVehicleFilters(
+              userId: v,
+              clearUserId: v == null,
+            );
             unawaited(controller.loadVehicleLogs());
           },
         ),

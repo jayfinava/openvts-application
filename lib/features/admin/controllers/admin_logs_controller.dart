@@ -12,6 +12,12 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
   AdminLogsController({required AdminLogsService service})
       : _service = service,
         super(const AdminLogsState.initial()) {
+    // Make the default 24h window visible in the date-range picker so the user
+    // knows why results are bounded.  The backend applies the same default when
+    // `from` is absent, so this just surfaces what was already happening.
+    state = state.copyWith(
+      vehicleFrom: DateTime.now().subtract(const Duration(hours: 24)),
+    );
     unawaited(loadInitial());
   }
 
@@ -129,11 +135,9 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
       vehicleNextCursorId: null,
     );
     try {
-      final now = DateTime.now();
-      final fromDefault = now.subtract(const Duration(hours: 24));
       final page = await _service.getVehicleEventLogs(
         limit: 50,
-        from: _fmt(state.vehicleFrom ?? fromDefault),
+        from: _fmt(state.vehicleFrom),
         to: _fmt(state.vehicleTo),
         vehicleId: state.vehicleVehicleId,
         userId: state.vehicleUserId,
@@ -164,12 +168,10 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
     }
     state = state.copyWith(isLoadingMoreVehicle: true);
     try {
-      final now = DateTime.now();
-      final fromDefault = now.subtract(const Duration(hours: 24));
       final page = await _service.getVehicleEventLogs(
         limit: 50,
         cursorId: state.vehicleNextCursorId,
-        from: _fmt(state.vehicleFrom ?? fromDefault),
+        from: _fmt(state.vehicleFrom),
         to: _fmt(state.vehicleTo),
         vehicleId: state.vehicleVehicleId,
         userId: state.vehicleUserId,
@@ -294,12 +296,15 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
     DateTime? from,
     DateTime? to,
     bool? dedupe,
+    bool clearVehicleId = false,
+    bool clearUserId = false,
     bool clearFrom = false,
     bool clearTo = false,
   }) {
     state = state.copyWith(
-      vehicleVehicleId: vehicleId ?? state.vehicleVehicleId,
-      vehicleUserId: userId ?? state.vehicleUserId,
+      vehicleVehicleId:
+          clearVehicleId ? null : vehicleId ?? state.vehicleVehicleId,
+      vehicleUserId: clearUserId ? null : userId ?? state.vehicleUserId,
       vehicleSource: source ?? state.vehicleSource,
       vehicleSeverity: severity ?? state.vehicleSeverity,
       vehicleReadFilter: readFilter ?? state.vehicleReadFilter,
