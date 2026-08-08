@@ -31,6 +31,19 @@ class _UserTopPerformingAssetsWidgetState
   _TopAssetsRange _range = _TopAssetsRange.today;
   int _refreshKey = 0;
 
+  // Resolved once per range selection / refresh so build() never calls
+  // DateTime.now() and accidentally shifts the provider identity.
+  late DateTime _resolvedFrom;
+  late DateTime _resolvedTo;
+
+  @override
+  void initState() {
+    super.initState();
+    final r = _range.resolve();
+    _resolvedFrom = r.from;
+    _resolvedTo = r.to;
+  }
+
   @override
   void didUpdateWidget(covariant UserTopPerformingAssetsWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -40,26 +53,35 @@ class _UserTopPerformingAssetsWidgetState
     }
   }
 
-  void _reload() => setState(() => _refreshKey++);
+  void _reload() {
+    final r = _range.resolve();
+    setState(() {
+      _resolvedFrom = r.from;
+      _resolvedTo = r.to;
+      _refreshKey++;
+    });
+  }
 
   void _changeRange(Set<_TopAssetsRange> value) {
     if (value.isEmpty) return;
+    final r = value.first.resolve();
     setState(() {
       _range = value.first;
+      _resolvedFrom = r.from;
+      _resolvedTo = r.to;
       _refreshKey++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final range = _range.resolve();
     final state = ref.watch(
       userDashboardTopAssetsProvider(
         UserDashboardTopAssetsArgs(
           widgetId: widget.config.id,
           refreshKey: _refreshKey,
-          from: range.from,
-          to: range.to,
+          from: _resolvedFrom,
+          to: _resolvedTo,
           limit:
               userDashboardPropInt(widget.config.props, const ['limit']) ?? 10,
         ),
