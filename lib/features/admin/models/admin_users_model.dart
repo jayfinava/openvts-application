@@ -578,14 +578,14 @@ class AdminUserCityOption {
           }
 
           final value = _firstString(itemMap, const [
-                'name',
-                'cityName',
-                'city_name',
-                'city',
                 'value',
                 'cityId',
                 'city_id',
                 'id',
+                'name',
+                'cityName',
+                'city_name',
+                'city',
               ]) ??
               '';
           final label = _firstString(itemMap, const [

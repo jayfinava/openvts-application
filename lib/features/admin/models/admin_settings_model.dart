@@ -139,7 +139,9 @@ class AdminAddressSettings {
     this.id,
     this.addressLine,
     this.countryCode,
+    this.countryName,
     this.stateCode,
+    this.stateName,
     this.cityName,
     this.cityId,
     this.cityCode,
@@ -150,20 +152,22 @@ class AdminAddressSettings {
   final int? id;
   final String? addressLine;
   final String? countryCode;
+  final String? countryName;
   final String? stateCode;
+  final String? stateName;
   final String? cityName;
-  final int? cityId;
+  final String? cityId;
   final String? cityCode;
   final String? pincode;
   final String? fullAddress;
 
-  String? get cityValue => cityCode ?? cityId?.toString();
+  String? get cityValue => cityCode ?? cityId;
 
   String? get cityDisplayName {
     final candidates = [
       cityName,
       if (cityName == null && (cityCode != null || cityId != null))
-        cityCode ?? cityId?.toString(),
+        cityCode ?? cityId,
     ];
     for (final candidate in candidates) {
       if (candidate != null && candidate.trim().isNotEmpty) {
@@ -178,7 +182,7 @@ class AdminAddressSettings {
 
     String? cityName;
     String? cityCode;
-    int? cityId;
+    String? cityId;
 
     final priorityNames = const ['cityName', 'city_name', 'cityname'];
     for (final key in priorityNames) {
@@ -197,7 +201,7 @@ class AdminAddressSettings {
         final cityMap = _asMap(cityRaw);
         cityName ??= _firstString(
             cityMap, const ['name', 'cityName', 'city_name', 'label']);
-        cityId ??= _firstInt(cityMap, const ['id', '_id']);
+        cityId ??= _firstString(cityMap, const ['id', '_id', 'value']);
         cityCode ??= _firstString(cityMap, const ['code']);
       } else if (cityName == null) {
         final val = _firstString(source, const ['city']);
@@ -218,7 +222,7 @@ class AdminAddressSettings {
       }
     }
 
-    cityId ??= _firstInt(source, const ['cityId', 'city_id']);
+    cityId ??= _firstString(source, const ['cityId', 'city_id']);
 
     return AdminAddressSettings(
       id: _firstInt(source, const ['id', 'addressId']),
@@ -233,10 +237,18 @@ class AdminAddressSettings {
         'country_code',
         'country',
       ]),
+      countryName: _firstString(source, const [
+        'countryName',
+        'country_name',
+      ]),
       stateCode: _firstString(source, const [
         'stateCode',
         'state_code',
         'state',
+      ]),
+      stateName: _firstString(source, const [
+        'stateName',
+        'state_name',
       ]),
       cityName: cityName,
       cityId: cityId,
@@ -261,9 +273,11 @@ class AdminAddressSettings {
     int? id,
     String? addressLine,
     String? countryCode,
+    String? countryName,
     String? stateCode,
+    String? stateName,
     String? cityName,
-    int? cityId,
+    String? cityId,
     String? cityCode,
     String? pincode,
     String? fullAddress,
@@ -272,7 +286,9 @@ class AdminAddressSettings {
       id: id ?? this.id,
       addressLine: addressLine ?? this.addressLine,
       countryCode: countryCode ?? this.countryCode,
+      countryName: countryName ?? this.countryName,
       stateCode: stateCode ?? this.stateCode,
+      stateName: stateName ?? this.stateName,
       cityName: cityName ?? this.cityName,
       cityId: cityId ?? this.cityId,
       cityCode: cityCode ?? this.cityCode,

@@ -23,6 +23,7 @@ import '../../../controllers/admin_settings_controller.dart';
 import '../../../models/admin_settings_model.dart';
 import '../../../models/admin_settings_state.dart';
 import '../../../models/admin_users_model.dart';
+import '../../../utils/location_label_resolver.dart';
 
 const _allowedImageExts = ['png', 'jpg', 'jpeg', 'webp'];
 const int _maxImageBytes = 2 * 1024 * 1024;
@@ -157,7 +158,7 @@ class _ProfileSettingsSectionState
           onVerifyWhatsApp: () => _openOtpSheet(_OtpChannel.whatsapp),
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
-        _AddressCard(profile: profile),
+        AdminProfileAddressCard(profile: profile),
         const SizedBox(height: OpenVtsSpacing.sm),
         if (profile.company != null)
           _CompanyCard(
@@ -844,17 +845,110 @@ class _VerificationRow extends StatelessWidget {
 // Address card
 // =====================================================================
 
-class _AddressCard extends StatelessWidget {
-  const _AddressCard({required this.profile});
+class AdminProfileAddressCard extends ConsumerStatefulWidget {
+  const AdminProfileAddressCard({
+    super.key,
+    required this.profile,
+    this.initialCountries = const [],
+    this.initialStates = const [],
+    this.initialCities = const [],
+    this.loadCatalogs = true,
+  });
+
   final AdminProfileSettings profile;
+  final List<AdminUserCountryOption> initialCountries;
+  final List<AdminUserStateOption> initialStates;
+  final List<AdminUserCityOption> initialCities;
+  final bool loadCatalogs;
+
+  @override
+  ConsumerState<AdminProfileAddressCard> createState() =>
+      _AdminProfileAddressCardState();
+}
+
+class _AdminProfileAddressCardState
+    extends ConsumerState<AdminProfileAddressCard> {
+  late List<AdminUserCountryOption> _countries;
+  late List<AdminUserStateOption> _states;
+  late List<AdminUserCityOption> _cities;
+
+  @override
+  void initState() {
+    super.initState();
+    _countries = widget.initialCountries;
+    _states = widget.initialStates;
+    _cities = widget.initialCities;
+    if (widget.loadCatalogs) {
+      unawaited(_loadLocationLabels());
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant AdminProfileAddressCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final previous = oldWidget.profile.address;
+    final current = widget.profile.address;
+    if (previous?.countryCode != current?.countryCode ||
+        previous?.stateCode != current?.stateCode ||
+        previous?.cityValue != current?.cityValue) {
+      if (widget.loadCatalogs) {
+        unawaited(_loadLocationLabels());
+      }
+    }
+  }
+
+  Future<void> _loadLocationLabels() async {
+    final address = widget.profile.address;
+    final countryCode = address?.countryCode?.trim() ?? '';
+    final stateCode = address?.stateCode?.trim() ?? '';
+    final controller = ref.read(adminUsersControllerProvider.notifier);
+
+    try {
+      final countries = await controller.getCountries();
+      final states = countryCode.isEmpty
+          ? const <AdminUserStateOption>[]
+          : await controller.getStates(countryCode);
+      final cities = countryCode.isEmpty || stateCode.isEmpty
+          ? const <AdminUserCityOption>[]
+          : await controller.getCities(countryCode, stateCode);
+      if (!mounted || widget.profile.address != address) return;
+      setState(() {
+        _countries = countries;
+        _states = states;
+        _cities = cities;
+      });
+    } catch (_) {
+      // The synchronous resolver still supplies local country/state labels.
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final profile = widget.profile;
     final address = profile.address;
     final addressLine = address?.addressLine ?? '';
     final countryCode = address?.countryCode ?? '';
     final stateCode = address?.stateCode ?? '';
-    final city = address?.cityDisplayName ?? profile.cityName ?? '';
+    final country = (address?.countryName?.trim().isNotEmpty ?? false)
+        ? address!.countryName!.trim()
+        : LocationLabelResolver.resolveCountry(
+            countryCode,
+            apiOptions: _countries,
+          );
+    final state = (address?.stateName?.trim().isNotEmpty ?? false)
+        ? address!.stateName!.trim()
+        : LocationLabelResolver.resolveState(
+            countryCode,
+            stateCode,
+            apiOptions: _states,
+          );
+    final explicitCity = address?.cityName ?? profile.cityName;
+    final city = (explicitCity?.trim().isNotEmpty ?? false)
+        ? explicitCity!.trim()
+        : LocationLabelResolver.resolveCity(
+            address?.cityValue ?? '',
+            apiOptions: _cities,
+          );
     final pincode = address?.pincode ?? '';
 
     final hasAddress = addressLine.trim().isNotEmpty ||
@@ -877,13 +971,13 @@ class _AddressCard extends StatelessWidget {
         if (countryCode.trim().isNotEmpty)
           _InfoRow(
             label: 'Country',
-            value: countryCode,
+            value: country,
             icon: Icons.public_outlined,
           ),
         if (stateCode.trim().isNotEmpty)
           _InfoRow(
             label: 'State',
-            value: stateCode,
+            value: state,
             icon: Icons.map_outlined,
           ),
         _InfoRow(
@@ -1395,7 +1489,6 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
   String? _countryCode;
   String? _stateCode;
   String? _cityValue;
-  String? _cityLabel;
 
   List<AdminUserMobilePrefixOption> _prefixes = [];
   List<AdminUserCountryOption> _countries = [];
@@ -1431,7 +1524,6 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     _initialCityDisplayName = a?.cityDisplayName;
 
     _cityValue = _initialCityValue;
-    _cityLabel = _initialCityDisplayName;
 
     unawaited(_loadCatalogs());
   }
@@ -1538,7 +1630,6 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         // Found exact match in list - sync state to matched option
         setState(() {
           _cityValue = matchedOption!.value;
-          _cityLabel = matchedOption.label;
         });
       } else if (matchedOption == null &&
           (_initialCityValue != null || _initialCityDisplayName != null)) {
@@ -1555,7 +1646,6 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
             ..._cities,
           ];
           _cityValue = syntheticValue;
-          _cityLabel = displayLabel;
         });
       }
 
@@ -1586,7 +1676,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
             _addressLine.text.trim().isEmpty ? null : _addressLine.text.trim(),
         countryCode: _countryCode,
         stateCode: _stateCode,
-        cityName: _cityLabel,
+        cityName: _cityValue,
         pincode: _pincode.text.trim().isEmpty ? null : _pincode.text.trim(),
       ),
     );
@@ -1705,7 +1795,6 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                         _stateCode = null;
                         if (!_isInitializingProfileLocation) {
                           _cityValue = null;
-                          _cityLabel = null;
                         }
                         _states = [];
                         _cities = [];
@@ -1733,7 +1822,6 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                         _stateCode = v;
                         if (!_isInitializingProfileLocation) {
                           _cityValue = null;
-                          _cityLabel = null;
                         }
                         _cities = [];
                       });
@@ -1758,14 +1846,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                         )
                         .toList(),
                     onChanged: (v) {
-                      final selected =
-                          _cities.cast<AdminUserCityOption?>().firstWhere(
-                                (c) => c?.value == v,
-                                orElse: () => null,
-                              );
                       setState(() {
                         _cityValue = v;
-                        _cityLabel = selected?.label;
                         // Mark initialization complete when user manually selects
                         _isInitializingProfileLocation = false;
                       });

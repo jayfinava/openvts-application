@@ -51,6 +51,25 @@ void main() {
     });
   });
 
+  group('LocationLabelResolver profile address labels', () {
+    test('resolves India and Maharashtra without network catalogues', () {
+      expect(LocationLabelResolver.resolveCountry('IN'), 'India');
+      expect(LocationLabelResolver.resolveState('IN', 'MH'), 'Maharashtra');
+    });
+
+    test('resolves a canonical city value from loaded catalogue options', () {
+      const cities = <AdminUserCityOption>[
+        AdminUserCityOption(value: 'city-42', label: 'Mumbai'),
+      ];
+
+      expect(
+        LocationLabelResolver.resolveCity('city-42', apiOptions: cities),
+        'Mumbai',
+      );
+      expect(LocationLabelResolver.resolveCity('unknown'), 'unknown');
+    });
+  });
+
   // -------------------------------------------------------------------------
   // resolveState
   // -------------------------------------------------------------------------

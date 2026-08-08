@@ -76,6 +76,23 @@ class LocationLabelResolver {
     return normalizedState;
   }
 
+  /// Returns the readable city label for a saved canonical city value.
+  static String resolveCity(
+    String value, {
+    List<AdminUserCityOption> apiOptions = const [],
+  }) {
+    final normalized = value.trim();
+    if (normalized.isEmpty) return '';
+
+    for (final option in apiOptions) {
+      if (option.value.trim().toLowerCase() == normalized.toLowerCase()) {
+        return option.label;
+      }
+    }
+
+    return normalized;
+  }
+
   /// Builds a sorted list of unique [AdminUserCountryOption] entries whose
   /// codes are present in [codes], resolved against [apiOptions] and the
   /// hardcoded fallback.
