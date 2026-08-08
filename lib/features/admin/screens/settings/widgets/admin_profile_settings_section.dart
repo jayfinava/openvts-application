@@ -2465,6 +2465,7 @@ class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
   bool _requested = false;
   bool _submitting = false;
   bool _resending = false;
+  bool _requestInFlight = false;
 
   @override
   void initState() {
@@ -2479,7 +2480,9 @@ class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
   }
 
   Future<void> _requestOtp({bool isResend = false}) async {
+    if (_requestInFlight) return;
     setState(() {
+      _requestInFlight = true;
       if (isResend) _resending = true;
     });
     final controller = ref.read(adminSettingsControllerProvider.notifier);
@@ -2489,6 +2492,7 @@ class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
     if (!mounted) return;
     setState(() {
       _resending = false;
+      _requestInFlight = false;
       _requested = _requested || ok;
     });
     if (ok) {
@@ -2587,8 +2591,9 @@ class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
               Align(
                 alignment: Alignment.center,
                 child: TextButton(
-                  onPressed:
-                      _resending ? null : () => _requestOtp(isResend: true),
+                  onPressed: _requestInFlight
+                      ? null
+                      : () => _requestOtp(isResend: true),
                   child: _resending
                       ? const SizedBox(
                           width: 14,

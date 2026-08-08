@@ -612,6 +612,13 @@ class CalendarLinkedDetail {
 
   factory CalendarLinkedDetail.fromVehiclePayload(dynamic payload) {
     final json = _asMap(payload);
+    final plateNumber = _firstString(json, const [
+      'plateNumber',
+      'plate_number',
+      'registrationNo',
+      'registration_no'
+    ]);
+    final vehicleTypeName = _vehicleTypeName(json);
     return CalendarLinkedDetail(
       title: _firstString(
             json,
@@ -624,21 +631,7 @@ class CalendarLinkedDetail {
             ],
           ) ??
           'Vehicle',
-      subtitle: _joinParts(<String?>[
-        _firstString(json, const [
-          'plateNumber',
-          'plate_number',
-          'registrationNo',
-          'registration_no'
-        ]),
-        _firstString(json, const [
-          'vehicleType',
-          'vehicle_type',
-          'type',
-          'typeName',
-          'type_name'
-        ]),
-      ]),
+      subtitle: plateNumber ?? vehicleTypeName ?? '',
       metadata: <String>[
         _joinParts(<String?>[
           _firstString(json, const ['imei', 'deviceImei', 'deviceIMEI']),
@@ -709,7 +702,7 @@ dynamic _firstNestedCollection(Map<String, dynamic> source, List<String> keys) {
 String? _firstString(Map<String, dynamic> source, List<String> keys) {
   for (final key in keys) {
     final value = source[key];
-    if (value == null) {
+    if (value == null || value is Map || value is Iterable) {
       continue;
     }
     final text = value.toString().trim();
@@ -718,6 +711,25 @@ String? _firstString(Map<String, dynamic> source, List<String> keys) {
     }
   }
   return null;
+}
+
+String? _vehicleTypeName(Map<String, dynamic> source) {
+  for (final key in const ['vehicleType', 'vehicle_type']) {
+    final value = source[key];
+    if (value is Map) {
+      final name = _firstString(_asMap(value), const ['name']);
+      if (name != null) {
+        return name;
+      }
+    } else {
+      final scalarValue = _firstString(source, <String>[key]);
+      if (scalarValue != null) {
+        return scalarValue;
+      }
+    }
+  }
+
+  return _firstString(source, const ['typeName', 'type_name']);
 }
 
 bool _looksLikeDateKey(String key) => _normalizeDate(key) != null;

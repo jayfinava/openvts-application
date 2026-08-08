@@ -16,6 +16,19 @@ class ApiClient {
 
   bool get isDemoMode => _demoPolicy?.isEnabled == true;
 
+  /// Resolves an endpoint for diagnostics without query parameters, fragments,
+  /// credentials, headers, or request data.
+  String safeResolvedUrl(String endpoint) {
+    final base = Uri.tryParse(_dio.options.baseUrl);
+    final target = Uri.tryParse(_endpointForRequest(endpoint));
+    final resolved =
+        base != null && target != null ? base.resolveUri(target) : target;
+    if (resolved == null) return _safeEndpointForPerf(endpoint);
+    if (!resolved.hasAuthority) return resolved.path;
+    final port = resolved.hasPort ? ':${resolved.port}' : '';
+    return '${resolved.scheme}://${resolved.host}$port${resolved.path}';
+  }
+
   Future<ApiResponse<T>> get<T>(
     String endpoint, {
     Map<String, dynamic>? queryParameters,
@@ -36,7 +49,7 @@ class ApiClient {
       }
 
       final response = await _dio.get<dynamic>(
-        resolution.endpoint,
+        _endpointForRequest(resolution.endpoint),
         queryParameters: resolution.queryParameters,
         options: options,
       );
@@ -57,7 +70,7 @@ class ApiClient {
     return OpenVtsPerf.traceAsync(_apiPerfLabel('POST', endpoint), () async {
       _demoPolicy?.ensureMutationAllowed('POST', endpoint);
       final response = await _dio.post<dynamic>(
-        endpoint,
+        _endpointForRequest(endpoint),
         data: data,
         queryParameters: queryParameters,
         options: options,
@@ -75,7 +88,7 @@ class ApiClient {
     return OpenVtsPerf.traceAsync(_apiPerfLabel('PUT', endpoint), () async {
       _demoPolicy?.ensureMutationAllowed('PUT', endpoint);
       final response = await _dio.put<dynamic>(
-        endpoint,
+        _endpointForRequest(endpoint),
         data: data,
         options: options,
       );
@@ -93,7 +106,7 @@ class ApiClient {
     return OpenVtsPerf.traceAsync(_apiPerfLabel('PATCH', endpoint), () async {
       _demoPolicy?.ensureMutationAllowed('PATCH', endpoint);
       final response = await _dio.patch<dynamic>(
-        endpoint,
+        _endpointForRequest(endpoint),
         data: data,
         queryParameters: queryParameters,
         options: options,
@@ -111,7 +124,7 @@ class ApiClient {
     return OpenVtsPerf.traceAsync(_apiPerfLabel('DELETE', endpoint), () async {
       _demoPolicy?.ensureMutationAllowed('DELETE', endpoint);
       final response = await _dio.delete<dynamic>(
-        endpoint,
+        _endpointForRequest(endpoint),
         data: data,
         options: options,
       );
@@ -121,6 +134,25 @@ class ApiClient {
 
   String _apiPerfLabel(String method, String endpoint) {
     return 'api.$method ${_safeEndpointForPerf(endpoint)}';
+  }
+
+  String _endpointForRequest(String endpoint) {
+    final target = Uri.tryParse(endpoint.trim());
+    if (target?.hasScheme == true) return endpoint;
+
+    final baseUrl = _dio.options.baseUrl.trim();
+    final base = Uri.tryParse(baseUrl);
+    if (base == null || base.path.isEmpty || base.path == '/') return endpoint;
+
+    final normalizedBase = baseUrl.replaceAll(RegExp(r'/+$'), '');
+    final normalizedEndpoint = endpoint.trim().replaceFirst(RegExp(r'^/+'), '');
+    final normalizedBasePath = base.path.replaceAll(RegExp(r'^/+|/+$'), '');
+    if (normalizedBasePath.isNotEmpty &&
+        (normalizedEndpoint == normalizedBasePath ||
+            normalizedEndpoint.startsWith('$normalizedBasePath/'))) {
+      return '${base.scheme}://${base.authority}/$normalizedEndpoint';
+    }
+    return '$normalizedBase/$normalizedEndpoint';
   }
 
   String _safeEndpointForPerf(String endpoint) {
@@ -152,7 +184,13 @@ class ApiClient {
       try {
         final apiResponse = ApiResponse<T>.fromJson(data, parser);
         if (apiResponse.success) {
-          return apiResponse;
+          return ApiResponse<T>(
+            success: apiResponse.success,
+            data: apiResponse.data,
+            message: apiResponse.message,
+            timestamp: apiResponse.timestamp,
+            statusCode: response.statusCode,
+          );
         }
       } catch (_) {
         // Fall through to the implicit envelope path below.
@@ -164,6 +202,7 @@ class ApiClient {
             success: true,
             data: parser(_extractEnvelopePayload(data)),
             message: _extractMessage(data),
+            statusCode: response.statusCode,
           );
         } catch (_) {
           throw ApiException(
@@ -187,6 +226,7 @@ class ApiClient {
         success: _isSuccessStatusCode(response.statusCode),
         data: parser(data),
         message: _extractMessage(data),
+        statusCode: response.statusCode,
       );
     } catch (_) {
       throw ApiException(

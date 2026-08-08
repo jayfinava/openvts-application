@@ -187,7 +187,6 @@ class _SupportHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final countLabel = _countLabel(
       visibleCount: visibleCount,
       totalCount: totalCount,
@@ -195,6 +194,7 @@ class _SupportHeader extends StatelessWidget {
     );
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           child: Text(
@@ -202,7 +202,7 @@ class _SupportHeader extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: OpenVtsTypography.meta.copyWith(
-              color: colorScheme.onSurfaceVariant,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -211,13 +211,19 @@ class _SupportHeader extends StatelessWidget {
         FilledButton.icon(
           onPressed: isCreating ? null : onCreatePressed,
           style: FilledButton.styleFrom(
+            minimumSize: const Size(0, 42),
             backgroundColor: OpenVtsColors.brandInk,
             foregroundColor: OpenVtsColors.white,
-            side: const BorderSide(color: OpenVtsColors.white, width: 0.8),
-            minimumSize: const Size(0, 34),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            visualDensity: VisualDensity.compact,
-            padding: const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.sm),
+            padding: const EdgeInsets.symmetric(
+              horizontal: OpenVtsSpacing.md,
+              vertical: OpenVtsSpacing.sm,
+            ),
+            textStyle: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.1,
+            ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
             ),
@@ -225,12 +231,9 @@ class _SupportHeader extends StatelessWidget {
           icon: isCreating
               ? const SizedBox.square(
                   dimension: 15,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: OpenVtsColors.white,
-                  ),
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Icon(Icons.add_rounded, size: 17),
+              : const Icon(Icons.add_rounded, size: 18),
           label: const Text('Create'),
         ),
       ],

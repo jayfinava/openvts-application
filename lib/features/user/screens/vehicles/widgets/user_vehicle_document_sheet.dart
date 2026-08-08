@@ -414,18 +414,20 @@ class _FilePickerField extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(OpenVtsSpacing.sm),
           decoration: BoxDecoration(
-            color: OpenVtsColors.surface,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
             border: Border.all(
-              color: showError ? OpenVtsColors.error : OpenVtsColors.border,
+              color: showError
+                  ? OpenVtsColors.error
+                  : Theme.of(context).colorScheme.outlineVariant,
             ),
           ),
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.attach_file_rounded,
                 size: 18,
-                color: OpenVtsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
               Expanded(
@@ -435,8 +437,8 @@ class _FilePickerField extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.meta.copyWith(
                     color: currentName.isEmpty
-                        ? OpenVtsColors.textTertiary
-                        : OpenVtsColors.textPrimary,
+                        ? Theme.of(context).colorScheme.onSurfaceVariant
+                        : Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -504,16 +506,17 @@ class _ExpiryField extends ConsumerWidget {
               vertical: OpenVtsSpacing.xs,
             ),
             decoration: BoxDecoration(
-              color: OpenVtsColors.surface,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: OpenVtsColors.border),
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant),
             ),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.event_outlined,
                   size: 18,
-                  color: OpenVtsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: OpenVtsSpacing.xs),
                 Expanded(
@@ -521,8 +524,8 @@ class _ExpiryField extends ConsumerWidget {
                     value == null ? 'No expiry' : _dateText(value, formatter),
                     style: OpenVtsTypography.meta.copyWith(
                       color: value == null
-                          ? OpenVtsColors.textTertiary
-                          : OpenVtsColors.textPrimary,
+                          ? Theme.of(context).colorScheme.onSurfaceVariant
+                          : Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -539,10 +542,10 @@ class _ExpiryField extends ConsumerWidget {
                     ),
                   )
                 else
-                  const Icon(
+                  Icon(
                     Icons.expand_more_rounded,
                     size: 18,
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
               ],
             ),
@@ -567,16 +570,16 @@ class _VisibilityToggle extends StatelessWidget {
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Row(
         children: [
           Icon(
             value ? Icons.visibility_outlined : Icons.visibility_off_outlined,
             size: 18,
-            color: OpenVtsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -586,13 +589,13 @@ class _VisibilityToggle extends StatelessWidget {
                 Text(
                   'Visible',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 Text(
                   value ? 'Shown in vehicle documents' : 'Hidden from users',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -621,8 +624,8 @@ class _TagChip extends StatelessWidget {
       onDeleted: onDelete,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       visualDensity: VisualDensity.compact,
-      side: const BorderSide(color: OpenVtsColors.border),
-      backgroundColor: OpenVtsColors.surface,
+      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+      backgroundColor: Theme.of(context).colorScheme.surface,
     );
   }
 }

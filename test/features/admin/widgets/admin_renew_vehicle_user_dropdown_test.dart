@@ -225,8 +225,7 @@ void main() {
           ),
         ),
       );
-      final subtitleFinder =
-          find.text('alice@example.com • +91 98765 43210');
+      final subtitleFinder = find.text('alice@example.com • +91 98765 43210');
       expect(subtitleFinder, findsOneWidget);
       final subtitleWidget = tester.widget<Text>(subtitleFinder);
       final color = subtitleWidget.style?.color;
