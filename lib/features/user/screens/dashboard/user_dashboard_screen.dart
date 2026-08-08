@@ -25,8 +25,47 @@ class UserDashboardScreen extends ConsumerStatefulWidget {
       _UserDashboardScreenState();
 }
 
-class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen> {
+class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen>
+    with WidgetsBindingObserver {
   int _refreshTick = 0;
+  bool _resumeRefreshPending = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _triggerResumeRefresh();
+    }
+  }
+
+  void _triggerResumeRefresh() {
+    final controller = ref.read(userDashboardControllerProvider.notifier);
+    // Skip if a refresh is already running (manual or a prior resume).
+    if (ref.read(userDashboardControllerProvider).isRefreshing) return;
+    if (_resumeRefreshPending) return;
+    _resumeRefreshPending = true;
+    controller.refresh().then((_) {
+      if (!mounted) return;
+      setState(() {
+        _resumeRefreshPending = false;
+        _refreshTick++;
+      });
+    }).catchError((_) {
+      if (!mounted) return;
+      setState(() => _resumeRefreshPending = false);
+    });
+  }
 
   Future<void> _refresh() async {
     await ref.read(userDashboardControllerProvider.notifier).refresh();
@@ -505,9 +544,12 @@ class _DashboardWidgetList extends StatelessWidget {
     return Column(
       children: [
         for (var index = 0; index < widgets.length; index++) ...[
-          buildUserDashboardWidget(
-            config: widgets[index],
-            refreshTick: refreshTick,
+          KeyedSubtree(
+            key: ValueKey(widgets[index].id),
+            child: buildUserDashboardWidget(
+              config: widgets[index],
+              refreshTick: refreshTick,
+            ),
           ),
           if (index != widgets.length - 1)
             const SizedBox(height: OpenVtsSpacing.sm),
