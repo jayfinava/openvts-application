@@ -9,6 +9,18 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
+  String get date => 'التاريخ';
+
+  @override
+  String get time => 'الوقت';
+
+  @override
+  String get direction => 'الاتجاه';
+
+  @override
+  String get units => 'الوحدات';
+
+  @override
   String get appTitle => 'OpenVTS';
 
   @override
@@ -566,4 +578,51 @@ class AppLocalizationsAr extends AppLocalizations {
   String reportsSourceLabel(Object source) {
     return 'Source: $source';
   }
+
+  @override
+  String get adminRole => 'المشرف';
+
+  @override
+  String get users => 'المستخدمون';
+
+  @override
+  String get vehicles => 'المركبات';
+
+  @override
+  String get drivers => 'السائقون';
+
+  @override
+  String get team => 'الفريق';
+
+  @override
+  String get inventory => 'المخزون';
+
+  @override
+  String get map => 'الخريطة';
+
+  @override
+  String get transactions => 'المعاملات';
+
+  @override
+  String get calendar => 'التقويم';
+
+  @override
+  String get logs => 'السجلات';
+
+  @override
+  String get plans => 'الخطط';
+
+  @override
+  String get roles => 'الأدوار';
+
+  @override
+  String get smtp => 'SMTP';
+
+  @override
+  String get settingsDescription =>
+      'إدارة الملف الشخصي والتوطين وإعدادات SMTP.';
+
+  @override
+  String get localizationDescription =>
+      'اللغة والتاريخ والوقت والوحدات وتركيز الخريطة الافتراضي.';
 }

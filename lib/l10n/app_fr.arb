@@ -1,5 +1,9 @@
 {
   "@@locale": "fr",
+  "date": "Date",
+  "time": "Heure",
+  "direction": "Direction",
+  "units": "Unités",
   "appTitle": "OpenVTS",
   "settings": "Paramètres",
   "localization": "Localisation",
@@ -115,5 +119,8 @@
   "reportsCatalogAlertsTitle": "Alertes",
   "reportsCatalogSensorTitle": "Capteur",
   "reportsCatalogLogsTitle": "Journaux du dispositif",
-  "reportsCatalogTimelineTitle": "Chronologie"
+  "reportsCatalogTimelineTitle": "Chronologie",
+  "adminRole": "Administrateur", "users": "Utilisateurs", "vehicles": "Véhicules", "drivers": "Conducteurs", "team": "Équipe", "inventory": "Inventaire", "map": "Carte", "transactions": "Transactions", "calendar": "Calendrier", "logs": "Journaux", "plans": "Forfaits", "roles": "Rôles", "smtp": "SMTP",
+  "settingsDescription": "Gérez le profil, la localisation et les paramètres SMTP.",
+  "localizationDescription": "Langue, date/heure, unités et centrage par défaut de la carte."
 }

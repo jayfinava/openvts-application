@@ -5,6 +5,7 @@ import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
@@ -93,6 +94,7 @@ class _SmtpSettingsSectionState extends ConsumerState<SmtpSettingsSection> {
   // -----------------------------------------------------------------
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     final form = _formKey.currentState;
     if (form == null || !form.validate()) return;
 
@@ -112,7 +114,7 @@ class _SmtpSettingsSectionState extends ConsumerState<SmtpSettingsSection> {
     final ok = await _controller.updateSmtp(request);
     if (!mounted) return;
     if (ok) {
-      ToastHelper.showSuccess('SMTP settings saved');
+      ToastHelper.showSuccess(l10n.settingsUpdated);
       await _controller.loadSmtp();
       if (mounted) {
         setState(() => _hydrated = false);
@@ -121,7 +123,7 @@ class _SmtpSettingsSectionState extends ConsumerState<SmtpSettingsSection> {
     } else {
       ToastHelper.showError(
         ref.read(adminSettingsControllerProvider).sectionErrorMessage ??
-            'Failed to save SMTP settings',
+            l10n.failedToUpdate,
       );
     }
   }
@@ -171,6 +173,7 @@ class _SmtpSettingsSectionState extends ConsumerState<SmtpSettingsSection> {
   @override
   Widget build(BuildContext context) {
     final state = widget.state;
+    final l10n = AppLocalizations.of(context);
 
     if (state.isLoadingSmtp && state.smtp == null) {
       return const OpenVtsCard(
@@ -185,7 +188,7 @@ class _SmtpSettingsSectionState extends ConsumerState<SmtpSettingsSection> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              state.sectionErrorMessage ?? 'Could not load SMTP settings.',
+              state.sectionErrorMessage ?? l10n.failedToUpdate,
               style: TextStyle(
                 fontFamily: OpenVtsTypography.primaryFontFamily,
                 fontSize: 12.5,
@@ -194,7 +197,7 @@ class _SmtpSettingsSectionState extends ConsumerState<SmtpSettingsSection> {
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
             OpenVtsButton(
-              label: 'Retry',
+              label: l10n.retry,
               variant: OpenVtsButtonVariant.secondary,
               height: 40,
               onPressed: _controller.loadSmtp,
@@ -211,11 +214,11 @@ class _SmtpSettingsSectionState extends ConsumerState<SmtpSettingsSection> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _SectionHeader(
-            title: 'SMTP',
+            title: l10n.smtp,
             subtitle: 'Configure outgoing mail delivery.',
             icon: Icons.mail_outline_rounded,
             trailing: IconButton(
-              tooltip: 'Refresh',
+              tooltip: l10n.refresh,
               onPressed: state.isLoadingSmtp ? null : _controller.loadSmtp,
               iconSize: 18,
               visualDensity: VisualDensity.compact,
@@ -372,7 +375,7 @@ class _SmtpSettingsSectionState extends ConsumerState<SmtpSettingsSection> {
             children: [
               Expanded(
                 child: OpenVtsButton(
-                  label: 'Save',
+                  label: l10n.save,
                   isLoading: state.isSavingSmtp,
                   height: 44,
                   onPressed: state.isSavingSmtp ? null : _save,

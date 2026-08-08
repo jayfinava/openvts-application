@@ -9,6 +9,18 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String get date => 'Data';
+
+  @override
+  String get time => 'Hora';
+
+  @override
+  String get direction => 'Direção';
+
+  @override
+  String get units => 'Unidades';
+
+  @override
   String get appTitle => 'OpenVTS';
 
   @override
@@ -568,4 +580,51 @@ class AppLocalizationsPt extends AppLocalizations {
   String reportsSourceLabel(Object source) {
     return 'Source: $source';
   }
+
+  @override
+  String get adminRole => 'Administrador';
+
+  @override
+  String get users => 'Usuários';
+
+  @override
+  String get vehicles => 'Veículos';
+
+  @override
+  String get drivers => 'Motoristas';
+
+  @override
+  String get team => 'Equipe';
+
+  @override
+  String get inventory => 'Inventário';
+
+  @override
+  String get map => 'Mapa';
+
+  @override
+  String get transactions => 'Transações';
+
+  @override
+  String get calendar => 'Calendário';
+
+  @override
+  String get logs => 'Registros';
+
+  @override
+  String get plans => 'Planos';
+
+  @override
+  String get roles => 'Funções';
+
+  @override
+  String get smtp => 'SMTP';
+
+  @override
+  String get settingsDescription =>
+      'Gerencie o perfil, a localização e as configurações SMTP.';
+
+  @override
+  String get localizationDescription =>
+      'Idioma, data/hora, unidades e foco padrão do mapa.';
 }

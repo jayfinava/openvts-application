@@ -1,5 +1,9 @@
 {
   "@@locale": "en",
+  "date": "Date",
+  "time": "Time",
+  "direction": "Direction",
+  "units": "Units",
   "appTitle": "OpenVTS",
   "settings": "Settings",
   "localization": "Localization",
@@ -197,5 +201,8 @@
   "reportsRowDetailsHideMap": "Hide Map",
   "reportsRowDetailsNoGps": "No GPS data available for this segment.",
   "reportsWarningBanner": "Warning: {message}",
-  "reportsSourceLabel": "Source: {source}"
+  "reportsSourceLabel": "Source: {source}",
+  "adminRole": "Admin", "users": "Users", "vehicles": "Vehicles", "drivers": "Drivers", "team": "Team", "inventory": "Inventory", "map": "Map", "transactions": "Transactions", "calendar": "Calendar", "logs": "Logs", "plans": "Plans", "roles": "Roles", "smtp": "SMTP",
+  "settingsDescription": "Manage profile, localization and SMTP settings.",
+  "localizationDescription": "Language, date/time, units, and default map focus."
 }

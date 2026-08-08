@@ -106,6 +106,30 @@ abstract class AppLocalizations {
     Locale('pt')
   ];
 
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get time;
+
+  /// No description provided for @direction.
+  ///
+  /// In en, this message translates to:
+  /// **'Direction'**
+  String get direction;
+
+  /// No description provided for @units.
+  ///
+  /// In en, this message translates to:
+  /// **'Units'**
+  String get units;
+
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
@@ -1149,6 +1173,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Source: {source}'**
   String reportsSourceLabel(Object source);
+
+  /// No description provided for @adminRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get adminRole;
+
+  /// No description provided for @users.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get users;
+
+  /// No description provided for @vehicles.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicles'**
+  String get vehicles;
+
+  /// No description provided for @drivers.
+  ///
+  /// In en, this message translates to:
+  /// **'Drivers'**
+  String get drivers;
+
+  /// No description provided for @team.
+  ///
+  /// In en, this message translates to:
+  /// **'Team'**
+  String get team;
+
+  /// No description provided for @inventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory'**
+  String get inventory;
+
+  /// No description provided for @map.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get map;
+
+  /// No description provided for @transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get transactions;
+
+  /// No description provided for @calendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get calendar;
+
+  /// No description provided for @logs.
+  ///
+  /// In en, this message translates to:
+  /// **'Logs'**
+  String get logs;
+
+  /// No description provided for @plans.
+  ///
+  /// In en, this message translates to:
+  /// **'Plans'**
+  String get plans;
+
+  /// No description provided for @roles.
+  ///
+  /// In en, this message translates to:
+  /// **'Roles'**
+  String get roles;
+
+  /// No description provided for @smtp.
+  ///
+  /// In en, this message translates to:
+  /// **'SMTP'**
+  String get smtp;
+
+  /// No description provided for @settingsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage profile, localization and SMTP settings.'**
+  String get settingsDescription;
+
+  /// No description provided for @localizationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Language, date/time, units, and default map focus.'**
+  String get localizationDescription;
 }
 
 class _AppLocalizationsDelegate

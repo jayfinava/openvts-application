@@ -7,6 +7,7 @@ import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/open_vts_card.dart';
 import '../../../../shared/widgets/open_vts_page_scaffold.dart';
 import '../../controllers/admin_providers.dart';
@@ -39,7 +40,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(adminSettingsControllerProvider);
     return OpenVtsPageScaffold(
-      title: 'Settings',
+      title: AppLocalizations.of(context).settings,
       headerMode: OpenVtsPageHeaderMode.closeable,
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.sm,
@@ -71,6 +72,7 @@ class _SettingsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return OpenVtsCard(
       padding: const EdgeInsets.symmetric(
@@ -103,7 +105,7 @@ class _SettingsHeader extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Settings',
+                    l10n.settings,
                     style: TextStyle(
                       fontFamily: OpenVtsTypography.primaryFontFamily,
                       fontSize: 15,
@@ -113,7 +115,7 @@ class _SettingsHeader extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Manage profile, localization and SMTP settings.',
+                    l10n.settingsDescription,
                     style: TextStyle(
                       fontFamily: OpenVtsTypography.primaryFontFamily,
                       fontSize: 11.5,
@@ -132,19 +134,24 @@ class _SettingsHeader extends StatelessWidget {
 }
 
 class _SectionItem {
-  const _SectionItem(this.section, this.label, this.icon);
+  const _SectionItem(this.section, this.icon);
   final AdminSettingsSection section;
-  final String label;
   final IconData icon;
 }
 
 const _kSections = <_SectionItem>[
-  _SectionItem(
-      AdminSettingsSection.profile, 'Profile', Icons.person_outline_rounded),
-  _SectionItem(
-      AdminSettingsSection.localization, 'Localization', Icons.public_rounded),
-  _SectionItem(AdminSettingsSection.smtp, 'SMTP', Icons.mail_outline_rounded),
+  _SectionItem(AdminSettingsSection.profile, Icons.person_outline_rounded),
+  _SectionItem(AdminSettingsSection.localization, Icons.public_rounded),
+  _SectionItem(AdminSettingsSection.smtp, Icons.mail_outline_rounded),
 ];
+
+String _sectionLabel(AppLocalizations l10n, AdminSettingsSection section) {
+  return switch (section) {
+    AdminSettingsSection.profile => l10n.profile,
+    AdminSettingsSection.localization => l10n.localization,
+    AdminSettingsSection.smtp => l10n.smtp,
+  };
+}
 
 class _SectionSelector extends ConsumerWidget {
   const _SectionSelector({required this.selected});
@@ -166,6 +173,7 @@ class _SectionSelector extends ConsumerWidget {
           final isSelected = item.section == selected;
           return _SectionChip(
             item: item,
+            label: _sectionLabel(AppLocalizations.of(context), item.section),
             isSelected: isSelected,
             onTap: () {
               ref
@@ -182,11 +190,13 @@ class _SectionSelector extends ConsumerWidget {
 class _SectionChip extends StatelessWidget {
   const _SectionChip({
     required this.item,
+    required this.label,
     required this.isSelected,
     required this.onTap,
   });
 
   final _SectionItem item;
+  final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -218,7 +228,7 @@ class _SectionChip extends StatelessWidget {
               Icon(item.icon, size: 14, color: fg),
               const SizedBox(width: 6),
               Text(
-                item.label,
+                label,
                 style: TextStyle(
                   fontFamily: OpenVtsTypography.primaryFontFamily,
                   fontSize: 12,

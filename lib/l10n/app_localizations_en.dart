@@ -9,6 +9,18 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get date => 'Date';
+
+  @override
+  String get time => 'Time';
+
+  @override
+  String get direction => 'Direction';
+
+  @override
+  String get units => 'Units';
+
+  @override
   String get appTitle => 'OpenVTS';
 
   @override
@@ -567,4 +579,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String reportsSourceLabel(Object source) {
     return 'Source: $source';
   }
+
+  @override
+  String get adminRole => 'Admin';
+
+  @override
+  String get users => 'Users';
+
+  @override
+  String get vehicles => 'Vehicles';
+
+  @override
+  String get drivers => 'Drivers';
+
+  @override
+  String get team => 'Team';
+
+  @override
+  String get inventory => 'Inventory';
+
+  @override
+  String get map => 'Map';
+
+  @override
+  String get transactions => 'Transactions';
+
+  @override
+  String get calendar => 'Calendar';
+
+  @override
+  String get logs => 'Logs';
+
+  @override
+  String get plans => 'Plans';
+
+  @override
+  String get roles => 'Roles';
+
+  @override
+  String get smtp => 'SMTP';
+
+  @override
+  String get settingsDescription =>
+      'Manage profile, localization and SMTP settings.';
+
+  @override
+  String get localizationDescription =>
+      'Language, date/time, units, and default map focus.';
 }

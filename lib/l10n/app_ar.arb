@@ -1,5 +1,9 @@
 {
   "@@locale": "ar",
+  "date": "التاريخ",
+  "time": "الوقت",
+  "direction": "الاتجاه",
+  "units": "الوحدات",
   "appTitle": "OpenVTS",
   "settings": "الإعدادات",
   "localization": "التوطين",
@@ -115,5 +119,8 @@
   "reportsCatalogAlertsTitle": "التنبيهات",
   "reportsCatalogSensorTitle": "المستشعر",
   "reportsCatalogLogsTitle": "سجلات الجهاز",
-  "reportsCatalogTimelineTitle": "الجدول الزمني"
+  "reportsCatalogTimelineTitle": "الجدول الزمني",
+  "adminRole": "المشرف", "users": "المستخدمون", "vehicles": "المركبات", "drivers": "السائقون", "team": "الفريق", "inventory": "المخزون", "map": "الخريطة", "transactions": "المعاملات", "calendar": "التقويم", "logs": "السجلات", "plans": "الخطط", "roles": "الأدوار", "smtp": "SMTP",
+  "settingsDescription": "إدارة الملف الشخصي والتوطين وإعدادات SMTP.",
+  "localizationDescription": "اللغة والتاريخ والوقت والوحدات وتركيز الخريطة الافتراضي."
 }

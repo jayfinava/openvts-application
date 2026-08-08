@@ -9,6 +9,18 @@ class AppLocalizationsHi extends AppLocalizations {
   AppLocalizationsHi([String locale = 'hi']) : super(locale);
 
   @override
+  String get date => 'दिनांक';
+
+  @override
+  String get time => 'समय';
+
+  @override
+  String get direction => 'दिशा';
+
+  @override
+  String get units => 'इकाइयाँ';
+
+  @override
   String get appTitle => 'OpenVTS';
 
   @override
@@ -567,4 +579,51 @@ class AppLocalizationsHi extends AppLocalizations {
   String reportsSourceLabel(Object source) {
     return 'Source: $source';
   }
+
+  @override
+  String get adminRole => 'प्रशासक';
+
+  @override
+  String get users => 'उपयोगकर्ता';
+
+  @override
+  String get vehicles => 'वाहन';
+
+  @override
+  String get drivers => 'चालक';
+
+  @override
+  String get team => 'टीम';
+
+  @override
+  String get inventory => 'इन्वेंटरी';
+
+  @override
+  String get map => 'मानचित्र';
+
+  @override
+  String get transactions => 'लेन-देन';
+
+  @override
+  String get calendar => 'कैलेंडर';
+
+  @override
+  String get logs => 'लॉग';
+
+  @override
+  String get plans => 'योजनाएँ';
+
+  @override
+  String get roles => 'भूमिकाएँ';
+
+  @override
+  String get smtp => 'SMTP';
+
+  @override
+  String get settingsDescription =>
+      'प्रोफ़ाइल, स्थानीयकरण और SMTP सेटिंग प्रबंधित करें।';
+
+  @override
+  String get localizationDescription =>
+      'भाषा, दिनांक/समय, इकाइयाँ और डिफ़ॉल्ट मानचित्र केंद्र।';
 }

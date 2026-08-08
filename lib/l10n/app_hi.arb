@@ -1,5 +1,9 @@
 {
   "@@locale": "hi",
+  "date": "दिनांक",
+  "time": "समय",
+  "direction": "दिशा",
+  "units": "इकाइयाँ",
   "appTitle": "OpenVTS",
   "settings": "सेटिंग्स",
   "localization": "स्थानीयकरण",
@@ -115,5 +119,8 @@
   "reportsCatalogAlertsTitle": "अलर्ट",
   "reportsCatalogSensorTitle": "सेंसर",
   "reportsCatalogLogsTitle": "डिवाइस लॉग",
-  "reportsCatalogTimelineTitle": "समयरेखा"
+  "reportsCatalogTimelineTitle": "समयरेखा",
+  "adminRole": "प्रशासक", "users": "उपयोगकर्ता", "vehicles": "वाहन", "drivers": "चालक", "team": "टीम", "inventory": "इन्वेंटरी", "map": "मानचित्र", "transactions": "लेन-देन", "calendar": "कैलेंडर", "logs": "लॉग", "plans": "योजनाएँ", "roles": "भूमिकाएँ", "smtp": "SMTP",
+  "settingsDescription": "प्रोफ़ाइल, स्थानीयकरण और SMTP सेटिंग प्रबंधित करें।",
+  "localizationDescription": "भाषा, दिनांक/समय, इकाइयाँ और डिफ़ॉल्ट मानचित्र केंद्र।"
 }
