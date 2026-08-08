@@ -123,27 +123,10 @@ class _UserWeeklyComparisonWidgetState
           onChanged: _changeVehicle,
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
-        SegmentedButton<_WeeklyMetric>(
-          segments: [
-            ButtonSegment(
-              value: _WeeklyMetric.drivenKm,
-              label:
-                  Text('Driven ${unitFormatter.distanceLabel.toUpperCase()}'),
-            ),
-            const ButtonSegment(
-              value: _WeeklyMetric.engineHours,
-              label: Text('Engine Hours'),
-            ),
-          ],
-          selected: {_metric},
-          showSelectedIcon: false,
-          style: ButtonStyle(
-            visualDensity: VisualDensity.compact,
-            textStyle: WidgetStatePropertyAll(
-              OpenVtsTypography.meta.copyWith(fontWeight: FontWeight.w800),
-            ),
-          ),
-          onSelectionChanged: _changeMetric,
+        _MetricToggle(
+          metric: _metric,
+          distanceLabel: unitFormatter.distanceLabel.toUpperCase(),
+          onChanged: _changeMetric,
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
         Row(
@@ -462,6 +445,70 @@ class _SkeletonBlock extends StatelessWidget {
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
+    );
+  }
+}
+
+// Renders the Driven / Engine Hours segmented toggle with explicit per-state
+// colors drawn from the active ColorScheme so both light and dark themes
+// produce readable labels with adequate contrast.
+class _MetricToggle extends StatelessWidget {
+  const _MetricToggle({
+    required this.metric,
+    required this.distanceLabel,
+    required this.onChanged,
+  });
+
+  final _WeeklyMetric metric;
+  final String distanceLabel;
+  final void Function(Set<_WeeklyMetric>) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final labelStyle =
+        OpenVtsTypography.meta.copyWith(fontWeight: FontWeight.w800);
+
+    return Row(
+      children: [
+        Expanded(
+          child: SegmentedButton<_WeeklyMetric>(
+            segments: [
+              ButtonSegment(
+                value: _WeeklyMetric.drivenKm,
+                label: Text('Driven $distanceLabel'),
+              ),
+              const ButtonSegment(
+                value: _WeeklyMetric.engineHours,
+                label: Text('Engine Hours'),
+              ),
+            ],
+            selected: {metric},
+            showSelectedIcon: false,
+            style: ButtonStyle(
+              visualDensity: VisualDensity.compact,
+              textStyle: WidgetStatePropertyAll(labelStyle),
+              // Selected segment: primary container background + matching foreground.
+              backgroundColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return cs.primary;
+                }
+                return cs.surface;
+              }),
+              foregroundColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return cs.onPrimary;
+                }
+                return cs.onSurfaceVariant;
+              }),
+              side: WidgetStatePropertyAll(
+                BorderSide(color: cs.outlineVariant),
+              ),
+            ),
+            onSelectionChanged: onChanged,
+          ),
+        ),
+      ],
     );
   }
 }
