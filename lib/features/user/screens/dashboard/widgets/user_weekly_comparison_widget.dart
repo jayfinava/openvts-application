@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -251,13 +250,34 @@ class _WeeklyComparisonChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // This Week: dominant series — onSurface at full opacity in dark mode so
+    // bars contrast against the card surface; primary in light mode.
+    final thisWeekColor = isDark ? cs.onSurface : cs.primary;
+
+    // Last Week: clearly distinct but subordinate — muted outline-level tone.
+    final lastWeekColor = cs.outlineVariant;
+
+    // Grid: very low emphasis — should support the chart, not compete.
+    final gridColor = cs.outlineVariant.withValues(alpha: 0.5);
+
+    // Pattern stripes drawn over Last Week bars use the card surface so the
+    // stripe gaps reveal the bar color underneath.
+    final patternColor = cs.surface;
+
     return SizedBox(
       height: 172,
       child: CustomPaint(
         painter: _WeeklyComparisonChartPainter(
           points,
           metric,
-          textColor: Theme.of(context).colorScheme.onSurfaceVariant,
+          thisWeekColor: thisWeekColor,
+          lastWeekColor: lastWeekColor,
+          gridColor: gridColor,
+          patternColor: patternColor,
+          textColor: cs.onSurfaceVariant,
         ),
         size: Size.infinite,
       ),
@@ -269,11 +289,19 @@ class _WeeklyComparisonChartPainter extends CustomPainter {
   _WeeklyComparisonChartPainter(
     this.points,
     this.metric, {
+    required this.thisWeekColor,
+    required this.lastWeekColor,
+    required this.gridColor,
+    required this.patternColor,
     required this.textColor,
   });
 
   final List<UserDashboardWeeklyPoint> points;
   final _WeeklyMetric metric;
+  final Color thisWeekColor;
+  final Color lastWeekColor;
+  final Color gridColor;
+  final Color patternColor;
   final Color textColor;
 
   @override
@@ -297,7 +325,7 @@ class _WeeklyComparisonChartPainter extends CustomPainter {
     final scale = math.max(maxValue, 1);
 
     final gridPaint = Paint()
-      ..color = OpenVtsColors.border
+      ..color = gridColor
       ..strokeWidth = 1;
     for (var line = 0; line < 4; line++) {
       final y = top + chartHeight * line / 3;
@@ -308,13 +336,13 @@ class _WeeklyComparisonChartPainter extends CustomPainter {
     final slot = chartWidth / points.length;
     final barWidth = math.min(14.0, slot * 0.25);
     final thisPaint = Paint()
-      ..color = OpenVtsColors.brandInk
+      ..color = thisWeekColor
       ..style = PaintingStyle.fill;
     final lastPaint = Paint()
-      ..color = OpenVtsColors.textTertiary
+      ..color = lastWeekColor
       ..style = PaintingStyle.fill;
     final dashPaint = Paint()
-      ..color = OpenVtsColors.surfaceElevated.withValues(alpha: 0.85)
+      ..color = patternColor.withValues(alpha: 0.85)
       ..strokeWidth = 1;
 
     for (var index = 0; index < points.length; index++) {
@@ -322,8 +350,14 @@ class _WeeklyComparisonChartPainter extends CustomPainter {
       final centerX = left + slot * index + slot / 2;
       final thisValue = metric.valueOf(point.thisWeek);
       final lastValue = metric.valueOf(point.lastWeek);
-      final thisHeight = chartHeight * (thisValue / scale).clamp(0.0, 1.0);
-      final lastHeight = chartHeight * (lastValue / scale).clamp(0.0, 1.0);
+      // Apply a 2 px minimum visible height for positive values so sub-pixel
+      // bars are not lost; zero values stay zero-height.
+      final thisHeight = thisValue > 0
+          ? math.max(2.0, chartHeight * (thisValue / scale).clamp(0.0, 1.0))
+          : 0.0;
+      final lastHeight = lastValue > 0
+          ? math.max(2.0, chartHeight * (lastValue / scale).clamp(0.0, 1.0))
+          : 0.0;
       final thisRect = RRect.fromRectAndRadius(
         Rect.fromLTWH(
           centerX - barWidth - 2,
@@ -380,9 +414,10 @@ class _WeeklyComparisonChartPainter extends CustomPainter {
   }
 
   void _drawLegend(Canvas canvas) {
-    _legendPainter('This week', OpenVtsColors.brandInk)
+    _legendPainter('This week', thisWeekColor)
         .paint(canvas, const Offset(4, 0));
-    _legendPainter('Last week', textColor).paint(canvas, const Offset(92, 0));
+    _legendPainter('Last week', lastWeekColor)
+        .paint(canvas, const Offset(92, 0));
   }
 
   TextPainter _legendPainter(String text, Color color) {
@@ -401,7 +436,13 @@ class _WeeklyComparisonChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _WeeklyComparisonChartPainter oldDelegate) {
-    return oldDelegate.points != points || oldDelegate.metric != metric;
+    return oldDelegate.points != points ||
+        oldDelegate.metric != metric ||
+        oldDelegate.thisWeekColor != thisWeekColor ||
+        oldDelegate.lastWeekColor != lastWeekColor ||
+        oldDelegate.gridColor != gridColor ||
+        oldDelegate.patternColor != patternColor ||
+        oldDelegate.textColor != textColor;
   }
 }
 
