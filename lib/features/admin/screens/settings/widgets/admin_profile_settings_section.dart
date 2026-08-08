@@ -10,13 +10,13 @@ import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../../shared/widgets/open_vts_role_home.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
-import '../../../../../core/utils/validators.dart';
 import '../../../../auth/controllers/auth_controller.dart';
 import '../../../controllers/admin_providers.dart';
 import '../../../controllers/admin_settings_controller.dart';
@@ -295,7 +295,7 @@ class _ProfileSettingsSectionState
   }
 
   Future<void> _openChangePasswordSheet() async {
-    final ok = await _showSheet<bool>(child: const _ChangePasswordSheet());
+    final ok = await _showSheet<bool>(child: const AdminChangePasswordSheet());
     if (ok == true && mounted) {
       ToastHelper.showSuccess('Password changed');
     }
@@ -2001,21 +2001,23 @@ class _DropdownField<T> extends StatelessWidget {
 // Change Password sheet
 // =====================================================================
 
-class _ChangePasswordSheet extends ConsumerStatefulWidget {
-  const _ChangePasswordSheet();
+class AdminChangePasswordSheet extends ConsumerStatefulWidget {
+  const AdminChangePasswordSheet({super.key});
 
   @override
-  ConsumerState<_ChangePasswordSheet> createState() =>
+  ConsumerState<AdminChangePasswordSheet> createState() =>
       _ChangePasswordSheetState();
 }
 
-class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
+class _ChangePasswordSheetState
+    extends ConsumerState<AdminChangePasswordSheet> {
   final _formKey = GlobalKey<FormState>();
   final _current = TextEditingController();
   final _next = TextEditingController();
   final _confirm = TextEditingController();
   bool _obscureCurrent = true;
   bool _obscureNext = true;
+  bool _obscureConfirm = true;
   bool _submitting = false;
 
   @override
@@ -2075,11 +2077,16 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
                     controller: _current,
                     obscureText: _obscureCurrent,
                     suffixIcon: IconButton(
+                      key: const ValueKey('current-password-visibility'),
+                      tooltip: _obscureCurrent
+                          ? 'Show current password'
+                          : 'Hide current password',
                       icon: Icon(
                         _obscureCurrent
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
                         size: 18,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       onPressed: () => setState(
                         () => _obscureCurrent = !_obscureCurrent,
@@ -2094,11 +2101,16 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
                     controller: _next,
                     obscureText: _obscureNext,
                     suffixIcon: IconButton(
+                      key: const ValueKey('new-password-visibility'),
+                      tooltip: _obscureNext
+                          ? 'Show new password'
+                          : 'Hide new password',
                       icon: Icon(
                         _obscureNext
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
                         size: 18,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       onPressed: () =>
                           setState(() => _obscureNext = !_obscureNext),
@@ -2115,7 +2127,23 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
                   OpenVtsTextField(
                     label: 'Confirm new password',
                     controller: _confirm,
-                    obscureText: _obscureNext,
+                    obscureText: _obscureConfirm,
+                    suffixIcon: IconButton(
+                      key: const ValueKey('confirm-password-visibility'),
+                      tooltip: _obscureConfirm
+                          ? 'Show confirm new password'
+                          : 'Hide confirm new password',
+                      icon: Icon(
+                        _obscureConfirm
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      onPressed: () => setState(
+                        () => _obscureConfirm = !_obscureConfirm,
+                      ),
+                    ),
                     validator: (v) {
                       if ((v ?? '') != _next.text) {
                         return 'Passwords do not match';
