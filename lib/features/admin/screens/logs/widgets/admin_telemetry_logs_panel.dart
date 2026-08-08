@@ -59,29 +59,22 @@ class _AdminTelemetryLogsPanelState
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
-        SizedBox(
-          height: 48,
-          child: DropdownButtonFormField<String?>(
-            initialValue: state.telemetryVehicleId,
-            decoration: const InputDecoration(
-              labelText: 'Vehicle',
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            ),
-            isExpanded: true,
-            items: [
-              const DropdownMenuItem<String?>(
-                  value: null, child: Text('All vehicles')),
-              ...state.options.vehicles.map((v) => DropdownMenuItem<String?>(
-                    value: v.id,
-                    child: Text(v.displayName, overflow: TextOverflow.ellipsis),
-                  )),
-            ],
-            onChanged: (v) {
-              controller.setTelemetryFilters(vehicleId: v, imeiSearch: '');
-              unawaited(controller.loadTelemetryLogs());
-            },
-          ),
+        DropdownButtonFormField<String?>(
+          initialValue: state.telemetryVehicleId,
+          decoration: const InputDecoration(labelText: 'Vehicle'),
+          isExpanded: true,
+          items: [
+            const DropdownMenuItem<String?>(
+                value: null, child: Text('All vehicles')),
+            ...state.options.vehicles.map((v) => DropdownMenuItem<String?>(
+                  value: v.id,
+                  child: Text(v.displayName, overflow: TextOverflow.ellipsis),
+                )),
+          ],
+          onChanged: (v) {
+            controller.setTelemetryFilters(vehicleId: v, imeiSearch: '');
+            unawaited(controller.loadTelemetryLogs());
+          },
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
         if ((state.telemetryVehicleId ?? '').isEmpty)
