@@ -75,7 +75,10 @@ class _AdminActivityLogsPanelState
                 )),
           ],
           onChanged: (v) {
-            controller.setActivityFilters(userId: v);
+            controller.setActivityFilters(
+              userId: v,
+              clearUserId: v == null,
+            );
             unawaited(controller.loadActivityLogs());
           },
         ),

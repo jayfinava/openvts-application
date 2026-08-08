@@ -68,9 +68,8 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
     try {
       final page = await _service.getActivityLogs(
         limit: 20,
-        q: state.activitySearch,
+        q: _effectiveActivityQuery(state),
         userId: state.activityUserId,
-        actionPrefix: state.activityActionPrefix,
         entity: state.activityEntity,
         from: _fmt(state.activityFrom),
         to: _fmt(state.activityTo),
@@ -100,9 +99,8 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
       final page = await _service.getActivityLogs(
         limit: 20,
         cursorId: state.activityNextCursorId,
-        q: state.activitySearch,
+        q: _effectiveActivityQuery(state),
         userId: state.activityUserId,
-        actionPrefix: state.activityActionPrefix,
         entity: state.activityEntity,
         from: _fmt(state.activityFrom),
         to: _fmt(state.activityTo),
@@ -269,11 +267,12 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
     String? search,
     DateTime? from,
     DateTime? to,
+    bool clearUserId = false,
     bool clearFrom = false,
     bool clearTo = false,
   }) {
     state = state.copyWith(
-      activityUserId: userId ?? state.activityUserId,
+      activityUserId: clearUserId ? null : userId ?? state.activityUserId,
       activityActionPrefix: actionPrefix ?? state.activityActionPrefix,
       activityEntity: entity ?? state.activityEntity,
       activitySearch: search ?? state.activitySearch,
@@ -343,8 +342,20 @@ class AdminLogsController extends StateNotifier<AdminLogsState> {
     return _service.getTelemetryDetail(id);
   }
 
-  String _fmt(DateTime? dt) {
-    if (dt == null) return '';
+  /// Manual search text takes priority; falls back to the selected chip keyword.
+  /// Both are sent as `q` (backend: action/entity contains match), never as
+  /// `actionPrefix` (backend: action startsWith) because chip values like
+  /// "AUTH" do not match the `ROLE.RESOURCE.OP` action format.
+  static String? _effectiveActivityQuery(AdminLogsState s) {
+    final manual = s.activitySearch.trim();
+    if (manual.isNotEmpty) return manual;
+    final chip = s.activityActionPrefix.trim();
+    if (chip.isNotEmpty) return chip;
+    return null;
+  }
+
+  String? _fmt(DateTime? dt) {
+    if (dt == null) return null;
     return dt.toUtc().toIso8601String();
   }
 
