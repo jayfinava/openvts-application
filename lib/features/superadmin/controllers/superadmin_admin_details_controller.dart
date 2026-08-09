@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_exception.dart';
+import '../models/superadmin_activity_filter.dart';
 import '../models/superadmin_admin_details_model.dart';
 import '../models/superadmin_admin_details_state.dart';
 import '../models/superadmin_administrator_model.dart';
@@ -26,6 +27,7 @@ class SuperadminAdminDetailsController
   final String _adminId;
   final SuperadminAdminDetailsService _detailsService;
   final SuperadminPaymentsService _paymentsService;
+  int _activityRequestGeneration = 0;
 
   /// Callback to sync status changes with the administrators list.
   final void Function(String adminId, bool isActive)? onAdminStatusChanged;
@@ -747,18 +749,29 @@ class SuperadminAdminDetailsController
   // -------------------------------------------------------------------------
 
   Future<void> loadActivity() async {
+    final generation = ++_activityRequestGeneration;
+    final search = state.activitySearch.trim();
+    final category = SuperadminActivityCategory.fromValue(
+      state.activityActionPrefix,
+    );
+    final from = serializeActivityDateTime(state.activityFrom);
+    final to = serializeActivityDateTime(state.activityTo);
     state = state.copyWith(
       isLoadingActivity: true,
+      isLoadingMoreActivity: false,
+      activityLogs: const <SuperadminAdminActivityLog>[],
+      activityNextCursorId: null,
+      activityHasMore: false,
       sectionErrorMessage: null,
     );
     try {
-      final page = await _detailsService.getAdminActivityLogs(
-        adminId: _adminId,
-        q: state.activitySearch,
-        actionPrefix: state.activityActionPrefix,
-        from: _formatDateForApi(state.activityFrom),
-        to: _formatDateForApi(state.activityTo),
+      final page = await _loadActivityPage(
+        search: search,
+        category: category,
+        from: from,
+        to: to,
       );
+      if (generation != _activityRequestGeneration) return;
       state = state.copyWith(
         activityLogs: page.items,
         activityNextCursorId: page.nextCursorId,
@@ -766,6 +779,7 @@ class SuperadminAdminDetailsController
         isLoadingActivity: false,
       );
     } catch (error) {
+      if (generation != _activityRequestGeneration) return;
       state = state.copyWith(
         isLoadingActivity: false,
         sectionErrorMessage: _errorMessage(error),
@@ -779,27 +793,36 @@ class SuperadminAdminDetailsController
         state.isLoadingActivity) {
       return;
     }
+    final generation = _activityRequestGeneration;
+    final search = state.activitySearch.trim();
+    final category = SuperadminActivityCategory.fromValue(
+      state.activityActionPrefix,
+    );
+    final from = serializeActivityDateTime(state.activityFrom);
+    final to = serializeActivityDateTime(state.activityTo);
+    final cursorId = state.activityNextCursorId;
     state = state.copyWith(isLoadingMoreActivity: true);
     try {
-      final page = await _detailsService.getAdminActivityLogs(
-        adminId: _adminId,
-        q: state.activitySearch,
-        actionPrefix: state.activityActionPrefix,
-        from: _formatDateForApi(state.activityFrom),
-        to: _formatDateForApi(state.activityTo),
-        cursorId: state.activityNextCursorId,
+      final page = await _loadActivityPage(
+        search: search,
+        category: category,
+        from: from,
+        to: to,
+        cursorId: cursorId,
       );
-      final combined = <SuperadminAdminActivityLog>[
-        ...state.activityLogs,
-        ...page.items,
-      ];
+      if (generation != _activityRequestGeneration) return;
+      final byId = <int, SuperadminAdminActivityLog>{
+        for (final log in state.activityLogs) log.id: log,
+        for (final log in page.items) log.id: log,
+      };
       state = state.copyWith(
-        activityLogs: combined,
+        activityLogs: byId.values.toList(growable: false),
         activityNextCursorId: page.nextCursorId,
         activityHasMore: page.hasMore,
         isLoadingMoreActivity: false,
       );
     } catch (error) {
+      if (generation != _activityRequestGeneration) return;
       state = state.copyWith(
         isLoadingMoreActivity: false,
         sectionErrorMessage: _errorMessage(error),
@@ -808,30 +831,62 @@ class SuperadminAdminDetailsController
   }
 
   void setActivitySearch(String value) {
-    state = state.copyWith(activitySearch: value);
+    state = state.copyWith(activitySearch: value.trim());
   }
 
   void setActivityActionPrefix(String value) {
     state = state.copyWith(activityActionPrefix: value);
   }
 
-  void setActivityDateRange({DateTime? from, DateTime? to}) {
+  bool setActivityDateRange({DateTime? from, DateTime? to}) {
+    if (from != null && to != null && from.isAfter(to)) return false;
     state = state.copyWith(
       activityFrom: from,
       activityTo: to,
     );
+    return true;
   }
 
   // -------------------------------------------------------------------------
   // Helpers
   // -------------------------------------------------------------------------
 
-  String? _formatDateForApi(DateTime? value) {
-    if (value == null) return null;
-    final y = value.year.toString().padLeft(4, '0');
-    final m = value.month.toString().padLeft(2, '0');
-    final d = value.day.toString().padLeft(2, '0');
-    return '$y-$m-$d';
+  Future<SuperadminAdminActivityLogPage> _loadActivityPage({
+    required String search,
+    required SuperadminActivityCategory category,
+    required String? from,
+    required String? to,
+    int? cursorId,
+  }) async {
+    var cursor = cursorId;
+    var hasMore = true;
+    final items = <SuperadminAdminActivityLog>[];
+
+    do {
+      final page = await _detailsService.getAdminActivityLogs(
+        adminId: _adminId,
+        q: search,
+        actionPrefix: category.backendPrefix,
+        from: from,
+        to: to,
+        cursorId: cursor,
+      );
+      items.addAll(
+        category.requiresClientAggregation
+            ? page.items.where((log) => category.matches(log.action))
+            : page.items,
+      );
+      cursor = page.nextCursorId;
+      hasMore = page.hasMore && cursor != null;
+    } while (
+        category.requiresClientAggregation && items.length < 20 && hasMore);
+
+    return SuperadminAdminActivityLogPage(
+      items: items,
+      nextCursorId: cursor,
+      hasMore: hasMore,
+      admin: null,
+    );
   }
 
   // Helper: sanitize and limit messages shown to users.

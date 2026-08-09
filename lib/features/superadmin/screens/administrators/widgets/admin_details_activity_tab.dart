@@ -14,8 +14,8 @@ import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_date_time_range_selector.dart';
 import '../../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../controllers/superadmin_providers.dart';
-import '../../../models/superadmin_admin_details_model.dart';
 import '../../../models/superadmin_activity_filter.dart';
+import '../../../models/superadmin_admin_details_model.dart';
 
 class AdminDetailsActivityTab extends ConsumerStatefulWidget {
   const AdminDetailsActivityTab({required this.adminId, super.key});
@@ -930,33 +930,33 @@ class _ActivityEmptyState extends StatelessWidget {
     String prefix,
   ) {
     switch (prefix) {
-      case 'AUTH':
+      case 'ADMIN.AUTH':
         return (
           icon: Icons.shield_outlined,
           title: 'No security activity found.',
           subtitle:
               'Login, password, or account status changes will appear here.',
         );
-      case 'SETTINGS':
+      case '@SETTINGS':
         return (
           icon: Icons.settings_outlined,
           title: 'No settings activity found.',
           subtitle:
               'Profile, company, or configuration changes will appear here.',
         );
-      case 'PAYMENT':
+      case '@BILLING':
         return (
           icon: Icons.account_balance_wallet_outlined,
           title: 'No billing activity found.',
           subtitle: 'Credit, payment, or billing updates will appear here.',
         );
-      case 'VEHICLE':
+      case 'ADMIN.VEHICLE':
         return (
           icon: Icons.directions_car_outlined,
           title: 'No vehicle activity found.',
           subtitle: 'Vehicle assignment or vehicle updates will appear here.',
         );
-      case 'DRIVER':
+      case 'ADMIN.DRIVER':
         return (
           icon: Icons.person_outline,
           title: 'No driver activity found.',
