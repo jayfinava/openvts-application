@@ -34,7 +34,7 @@ class UserTransactionsScreen extends ConsumerWidget {
     final currentUserId = ref.watch(
       authControllerProvider.select((authState) => authState.user?.id),
     );
-    final filteredTransactions = state.filteredTransactions;
+    final filteredTransactions = state.filteredTransactionsFor(currentUserId);
 
     return OpenVtsPageScaffold(
       title: 'Transactions',
@@ -89,7 +89,7 @@ class UserTransactionsScreen extends ConsumerWidget {
                       customTo: state.customTo,
                       selectedStatus: state.selectedStatus,
                       selectedPaymentMode: state.selectedPaymentMode,
-                      selectedPaymentType: state.selectedPaymentType,
+                      selectedDirection: state.selectedDirection,
                       hasActiveFilters: state.hasActiveFilters,
                       onSearchChanged: controller.setSearchQuery,
                       onRangePresetChanged: (preset) {
@@ -102,7 +102,7 @@ class UserTransactionsScreen extends ConsumerWidget {
                         unawaited(controller.setStatusFilter(status));
                       },
                       onPaymentModeChanged: controller.setPaymentModeFilter,
-                      onPaymentTypeChanged: controller.setPaymentTypeFilter,
+                      onDirectionChanged: controller.setDirectionFilter,
                       onClearFilters: () {
                         unawaited(controller.clearFilters());
                       },

@@ -18,14 +18,14 @@ class UserTransactionsFilterCard extends StatefulWidget {
     required this.customTo,
     required this.selectedStatus,
     required this.selectedPaymentMode,
-    required this.selectedPaymentType,
+    required this.selectedDirection,
     required this.hasActiveFilters,
     required this.onSearchChanged,
     required this.onRangePresetChanged,
     required this.onCustomRangeChanged,
     required this.onStatusChanged,
     required this.onPaymentModeChanged,
-    required this.onPaymentTypeChanged,
+    required this.onDirectionChanged,
     required this.onClearFilters,
     super.key,
   });
@@ -36,7 +36,7 @@ class UserTransactionsFilterCard extends StatefulWidget {
   final DateTime? customTo;
   final UserTransactionStatus? selectedStatus;
   final UserPaymentMode? selectedPaymentMode;
-  final String? selectedPaymentType;
+  final UserTransactionDirection? selectedDirection;
   final bool hasActiveFilters;
 
   final ValueChanged<String> onSearchChanged;
@@ -44,7 +44,7 @@ class UserTransactionsFilterCard extends StatefulWidget {
   final void Function(DateTime? from, DateTime? to) onCustomRangeChanged;
   final ValueChanged<UserTransactionStatus?> onStatusChanged;
   final ValueChanged<UserPaymentMode?> onPaymentModeChanged;
-  final ValueChanged<String?> onPaymentTypeChanged;
+  final ValueChanged<UserTransactionDirection?> onDirectionChanged;
   final VoidCallback onClearFilters;
 
   @override
@@ -69,10 +69,8 @@ class _UserTransactionsFilterCardState
 
   @override
   Widget build(BuildContext context) {
-    final selectedPaymentType =
-        widget.selectedPaymentType?.trim().toUpperCase();
-    final hasAdvancedSelection = widget.selectedPaymentMode != null ||
-        (selectedPaymentType != null && selectedPaymentType.isNotEmpty);
+    final hasAdvancedSelection =
+        widget.selectedPaymentMode != null || widget.selectedDirection != null;
     final showAdvancedFilters = _showAdvancedFilters || hasAdvancedSelection;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final headingColor = isDark ? Colors.white : OpenVtsColors.textPrimary;
@@ -310,18 +308,22 @@ class _UserTransactionsFilterCardState
               children: [
                 _CompactChoiceChip(
                   label: 'All',
-                  selected: selectedPaymentType == null,
-                  onTap: () => widget.onPaymentTypeChanged(null),
+                  selected: widget.selectedDirection == null,
+                  onTap: () => widget.onDirectionChanged(null),
                 ),
                 _CompactChoiceChip(
                   label: 'Credit',
-                  selected: selectedPaymentType == 'CREDIT',
-                  onTap: () => widget.onPaymentTypeChanged('CREDIT'),
+                  selected: widget.selectedDirection ==
+                      UserTransactionDirection.credit,
+                  onTap: () => widget
+                      .onDirectionChanged(UserTransactionDirection.credit),
                 ),
                 _CompactChoiceChip(
                   label: 'Debit',
-                  selected: selectedPaymentType == 'DEBIT',
-                  onTap: () => widget.onPaymentTypeChanged('DEBIT'),
+                  selected: widget.selectedDirection ==
+                      UserTransactionDirection.debit,
+                  onTap: () =>
+                      widget.onDirectionChanged(UserTransactionDirection.debit),
                 ),
               ],
             ),
