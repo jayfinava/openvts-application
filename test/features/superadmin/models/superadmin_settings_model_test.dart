@@ -353,4 +353,83 @@ void main() {
       expect(normalizeLangCode('ZH-Hans'), 'zh');
     });
   });
+
+  // -----------------------------------------------------------------------
+  // SuperadminUpdateProfileRequest.toJson — optional subdivision contract
+  // (Required FIX 2: '' vs null vs omitted)
+  // -----------------------------------------------------------------------
+  group('SuperadminUpdateProfileRequest.toJson — optional subdivisions', () {
+    test('empty stateCode is serialized as empty string, not omitted', () {
+      final json = const SuperadminUpdateProfileRequest(
+        name: 'Admin',
+        mobilePrefix: '+91',
+        mobileNumber: '9999999999',
+        addressLine: 'Addr',
+        countryCode: 'AX',
+        stateCode: '',
+        cityName: '',
+      ).toJson();
+      expect(json.containsKey('stateCode'), isTrue,
+          reason: 'stateCode="" must appear in JSON');
+      expect(json['stateCode'], '',
+          reason: 'stateCode must be empty string, not null');
+      expect(json.containsKey('cityName'), isTrue,
+          reason: 'cityName="" must appear in JSON');
+      expect(json['cityName'], '',
+          reason: 'cityName must be empty string, not null');
+    });
+
+    test('non-empty stateCode is serialized verbatim', () {
+      final json = const SuperadminUpdateProfileRequest(
+        name: 'Admin',
+        mobilePrefix: '+91',
+        mobileNumber: '9999999999',
+        addressLine: 'Addr',
+        countryCode: 'IN',
+        stateCode: 'MH',
+        cityName: 'Mumbai',
+      ).toJson();
+      expect(json['stateCode'], 'MH');
+      expect(json['cityName'], 'Mumbai');
+    });
+
+    test('null stateCode is omitted (not sent as null)', () {
+      final json = const SuperadminUpdateProfileRequest(
+        name: 'Admin',
+        mobilePrefix: '+91',
+        mobileNumber: '9999999999',
+        addressLine: 'Addr',
+        countryCode: 'IN',
+      ).toJson();
+      expect(json.containsKey('stateCode'), isFalse);
+      expect(json.containsKey('cityName'), isFalse);
+    });
+
+    test('empty cityName with non-empty stateCode sends both', () {
+      final json = const SuperadminUpdateProfileRequest(
+        name: 'Admin',
+        mobilePrefix: '+91',
+        mobileNumber: '9999999999',
+        addressLine: 'Addr',
+        countryCode: 'US',
+        stateCode: 'TX',
+        cityName: '',
+      ).toJson();
+      expect(json['stateCode'], 'TX');
+      expect(json['cityName'], '');
+    });
+
+    test('countryCode is always included when set', () {
+      final json = const SuperadminUpdateProfileRequest(
+        name: 'Admin',
+        mobilePrefix: '+91',
+        mobileNumber: '9999999999',
+        addressLine: 'Addr',
+        countryCode: 'AX',
+        stateCode: '',
+        cityName: '',
+      ).toJson();
+      expect(json['countryCode'], 'AX');
+    });
+  });
 }

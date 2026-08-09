@@ -614,6 +614,8 @@ class SuperadminUpdateProfileRequest {
     if (mobileNumber != null) json['mobileNumber'] = mobileNumber;
     if (addressLine != null) json['addressLine'] = addressLine;
     if (countryCode != null) json['countryCode'] = countryCode;
+    // stateCode and cityName are always included when set, even as empty strings.
+    // An empty string signals a genuinely absent subdivision (not null/omitted).
     if (stateCode != null) json['stateCode'] = stateCode;
     if (cityName != null) json['cityName'] = cityName;
     if (pincode != null) json['pincode'] = pincode;

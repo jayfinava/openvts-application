@@ -35,7 +35,10 @@ class SuperadminSettingsService {
     return SuperadminProfileSettings.fromJson(response.data);
   }
 
-  Future<SuperadminProfileSettings> updateProfile(
+  /// Sends PATCH and returns the canonical profile from a follow-up GET.
+  /// The GET is best-effort: if it fails, [refreshedProfile] is null and the
+  /// caller should apply an optimistic update instead of treating the save as failed.
+  Future<({SuperadminProfileSettings? refreshedProfile})> updateProfile(
     SuperadminUpdateProfileRequest request,
   ) async {
     await _apiClient.patch<void>(
@@ -44,7 +47,12 @@ class SuperadminSettingsService {
       options: _mutationOptions,
       parser: (_) {},
     );
-    return getProfile();
+    try {
+      final profile = await getProfile();
+      return (refreshedProfile: profile);
+    } catch (_) {
+      return (refreshedProfile: null);
+    }
   }
 
   Future<void> updateCompany(

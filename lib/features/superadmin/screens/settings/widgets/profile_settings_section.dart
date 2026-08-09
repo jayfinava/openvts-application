@@ -1496,16 +1496,32 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
   bool _isInitializingProfileLocation = true;
 
   // Set to the country code only when states were successfully loaded.
-  // Null = never loaded (or cleared). Distinguishes "loading" / "failed" from
-  // "loaded and genuinely empty".
+  // Null = never loaded (or cleared). Distinguishes loading/failed from
+  // loaded-and-genuinely-empty.
   String? _statesLoadedForCountry;
 
   // Set to the state code only when cities were successfully loaded.
   String? _citiesLoadedForState;
 
+  // Set when the corresponding load request threw an error (not just empty).
+  bool _statesLoadFailed = false;
+  bool _citiesLoadFailed = false;
+
+  // True once the user manually changes Country or State.
+  // Prevents the saved profile city from being reinjected into a new location.
+  bool _userChangedLocation = false;
+
   bool get _hasStates => _statesLoadedForCountry != null && _states.isNotEmpty;
 
   bool get _hasCities => _citiesLoadedForState != null && _cities.isNotEmpty;
+
+  // True when states were loaded successfully but the country has none.
+  bool get _statesNotApplicable =>
+      _statesLoadedForCountry != null && _states.isEmpty;
+
+  // True when cities were loaded successfully but the state has none.
+  bool get _citiesNotApplicable =>
+      _citiesLoadedForState != null && _cities.isEmpty;
 
   String? _initialCityName;
 
@@ -1581,21 +1597,36 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       _loadingStates = true;
       _states = [];
       _statesLoadedForCountry = null;
+      _statesLoadFailed = false;
       _citiesLoadedForState = null;
+      _citiesLoadFailed = false;
     });
     try {
       final states = await ref
           .read(superadminAdministratorsControllerProvider.notifier)
           .getStates(countryCode);
       if (!mounted) return;
+      // If the current stateCode is not in the newly loaded list, clear it.
+      final stateStillValid =
+          _stateCode != null && states.any((s) => s.code == _stateCode);
       setState(() {
         _states = states;
         _loadingStates = false;
         _statesLoadedForCountry = countryCode;
+        if (!stateStillValid) {
+          _stateCode = null;
+          _cityName = null;
+          _cities = [];
+          _citiesLoadedForState = null;
+          _citiesLoadFailed = false;
+        }
       });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _loadingStates = false);
+      setState(() {
+        _loadingStates = false;
+        _statesLoadFailed = true;
+      });
     }
   }
 
@@ -1604,6 +1635,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       _loadingCities = true;
       _cities = [];
       _citiesLoadedForState = null;
+      _citiesLoadFailed = false;
     });
     try {
       final cities = await ref
@@ -1616,10 +1648,13 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         _citiesLoadedForState = stateCode;
       });
 
-      // Try to match saved city name against the loaded list
-      SuperadminCityOption? matchedOption;
-
-      if (_initialCityName != null && _initialCityName!.isNotEmpty) {
+      // Only restore the saved profile city during initial hydration and when
+      // the user has not manually changed Country or State since the sheet opened.
+      if (!_userChangedLocation &&
+          _isInitializingProfileLocation &&
+          _initialCityName != null &&
+          _initialCityName!.isNotEmpty) {
+        SuperadminCityOption? matchedOption;
         try {
           matchedOption = _cities.firstWhere(
             (c) => c.name.toLowerCase() == _initialCityName!.toLowerCase(),
@@ -1627,41 +1662,40 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         } catch (_) {
           matchedOption = null;
         }
+
+        if (!mounted) return;
+        if (matchedOption != null) {
+          setState(() => _cityName = matchedOption!.name);
+        } else {
+          // Not found in list — inject synthetic option so dropdown shows saved city
+          setState(() {
+            _cityName = _initialCityName;
+            _cities = [
+              SuperadminCityOption(
+                name: _initialCityName!,
+                countryCode: _countryCode ?? '',
+                stateCode: _stateCode ?? '',
+              ),
+              ..._cities,
+            ];
+          });
+        }
       }
 
-      if (!mounted) return;
-      if (matchedOption != null) {
-        setState(() {
-          _cityName = matchedOption!.name;
-        });
-      } else if (_initialCityName != null && _initialCityName!.isNotEmpty) {
-        // Not found in list — inject synthetic option so dropdown shows saved city
-        setState(() {
-          _cityName = _initialCityName;
-          _cities = [
-            SuperadminCityOption(
-              name: _initialCityName!,
-              countryCode: _countryCode ?? '',
-              stateCode: _stateCode ?? '',
-            ),
-            ..._cities,
-          ];
-        });
-      }
-
-      // Mark initialization as complete
       if (!mounted) return;
       setState(() => _isInitializingProfileLocation = false);
     } catch (_) {
       if (!mounted) return;
       setState(() {
         _loadingCities = false;
+        _citiesLoadFailed = true;
         _isInitializingProfileLocation = false;
       });
     }
   }
 
   Future<void> _submit() async {
+    if (_submitting) return;
     if (!_formKey.currentState!.validate()) return;
 
     // Validate backend-required dropdown fields before submitting.
@@ -1674,8 +1708,14 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       missingField = 'Address is required';
     } else if (_countryCode == null) {
       missingField = 'Country is required';
+    } else if (_statesLoadFailed) {
+      // Cannot determine whether State is applicable — block save.
+      missingField = 'State options failed to load. Please retry.';
     } else if (_hasStates && _stateCode == null) {
       missingField = 'State is required';
+    } else if (_hasStates && _citiesLoadFailed) {
+      // Cannot determine whether City is applicable — block save.
+      missingField = 'City options failed to load. Please retry.';
     } else if (_hasCities && (_cityName == null || _cityName!.trim().isEmpty)) {
       missingField = 'City is required';
     }
@@ -1685,9 +1725,20 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       return;
     }
 
-    // Use empty string for genuinely unavailable subdivisions per backend contract.
-    final stateValue = _hasStates ? (_stateCode ?? '') : '';
-    final cityValue = _hasCities ? (_cityName ?? '') : '';
+    // For genuinely no-state/no-city countries, send '' per backend contract.
+    // '' tells the backend to store an empty subdivision, not null.
+    final String stateValue;
+    final String cityValue;
+    if (_statesNotApplicable) {
+      stateValue = '';
+      cityValue = '';
+    } else if (_citiesNotApplicable) {
+      stateValue = _stateCode ?? '';
+      cityValue = '';
+    } else {
+      stateValue = _stateCode ?? '';
+      cityValue = _cityName ?? '';
+    }
 
     setState(() => _submitting = true);
     final controller = ref.read(superadminSettingsControllerProvider.notifier);
@@ -1699,8 +1750,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         mobileNumber: _mobile.text.trim(),
         addressLine: _addressLine.text.trim(),
         countryCode: _countryCode,
-        stateCode: stateValue.isEmpty ? null : stateValue,
-        cityName: cityValue.isEmpty ? null : cityValue,
+        stateCode: stateValue,
+        cityName: cityValue,
         pincode: _pincode.text.trim().isEmpty ? null : _pincode.text.trim(),
       ),
     );
@@ -1823,13 +1874,15 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                       setState(() {
                         _countryCode = v;
                         _stateCode = null;
-                        if (!_isInitializingProfileLocation) {
-                          _cityName = null;
-                        }
+                        _cityName = null;
                         _states = [];
                         _cities = [];
                         _statesLoadedForCountry = null;
+                        _statesLoadFailed = false;
                         _citiesLoadedForState = null;
+                        _citiesLoadFailed = false;
+                        _isInitializingProfileLocation = false;
+                        _userChangedLocation = true;
                       });
                       if (v != null) unawaited(_loadStates(v));
                     },
@@ -1842,9 +1895,11 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     busy: _loadingStates,
                     hint: _loadingStates
                         ? 'Loading…'
-                        : (_statesLoadedForCountry != null && !_hasStates)
-                            ? 'Not applicable'
-                            : 'Select',
+                        : _statesLoadFailed
+                            ? 'Failed to load — retry'
+                            : _statesNotApplicable
+                                ? 'Not applicable'
+                                : 'Select',
                     items: _states
                         .map(
                           (s) => DropdownMenuItem(
@@ -1856,11 +1911,12 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     onChanged: (v) {
                       setState(() {
                         _stateCode = v;
-                        if (!_isInitializingProfileLocation) {
-                          _cityName = null;
-                        }
+                        _cityName = null;
                         _cities = [];
                         _citiesLoadedForState = null;
+                        _citiesLoadFailed = false;
+                        _isInitializingProfileLocation = false;
+                        _userChangedLocation = true;
                       });
                       if (v != null && _countryCode != null) {
                         unawaited(_loadCities(_countryCode!, v));
@@ -1875,11 +1931,13 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     busy: _loadingCities,
                     hint: _loadingCities
                         ? 'Loading…'
-                        : (_citiesLoadedForState != null && !_hasCities)
-                            ? 'Not applicable'
-                            : (_hasStates && _stateCode != null)
-                                ? 'Select'
-                                : 'Not applicable',
+                        : _citiesLoadFailed
+                            ? 'Failed to load — retry'
+                            : _citiesNotApplicable
+                                ? 'Not applicable'
+                                : (_hasStates && _stateCode != null)
+                                    ? 'Select'
+                                    : 'Not applicable',
                     items: _cities
                         .map(
                           (c) => DropdownMenuItem(

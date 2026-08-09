@@ -90,16 +90,55 @@ class SuperadminSettingsController
   Future<bool> updateProfile(SuperadminUpdateProfileRequest request) async {
     state = state.copyWith(isSavingProfile: true, sectionErrorMessage: null);
     try {
-      final profile = await _service.updateProfile(request);
-      state = state.copyWith(profile: profile, isSavingProfile: false);
+      final result = await _service.updateProfile(request);
+      final canonical = result.refreshedProfile;
+      if (canonical != null) {
+        state = state.copyWith(profile: canonical, isSavingProfile: false);
+      } else {
+        // PATCH succeeded but refresh failed — apply optimistic update.
+        final optimistic = _applyRequestToProfile(state.profile, request);
+        state = state.copyWith(profile: optimistic, isSavingProfile: false);
+      }
       return true;
     } catch (error) {
+      // Only reaches here if the PATCH itself failed.
       state = state.copyWith(
         isSavingProfile: false,
         sectionErrorMessage: _toErrorMessage(error),
       );
       return false;
     }
+  }
+
+  /// Builds an optimistic profile from the submitted request fields, keeping
+  /// existing fields that were not part of the request unchanged.
+  SuperadminProfileSettings? _applyRequestToProfile(
+    SuperadminProfileSettings? current,
+    SuperadminUpdateProfileRequest request,
+  ) {
+    if (current == null) return null;
+    final base = current.address ?? const SuperadminAddressSettings();
+    // Use explicit field map so that intentional empty strings (no subdivision)
+    // are written through rather than falling back to the old value.
+    final address = SuperadminAddressSettings(
+      id: base.id,
+      addressLine: request.addressLine ?? base.addressLine,
+      countryCode: request.countryCode ?? base.countryCode,
+      stateCode: request.stateCode ?? base.stateCode,
+      cityName: request.cityName ?? base.cityName,
+      cityId: request.cityName ?? base.cityId,
+      cityCode: base.cityCode,
+      pincode: request.pincode ?? base.pincode,
+      fullAddress: base.fullAddress,
+    );
+    return current.copyWith(
+      name: request.name ?? current.name,
+      email: request.email ?? current.email,
+      mobilePrefix: request.mobilePrefix ?? current.mobilePrefix,
+      mobileNumber: request.mobileNumber ?? current.mobileNumber,
+      address: address,
+      cityName: request.cityName ?? current.cityName,
+    );
   }
 
   Future<bool> updateCompany(SuperadminUpdateCompanyRequest request) async {
