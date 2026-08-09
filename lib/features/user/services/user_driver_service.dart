@@ -121,6 +121,7 @@ class UserDriverService {
     final id = _requireId(driverId, 'driverId');
     await _apiClient.post<void>(
       ApiEndpoints.user.driverUnassignVehicle(id),
+      data: <String, dynamic>{},
       options: _mutationOptions,
       parser: (_) {},
     );

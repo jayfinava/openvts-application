@@ -91,7 +91,6 @@ class RoutePaths {
   static const userPoiEditor = '/user/landmarks-studio/pois/editor';
   static const userRouteEditor = '/user/landmarks-studio/routes/editor';
   static const userTrackLinks = '/user/track-links';
-  static const userRouteOptimisation = '/user/route-optimisation';
   static const userSupport = '/user/support';
   static const userSupportCreate = '/user/support/create';
   static const userTransactions = '/user/transactions';

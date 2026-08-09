@@ -74,6 +74,11 @@ class _LogCard extends ConsumerWidget {
     final title = _activityLabel(log.activity);
     final vehicle = _vehicleLabel(log.vehicle);
     final actor = log.actorName.trim().isEmpty ? '-' : log.actorName.trim();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor =
+        isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary;
+    final secondaryColor =
+        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
 
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
@@ -84,14 +89,16 @@ class _LogCard extends ConsumerWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: OpenVtsColors.surface,
+              color: isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: OpenVtsColors.border),
+              border: Border.all(
+                color: isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
+              ),
             ),
             child: Icon(
               _activityIcon(log.activity),
               size: 17,
-              color: OpenVtsColors.textSecondary,
+              color: secondaryColor,
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -104,7 +111,7 @@ class _LogCard extends ConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: primaryColor,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -112,7 +119,7 @@ class _LogCard extends ConsumerWidget {
                 Text(
                   _message(log),
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: secondaryColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -152,20 +159,24 @@ class _MetaPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color =
+        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
+
     return Container(
       constraints: const BoxConstraints(maxWidth: 280),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: OpenVtsColors.textSecondary.withValues(alpha: 0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         border: Border.all(
-          color: OpenVtsColors.textSecondary.withValues(alpha: 0.16),
+          color: color.withValues(alpha: 0.16),
         ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: OpenVtsColors.textSecondary),
+          Icon(icon, size: 12, color: color),
           const SizedBox(width: 4),
           Flexible(
             child: Text(
@@ -173,7 +184,7 @@ class _MetaPill extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textSecondary,
+                color: color,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
               ),
@@ -192,6 +203,10 @@ class _LoadingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color =
+        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
+
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       child: Row(
@@ -205,7 +220,7 @@ class _LoadingCard extends StatelessWidget {
           Text(
             label,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: color,
               fontWeight: FontWeight.w700,
             ),
           ),

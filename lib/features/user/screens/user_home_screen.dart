@@ -44,11 +44,6 @@ class UserHomeScreen extends ConsumerWidget {
       route: RoutePaths.userTrackLinks,
     ),
     OpenVtsRoleHomeItem(
-      label: 'Route Optimisation',
-      icon: Icons.alt_route_outlined,
-      route: RoutePaths.userRouteOptimisation,
-    ),
-    OpenVtsRoleHomeItem(
       label: 'Support',
       icon: Icons.help_outline_rounded,
       route: RoutePaths.userSupport,

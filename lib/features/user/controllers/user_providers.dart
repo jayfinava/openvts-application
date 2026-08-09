@@ -14,7 +14,6 @@ import '../controllers/user_landmark_geometry_editor_controller.dart';
 import '../controllers/user_landmark_studio_controller.dart';
 import '../controllers/user_notification_settings_controller.dart';
 import '../controllers/user_pois_controller.dart';
-import '../controllers/user_route_optimisation_controller.dart';
 import '../controllers/user_report_controller.dart';
 import '../controllers/user_routes_controller.dart';
 import '../controllers/user_settings_controller.dart';
@@ -32,7 +31,6 @@ import '../models/user_drivers_state.dart';
 import '../models/user_landmark_model.dart';
 import '../models/user_landmark_state.dart';
 import '../models/user_notification_settings_state.dart';
-import '../models/user_route_optimisation_state.dart';
 import '../models/user_settings_state.dart';
 import '../models/user_share_track_link_state.dart';
 import '../models/user_subuser_model.dart';
@@ -46,7 +44,6 @@ import '../services/user_driver_service.dart';
 import '../services/user_landmark_service.dart';
 import '../services/user_notification_service.dart';
 import '../services/user_notification_settings_service.dart';
-import '../services/user_route_optimisation_service.dart';
 import '../services/user_report_service.dart';
 import '../services/user_settings_service.dart';
 import '../services/user_share_track_link_service.dart';
@@ -687,23 +684,6 @@ final userLandmarkBulkJobControllerProvider = StateNotifierProvider.autoDispose<
     UserLandmarkBulkJobController, UserLandmarkBulkJobState>((ref) {
   return UserLandmarkBulkJobController(
     service: ref.watch(userLandmarkServiceProvider),
-  );
-});
-
-// ---------------------------------------------------------------------------
-// Route Optimisation
-// ---------------------------------------------------------------------------
-
-final userRouteOptimisationServiceProvider =
-    Provider<UserRouteOptimisationService>((ref) {
-  return UserRouteOptimisationService(ref.watch(userLandmarkServiceProvider));
-});
-
-final userRouteOptimisationControllerProvider =
-    StateNotifierProvider.autoDispose<UserRouteOptimisationController,
-        UserRouteOptimisationState>((ref) {
-  return UserRouteOptimisationController(
-    service: ref.watch(userRouteOptimisationServiceProvider),
   );
 });
 

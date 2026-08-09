@@ -333,7 +333,6 @@ const _userStaticRoutes = <String>{
   RoutePaths.userPoiEditor,
   RoutePaths.userRouteEditor,
   RoutePaths.userTrackLinks,
-  RoutePaths.userRouteOptimisation,
   RoutePaths.userSupport,
   RoutePaths.userTransactions,
   RoutePaths.userAccounts,

@@ -68,7 +68,6 @@ import '../../features/user/screens/landmarks/user_landmark_studio_screen.dart';
 import '../../features/user/screens/map/user_map_screen.dart';
 import '../../features/user/screens/notification_settings/user_notification_settings_screen.dart';
 import '../../features/user/screens/notifications/user_notification_center_screen.dart';
-import '../../features/user/screens/route_optimisation/user_route_optimisation_screen.dart';
 import '../../features/user/models/user_report_model.dart';
 import '../../features/user/screens/reports/user_reports_catalog_screen.dart';
 import '../../features/user/screens/reports/user_report_workspace_screen.dart';
@@ -416,10 +415,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 initialVehicle: extra is UserVehicleListItem ? extra : null,
               );
             },
-          ),
-          GoRoute(
-            path: RoutePaths.userRouteOptimisation,
-            builder: (context, state) => const UserRouteOptimisationScreen(),
           ),
           GoRoute(
             path: RoutePaths.userTrackLinks,
