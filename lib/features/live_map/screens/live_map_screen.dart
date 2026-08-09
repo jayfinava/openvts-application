@@ -51,9 +51,22 @@ const double _vehicleMarkerTimestampDurationScale = 0.90;
 const double _vehicleMarkerSnapDistanceMeters = 5000;
 
 class LiveMapScreen extends ConsumerWidget {
-  const LiveMapScreen({super.key, required this.config});
+  const LiveMapScreen({
+    super.key,
+    required this.config,
+    this.onCreatePoiAt,
+    this.onCreateGeofenceAt,
+  });
 
   final LiveMapRoleConfig config;
+
+  /// Optional callback invoked when the user completes a 2-second hold on the
+  /// map and selects "Create POI". Only wired up for roles that support it.
+  final void Function(LatLng point)? onCreatePoiAt;
+
+  /// Optional callback invoked when the user completes a 2-second hold on the
+  /// map and selects "Create Geofence". Only wired up for roles that support it.
+  final void Function(LatLng point)? onCreateGeofenceAt;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -77,6 +90,8 @@ class LiveMapScreen extends ConsumerWidget {
               inactiveCount: telemetry.inactiveCount,
               alerts: liveState.alerts,
               isAlertsLoading: liveState.isAlertsLoading,
+              onCreatePoiAt: onCreatePoiAt,
+              onCreateGeofenceAt: onCreateGeofenceAt,
             ),
           );
         },
@@ -233,6 +248,8 @@ class _LiveMap extends ConsumerStatefulWidget {
     required this.inactiveCount,
     required this.alerts,
     required this.isAlertsLoading,
+    this.onCreatePoiAt,
+    this.onCreateGeofenceAt,
   });
 
   final List<VehicleSummary> vehicles;
@@ -242,6 +259,8 @@ class _LiveMap extends ConsumerStatefulWidget {
   final int inactiveCount;
   final List<AppNotification> alerts;
   final bool isAlertsLoading;
+  final void Function(LatLng point)? onCreatePoiAt;
+  final void Function(LatLng point)? onCreateGeofenceAt;
 
   @override
   ConsumerState<_LiveMap> createState() => _LiveMapState();
@@ -282,6 +301,12 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   late final ValueNotifier<DateTime> _vehicleMotionFrameNotifier =
       ValueNotifier<DateTime>(DateTime.now());
   _MapVisualSettings _visualSettings = _MapVisualSettings.defaults;
+
+  // --- 2-second hold-to-create state ---------------------------------------
+  Timer? _holdTimer;
+  LatLng? _holdPoint;
+  LatLng? _tempCreationMarker;
+  bool _creationMenuOpen = false;
 
   @override
   void initState() {
@@ -348,8 +373,87 @@ class _LiveMapState extends ConsumerState<_LiveMap>
     _scheduleFitVehicles();
   }
 
+  // --- 2-second hold-to-create logic ---------------------------------------
+
+  bool get _supportsMapCreate =>
+      widget.onCreatePoiAt != null || widget.onCreateGeofenceAt != null;
+
+  void _onMapPointerDown(PointerDownEvent event, LatLng point) {
+    if (!_supportsMapCreate) return;
+    if (_creationMenuOpen) return;
+    _cancelHold();
+    _holdPoint = point;
+    _holdTimer = Timer(const Duration(seconds: 2), () => _onHoldCompleted());
+  }
+
+  void _onMapPointerUp(PointerUpEvent event, LatLng point) {
+    _cancelHold();
+  }
+
+  void _onMapPointerCancel(PointerCancelEvent event, LatLng point) {
+    _cancelHold();
+  }
+
+  void _cancelHold() {
+    _holdTimer?.cancel();
+    _holdTimer = null;
+    _holdPoint = null;
+  }
+
+  void _onHoldCompleted() {
+    final point = _holdPoint;
+    if (point == null || !mounted) return;
+    _holdTimer = null;
+    _holdPoint = null;
+    setState(() {
+      _tempCreationMarker = point;
+      _creationMenuOpen = true;
+    });
+    _showCreationMenu(point);
+  }
+
+  Future<void> _showCreationMenu(LatLng point) async {
+    final canPoi = widget.onCreatePoiAt != null;
+    final canGeofence = widget.onCreateGeofenceAt != null;
+    if (!mounted) return;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return _MapCreationMenuSheet(
+          point: point,
+          canCreatePoi: canPoi,
+          canCreateGeofence: canGeofence,
+          onCreatePoi: canPoi
+              ? () {
+                  Navigator.of(ctx).pop();
+                  widget.onCreatePoiAt!(point);
+                }
+              : null,
+          onCreateGeofence: canGeofence
+              ? () {
+                  Navigator.of(ctx).pop();
+                  widget.onCreateGeofenceAt!(point);
+                }
+              : null,
+        );
+      },
+    );
+
+    if (mounted) {
+      setState(() {
+        _tempCreationMarker = null;
+        _creationMenuOpen = false;
+      });
+    }
+  }
+
+  // -------------------------------------------------------------------------
+
   @override
   void dispose() {
+    _holdTimer?.cancel();
     _replayTimer?.cancel();
     _historyCameraAnimationController
       ..removeListener(_handleHistoryCameraAnimationTick)
@@ -1453,7 +1557,16 @@ class _LiveMapState extends ConsumerState<_LiveMap>
               options: MapOptions(
                 initialCenter: center,
                 initialZoom: _currentZoom,
-                onPositionChanged: (position, _) {
+                onPointerDown: _supportsMapCreate ? _onMapPointerDown : null,
+                onPointerUp: _supportsMapCreate ? _onMapPointerUp : null,
+                onPointerCancel:
+                    _supportsMapCreate ? _onMapPointerCancel : null,
+                onPositionChanged: (position, hasGesture) {
+                  // Cancel any in-progress hold when the map is being dragged.
+                  if (hasGesture && _holdTimer != null) {
+                    _cancelHold();
+                  }
+
                   final nextZoom = position.zoom;
                   final nextRotation = position.rotation;
                   final shouldUpdateZoom =
@@ -1491,6 +1604,18 @@ class _LiveMapState extends ConsumerState<_LiveMap>
                 if (geofenceCircles.isNotEmpty)
                   CircleLayer(circles: geofenceCircles),
                 if (poiMarkers.isNotEmpty) MarkerLayer(markers: poiMarkers),
+                if (_tempCreationMarker != null)
+                  MarkerLayer(
+                    markers: [
+                      Marker(
+                        point: _tempCreationMarker!,
+                        width: 36,
+                        height: 48,
+                        alignment: Alignment.topCenter,
+                        child: const _CreationPinMarker(),
+                      ),
+                    ],
+                  ),
                 if (vehicleMarkerGroups.isNotEmpty)
                   ValueListenableBuilder<DateTime>(
                     valueListenable: _vehicleMotionFrameNotifier,
@@ -10430,6 +10555,101 @@ class _RippleRing extends StatelessWidget {
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Map hold-to-create widgets
+// ---------------------------------------------------------------------------
+
+/// Temporary pin shown at the held map coordinate while the creation menu
+/// is open. Intentionally distinct from saved POI markers.
+class _CreationPinMarker extends StatelessWidget {
+  const _CreationPinMarker();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(
+      Icons.location_pin,
+      size: 40,
+      color: Color(0xFF7C3AED),
+    );
+  }
+}
+
+/// Bottom sheet that lets the user choose between creating a POI or a Geofence
+/// at the point held on the map.
+class _MapCreationMenuSheet extends StatelessWidget {
+  const _MapCreationMenuSheet({
+    required this.point,
+    required this.canCreatePoi,
+    required this.canCreateGeofence,
+    this.onCreatePoi,
+    this.onCreateGeofence,
+  });
+
+  final LatLng point;
+  final bool canCreatePoi;
+  final bool canCreateGeofence;
+  final VoidCallback? onCreatePoi;
+  final VoidCallback? onCreateGeofence;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final coordText =
+        '${point.latitude.toStringAsFixed(6)}, ${point.longitude.toStringAsFixed(6)}';
+    return SafeArea(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: scheme.surface,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: scheme.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                coordText,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: scheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 8),
+            if (canCreatePoi)
+              ListTile(
+                leading: const Icon(Icons.place_outlined),
+                title: const Text('Create POI'),
+                onTap: onCreatePoi,
+              ),
+            if (canCreateGeofence)
+              ListTile(
+                leading: const Icon(Icons.crop_free_rounded),
+                title: const Text('Create Geofence'),
+                onTap: onCreateGeofence,
+              ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 
 class _MapVisualSettings {
   const _MapVisualSettings({

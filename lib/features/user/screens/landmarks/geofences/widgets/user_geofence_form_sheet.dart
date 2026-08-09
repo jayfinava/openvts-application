@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
@@ -58,6 +59,7 @@ class UserGeofenceFormSheet {
   static Future<UserGeofence?> show({
     required BuildContext context,
     UserGeofence? geofence,
+    LatLng? initialCenter,
   }) {
     return OpenVtsBottomSheet.show<UserGeofence>(
       context: context,
@@ -68,6 +70,7 @@ class UserGeofenceFormSheet {
       draggableChildBuilder: (context, scrollController) {
         return _UserGeofenceFormBody(
           existing: geofence,
+          initialCenter: initialCenter,
           scrollController: scrollController,
         );
       },
@@ -79,9 +82,11 @@ class _UserGeofenceFormBody extends ConsumerStatefulWidget {
   const _UserGeofenceFormBody({
     required this.existing,
     required this.scrollController,
+    this.initialCenter,
   });
 
   final UserGeofence? existing;
+  final LatLng? initialCenter;
   final ScrollController scrollController;
 
   @override
@@ -110,11 +115,25 @@ class _UserGeofenceFormBodyState extends ConsumerState<_UserGeofenceFormBody> {
     _type = _formTypeFromGeodata(existing?.geodata);
     _color = existing?.color ?? kUserLandmarkPalette.first;
     _active = existing?.isActive ?? true;
-    _geodata = existing?.geodata;
     _toleranceM = existing?.toleranceMeters ??
         (existing?.geodata is UserLineGeoData
             ? (existing!.geodata as UserLineGeoData).toleranceM
             : null);
+
+    if (existing != null) {
+      _geodata = existing.geodata;
+    } else if (widget.initialCenter != null) {
+      // Quick-create from the map: pre-populate a 200 m circle centred on the
+      // held coordinate so the user can save immediately or refine the shape.
+      _type = UserGeofenceFormType.circle;
+      _geodata = UserCircleGeoData(
+        center: UserGeoPoint(
+          lat: widget.initialCenter!.latitude,
+          lon: widget.initialCenter!.longitude,
+        ),
+        radiusM: 200,
+      );
+    }
   }
 
   @override
@@ -125,6 +144,7 @@ class _UserGeofenceFormBodyState extends ConsumerState<_UserGeofenceFormBody> {
   }
 
   Future<void> _openEditor() async {
+    final center = widget.initialCenter;
     final result = await Navigator.of(context).push<UserGeofenceEditorResult>(
       MaterialPageRoute<UserGeofenceEditorResult>(
         fullscreenDialog: true,
@@ -132,6 +152,7 @@ class _UserGeofenceFormBodyState extends ConsumerState<_UserGeofenceFormBody> {
           initialMode: _type.editorMode,
           initialGeodata: _geodata,
           initialToleranceM: _toleranceM,
+          initialCenter: _geodata == null ? center : null,
         ),
       ),
     );

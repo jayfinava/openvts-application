@@ -25,6 +25,7 @@ class UserPoiFormSheet {
   static Future<UserPoi?> show({
     required BuildContext context,
     UserPoi? poi,
+    UserGeoPoint? initialCoordinates,
   }) {
     return OpenVtsBottomSheet.show<UserPoi>(
       context: context,
@@ -35,6 +36,7 @@ class UserPoiFormSheet {
       draggableChildBuilder: (context, scrollController) {
         return _UserPoiFormBody(
           existing: poi,
+          initialCoordinates: initialCoordinates,
           scrollController: scrollController,
         );
       },
@@ -46,9 +48,11 @@ class _UserPoiFormBody extends ConsumerStatefulWidget {
   const _UserPoiFormBody({
     required this.existing,
     required this.scrollController,
+    this.initialCoordinates,
   });
 
   final UserPoi? existing;
+  final UserGeoPoint? initialCoordinates;
   final ScrollController scrollController;
 
   @override
@@ -85,7 +89,7 @@ class _UserPoiFormBodyState extends ConsumerState<_UserPoiFormBody> {
         ? existing!.color
         : kUserLandmarkPalette.first;
     _isActive = existing?.isActive ?? true;
-    _coordinates = existing?.coordinates;
+    _coordinates = existing?.coordinates ?? widget.initialCoordinates;
     _toleranceMeters = existing?.toleranceMeters;
     _tolerance = TextEditingController(
       text: _toleranceMeters == null || _toleranceMeters == 0
