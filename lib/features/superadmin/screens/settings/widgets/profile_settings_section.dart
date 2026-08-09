@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../../core/data/location_data.dart';
 import '../../../../../core/providers/core_providers.dart';
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
@@ -828,17 +829,108 @@ class _VerificationRow extends StatelessWidget {
 // Address card
 // =====================================================================
 
-class _AddressCard extends StatelessWidget {
+class _AddressCard extends ConsumerStatefulWidget {
   const _AddressCard({required this.profile});
   final SuperadminProfileSettings profile;
 
   @override
+  ConsumerState<_AddressCard> createState() => _AddressCardState();
+}
+
+class _AddressCardState extends ConsumerState<_AddressCard> {
+  List<SuperadminCountryOption> _countries = const [];
+  List<SuperadminStateOption> _states = const [];
+  List<SuperadminCityOption> _cities = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_loadLocationLabels());
+  }
+
+  @override
+  void didUpdateWidget(covariant _AddressCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final previous = oldWidget.profile.address;
+    final current = widget.profile.address;
+    if (previous?.countryCode != current?.countryCode ||
+        previous?.stateCode != current?.stateCode ||
+        previous?.cityDisplayName != current?.cityDisplayName) {
+      unawaited(_loadLocationLabels());
+    }
+  }
+
+  Future<void> _loadLocationLabels() async {
+    final address = widget.profile.address;
+    final countryCode = address?.countryCode?.trim() ?? '';
+    final stateCode = address?.stateCode?.trim() ?? '';
+    final controller =
+        ref.read(superadminAdministratorsControllerProvider.notifier);
+
+    try {
+      final countries = await controller.getCountries();
+      final states = countryCode.isEmpty
+          ? const <SuperadminStateOption>[]
+          : await controller.getStates(countryCode);
+      final cities = countryCode.isEmpty || stateCode.isEmpty
+          ? const <SuperadminCityOption>[]
+          : await controller.getCities(countryCode, stateCode);
+      if (!mounted || widget.profile.address != address) return;
+      setState(() {
+        _countries = countries;
+        _states = states;
+        _cities = cities;
+      });
+    } catch (_) {
+      // Keep the saved values visible if a location catalogue is unavailable.
+    }
+  }
+
+  String _countryLabel(String code) {
+    final normalized = code.trim().toUpperCase();
+    for (final option in _countries) {
+      if (option.code.toUpperCase() == normalized) return option.name;
+    }
+    for (final country in LocationData.countries) {
+      if (country['code']?.toUpperCase() == normalized) {
+        return country['name'] ?? code;
+      }
+    }
+    return code;
+  }
+
+  String _stateLabel(String code) {
+    final normalized = code.trim().toUpperCase();
+    for (final option in _states) {
+      if (option.code.toUpperCase() == normalized) return option.name;
+    }
+    final countryCode = widget.profile.address?.countryCode?.toUpperCase();
+    for (final state in LocationData.statesByCountry[countryCode] ?? const []) {
+      if (state['code']?.toUpperCase() == normalized) {
+        return state['name'] ?? code;
+      }
+    }
+    return code;
+  }
+
+  String _cityLabel(String value) {
+    final normalized = value.trim().toLowerCase();
+    for (final option in _cities) {
+      if (option.name.trim().toLowerCase() == normalized) return option.name;
+    }
+    return value;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final profile = widget.profile;
     final address = profile.address;
     final addressLine = address?.addressLine ?? '';
     final countryCode = address?.countryCode ?? '';
     final stateCode = address?.stateCode ?? '';
-    final city = address?.cityDisplayName ?? profile.cityName ?? '';
+    final country = _countryLabel(countryCode);
+    final state = _stateLabel(stateCode);
+    final city = _cityLabel(address?.cityDisplayName ?? profile.cityName ?? '');
     final pincode = address?.pincode ?? '';
 
     final hasAddress = addressLine.trim().isNotEmpty ||
@@ -861,13 +953,13 @@ class _AddressCard extends StatelessWidget {
         if (countryCode.trim().isNotEmpty)
           _InfoRow(
             label: 'Country',
-            value: countryCode,
+            value: country,
             icon: Icons.public_outlined,
           ),
         if (stateCode.trim().isNotEmpty)
           _InfoRow(
             label: 'State',
-            value: stateCode,
+            value: state,
             icon: Icons.map_outlined,
           ),
         if (city.trim().isNotEmpty)
@@ -1403,6 +1495,18 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
   bool _submitting = false;
   bool _isInitializingProfileLocation = true;
 
+  // Set to the country code only when states were successfully loaded.
+  // Null = never loaded (or cleared). Distinguishes "loading" / "failed" from
+  // "loaded and genuinely empty".
+  String? _statesLoadedForCountry;
+
+  // Set to the state code only when cities were successfully loaded.
+  String? _citiesLoadedForState;
+
+  bool get _hasStates => _statesLoadedForCountry != null && _states.isNotEmpty;
+
+  bool get _hasCities => _citiesLoadedForState != null && _cities.isNotEmpty;
+
   String? _initialCityName;
 
   @override
@@ -1476,6 +1580,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     setState(() {
       _loadingStates = true;
       _states = [];
+      _statesLoadedForCountry = null;
+      _citiesLoadedForState = null;
     });
     try {
       final states = await ref
@@ -1485,6 +1591,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       setState(() {
         _states = states;
         _loadingStates = false;
+        _statesLoadedForCountry = countryCode;
       });
     } catch (_) {
       if (!mounted) return;
@@ -1496,6 +1603,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     setState(() {
       _loadingCities = true;
       _cities = [];
+      _citiesLoadedForState = null;
     });
     try {
       final cities = await ref
@@ -1505,6 +1613,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       setState(() {
         _cities = cities;
         _loadingCities = false;
+        _citiesLoadedForState = stateCode;
       });
 
       // Try to match saved city name against the loaded list
@@ -1556,24 +1665,29 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     if (!_formKey.currentState!.validate()) return;
 
     // Validate backend-required dropdown fields before submitting.
-    final missingField = _mobilePrefix == null
-        ? 'Mobile prefix is required'
-        : _mobile.text.trim().isEmpty
-            ? 'Mobile number is required'
-            : _addressLine.text.trim().isEmpty
-                ? 'Address is required'
-                : _countryCode == null
-                    ? 'Country is required'
-                    : _stateCode == null
-                        ? 'State is required'
-                        : _cityName == null || _cityName!.trim().isEmpty
-                            ? 'City is required'
-                            : null;
+    String? missingField;
+    if (_mobilePrefix == null) {
+      missingField = 'Mobile prefix is required';
+    } else if (_mobile.text.trim().isEmpty) {
+      missingField = 'Mobile number is required';
+    } else if (_addressLine.text.trim().isEmpty) {
+      missingField = 'Address is required';
+    } else if (_countryCode == null) {
+      missingField = 'Country is required';
+    } else if (_hasStates && _stateCode == null) {
+      missingField = 'State is required';
+    } else if (_hasCities && (_cityName == null || _cityName!.trim().isEmpty)) {
+      missingField = 'City is required';
+    }
 
     if (missingField != null) {
       ToastHelper.showError(missingField);
       return;
     }
+
+    // Use empty string for genuinely unavailable subdivisions per backend contract.
+    final stateValue = _hasStates ? (_stateCode ?? '') : '';
+    final cityValue = _hasCities ? (_cityName ?? '') : '';
 
     setState(() => _submitting = true);
     final controller = ref.read(superadminSettingsControllerProvider.notifier);
@@ -1585,8 +1699,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         mobileNumber: _mobile.text.trim(),
         addressLine: _addressLine.text.trim(),
         countryCode: _countryCode,
-        stateCode: _stateCode,
-        cityName: _cityName,
+        stateCode: stateValue.isEmpty ? null : stateValue,
+        cityName: cityValue.isEmpty ? null : cityValue,
         pincode: _pincode.text.trim().isEmpty ? null : _pincode.text.trim(),
       ),
     );
@@ -1714,6 +1828,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                         }
                         _states = [];
                         _cities = [];
+                        _statesLoadedForCountry = null;
+                        _citiesLoadedForState = null;
                       });
                       if (v != null) unawaited(_loadStates(v));
                     },
@@ -1721,9 +1837,14 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                   const SizedBox(height: OpenVtsSpacing.sm),
                   _DropdownField<String>(
                     label: 'State',
-                    value: _stateCode,
-                    enabled: !_loadingStates && _states.isNotEmpty,
+                    value: _hasStates ? _stateCode : null,
+                    enabled: _hasStates,
                     busy: _loadingStates,
+                    hint: _loadingStates
+                        ? 'Loading…'
+                        : (_statesLoadedForCountry != null && !_hasStates)
+                            ? 'Not applicable'
+                            : 'Select',
                     items: _states
                         .map(
                           (s) => DropdownMenuItem(
@@ -1739,6 +1860,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                           _cityName = null;
                         }
                         _cities = [];
+                        _citiesLoadedForState = null;
                       });
                       if (v != null && _countryCode != null) {
                         unawaited(_loadCities(_countryCode!, v));
@@ -1748,10 +1870,16 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                   const SizedBox(height: OpenVtsSpacing.sm),
                   _DropdownField<String>(
                     label: 'City',
-                    value: _cityName,
-                    enabled: !_loadingCities &&
-                        (_cities.isNotEmpty || _cityName != null),
+                    value: _hasCities ? _cityName : null,
+                    enabled: _hasCities,
                     busy: _loadingCities,
+                    hint: _loadingCities
+                        ? 'Loading…'
+                        : (_citiesLoadedForState != null && !_hasCities)
+                            ? 'Not applicable'
+                            : (_hasStates && _stateCode != null)
+                                ? 'Select'
+                                : 'Not applicable',
                     items: _cities
                         .map(
                           (c) => DropdownMenuItem(
@@ -1796,6 +1924,7 @@ class _DropdownField<T> extends StatelessWidget {
     required this.onChanged,
     this.enabled = true,
     this.busy = false,
+    this.hint = 'Select',
   });
 
   final String label;
@@ -1804,6 +1933,7 @@ class _DropdownField<T> extends StatelessWidget {
   final ValueChanged<T?> onChanged;
   final bool enabled;
   final bool busy;
+  final String hint;
 
   @override
   Widget build(BuildContext context) {
@@ -1882,7 +2012,7 @@ class _DropdownField<T> extends StatelessWidget {
                   onChanged: enabled ? onChanged : null,
                   items: safeItems,
                   hint: Text(
-                    'Select',
+                    hint,
                     style: TextStyle(
                       fontFamily: OpenVtsTypography.primaryFontFamily,
                       fontSize: 12.5,
