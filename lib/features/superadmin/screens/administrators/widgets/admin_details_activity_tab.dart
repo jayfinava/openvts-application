@@ -15,6 +15,7 @@ import '../../../../../shared/widgets/open_vts_date_time_range_selector.dart';
 import '../../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../controllers/superadmin_providers.dart';
 import '../../../models/superadmin_admin_details_model.dart';
+import '../../../models/superadmin_activity_filter.dart';
 
 class AdminDetailsActivityTab extends ConsumerStatefulWidget {
   const AdminDetailsActivityTab({required this.adminId, super.key});
@@ -32,12 +33,12 @@ class _AdminDetailsActivityTabState
   Timer? _searchDebounce;
 
   static const List<_ActionGroup> _groups = [
-    _ActionGroup('All', ''),
-    _ActionGroup('Security', 'AUTH'),
-    _ActionGroup('Settings', 'SETTINGS'),
-    _ActionGroup('Billing', 'PAYMENT'),
-    _ActionGroup('Vehicles', 'VEHICLE'),
-    _ActionGroup('Drivers', 'DRIVER'),
+    _ActionGroup('All', SuperadminActivityCategory.all),
+    _ActionGroup('Security', SuperadminActivityCategory.security),
+    _ActionGroup('Settings', SuperadminActivityCategory.settings),
+    _ActionGroup('Billing', SuperadminActivityCategory.billing),
+    _ActionGroup('Vehicles', SuperadminActivityCategory.vehicles),
+    _ActionGroup('Drivers', SuperadminActivityCategory.drivers),
   ];
 
   @override
@@ -78,6 +79,7 @@ class _AdminDetailsActivityTabState
   }
 
   void _onActionPrefixChanged(String prefix) {
+    _searchDebounce?.cancel();
     final controller = ref.read(
       superadminAdminDetailsControllerProvider(widget.adminId).notifier,
     );
@@ -97,14 +99,23 @@ class _AdminDetailsActivityTabState
       title: 'Activity date range',
     );
     if (result == null) return;
+    _searchDebounce?.cancel();
     final controller = ref.read(
       superadminAdminDetailsControllerProvider(widget.adminId).notifier,
     );
-    controller.setActivityDateRange(from: result.start, to: result.end);
+    final valid = controller.setActivityDateRange(
+      from: result.start,
+      to: result.end,
+    );
+    if (!valid) {
+      ToastHelper.showError('Start time must be before end time.');
+      return;
+    }
     controller.loadActivity();
   }
 
   void _onClearDateRange() {
+    _searchDebounce?.cancel();
     final controller = ref.read(
       superadminAdminDetailsControllerProvider(widget.adminId).notifier,
     );
@@ -113,6 +124,7 @@ class _AdminDetailsActivityTabState
   }
 
   void _onResetFilters() {
+    _searchDebounce?.cancel();
     final controller = ref.read(
       superadminAdminDetailsControllerProvider(widget.adminId).notifier,
     );
@@ -242,9 +254,10 @@ class _AdminDetailsActivityTabState
 }
 
 class _ActionGroup {
-  const _ActionGroup(this.label, this.prefix);
+  const _ActionGroup(this.label, this.category);
   final String label;
-  final String prefix;
+  final SuperadminActivityCategory category;
+  String get prefix => category.value;
 }
 
 // ---------------------------------------------------------------------------
