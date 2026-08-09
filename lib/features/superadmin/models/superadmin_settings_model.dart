@@ -155,20 +155,18 @@ class SuperadminAddressSettings {
   final String? countryCode;
   final String? stateCode;
   final String? cityName;
-  final int? cityId;
+  // Backend Address.cityId is a String field (stores the city name/value).
+  final String? cityId;
   final String? cityCode;
   final String? pincode;
   final String? fullAddress;
 
-  String? get cityValue => cityCode ?? cityId?.toString();
+  String? get cityValue => cityCode ?? cityId;
 
   String? get cityDisplayName {
-    final candidates = [
-      cityName,
-      if (cityName == null && (cityCode != null || cityId != null))
-        cityCode ?? cityId?.toString(),
-    ];
-    for (final candidate in candidates) {
+    // Resolution order per confirmed backend contract:
+    // cityName → city_name → city → string cityId → cityCode
+    for (final candidate in [cityName, cityId, cityCode]) {
       if (candidate != null && candidate.trim().isNotEmpty) {
         return candidate.trim();
       }
@@ -181,7 +179,7 @@ class SuperadminAddressSettings {
 
     String? cityName;
     String? cityCode;
-    int? cityId;
+    String? cityId;
 
     final priorityNames = const ['cityName', 'city_name'];
     for (final key in priorityNames) {
@@ -212,7 +210,8 @@ class SuperadminAddressSettings {
       }
     }
 
-    cityId = _firstInt(source, const ['cityId', 'city_id']);
+    // cityId is a String in the backend schema (stores city name/value).
+    cityId = _firstString(source, const ['cityId', 'city_id']);
 
     return SuperadminAddressSettings(
       id: _firstInt(source, const ['id', 'addressId']),
@@ -238,7 +237,7 @@ class SuperadminAddressSettings {
     String? countryCode,
     String? stateCode,
     String? cityName,
-    int? cityId,
+    String? cityId,
     String? cityCode,
     String? pincode,
     String? fullAddress,
@@ -524,12 +523,17 @@ class SuperadminProfileSettings {
             'cityName',
             'city_name',
             'city',
+            // backend Address.cityId is a String carrying the city name
+            'cityId',
+            'city_id',
           ]) ??
           _firstString(source, const [
             'cityName',
             'city_name',
             'cityname',
             'city',
+            'cityId',
+            'city_id',
           ]),
     );
   }
@@ -611,10 +615,7 @@ class SuperadminUpdateProfileRequest {
     if (addressLine != null) json['addressLine'] = addressLine;
     if (countryCode != null) json['countryCode'] = countryCode;
     if (stateCode != null) json['stateCode'] = stateCode;
-    if (cityName != null) {
-      json['city'] = cityName;
-      json['cityName'] = cityName;
-    }
+    if (cityName != null) json['cityName'] = cityName;
     if (pincode != null) json['pincode'] = pincode;
     return json;
   }

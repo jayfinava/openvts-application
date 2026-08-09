@@ -1554,16 +1554,36 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
+    // Validate backend-required dropdown fields before submitting.
+    final missingField = _mobilePrefix == null
+        ? 'Mobile prefix is required'
+        : _mobile.text.trim().isEmpty
+            ? 'Mobile number is required'
+            : _addressLine.text.trim().isEmpty
+                ? 'Address is required'
+                : _countryCode == null
+                    ? 'Country is required'
+                    : _stateCode == null
+                        ? 'State is required'
+                        : _cityName == null || _cityName!.trim().isEmpty
+                            ? 'City is required'
+                            : null;
+
+    if (missingField != null) {
+      ToastHelper.showError(missingField);
+      return;
+    }
+
     setState(() => _submitting = true);
     final controller = ref.read(superadminSettingsControllerProvider.notifier);
     final ok = await controller.updateProfile(
       SuperadminUpdateProfileRequest(
         name: _name.text.trim(),
-        email: _email.text.trim(),
+        email: _email.text.trim().isEmpty ? null : _email.text.trim(),
         mobilePrefix: _mobilePrefix,
-        mobileNumber: _mobile.text.trim().isEmpty ? null : _mobile.text.trim(),
-        addressLine:
-            _addressLine.text.trim().isEmpty ? null : _addressLine.text.trim(),
+        mobileNumber: _mobile.text.trim(),
+        addressLine: _addressLine.text.trim(),
         countryCode: _countryCode,
         stateCode: _stateCode,
         cityName: _cityName,
@@ -1624,7 +1644,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     keyboardType: TextInputType.emailAddress,
                     validator: (v) {
                       final t = (v ?? '').trim();
-                      if (t.isEmpty) return 'Email is required';
+                      if (t.isEmpty) return null;
                       if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(t)) {
                         return 'Enter a valid email';
                       }
@@ -1659,6 +1679,9 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                           label: 'Mobile',
                           controller: _mobile,
                           keyboardType: TextInputType.phone,
+                          validator: (v) => (v ?? '').trim().isEmpty
+                              ? 'Mobile number is required'
+                              : null,
                         ),
                       ),
                     ],
@@ -1667,6 +1690,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                   OpenVtsTextField(
                     label: 'Address',
                     controller: _addressLine,
+                    validator: (v) =>
+                        (v ?? '').trim().isEmpty ? 'Address is required' : null,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   _DropdownField<String>(
