@@ -6,6 +6,7 @@ import '../../../../../core/providers/app_preferences_provider.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
@@ -130,8 +131,9 @@ class _LocalizationSettingsSectionState
 
     final ok = await _controller.updateLocalization(request);
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
     if (ok) {
-      ToastHelper.showSuccess('Localization saved');
+      ToastHelper.showSuccess(l10n.localizationSaved);
 
       // Apply preferences immediately with saved request values (confirmed by successful API save).
       // This updates appLocalizationPreferencesProvider, which cascades to appDateFormatterProvider,
@@ -171,7 +173,7 @@ class _LocalizationSettingsSectionState
     } else {
       ToastHelper.showError(
         ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
-            'Failed to save localization',
+            l10n.failedToUpdate,
       );
     }
   }
@@ -195,6 +197,7 @@ class _LocalizationSettingsSectionState
   @override
   Widget build(BuildContext context) {
     final state = widget.state;
+    final l10n = AppLocalizations.of(context);
 
     if (state.isLoadingLocalization && state.localization == null) {
       return const OpenVtsCard(
@@ -209,7 +212,7 @@ class _LocalizationSettingsSectionState
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              state.sectionErrorMessage ?? 'Could not load localization.',
+              state.sectionErrorMessage ?? l10n.couldNotLoadLocalization,
               style: TextStyle(
                 fontFamily: OpenVtsTypography.primaryFontFamily,
                 fontSize: 12.5,
@@ -218,7 +221,7 @@ class _LocalizationSettingsSectionState
             ),
             const SizedBox(height: OpenVtsSpacing.sm),
             OpenVtsButton(
-              label: 'Retry',
+              label: l10n.retry,
               variant: OpenVtsButtonVariant.secondary,
               height: 40,
               onPressed: _controller.loadLocalization,
@@ -239,11 +242,11 @@ class _LocalizationSettingsSectionState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _SectionHeader(
-            title: 'Localization',
-            subtitle: 'Language, date/time, units, and default map focus.',
+            title: l10n.localization,
+            subtitle: l10n.localizationDescription,
             icon: Icons.public_rounded,
             trailing: IconButton(
-              tooltip: 'Refresh',
+              tooltip: l10n.refresh,
               onPressed: state.isLoadingLocalization
                   ? null
                   : _controller.loadLocalization,
@@ -264,8 +267,8 @@ class _LocalizationSettingsSectionState
           const SizedBox(height: OpenVtsSpacing.sm),
           _GroupedCard(
             icon: Icons.translate_rounded,
-            title: 'Language & Direction',
-            subtitle: 'Interface language and text direction.',
+            title: l10n.languageAndDirection,
+            subtitle: l10n.languageAndDirectionSubtitle,
             children: [
               _LanguageDropdown(
                 value: _language,
@@ -277,7 +280,7 @@ class _LocalizationSettingsSectionState
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               _LabeledRow(
-                label: 'Text direction',
+                label: l10n.textDirection,
                 child: _SegmentedControl<SuperadminLayoutDirection>(
                   value: _direction,
                   segments: const [
@@ -292,8 +295,8 @@ class _LocalizationSettingsSectionState
           const SizedBox(height: OpenVtsSpacing.sm),
           _GroupedCard(
             icon: Icons.event_note_rounded,
-            title: 'Date & Time',
-            subtitle: 'Date format, time style, and timezone.',
+            title: l10n.dateAndTime,
+            subtitle: l10n.dateAndTimeSubtitle,
             children: [
               _DateFormatDropdown(
                 value: _dateFormat,
@@ -305,7 +308,7 @@ class _LocalizationSettingsSectionState
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               _LabeledRow(
-                label: '24-hour time',
+                label: l10n.use24Hour,
                 trailing: Switch.adaptive(
                   value: _use24Hour,
                   onChanged: (v) => setState(() => _use24Hour = v),
@@ -325,11 +328,11 @@ class _LocalizationSettingsSectionState
           const SizedBox(height: OpenVtsSpacing.sm),
           _GroupedCard(
             icon: Icons.tune_rounded,
-            title: 'Units & Theme',
-            subtitle: 'Distance units and app appearance.',
+            title: l10n.unitsAndTheme,
+            subtitle: l10n.unitsAndThemeSubtitle,
             children: [
               _LabeledRow(
-                label: 'Units',
+                label: l10n.units,
                 child: _SegmentedControl<SuperadminUnits>(
                   value: _units,
                   segments: const [
@@ -341,13 +344,13 @@ class _LocalizationSettingsSectionState
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               _LabeledRow(
-                label: 'Theme',
+                label: l10n.theme,
                 child: _SegmentedControl<SuperadminTheme>(
                   value: _theme,
-                  segments: const [
-                    _Seg(value: SuperadminTheme.light, label: 'Light'),
-                    _Seg(value: SuperadminTheme.dark, label: 'Dark'),
-                    _Seg(value: SuperadminTheme.system, label: 'System'),
+                  segments: [
+                    _Seg(value: SuperadminTheme.light, label: l10n.light),
+                    _Seg(value: SuperadminTheme.dark, label: l10n.dark),
+                    _Seg(value: SuperadminTheme.system, label: l10n.system),
                   ],
                   onChanged: (v) => setState(() => _theme = v),
                 ),
@@ -357,8 +360,8 @@ class _LocalizationSettingsSectionState
           const SizedBox(height: OpenVtsSpacing.sm),
           _GroupedCard(
             icon: Icons.location_on_outlined,
-            title: 'Default Map Focus',
-            subtitle: 'Initial map center and zoom level.',
+            title: l10n.defaultMapFocus,
+            subtitle: l10n.defaultMapFocusSubtitle,
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -420,12 +423,15 @@ class _LocalizationSettingsSectionState
                 },
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
-              _PresetsRow(onPick: _applyPreset),
+              _PresetsRow(
+                label: l10n.quickPresets,
+                onPick: _applyPreset,
+              ),
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.md),
           OpenVtsButton(
-            label: 'Save changes',
+            label: l10n.saveChanges,
             isLoading: state.isSavingLocalization,
             height: 44,
             onPressed: state.isSavingLocalization ? null : _save,
@@ -614,6 +620,16 @@ class _PreviewTile extends StatelessWidget {
 // Dropdowns
 // =====================================================================
 
+// Only codes supported by AppLocalizations are renderable by Flutter.
+// pt-BR and pt-PT backend variants both map to the 'pt' Flutter locale.
+const Set<String> _kSupportedLangCodes = {'ar', 'en', 'es', 'fr', 'hi', 'pt'};
+
+String _normalizeLangCode(String code) {
+  final base = code.split('-').first.split('_').first.toLowerCase();
+  if (base == 'pt') return 'pt';
+  return base;
+}
+
 class _LanguageDropdown extends StatelessWidget {
   const _LanguageDropdown({
     required this.value,
@@ -627,17 +643,36 @@ class _LanguageDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasValue = options.any((o) => o.code == value);
+    final l10n = AppLocalizations.of(context);
+
+    // Build a deduplicated list of options whose normalized code is supported.
+    final seen = <String>{};
+    final filtered = <SuperadminLanguageOption>[];
+    for (final o in options) {
+      final normalized = _normalizeLangCode(o.code);
+      if (_kSupportedLangCodes.contains(normalized) && seen.add(normalized)) {
+        filtered
+            .add(SuperadminLanguageOption(code: normalized, label: o.label));
+      }
+    }
+
+    // Ensure the current value is representable; fall back to a placeholder entry.
+    final normalizedValue = _normalizeLangCode(value);
+    final hasValue = filtered.any((o) => o.code == normalizedValue);
+    final effectiveValue =
+        hasValue ? normalizedValue : (value.isEmpty ? null : value);
+
     final items = <DropdownMenuItem<String>>[
       if (!hasValue && value.isNotEmpty)
         DropdownMenuItem(value: value, child: Text(value.toUpperCase())),
-      for (final o in options)
+      for (final o in filtered)
         DropdownMenuItem(value: o.code, child: Text(o.label)),
     ];
+
     return _DropdownShell(
-      label: 'Language',
+      label: l10n.language,
       child: DropdownButton<String>(
-        value: value.isEmpty ? null : value,
+        value: effectiveValue,
         isExpanded: true,
         icon: Icon(
           Icons.expand_more_rounded,
@@ -677,8 +712,9 @@ class _DateFormatDropdown extends StatelessWidget {
       for (final o in options)
         DropdownMenuItem(value: o.value, child: Text(o.label)),
     ];
+    final l10n = AppLocalizations.of(context);
     return _DropdownShell(
-      label: 'Date format',
+      label: l10n.dateFormat,
       child: DropdownButton<String>(
         value: value.isEmpty ? null : value,
         isExpanded: true,
@@ -719,8 +755,9 @@ class _TimezoneDropdown extends StatelessWidget {
         DropdownMenuItem(value: value, child: Text(value)),
       for (final o in options) DropdownMenuItem(value: o, child: Text(o)),
     ];
+    final l10n = AppLocalizations.of(context);
     return _DropdownShell(
-      label: 'Timezone',
+      label: l10n.timezone,
       child: DropdownButton<String>(
         value: value.isEmpty ? null : value,
         isExpanded: true,
@@ -903,7 +940,8 @@ const List<_MapPreset> _kMapPresets = [
 ];
 
 class _PresetsRow extends StatelessWidget {
-  const _PresetsRow({required this.onPick});
+  const _PresetsRow({required this.label, required this.onPick});
+  final String label;
   final ValueChanged<_MapPreset> onPick;
 
   @override
@@ -911,8 +949,8 @@ class _PresetsRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Quick presets',
+        Text(
+          label,
           style: OpenVtsTypography.label,
         ),
         const SizedBox(height: OpenVtsSpacing.xs),

@@ -122,5 +122,20 @@
   "reportsCatalogTimelineTitle": "Chronologie",
   "adminRole": "Administrateur", "users": "Utilisateurs", "vehicles": "Véhicules", "drivers": "Conducteurs", "team": "Équipe", "inventory": "Inventaire", "map": "Carte", "transactions": "Transactions", "calendar": "Calendrier", "logs": "Journaux", "plans": "Forfaits", "roles": "Rôles", "smtp": "SMTP",
   "settingsDescription": "Gérez le profil, la localisation et les paramètres SMTP.",
-  "localizationDescription": "Langue, date/heure, unités et centrage par défaut de la carte."
+  "localizationDescription": "Langue, date/heure, unités et centrage par défaut de la carte.",
+  "whiteLabel": "Marque Blanche",
+  "saveChanges": "Enregistrer les modifications",
+  "textDirection": "Direction du texte",
+  "languageAndDirection": "Langue et Direction",
+  "languageAndDirectionSubtitle": "Langue de l'interface et direction du texte.",
+  "dateAndTime": "Date et Heure",
+  "dateAndTimeSubtitle": "Format de date, style de l'heure et fuseau horaire.",
+  "unitsAndTheme": "Unités et Thème",
+  "unitsAndThemeSubtitle": "Unités de distance et apparence de l'application.",
+  "defaultMapFocus": "Centrage Carte par Défaut",
+  "defaultMapFocusSubtitle": "Centre initial de la carte et niveau de zoom.",
+  "couldNotLoadLocalization": "Impossible de charger la localisation.",
+  "localizationSaved": "Localisation enregistrée",
+  "quickPresets": "Présélections rapides",
+  "settingsHeaderSubtitle": "Profil, marque, courrier, localisation et préférences de plateforme."
 }

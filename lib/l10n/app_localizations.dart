@@ -1263,6 +1263,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Language, date/time, units, and default map focus.'**
   String get localizationDescription;
+
+  /// No description provided for @whiteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'White Label'**
+  String get whiteLabel;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get saveChanges;
+
+  /// No description provided for @textDirection.
+  ///
+  /// In en, this message translates to:
+  /// **'Text direction'**
+  String get textDirection;
+
+  /// No description provided for @languageAndDirection.
+  ///
+  /// In en, this message translates to:
+  /// **'Language & Direction'**
+  String get languageAndDirection;
+
+  /// No description provided for @languageAndDirectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Interface language and text direction.'**
+  String get languageAndDirectionSubtitle;
+
+  /// No description provided for @dateAndTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Date & Time'**
+  String get dateAndTime;
+
+  /// No description provided for @dateAndTimeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Date format, time style, and timezone.'**
+  String get dateAndTimeSubtitle;
+
+  /// No description provided for @unitsAndTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Units & Theme'**
+  String get unitsAndTheme;
+
+  /// No description provided for @unitsAndThemeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance units and app appearance.'**
+  String get unitsAndThemeSubtitle;
+
+  /// No description provided for @defaultMapFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Map Focus'**
+  String get defaultMapFocus;
+
+  /// No description provided for @defaultMapFocusSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial map center and zoom level.'**
+  String get defaultMapFocusSubtitle;
+
+  /// No description provided for @couldNotLoadLocalization.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load localization.'**
+  String get couldNotLoadLocalization;
+
+  /// No description provided for @localizationSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Localization saved'**
+  String get localizationSaved;
+
+  /// No description provided for @quickPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick presets'**
+  String get quickPresets;
+
+  /// No description provided for @settingsHeaderSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile, branding, mail, localization, and platform preferences.'**
+  String get settingsHeaderSubtitle;
 }
 
 class _AppLocalizationsDelegate

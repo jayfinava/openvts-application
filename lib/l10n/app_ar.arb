@@ -122,5 +122,20 @@
   "reportsCatalogTimelineTitle": "الجدول الزمني",
   "adminRole": "المشرف", "users": "المستخدمون", "vehicles": "المركبات", "drivers": "السائقون", "team": "الفريق", "inventory": "المخزون", "map": "الخريطة", "transactions": "المعاملات", "calendar": "التقويم", "logs": "السجلات", "plans": "الخطط", "roles": "الأدوار", "smtp": "SMTP",
   "settingsDescription": "إدارة الملف الشخصي والتوطين وإعدادات SMTP.",
-  "localizationDescription": "اللغة والتاريخ والوقت والوحدات وتركيز الخريطة الافتراضي."
+  "localizationDescription": "اللغة والتاريخ والوقت والوحدات وتركيز الخريطة الافتراضي.",
+  "whiteLabel": "التسمية البيضاء",
+  "saveChanges": "حفظ التغييرات",
+  "textDirection": "اتجاه النص",
+  "languageAndDirection": "اللغة والاتجاه",
+  "languageAndDirectionSubtitle": "لغة الواجهة واتجاه النص.",
+  "dateAndTime": "التاريخ والوقت",
+  "dateAndTimeSubtitle": "تنسيق التاريخ ونمط الوقت والمنطقة الزمنية.",
+  "unitsAndTheme": "الوحدات والمظهر",
+  "unitsAndThemeSubtitle": "وحدات المسافة ومظهر التطبيق.",
+  "defaultMapFocus": "تركيز الخريطة الافتراضي",
+  "defaultMapFocusSubtitle": "مركز الخريطة الأولي ومستوى التكبير.",
+  "couldNotLoadLocalization": "تعذر تحميل التوطين.",
+  "localizationSaved": "تم حفظ التوطين",
+  "quickPresets": "الإعدادات المسبقة السريعة",
+  "settingsHeaderSubtitle": "الملف الشخصي والعلامة التجارية والبريد والتوطين وتفضيلات المنصة."
 }

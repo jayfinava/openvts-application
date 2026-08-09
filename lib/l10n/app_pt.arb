@@ -122,5 +122,20 @@
   "reportsCatalogTimelineTitle": "Linha do tempo",
   "adminRole": "Administrador", "users": "Usuários", "vehicles": "Veículos", "drivers": "Motoristas", "team": "Equipe", "inventory": "Inventário", "map": "Mapa", "transactions": "Transações", "calendar": "Calendário", "logs": "Registros", "plans": "Planos", "roles": "Funções", "smtp": "SMTP",
   "settingsDescription": "Gerencie o perfil, a localização e as configurações SMTP.",
-  "localizationDescription": "Idioma, data/hora, unidades e foco padrão do mapa."
+  "localizationDescription": "Idioma, data/hora, unidades e foco padrão do mapa.",
+  "whiteLabel": "Marca Branca",
+  "saveChanges": "Salvar alterações",
+  "textDirection": "Direção do texto",
+  "languageAndDirection": "Idioma e Direção",
+  "languageAndDirectionSubtitle": "Idioma da interface e direção do texto.",
+  "dateAndTime": "Data e Hora",
+  "dateAndTimeSubtitle": "Formato de data, estilo de hora e fuso horário.",
+  "unitsAndTheme": "Unidades e Tema",
+  "unitsAndThemeSubtitle": "Unidades de distância e aparência do aplicativo.",
+  "defaultMapFocus": "Foco Padrão do Mapa",
+  "defaultMapFocusSubtitle": "Centro inicial do mapa e nível de zoom.",
+  "couldNotLoadLocalization": "Não foi possível carregar a localização.",
+  "localizationSaved": "Localização salva",
+  "quickPresets": "Predefinições rápidas",
+  "settingsHeaderSubtitle": "Perfil, marca, correio, localização e preferências de plataforma."
 }

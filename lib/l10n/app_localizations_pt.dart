@@ -627,4 +627,55 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get localizationDescription =>
       'Idioma, data/hora, unidades e foco padrão do mapa.';
+
+  @override
+  String get whiteLabel => 'Marca Branca';
+
+  @override
+  String get saveChanges => 'Salvar alterações';
+
+  @override
+  String get textDirection => 'Direção do texto';
+
+  @override
+  String get languageAndDirection => 'Idioma e Direção';
+
+  @override
+  String get languageAndDirectionSubtitle =>
+      'Idioma da interface e direção do texto.';
+
+  @override
+  String get dateAndTime => 'Data e Hora';
+
+  @override
+  String get dateAndTimeSubtitle =>
+      'Formato de data, estilo de hora e fuso horário.';
+
+  @override
+  String get unitsAndTheme => 'Unidades e Tema';
+
+  @override
+  String get unitsAndThemeSubtitle =>
+      'Unidades de distância e aparência do aplicativo.';
+
+  @override
+  String get defaultMapFocus => 'Foco Padrão do Mapa';
+
+  @override
+  String get defaultMapFocusSubtitle =>
+      'Centro inicial do mapa e nível de zoom.';
+
+  @override
+  String get couldNotLoadLocalization =>
+      'Não foi possível carregar a localização.';
+
+  @override
+  String get localizationSaved => 'Localização salva';
+
+  @override
+  String get quickPresets => 'Predefinições rápidas';
+
+  @override
+  String get settingsHeaderSubtitle =>
+      'Perfil, marca, correio, localização e preferências de plataforma.';
 }

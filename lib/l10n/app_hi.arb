@@ -122,5 +122,20 @@
   "reportsCatalogTimelineTitle": "समयरेखा",
   "adminRole": "प्रशासक", "users": "उपयोगकर्ता", "vehicles": "वाहन", "drivers": "चालक", "team": "टीम", "inventory": "इन्वेंटरी", "map": "मानचित्र", "transactions": "लेन-देन", "calendar": "कैलेंडर", "logs": "लॉग", "plans": "योजनाएँ", "roles": "भूमिकाएँ", "smtp": "SMTP",
   "settingsDescription": "प्रोफ़ाइल, स्थानीयकरण और SMTP सेटिंग प्रबंधित करें।",
-  "localizationDescription": "भाषा, दिनांक/समय, इकाइयाँ और डिफ़ॉल्ट मानचित्र केंद्र।"
+  "localizationDescription": "भाषा, दिनांक/समय, इकाइयाँ और डिफ़ॉल्ट मानचित्र केंद्र।",
+  "whiteLabel": "व्हाइट लेबल",
+  "saveChanges": "परिवर्तन सहेजें",
+  "textDirection": "पाठ दिशा",
+  "languageAndDirection": "भाषा और दिशा",
+  "languageAndDirectionSubtitle": "इंटरफ़ेस भाषा और पाठ दिशा।",
+  "dateAndTime": "दिनांक और समय",
+  "dateAndTimeSubtitle": "दिनांक प्रारूप, समय शैली और समय क्षेत्र।",
+  "unitsAndTheme": "इकाइयाँ और थीम",
+  "unitsAndThemeSubtitle": "दूरी इकाइयाँ और ऐप स्वरूप।",
+  "defaultMapFocus": "डिफ़ॉल्ट मानचित्र केंद्र",
+  "defaultMapFocusSubtitle": "प्रारंभिक मानचित्र केंद्र और ज़ूम स्तर।",
+  "couldNotLoadLocalization": "स्थानीयकरण लोड नहीं हो सका।",
+  "localizationSaved": "स्थानीयकरण सहेजा गया",
+  "quickPresets": "त्वरित प्रीसेट",
+  "settingsHeaderSubtitle": "प्रोफ़ाइल, ब्रांडिंग, मेल, स्थानीयकरण और प्लेटफ़ॉर्म प्राथमिकताएँ।"
 }

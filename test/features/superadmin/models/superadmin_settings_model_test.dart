@@ -208,4 +208,149 @@ void main() {
       expect(updated.cityDisplayName, 'New City');
     });
   });
+
+  // -----------------------------------------------------------------------
+  // SuperadminLocalizationSettings.toJson — distanceUnit removed
+  // -----------------------------------------------------------------------
+  group('SuperadminLocalizationSettings.toJson', () {
+    late SuperadminLocalizationSettings loc;
+
+    setUp(() {
+      loc = const SuperadminLocalizationSettings(
+        language: 'en',
+        layoutDirection: SuperadminLayoutDirection.ltr,
+        dateFormat: 'YYYY-MM-DD',
+        use24Hour: true,
+        theme: SuperadminTheme.system,
+        timezoneOffset: '+05:30',
+        units: SuperadminUnits.km,
+        defaultLat: 0,
+        defaultLon: 0,
+        mapZoom: 10,
+      );
+    });
+
+    test('contains units key', () {
+      expect(loc.toJson(), containsPair('units', 'KM'));
+    });
+
+    test('does NOT contain distanceUnit key', () {
+      expect(loc.toJson().containsKey('distanceUnit'), isFalse);
+    });
+
+    test('exact top-level key set matches UpdateSettingsStateDto', () {
+      expect(
+        loc.toJson().keys.toSet(),
+        equals({
+          'language',
+          'layoutDirection',
+          'dateFormat',
+          'use24Hour',
+          'theme',
+          'timezoneOffset',
+          'units',
+          'defaultLat',
+          'defaultLon',
+          'mapZoom',
+        }),
+      );
+    });
+
+    test('miles units serializes as MILES', () {
+      final milesLoc = const SuperadminLocalizationSettings(
+        language: 'en',
+        layoutDirection: SuperadminLayoutDirection.ltr,
+        dateFormat: 'YYYY-MM-DD',
+        use24Hour: false,
+        theme: SuperadminTheme.light,
+        timezoneOffset: '+00:00',
+        units: SuperadminUnits.miles,
+        defaultLat: 0,
+        defaultLon: 0,
+        mapZoom: 10,
+      );
+      expect(milesLoc.toJson()['units'], 'MILES');
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // SuperadminLanguageOption — filtering to supported locales
+  // -----------------------------------------------------------------------
+  group('SuperadminLanguageOption list filtering', () {
+    final backendOptions = [
+      const SuperadminLanguageOption(code: 'en', label: 'English'),
+      const SuperadminLanguageOption(code: 'hi', label: 'Hindi'),
+      const SuperadminLanguageOption(code: 'ar', label: 'Arabic'),
+      const SuperadminLanguageOption(code: 'es', label: 'Spanish'),
+      const SuperadminLanguageOption(code: 'fr', label: 'French'),
+      const SuperadminLanguageOption(code: 'pt', label: 'Portuguese'),
+      // unsupported backend-only languages
+      const SuperadminLanguageOption(code: 'ru', label: 'Russian'),
+      const SuperadminLanguageOption(code: 'de', label: 'German'),
+      const SuperadminLanguageOption(code: 'zh-Hans', label: 'Chinese'),
+      const SuperadminLanguageOption(
+          code: 'pt-BR', label: 'Portuguese (Brazil)'),
+      const SuperadminLanguageOption(
+          code: 'pt-PT', label: 'Portuguese (Portugal)'),
+    ];
+
+    const supportedCodes = {'ar', 'en', 'es', 'fr', 'hi', 'pt'};
+
+    String normalizeLangCode(String code) {
+      final base = code.split('-').first.split('_').first.toLowerCase();
+      if (base == 'pt') return 'pt';
+      return base;
+    }
+
+    List<SuperadminLanguageOption> filterToSupported(
+        List<SuperadminLanguageOption> options) {
+      final seen = <String>{};
+      final result = <SuperadminLanguageOption>[];
+      for (final o in options) {
+        final normalized = normalizeLangCode(o.code);
+        if (supportedCodes.contains(normalized) && seen.add(normalized)) {
+          result
+              .add(SuperadminLanguageOption(code: normalized, label: o.label));
+        }
+      }
+      return result;
+    }
+
+    test('excludes unsupported backend languages', () {
+      final filtered = filterToSupported(backendOptions);
+      final codes = filtered.map((o) => o.code).toSet();
+      expect(codes.contains('ru'), isFalse);
+      expect(codes.contains('de'), isFalse);
+      expect(codes.contains('zh-Hans'), isFalse);
+    });
+
+    test('includes all six supported locales', () {
+      final filtered = filterToSupported(backendOptions);
+      final codes = filtered.map((o) => o.code).toSet();
+      expect(codes, equals(supportedCodes));
+    });
+
+    test('pt-BR and pt-PT both collapse to pt without duplication', () {
+      final ptOnly = [
+        const SuperadminLanguageOption(
+            code: 'pt-BR', label: 'Portuguese (Brazil)'),
+        const SuperadminLanguageOption(
+            code: 'pt-PT', label: 'Portuguese (Portugal)'),
+      ];
+      final filtered = filterToSupported(ptOnly);
+      expect(filtered.length, 1);
+      expect(filtered.first.code, 'pt');
+    });
+
+    test('filtered list length equals number of supported locales', () {
+      final filtered = filterToSupported(backendOptions);
+      expect(filtered.length, supportedCodes.length);
+    });
+
+    test('normalization is case-insensitive', () {
+      expect(normalizeLangCode('EN'), 'en');
+      expect(normalizeLangCode('Pt-BR'), 'pt');
+      expect(normalizeLangCode('ZH-Hans'), 'zh');
+    });
+  });
 }

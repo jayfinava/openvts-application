@@ -204,5 +204,20 @@
   "reportsSourceLabel": "Source: {source}",
   "adminRole": "Admin", "users": "Users", "vehicles": "Vehicles", "drivers": "Drivers", "team": "Team", "inventory": "Inventory", "map": "Map", "transactions": "Transactions", "calendar": "Calendar", "logs": "Logs", "plans": "Plans", "roles": "Roles", "smtp": "SMTP",
   "settingsDescription": "Manage profile, localization and SMTP settings.",
-  "localizationDescription": "Language, date/time, units, and default map focus."
+  "localizationDescription": "Language, date/time, units, and default map focus.",
+  "whiteLabel": "White Label",
+  "saveChanges": "Save changes",
+  "textDirection": "Text direction",
+  "languageAndDirection": "Language & Direction",
+  "languageAndDirectionSubtitle": "Interface language and text direction.",
+  "dateAndTime": "Date & Time",
+  "dateAndTimeSubtitle": "Date format, time style, and timezone.",
+  "unitsAndTheme": "Units & Theme",
+  "unitsAndThemeSubtitle": "Distance units and app appearance.",
+  "defaultMapFocus": "Default Map Focus",
+  "defaultMapFocusSubtitle": "Initial map center and zoom level.",
+  "couldNotLoadLocalization": "Could not load localization.",
+  "localizationSaved": "Localization saved",
+  "quickPresets": "Quick presets",
+  "settingsHeaderSubtitle": "Profile, branding, mail, localization, and platform preferences."
 }

@@ -625,4 +625,51 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get localizationDescription =>
       'اللغة والتاريخ والوقت والوحدات وتركيز الخريطة الافتراضي.';
+
+  @override
+  String get whiteLabel => 'التسمية البيضاء';
+
+  @override
+  String get saveChanges => 'حفظ التغييرات';
+
+  @override
+  String get textDirection => 'اتجاه النص';
+
+  @override
+  String get languageAndDirection => 'اللغة والاتجاه';
+
+  @override
+  String get languageAndDirectionSubtitle => 'لغة الواجهة واتجاه النص.';
+
+  @override
+  String get dateAndTime => 'التاريخ والوقت';
+
+  @override
+  String get dateAndTimeSubtitle =>
+      'تنسيق التاريخ ونمط الوقت والمنطقة الزمنية.';
+
+  @override
+  String get unitsAndTheme => 'الوحدات والمظهر';
+
+  @override
+  String get unitsAndThemeSubtitle => 'وحدات المسافة ومظهر التطبيق.';
+
+  @override
+  String get defaultMapFocus => 'تركيز الخريطة الافتراضي';
+
+  @override
+  String get defaultMapFocusSubtitle => 'مركز الخريطة الأولي ومستوى التكبير.';
+
+  @override
+  String get couldNotLoadLocalization => 'تعذر تحميل التوطين.';
+
+  @override
+  String get localizationSaved => 'تم حفظ التوطين';
+
+  @override
+  String get quickPresets => 'الإعدادات المسبقة السريعة';
+
+  @override
+  String get settingsHeaderSubtitle =>
+      'الملف الشخصي والعلامة التجارية والبريد والتوطين وتفضيلات المنصة.';
 }

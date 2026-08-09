@@ -7,6 +7,7 @@ import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/open_vts_card.dart';
 import '../../../../shared/widgets/open_vts_page_scaffold.dart';
 import '../../controllers/superadmin_providers.dart';
@@ -43,8 +44,9 @@ class _SuperadminSettingsScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(superadminSettingsControllerProvider);
 
+    final l10n = AppLocalizations.of(context);
     return OpenVtsPageScaffold(
-      title: 'Settings',
+      title: l10n.settings,
       headerMode: OpenVtsPageHeaderMode.closeable,
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.sm,
@@ -102,31 +104,34 @@ class _SettingsHeader extends StatelessWidget {
           const SizedBox(width: OpenVtsSpacing.sm),
           Expanded(
             child: Builder(
-              builder: (context) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Settings',
-                    style: TextStyle(
-                      fontFamily: OpenVtsTypography.primaryFontFamily,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface,
+              builder: (context) {
+                final l10n = AppLocalizations.of(context);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.settings,
+                      style: TextStyle(
+                        fontFamily: OpenVtsTypography.primaryFontFamily,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Profile, branding, mail, localization, and platform preferences.',
-                    style: TextStyle(
-                      fontFamily: OpenVtsTypography.primaryFontFamily,
-                      fontSize: 11.5,
-                      height: 1.35,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    const SizedBox(height: 2),
+                    Text(
+                      l10n.settingsHeaderSubtitle,
+                      style: TextStyle(
+                        fontFamily: OpenVtsTypography.primaryFontFamily,
+                        fontSize: 11.5,
+                        height: 1.35,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -146,33 +151,33 @@ class _SectionItem {
   final IconData icon;
 }
 
-const List<_SectionItem> _kSections = <_SectionItem>[
-  _SectionItem(
-    SuperadminSettingsSection.profile,
-    'Profile',
-    Icons.person_outline_rounded,
-  ),
-  _SectionItem(
-    SuperadminSettingsSection.whiteLabel,
-    'White Label',
-    Icons.palette_outlined,
-  ),
-  _SectionItem(
-    SuperadminSettingsSection.smtp,
-    'SMTP',
-    Icons.mail_outline_rounded,
-  ),
-  _SectionItem(
-    SuperadminSettingsSection.localization,
-    'Localization',
-    Icons.public_rounded,
-  ),
-  _SectionItem(
-    SuperadminSettingsSection.general,
-    'Settings',
-    Icons.settings_suggest_outlined,
-  ),
-];
+List<_SectionItem> _buildSections(AppLocalizations l10n) => [
+      _SectionItem(
+        SuperadminSettingsSection.profile,
+        l10n.profile,
+        Icons.person_outline_rounded,
+      ),
+      _SectionItem(
+        SuperadminSettingsSection.whiteLabel,
+        l10n.whiteLabel,
+        Icons.palette_outlined,
+      ),
+      _SectionItem(
+        SuperadminSettingsSection.smtp,
+        l10n.smtp,
+        Icons.mail_outline_rounded,
+      ),
+      _SectionItem(
+        SuperadminSettingsSection.localization,
+        l10n.localization,
+        Icons.public_rounded,
+      ),
+      _SectionItem(
+        SuperadminSettingsSection.general,
+        l10n.settings,
+        Icons.settings_suggest_outlined,
+      ),
+    ];
 
 class _SectionSelector extends ConsumerWidget {
   const _SectionSelector({required this.selected});
@@ -181,16 +186,17 @@ class _SectionSelector extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final sections = _buildSections(AppLocalizations.of(context));
     return SizedBox(
       height: 36,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 2),
         physics: const BouncingScrollPhysics(),
-        itemCount: _kSections.length,
+        itemCount: sections.length,
         separatorBuilder: (_, __) => const SizedBox(width: OpenVtsSpacing.xs),
         itemBuilder: (context, index) {
-          final item = _kSections[index];
+          final item = sections[index];
           final isSelected = item.section == selected;
           return _SectionChip(
             item: item,

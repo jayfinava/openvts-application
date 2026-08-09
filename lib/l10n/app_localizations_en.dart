@@ -626,4 +626,51 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get localizationDescription =>
       'Language, date/time, units, and default map focus.';
+
+  @override
+  String get whiteLabel => 'White Label';
+
+  @override
+  String get saveChanges => 'Save changes';
+
+  @override
+  String get textDirection => 'Text direction';
+
+  @override
+  String get languageAndDirection => 'Language & Direction';
+
+  @override
+  String get languageAndDirectionSubtitle =>
+      'Interface language and text direction.';
+
+  @override
+  String get dateAndTime => 'Date & Time';
+
+  @override
+  String get dateAndTimeSubtitle => 'Date format, time style, and timezone.';
+
+  @override
+  String get unitsAndTheme => 'Units & Theme';
+
+  @override
+  String get unitsAndThemeSubtitle => 'Distance units and app appearance.';
+
+  @override
+  String get defaultMapFocus => 'Default Map Focus';
+
+  @override
+  String get defaultMapFocusSubtitle => 'Initial map center and zoom level.';
+
+  @override
+  String get couldNotLoadLocalization => 'Could not load localization.';
+
+  @override
+  String get localizationSaved => 'Localization saved';
+
+  @override
+  String get quickPresets => 'Quick presets';
+
+  @override
+  String get settingsHeaderSubtitle =>
+      'Profile, branding, mail, localization, and platform preferences.';
 }

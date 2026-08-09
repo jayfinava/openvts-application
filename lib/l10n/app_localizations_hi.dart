@@ -626,4 +626,51 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get localizationDescription =>
       'भाषा, दिनांक/समय, इकाइयाँ और डिफ़ॉल्ट मानचित्र केंद्र।';
+
+  @override
+  String get whiteLabel => 'व्हाइट लेबल';
+
+  @override
+  String get saveChanges => 'परिवर्तन सहेजें';
+
+  @override
+  String get textDirection => 'पाठ दिशा';
+
+  @override
+  String get languageAndDirection => 'भाषा और दिशा';
+
+  @override
+  String get languageAndDirectionSubtitle => 'इंटरफ़ेस भाषा और पाठ दिशा।';
+
+  @override
+  String get dateAndTime => 'दिनांक और समय';
+
+  @override
+  String get dateAndTimeSubtitle => 'दिनांक प्रारूप, समय शैली और समय क्षेत्र।';
+
+  @override
+  String get unitsAndTheme => 'इकाइयाँ और थीम';
+
+  @override
+  String get unitsAndThemeSubtitle => 'दूरी इकाइयाँ और ऐप स्वरूप।';
+
+  @override
+  String get defaultMapFocus => 'डिफ़ॉल्ट मानचित्र केंद्र';
+
+  @override
+  String get defaultMapFocusSubtitle =>
+      'प्रारंभिक मानचित्र केंद्र और ज़ूम स्तर।';
+
+  @override
+  String get couldNotLoadLocalization => 'स्थानीयकरण लोड नहीं हो सका।';
+
+  @override
+  String get localizationSaved => 'स्थानीयकरण सहेजा गया';
+
+  @override
+  String get quickPresets => 'त्वरित प्रीसेट';
+
+  @override
+  String get settingsHeaderSubtitle =>
+      'प्रोफ़ाइल, ब्रांडिंग, मेल, स्थानीयकरण और प्लेटफ़ॉर्म प्राथमिकताएँ।';
 }

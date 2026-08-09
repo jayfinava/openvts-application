@@ -886,7 +886,6 @@ class SuperadminLocalizationSettings {
         'theme': theme.apiValue,
         'timezoneOffset': timezoneOffset,
         'units': units.apiValue,
-        'distanceUnit': units.apiValue,
         'defaultLat': defaultLat,
         'defaultLon': defaultLon,
         'mapZoom': mapZoom,
