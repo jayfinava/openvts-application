@@ -61,6 +61,10 @@ class SuperadminAdministratorsController
     state = state.copyWith(
       stateOptions: const <SuperadminStateOption>[],
       cityOptions: const <SuperadminCityOption>[],
+      isLoadingStates: false,
+      isLoadingCities: false,
+      statesLoadedForCountry: null,
+      citiesLoadedForState: null,
       isCatalogLoading: state.countries.isEmpty || state.mobilePrefixes.isEmpty,
       errorMessage: null,
     );
@@ -151,27 +155,37 @@ class SuperadminAdministratorsController
       state = state.copyWith(
         stateOptions: const <SuperadminStateOption>[],
         cityOptions: const <SuperadminCityOption>[],
+        statesLoadedForCountry: null,
+        citiesLoadedForState: null,
+        isLoadingStates: false,
+        isLoadingCities: false,
       );
       return;
     }
 
     state = state.copyWith(
-      isCatalogLoading: true,
+      isLoadingStates: true,
       stateOptions: const <SuperadminStateOption>[],
       cityOptions: const <SuperadminCityOption>[],
+      statesLoadedForCountry: null,
+      citiesLoadedForState: null,
       errorMessage: null,
     );
 
     try {
       final states = await _service.getStates(normalized);
+      if (!mounted) return;
       state = state.copyWith(
         stateOptions: states,
         cityOptions: const <SuperadminCityOption>[],
-        isCatalogLoading: false,
+        isLoadingStates: false,
+        statesLoadedForCountry: normalized,
+        citiesLoadedForState: null,
       );
     } catch (error) {
+      if (!mounted) return;
       state = state.copyWith(
-        isCatalogLoading: false,
+        isLoadingStates: false,
         errorMessage: _toErrorMessage(error),
       );
       rethrow;
@@ -182,26 +196,34 @@ class SuperadminAdministratorsController
     final normalizedCountry = countryCode.trim().toUpperCase();
     final normalizedState = stateCode.trim().toUpperCase();
     if (normalizedCountry.isEmpty || normalizedState.isEmpty) {
-      state = state.copyWith(cityOptions: const <SuperadminCityOption>[]);
+      state = state.copyWith(
+        cityOptions: const <SuperadminCityOption>[],
+        citiesLoadedForState: null,
+        isLoadingCities: false,
+      );
       return;
     }
 
     state = state.copyWith(
-      isCatalogLoading: true,
+      isLoadingCities: true,
       cityOptions: const <SuperadminCityOption>[],
+      citiesLoadedForState: null,
       errorMessage: null,
     );
 
     try {
       final cities =
           await _service.getCities(normalizedCountry, normalizedState);
+      if (!mounted) return;
       state = state.copyWith(
         cityOptions: cities,
-        isCatalogLoading: false,
+        isLoadingCities: false,
+        citiesLoadedForState: normalizedState,
       );
     } catch (error) {
+      if (!mounted) return;
       state = state.copyWith(
-        isCatalogLoading: false,
+        isLoadingCities: false,
         errorMessage: _toErrorMessage(error),
       );
       rethrow;
