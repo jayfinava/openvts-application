@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:math' show Point;
+import 'dart:ui' as ui;
 
-import 'package:dio/dio.dart' show CancelToken, Dio, BaseOptions, DioException;
+import 'package:dio/dio.dart'
+    show CancelToken, Dio, BaseOptions, DioException, DioExceptionType;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -175,9 +178,9 @@ class _UserGeofenceEditorScreenState
   // ── Screen-to-LatLng conversion ──────────────────────────────────────────
 
   LatLng _offsetToLatLng(Offset localOffset) {
-    // flutter_map ≥7: camera.pointToLatLng converts a screen point to LatLng.
+    // flutter_map ≥7: camera.pointToLatLng expects a Point<double>.
     final camera = _mapController.camera;
-    return camera.pointToLatLng(localOffset);
+    return camera.pointToLatLng(Point<double>(localOffset.dx, localOffset.dy));
   }
 
   // ── Vertex drag handlers ─────────────────────────────────────────────────
@@ -1000,7 +1003,7 @@ class _DropTailPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..color = OpenVtsColors.brandInk;
-    final path = Path()
+    final path = ui.Path()
       ..moveTo(0, 0)
       ..lineTo(size.width, 0)
       ..lineTo(size.width / 2, size.height)
