@@ -368,7 +368,7 @@ class _LocalizationSettingsSectionState
                 children: [
                   Expanded(
                     child: OpenVtsTextField(
-                      label: 'Latitude',
+                      label: l10n.latitude,
                       controller: _latCtrl,
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
@@ -388,7 +388,7 @@ class _LocalizationSettingsSectionState
                   const SizedBox(width: OpenVtsSpacing.sm),
                   Expanded(
                     child: OpenVtsTextField(
-                      label: 'Longitude',
+                      label: l10n.longitude,
                       controller: _lonCtrl,
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
@@ -483,6 +483,7 @@ class _PreviewCard extends StatelessWidget {
 
     final distanceLabel = units == SuperadminUnits.miles ? 'mi' : 'km';
 
+    final l10n = AppLocalizations.of(context);
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -513,14 +514,14 @@ class _PreviewCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _PreviewTile(
-                  label: 'Date',
+                  label: l10n.date,
                   value: dateString,
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
               Expanded(
                 child: _PreviewTile(
-                  label: 'Time',
+                  label: l10n.time,
                   value: timeString,
                 ),
               ),
@@ -531,7 +532,7 @@ class _PreviewCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _PreviewTile(
-                  label: 'Timezone',
+                  label: l10n.timezone,
                   value: timezone,
                 ),
               ),
@@ -549,14 +550,14 @@ class _PreviewCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _PreviewTile(
-                  label: 'Language',
+                  label: l10n.language,
                   value: language.toUpperCase(),
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),
               Expanded(
                 child: _PreviewTile(
-                  label: 'Direction',
+                  label: l10n.direction,
                   value: direction.apiValue,
                 ),
               ),
@@ -620,15 +621,15 @@ class _PreviewTile extends StatelessWidget {
 // Dropdowns
 // =====================================================================
 
-// Only codes supported by AppLocalizations are renderable by Flutter.
-// pt-BR and pt-PT backend variants both map to the 'pt' Flutter locale.
-const Set<String> _kSupportedLangCodes = {'ar', 'en', 'es', 'fr', 'hi', 'pt'};
+/// Base language codes Flutter can actually render, derived from the ARB files.
+/// Adding a new app_XX.arb and re-running gen-l10n automatically expands this.
+Set<String> get _kSupportedLangCodes =>
+    AppLocalizations.supportedLocales.map((l) => l.languageCode).toSet();
 
-String _normalizeLangCode(String code) {
-  final base = code.split('-').first.split('_').first.toLowerCase();
-  if (base == 'pt') return 'pt';
-  return base;
-}
+/// Strips regional sub-tags (pt-BR → pt, en-US → en) to match Flutter locales,
+/// which are registered by base language code only.
+String _normalizeLangCode(String code) =>
+    code.split('-').first.split('_').first.toLowerCase();
 
 class _LanguageDropdown extends StatelessWidget {
   const _LanguageDropdown({
