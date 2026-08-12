@@ -11,6 +11,7 @@ import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../../shared/widgets/open_vts_map_layer_selector.dart';
 import '../../../../controllers/user_providers.dart';
 import '../../../../models/user_report_model.dart';
 import '../../../../models/user_report_state.dart';
@@ -407,6 +408,10 @@ class _MapSection extends StatefulWidget {
 
 class _MapSectionState extends State<_MapSection> {
   final MapController _mapController = MapController();
+  String _selectedLayerId = 'google-road';
+
+  MapLayerOption _getSelectedLayer() =>
+      mapLayerOptionById(_selectedLayerId) ?? primaryMapLayerOptions.first;
 
   @override
   void dispose() {
@@ -456,52 +461,66 @@ class _MapSectionState extends State<_MapSection> {
           bottom: Radius.circular(OpenVtsRadius.lg)),
       child: SizedBox(
         height: 280,
-        child: FlutterMap(
-          mapController: _mapController,
-          options: MapOptions(
-            initialCenter: center,
-            initialZoom: 13,
-            onMapReady: () {
-              if (polyLatLngs.length >= 2) {
-                _mapController.fitCamera(
-                  CameraFit.bounds(
-                    bounds: LatLngBounds.fromPoints(polyLatLngs),
-                    padding: const EdgeInsets.all(32),
-                    maxZoom: 17,
-                  ),
-                );
-              }
-            },
-          ),
+        child: Stack(
           children: [
-            TileLayer(
-              urlTemplate:
-                  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              subdomains: const ['a', 'b', 'c'],
-              userAgentPackageName: kTimelineMapTileUserAgent,
+            FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: center,
+                initialZoom: polyLatLngs.length == 1 ? 15 : 13,
+                onMapReady: () {
+                  if (polyLatLngs.length >= 2) {
+                    _mapController.fitCamera(
+                      CameraFit.bounds(
+                        bounds: LatLngBounds.fromPoints(polyLatLngs),
+                        padding: const EdgeInsets.all(32),
+                        maxZoom: 17,
+                      ),
+                    );
+                  }
+                },
+              ),
+              children: [
+                TileLayer(
+                  key: ValueKey<String>(_selectedLayerId),
+                  urlTemplate: _getSelectedLayer().url,
+                  subdomains: _getSelectedLayer().subdomains,
+                  userAgentPackageName: kTimelineMapTileUserAgent,
+                ),
+                if (polyLatLngs.length > 1)
+                  PolylineLayer(polylines: [
+                    Polyline(
+                        points: polyLatLngs,
+                        strokeWidth: 3,
+                        color: OpenVtsColors.info)
+                  ]),
+                MarkerLayer(markers: [
+                  Marker(
+                      point: polyLatLngs.first,
+                      width: 20,
+                      height: 20,
+                      child: const Icon(Icons.trip_origin_rounded,
+                          size: 20, color: OpenVtsColors.success)),
+                  if (polyLatLngs.length > 1)
+                    Marker(
+                        point: polyLatLngs.last,
+                        width: 20,
+                        height: 20,
+                        child: const Icon(Icons.location_on_rounded,
+                            size: 20, color: OpenVtsColors.error)),
+                ]),
+              ],
             ),
-            if (polyLatLngs.length > 1)
-              PolylineLayer(polylines: [
-                Polyline(
-                    points: polyLatLngs,
-                    strokeWidth: 3,
-                    color: OpenVtsColors.info)
-              ]),
-            MarkerLayer(markers: [
-              Marker(
-                  point: polyLatLngs.first,
-                  width: 20,
-                  height: 20,
-                  child: const Icon(Icons.trip_origin_rounded,
-                      size: 20, color: OpenVtsColors.success)),
-              if (polyLatLngs.length > 1)
-                Marker(
-                    point: polyLatLngs.last,
-                    width: 20,
-                    height: 20,
-                    child: const Icon(Icons.location_on_rounded,
-                        size: 20, color: OpenVtsColors.error)),
-            ]),
+            Positioned(
+              top: OpenVtsSpacing.xs,
+              right: OpenVtsSpacing.xs,
+              child: OpenVtsMapLayerSelectorButton(
+                selectedLayerId: _selectedLayerId,
+                onLayerSelected: (layer) {
+                  setState(() => _selectedLayerId = layer.id);
+                },
+              ),
+            ),
           ],
         ),
       ),
