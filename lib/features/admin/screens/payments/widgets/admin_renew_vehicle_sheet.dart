@@ -131,28 +131,70 @@ class _AdminRenewVehicleSheetState
                     );
                   }),
                 ],
+                const SizedBox(height: OpenVtsSpacing.xs),
+                if (filtered.isEmpty)
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: OpenVtsSpacing.sm),
+                    child: Text(
+                      _search.trim().isEmpty
+                          ? (_vehicles.isEmpty
+                              ? 'No vehicles found for this user.'
+                              : 'No renewable vehicles for this user.')
+                          : 'No vehicles match your search.',
+                      style: OpenVtsTypography.label
+                          .copyWith(color: OpenVtsColors.textSecondary),
+                    ),
+                  )
+                else
+                  Container(
+                    key: const Key('renew-vehicle-list'),
+                    constraints: const BoxConstraints(maxHeight: 280),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Theme.of(context).dividerColor),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: ListView.builder(
+                      primary: false,
+                      shrinkWrap: true,
+                      itemCount: filtered.length,
+                      itemBuilder: (context, index) {
+                        final vehicle = filtered[index];
+                        final checked = _selected.contains(vehicle.id);
+                        return CheckboxListTile(
+                          value: checked,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: OpenVtsSpacing.sm),
+                          onChanged: (_) {
+                            setState(() {
+                              if (checked) {
+                                _selected.remove(vehicle.id);
+                              } else {
+                                _selected.add(vehicle.id);
+                              }
+                            });
+                          },
+                          title: Text(
+                              vehicle.name.isEmpty
+                                  ? vehicle.plateNumber
+                                  : vehicle.name,
+                              style: OpenVtsTypography.label),
+                          subtitle: Text(
+                              'Plan: ${vehicle.planName} • ${vehicle.planCurrency} ${vehicle.planPrice.toStringAsFixed(2)}'),
+                        );
+                      },
+                    ),
+                  ),
+                if (_selected.isNotEmpty) ...[
+                  const SizedBox(height: OpenVtsSpacing.xs),
+                  Text(
+                    '${_selected.length} vehicle${_selected.length == 1 ? '' : 's'} selected',
+                    style: OpenVtsTypography.label
+                        .copyWith(color: OpenVtsColors.textSecondary),
+                  ),
+                ],
               ],
-              ...filtered.map((vehicle) {
-                final checked = _selected.contains(vehicle.id);
-                return CheckboxListTile(
-                  value: checked,
-                  contentPadding: EdgeInsets.zero,
-                  onChanged: (_) {
-                    setState(() {
-                      if (checked) {
-                        _selected.remove(vehicle.id);
-                      } else {
-                        _selected.add(vehicle.id);
-                      }
-                    });
-                  },
-                  title: Text(
-                      vehicle.name.isEmpty ? vehicle.plateNumber : vehicle.name,
-                      style: OpenVtsTypography.label),
-                  subtitle: Text(
-                      'Plan: ${vehicle.planName} • ${vehicle.planCurrency} ${vehicle.planPrice.toStringAsFixed(2)}'),
-                );
-              }),
               const SizedBox(height: OpenVtsSpacing.sm),
               OpenVtsTextField(
                 label: 'Amount Override',
