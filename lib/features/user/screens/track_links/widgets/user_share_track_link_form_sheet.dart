@@ -144,6 +144,7 @@ class _UserShareTrackLinkFormSheetState
         if (_isLoadingDetails) const LinearProgressIndicator(minHeight: 2),
         Expanded(
           child: ListView(
+            key: const Key('track-link-form-scroll'),
             controller: widget.scrollController,
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             padding: const EdgeInsets.fromLTRB(
@@ -220,6 +221,7 @@ class _UserShareTrackLinkFormSheetState
                       ),
                       const SizedBox(height: OpenVtsSpacing.xs),
                       _VehicleListFrame(
+                        key: const Key('track-link-vehicle-list-frame'),
                         child: filteredVehicles.isEmpty
                             ? const _MutedPanel(
                                 icon: Icons.search_off_rounded,
@@ -227,8 +229,10 @@ class _UserShareTrackLinkFormSheetState
                                 message: 'Try a different name or plate.',
                               )
                             : ListView.separated(
+                                key: const Key('track-link-vehicle-list'),
+                                primary: false,
                                 shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
+                                physics: const ClampingScrollPhysics(),
                                 padding: const EdgeInsets.symmetric(
                                   vertical: OpenVtsSpacing.xs,
                                 ),
@@ -245,6 +249,9 @@ class _UserShareTrackLinkFormSheetState
                                   final disabled =
                                       vehicle.isLicenseBlocked && !selected;
                                   return _VehicleSelectRow(
+                                    key: ValueKey(
+                                      'track-link-vehicle-${vehicle.id}',
+                                    ),
                                     vehicle: vehicle,
                                     selected: selected,
                                     disabled: disabled,
@@ -545,7 +552,7 @@ class _SectionLabel extends StatelessWidget {
 }
 
 class _VehicleListFrame extends StatelessWidget {
-  const _VehicleListFrame({required this.child});
+  const _VehicleListFrame({required this.child, super.key});
 
   final Widget child;
 
@@ -553,7 +560,10 @@ class _VehicleListFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      constraints: const BoxConstraints(minHeight: 112),
+      constraints: const BoxConstraints(
+        minHeight: 112,
+        maxHeight: 280,
+      ),
       decoration: BoxDecoration(
         color: isDark ? Colors.black : Colors.white,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
@@ -571,6 +581,7 @@ class _VehicleSelectRow extends StatelessWidget {
     required this.selected,
     required this.disabled,
     required this.onChanged,
+    super.key,
   });
 
   final UserShareTrackVehicle vehicle;

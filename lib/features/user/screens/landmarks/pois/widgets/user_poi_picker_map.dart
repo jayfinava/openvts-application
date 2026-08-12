@@ -35,11 +35,13 @@ class UserPoiPickerMap extends StatefulWidget {
     this.initialPoint,
     this.initialToleranceM,
     this.title = 'Pick location',
+    this.searchClient,
   });
 
   final LatLng? initialPoint;
   final double? initialToleranceM;
   final String title;
+  final Dio? searchClient;
 
   @override
   State<UserPoiPickerMap> createState() => _UserPoiPickerMapState();
@@ -59,6 +61,7 @@ class _UserPoiPickerMapState extends State<UserPoiPickerMap> {
   List<_NominatimResult> _searchResults = [];
   bool _searchLoading = false;
   late final Dio _nominatimDio;
+  late final bool _ownsNominatimDio;
 
   @override
   void initState() {
@@ -76,15 +79,17 @@ class _UserPoiPickerMapState extends State<UserPoiPickerMap> {
       text: _tolerance > 0 ? _tolerance.toStringAsFixed(0) : '',
     );
     _searchCtrl = TextEditingController();
-    _nominatimDio = Dio(
-      BaseOptions(
-        connectTimeout: const Duration(seconds: 6),
-        receiveTimeout: const Duration(seconds: 8),
-        headers: {
-          'User-Agent': 'OpenVTS-Mobile/1.0 (poi-search)',
-        },
-      ),
-    );
+    _ownsNominatimDio = widget.searchClient == null;
+    _nominatimDio = widget.searchClient ??
+        Dio(
+          BaseOptions(
+            connectTimeout: const Duration(seconds: 6),
+            receiveTimeout: const Duration(seconds: 8),
+            headers: {
+              'User-Agent': 'OpenVTS-Mobile/1.0 (poi-search)',
+            },
+          ),
+        );
   }
 
   @override
@@ -93,6 +98,9 @@ class _UserPoiPickerMapState extends State<UserPoiPickerMap> {
     _lonCtrl.dispose();
     _tolCtrl.dispose();
     _searchCtrl.dispose();
+    if (_ownsNominatimDio) {
+      _nominatimDio.close(force: true);
+    }
     super.dispose();
   }
 
@@ -774,7 +782,7 @@ class _SearchBar extends StatelessWidget {
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              OpenVtsColors.brandInk.withValues(alpha: 0.6),
+                              OpenVtsColors.white.withValues(alpha: 0.85),
                             ),
                           ),
                         ),

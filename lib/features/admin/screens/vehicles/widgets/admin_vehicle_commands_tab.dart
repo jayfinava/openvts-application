@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/open_vts_colors.dart';
@@ -127,11 +128,18 @@ class _AdminVehicleCommandsTabState extends State<AdminVehicleCommandsTab> {
                     .map(
                       (item) => DropdownMenuItem<String>(
                         value: item.id,
-                        child: Text(item.displayTitle),
+                        child: Text(item.displaySelectedLabel),
                       ),
                     )
                     .toList(growable: false),
                 onChanged: (value) {
+                  if (kDebugMode) {
+                    debugPrint(
+                      '[CommandsTab] template selected: value="$value" '
+                      'total=${widget.customCommands.length} '
+                      'ids=[${widget.customCommands.map((c) => c.id).join(", ")}]',
+                    );
+                  }
                   setState(() => _selectedTemplateId = value);
                   final selected = widget.customCommands
                       .where((item) => item.id == value)

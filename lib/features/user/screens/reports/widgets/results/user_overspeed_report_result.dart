@@ -161,8 +161,7 @@ class _OverspeedRowCard extends StatelessWidget {
       OverspeedSeverity.medium => (OpenVtsColors.info, 'Medium'),
       OverspeedSeverity.low => (OpenVtsColors.success, 'Low'),
     };
-    final location =
-        resolveOverspeedLocation(row.address, row.lat, row.lon);
+    final location = resolveOverspeedLocation(row.address, row.lat, row.lon);
     return Padding(
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),
       child: InkWell(
@@ -222,8 +221,7 @@ class _OverspeedRowCard extends StatelessWidget {
                         size: 13, color: OpenVtsColors.info),
                     const SizedBox(width: 4),
                     Expanded(
-                        child: Text(
-                            location,
+                        child: Text(location,
                             style: OpenVtsTypography.meta
                                 .copyWith(color: OpenVtsColors.info),
                             overflow: TextOverflow.ellipsis)),

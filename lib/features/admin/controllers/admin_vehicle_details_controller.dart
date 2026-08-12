@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/admin_vehicle_model.dart';
@@ -378,9 +379,32 @@ class AdminVehicleDetailsController
       final page = results[0] as AdminVehicleCommandHistoryPage;
       _loadedTabs.add(AdminVehicleDetailsTab.commands);
       final rawCommands = results[1] as List<AdminCustomCommand>;
+      final dedupedCommands = deduplicateAndSortCommands(rawCommands);
+      if (kDebugMode) {
+        debugPrint(
+          '[AdminCommands] loaded ${dedupedCommands.length} templates '
+          '(raw=${rawCommands.length} deviceTypeId=$deviceTypeId)',
+        );
+        for (var i = 0; i < dedupedCommands.length; i++) {
+          final c = dedupedCommands[i];
+          debugPrint(
+            '  [$i] id="${c.id}" stableKey="${c.stableKey}" '
+            'title="${c.displayTitle}" label="${c.displaySelectedLabel}" '
+            'cmd="${c.command}" deviceTypeId=${c.deviceTypeId}',
+          );
+        }
+        final values = dedupedCommands.map((c) => c.id).toList();
+        final uniqueValues = values.toSet();
+        if (uniqueValues.length != values.length) {
+          debugPrint(
+            '[AdminCommands] WARNING: duplicate dropdown values detected! '
+            'values=$values',
+          );
+        }
+      }
       state = state.copyWith(
         commandHistory: page.items,
-        customCommands: deduplicateAndSortCommands(rawCommands),
+        customCommands: dedupedCommands,
         systemVariables: results[2] as List<AdminSystemVariable>,
         isLoadingCommands: false,
       );

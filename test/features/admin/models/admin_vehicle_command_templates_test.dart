@@ -302,4 +302,61 @@ void main() {
           reason: 'stale selection old-id should not be present after refresh');
     });
   });
+
+  // -------------------------------------------------------------------------
+  // 9. displaySelectedLabel — same-type commands must be distinguishable
+  // -------------------------------------------------------------------------
+
+  group('SuperadminCustomCommand.displaySelectedLabel', () {
+    test('returns "Type — payload" when type and payload differ', () {
+      final cmd = _cmd(
+        id: 'x',
+        command: 'AT+LOCK=1',
+        commandTypeName: 'Engine Lock',
+      );
+      expect(cmd.displaySelectedLabel, 'Engine Lock — AT+LOCK=1');
+    });
+
+    test('returns just type when payload matches type exactly', () {
+      final cmd = _cmd(
+        id: 'x',
+        command: 'Engine Lock',
+        commandTypeName: 'Engine Lock',
+      );
+      expect(cmd.displaySelectedLabel, 'Engine Lock');
+    });
+
+    test('returns payload alone when commandTypeName is null', () {
+      final cmd = _cmd(id: 'x', command: 'AT+TRACK=1');
+      expect(cmd.displaySelectedLabel, 'AT+TRACK=1');
+    });
+
+    test('two same-type commands produce distinct displaySelectedLabels', () {
+      final cmd1 = _cmd(
+        id: 'a',
+        command: 'AT+LOCK=1',
+        commandTypeName: 'Engine Lock',
+      );
+      final cmd2 = _cmd(
+        id: 'b',
+        command: 'AT+LOCK=0',
+        commandTypeName: 'Engine Lock',
+      );
+      expect(cmd1.displaySelectedLabel, isNot(cmd2.displaySelectedLabel));
+      expect(cmd1.displaySelectedLabel, 'Engine Lock — AT+LOCK=1');
+      expect(cmd2.displaySelectedLabel, 'Engine Lock — AT+LOCK=0');
+    });
+
+    test('truncates payload longer than 40 chars', () {
+      final longPayload = 'A' * 50;
+      final cmd = _cmd(
+        id: 'x',
+        command: longPayload,
+        commandTypeName: 'Type',
+      );
+      final label = cmd.displaySelectedLabel;
+      expect(label.length, lessThanOrEqualTo('Type — '.length + 40));
+      expect(label, endsWith('…'));
+    });
+  });
 }

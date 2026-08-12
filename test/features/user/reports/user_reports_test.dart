@@ -91,8 +91,8 @@ void main() {
     });
 
     test('uses formatted coordinates for empty and whitespace addresses', () {
-      expect(resolveOverspeedLocation('', 28.6139, 77.209),
-          '28.61390, 77.20900');
+      expect(
+          resolveOverspeedLocation('', 28.6139, 77.209), '28.61390, 77.20900');
       expect(resolveOverspeedLocation('   ', 28.6139, 77.209),
           '28.61390, 77.20900');
     });
@@ -104,7 +104,8 @@ void main() {
   });
 
   group('overspeed export location normalization', () {
-    test('uses one address value for CSV, XLSX, JSON, PDF, and HTML inputs', () {
+    test('uses one address value for CSV, XLSX, JSON, PDF, and HTML inputs',
+        () {
       final rows = normalizeUserReportRowsForExport(
         UserReportKey.overspeed,
         <Map<String, dynamic>>[

@@ -36,6 +36,8 @@ class _AdminInventoryAddSheetState
   String? _deviceTypeId;
   String? _providerId;
   bool _loadingRefs = true;
+  String? _referenceError;
+  int _referenceGeneration = 0;
 
   @override
   void initState() {
@@ -73,7 +75,13 @@ class _AdminInventoryAddSheetState
                     _modeChips(),
                     if (_loadingRefs) ...[
                       const SizedBox(height: OpenVtsSpacing.sm),
-                      const LinearProgressIndicator(minHeight: 2),
+                      const _ReferenceLoadingIndicator(),
+                    ] else if (_referenceError != null) ...[
+                      const SizedBox(height: OpenVtsSpacing.sm),
+                      _ReferenceLoadError(
+                        message: _referenceError!,
+                        onRetry: _loadReferences,
+                      ),
                     ],
                     const SizedBox(height: OpenVtsSpacing.sm),
                     if (_mode != AdminInventoryAddMode.sim) ...[
@@ -85,8 +93,13 @@ class _AdminInventoryAddSheetState
                       ),
                       const SizedBox(height: OpenVtsSpacing.sm),
                       SearchableDropdownField<String>(
+                        key: ValueKey(
+                          'device-type-$_referenceGeneration-$_deviceTypeId',
+                        ),
                         label: 'Device Type',
-                        hintText: 'Select device type',
+                        hintText: _loadingRefs
+                            ? 'Loading device types...'
+                            : 'Select device type',
                         searchHint: 'Search device type…',
                         initialValue: _deviceTypeId,
                         items: _deviceTypes
@@ -95,7 +108,10 @@ class _AdminInventoryAddSheetState
                                   label: item.name,
                                 ))
                             .toList(growable: false),
-                        enabled: !isSubmitting,
+                        enabled: !isSubmitting &&
+                            !_loadingRefs &&
+                            _referenceError == null &&
+                            _deviceTypes.isNotEmpty,
                         validator: _mode == AdminInventoryAddMode.sim
                             ? null
                             : (value) => (value == null || value.isEmpty)
@@ -111,8 +127,9 @@ class _AdminInventoryAddSheetState
                         controller: _simNumberController,
                         keyboardType: TextInputType.number,
                         validator: (v) {
-                          if (_mode == AdminInventoryAddMode.device)
+                          if (_mode == AdminInventoryAddMode.device) {
                             return null;
+                          }
                           return Validators.simNumber(v);
                         },
                       ),
@@ -132,6 +149,9 @@ class _AdminInventoryAddSheetState
                       ),
                       const SizedBox(height: OpenVtsSpacing.sm),
                       SearchableDropdownField<String>(
+                        key: ValueKey(
+                          'sim-provider-$_referenceGeneration-$_providerId',
+                        ),
                         label: 'SIM Provider (optional)',
                         hintText: 'Select provider',
                         searchHint: 'Search provider…',
@@ -145,7 +165,9 @@ class _AdminInventoryAddSheetState
                                     label: item.name,
                                   )),
                         ],
-                        enabled: !isSubmitting,
+                        enabled: !isSubmitting &&
+                            !_loadingRefs &&
+                            _referenceError == null,
                         onChanged: (v) => setState(() => _providerId = v),
                       ),
                     ],
@@ -221,7 +243,10 @@ class _AdminInventoryAddSheetState
   }
 
   Future<void> _loadReferences() async {
-    setState(() => _loadingRefs = true);
+    setState(() {
+      _loadingRefs = true;
+      _referenceError = null;
+    });
     final controller = ref.read(adminInventoryControllerProvider.notifier);
     try {
       final results = await Future.wait([
@@ -234,13 +259,18 @@ class _AdminInventoryAddSheetState
       setState(() {
         _deviceTypes = deviceTypes;
         _providers = providers;
-        _deviceTypeId = deviceTypes.isNotEmpty ? deviceTypes.first.id : null;
+        _deviceTypeId = null;
         _providerId = '';
         _loadingRefs = false;
+        _referenceGeneration++;
       });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _loadingRefs = false);
+      setState(() {
+        _loadingRefs = false;
+        _referenceError = 'Unable to load device types and providers.';
+        _referenceGeneration++;
+      });
     }
   }
 
@@ -384,6 +414,58 @@ class _ModeChip extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ReferenceLoadingIndicator extends StatelessWidget {
+  const _ReferenceLoadingIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      key: Key('inventory-reference-loading'),
+      children: [
+        SizedBox.square(
+          dimension: 16,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+        SizedBox(width: OpenVtsSpacing.xs),
+        Expanded(child: Text('Loading device types and providers...')),
+      ],
+    );
+  }
+}
+
+class _ReferenceLoadError extends StatelessWidget {
+  const _ReferenceLoadError({
+    required this.message,
+    required this.onRetry,
+  });
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      key: const Key('inventory-reference-error'),
+      children: [
+        const Icon(Icons.error_outline, color: OpenVtsColors.error),
+        const SizedBox(width: OpenVtsSpacing.xs),
+        Expanded(
+          child: Text(
+            message,
+            style: OpenVtsTypography.meta.copyWith(
+              color: OpenVtsColors.error,
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: onRetry,
+          child: const Text('Retry'),
+        ),
+      ],
     );
   }
 }

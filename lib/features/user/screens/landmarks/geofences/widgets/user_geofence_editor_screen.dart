@@ -43,6 +43,7 @@ class UserGeofenceEditorScreen extends ConsumerStatefulWidget {
     this.initialToleranceM,
     this.initialCenter,
     this.title = 'Draw geometry',
+    this.searchClient,
   });
 
   final UserGeofenceEditorMode initialMode;
@@ -50,6 +51,7 @@ class UserGeofenceEditorScreen extends ConsumerStatefulWidget {
   final double? initialToleranceM;
   final LatLng? initialCenter;
   final String title;
+  final Dio? searchClient;
 
   @override
   ConsumerState<UserGeofenceEditorScreen> createState() =>
@@ -89,6 +91,7 @@ class _UserGeofenceEditorScreenState
 
   late final TextEditingController _searchCtrl;
   late final Dio _nominatimDio;
+  late final bool _ownsNominatimDio;
   late final FocusNode _searchFocus;
 
   Timer? _debounceTimer;
@@ -114,13 +117,15 @@ class _UserGeofenceEditorScreenState
     _mapController = MapController();
     _searchCtrl = TextEditingController();
     _searchFocus = FocusNode();
-    _nominatimDio = Dio(
-      BaseOptions(
-        connectTimeout: const Duration(seconds: 6),
-        receiveTimeout: const Duration(seconds: 10),
-        headers: {'User-Agent': 'OpenVTS-Mobile/1.0 (geofence-search)'},
-      ),
-    );
+    _ownsNominatimDio = widget.searchClient == null;
+    _nominatimDio = widget.searchClient ??
+        Dio(
+          BaseOptions(
+            connectTimeout: const Duration(seconds: 6),
+            receiveTimeout: const Duration(seconds: 10),
+            headers: {'User-Agent': 'OpenVTS-Mobile/1.0 (geofence-search)'},
+          ),
+        );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -141,7 +146,9 @@ class _UserGeofenceEditorScreenState
     _searchCancel?.cancel();
     _searchCtrl.dispose();
     _searchFocus.dispose();
-    _nominatimDio.close(force: true);
+    if (_ownsNominatimDio) {
+      _nominatimDio.close(force: true);
+    }
     super.dispose();
   }
 
@@ -536,7 +543,8 @@ class _UserGeofenceEditorScreenState
                   ),
 
                   // ── Measurement chip ─────────────────────────────────────
-                  if (state.measurementSummary != null)
+                  if (state.measurementSummary != null &&
+                      _searchResults.isEmpty)
                     Positioned(
                       top: OpenVtsSpacing.sm + 112,
                       left: 0,

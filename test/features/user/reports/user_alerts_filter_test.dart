@@ -246,13 +246,21 @@ void main() {
       // First tap: add 'overspeed'
       final isSelected1 = selected.contains('overspeed');
       final list1 = List<String>.from(selected);
-      if (isSelected1) { list1.remove('overspeed'); } else { list1.add('overspeed'); }
+      if (isSelected1) {
+        list1.remove('overspeed');
+      } else {
+        list1.add('overspeed');
+      }
       // selected is now ['overspeed']
 
       // Second tap on same chip (it is now selected → remove)
       final isSelected2 = list1.contains('overspeed');
       final list2 = List<String>.from(list1);
-      if (isSelected2) { list2.remove('overspeed'); } else { list2.add('overspeed'); }
+      if (isSelected2) {
+        list2.remove('overspeed');
+      } else {
+        list2.add('overspeed');
+      }
       // selected is now []
 
       expect(list2, isEmpty);
@@ -260,7 +268,11 @@ void main() {
       // Third tap on 'overspeed' when list2 is empty
       final isSelected3 = list2.contains('overspeed');
       final list3 = List<String>.from(list2);
-      if (isSelected3) { list3.remove('overspeed'); } else { list3.add('overspeed'); }
+      if (isSelected3) {
+        list3.remove('overspeed');
+      } else {
+        list3.add('overspeed');
+      }
 
       expect(list3, ['overspeed']);
       expect(list3, hasLength(1)); // No duplicate.
