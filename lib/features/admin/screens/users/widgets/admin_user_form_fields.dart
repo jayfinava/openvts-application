@@ -104,6 +104,7 @@ class AdminUserDropdownField extends StatelessWidget {
             prefixIcon: prefixIcon,
             isLoading: isLoading,
             validator: validator,
+            selectedLabel: resolvedSelectedLabel,
             onChanged: onChanged,
           )
         else
@@ -238,6 +239,7 @@ class _SearchableField extends StatelessWidget {
     required this.prefixIcon,
     required this.isLoading,
     required this.validator,
+    required this.selectedLabel,
     required this.onChanged,
     super.key,
   });
@@ -249,6 +251,7 @@ class _SearchableField extends StatelessWidget {
   final IconData? prefixIcon;
   final bool isLoading;
   final String? Function(String?)? validator;
+  final String? Function(String value)? selectedLabel;
   final ValueChanged<String?>? onChanged;
 
   @override
@@ -302,7 +305,9 @@ class _SearchableField extends StatelessWidget {
             child: safeValue == null
                 ? const SizedBox.shrink()
                 : Text(
-                    selectedOption?.label ?? safeValue!,
+                    selectedLabel?.call(safeValue!) ??
+                        selectedOption?.label ??
+                        safeValue!,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                     style: OpenVtsTypography.body.copyWith(
@@ -544,6 +549,7 @@ class AdminUserPrefixPhoneRow extends StatelessWidget {
           isLoading: isLoading,
           validator: requiredDropdown,
           selectedLabel: (v) => v,
+          searchable: true,
           onChanged: onPrefixChanged,
         );
 

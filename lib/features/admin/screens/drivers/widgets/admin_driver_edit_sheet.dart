@@ -202,6 +202,7 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
               hintText: '+91',
               prefixIcon: Icons.phone_android_rounded,
               isLoading: _loadingReferences,
+              searchable: true,
               validator: (value) => _mobile.text.trim().isNotEmpty &&
                       (value == null || value.trim().isEmpty)
                   ? 'Mobile prefix is required'
@@ -237,6 +238,7 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
               hintText: 'Select country',
               prefixIcon: Icons.public_rounded,
               isLoading: _loadingReferences,
+              searchable: true,
               validator: requiredDropdown,
               onChanged: _onCountryChanged,
             ),
@@ -250,6 +252,7 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
                   : 'Select state',
               prefixIcon: Icons.map_outlined,
               isLoading: _loadingStates,
+              searchable: true,
               validator: requiredDropdown,
               onChanged: _countryCode == null ? null : _onStateChanged,
             ),
@@ -262,6 +265,7 @@ class _DriverEditSheetState extends ConsumerState<_DriverEditSheet> {
                   _stateCode == null ? 'Select state first' : 'Select city',
               prefixIcon: Icons.location_city_rounded,
               isLoading: _loadingCities,
+              searchable: true,
               validator: requiredDropdown,
               onChanged: _stateCode == null
                   ? null

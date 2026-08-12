@@ -78,6 +78,5 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('US dotted'), findsOneWidget);
-    expect(find.byType(DropdownButton<String>), findsNWidgets(2));
   });
 }

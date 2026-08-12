@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_date_time_range_selector.dart';
 import '../../../../../shared/widgets/open_vts_search_field.dart';
+import '../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../models/superadmin_payments_model.dart';
 import '../../../models/superadmin_payments_state.dart';
 
@@ -111,12 +111,54 @@ class _CollapsibleFiltersSectionState
     extends State<_CollapsibleFiltersSection> {
   bool _isExpanded = false;
 
+  List<SuperadminPaymentAdminOption> _resolveAdminOptions() {
+    if (widget.state.selectedAdminId == null) {
+      return widget.state.admins;
+    }
+
+    final selectedId = widget.state.selectedAdminId!;
+    final hasSelected =
+        widget.state.admins.any((item) => item.uid == selectedId);
+    if (hasSelected) {
+      return widget.state.admins;
+    }
+
+    return [
+      SuperadminPaymentAdminOption(
+        uid: selectedId,
+        name: 'Admin #$selectedId',
+        username: '',
+        email: '',
+        currency: '',
+      ),
+      ...widget.state.admins,
+    ];
+  }
+
+  List<OpenVtsDropdownOption<int>> _buildAdminOptions(
+    List<SuperadminPaymentAdminOption> admins,
+  ) {
+    return admins.map((admin) {
+      final parts = <String>[
+        if (admin.username.trim().isNotEmpty) '@${admin.username.trim()}',
+        if (admin.email.trim().isNotEmpty) admin.email.trim(),
+      ];
+      return OpenVtsDropdownOption<int>(
+        value: admin.uid,
+        label: admin.displayName,
+        subtitle: parts.isNotEmpty ? parts.join(' • ') : null,
+        searchText: admin.searchText,
+      );
+    }).toList(growable: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     final admins = _resolveAdminOptions();
     final selectedAdmin = widget.state.selectedAdminId;
     final selectedAdminValue =
         admins.any((item) => item.uid == selectedAdmin) ? selectedAdmin : null;
+    final adminOptions = _buildAdminOptions(admins);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,55 +192,14 @@ class _CollapsibleFiltersSectionState
         ),
         if (_isExpanded) ...[
           const SizedBox(height: OpenVtsSpacing.sm),
-          DropdownButtonFormField<int?>(
-            initialValue: selectedAdminValue,
-            isExpanded: true,
-            decoration: InputDecoration(
-              isDense: true,
-              labelText: 'Administrator',
-              suffixIcon: widget.state.isLoadingAdmins
-                  ? const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    )
-                  : null,
-            ),
-            items: [
-              const DropdownMenuItem<int?>(
-                value: null,
-                child: Text('All Admins'),
-              ),
-              ...admins.map(
-                (admin) => DropdownMenuItem<int?>(
-                  value: admin.uid,
-                  child: _AdminDropdownLabel(admin: admin),
-                ),
-              ),
-            ],
-            selectedItemBuilder: (context) => [
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'All Admins',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              ...admins.map(
-                (admin) => Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    _compactAdminLabel(admin),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-            ],
+          OpenVtsSearchableDropdown<int>(
+            label: 'Administrator',
+            hintText: 'All Admins',
+            searchHintText: 'Search by name, username, email or ID',
+            sheetTitle: 'Filter by Administrator',
+            options: adminOptions,
+            value: selectedAdminValue,
+            isLoading: widget.state.isLoadingAdmins,
             onChanged: (value) => widget.onAdminChanged(value?.toString()),
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
@@ -314,76 +315,6 @@ class _CollapsibleFiltersSectionState
             ],
           ),
         ],
-      ],
-    );
-  }
-
-  String _compactAdminLabel(SuperadminPaymentAdminOption admin) {
-    final name = admin.displayName;
-    final username = admin.username.trim();
-    if (username.isNotEmpty) {
-      return '$name · @$username';
-    }
-    return name;
-  }
-
-  List<SuperadminPaymentAdminOption> _resolveAdminOptions() {
-    if (widget.state.selectedAdminId == null) {
-      return widget.state.admins;
-    }
-
-    final selectedId = widget.state.selectedAdminId!;
-    final hasSelected =
-        widget.state.admins.any((item) => item.uid == selectedId);
-    if (hasSelected) {
-      return widget.state.admins;
-    }
-
-    return [
-      SuperadminPaymentAdminOption(
-        uid: selectedId,
-        name: 'Admin #$selectedId',
-        username: '',
-        email: '',
-        currency: '',
-      ),
-      ...widget.state.admins,
-    ];
-  }
-}
-
-class _AdminDropdownLabel extends StatelessWidget {
-  const _AdminDropdownLabel({required this.admin});
-
-  final SuperadminPaymentAdminOption admin;
-
-  @override
-  Widget build(BuildContext context) {
-    final username = admin.username.trim();
-    final currency = admin.currency.trim();
-    final subtitleParts = <String>[
-      if (username.isNotEmpty) '@$username',
-      if (currency.isNotEmpty) currency,
-    ];
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          admin.displayName,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        if (subtitleParts.isNotEmpty)
-          Text(
-            subtitleParts.join(' • '),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
-            ),
-          ),
       ],
     );
   }

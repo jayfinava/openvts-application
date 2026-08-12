@@ -8,17 +8,31 @@ import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
+import '../../../../../shared/widgets/open_vts_search_field.dart';
 import '../../../controllers/superadmin_calendar_controller.dart';
 import '../../../models/superadmin_calendar_model.dart';
 
-class CalendarDayBottomSheet extends ConsumerWidget {
+class CalendarDayBottomSheet extends ConsumerStatefulWidget {
   final DateTime date;
 
   const CalendarDayBottomSheet({super.key, required this.date});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final detailsAsync = ref.watch(calendarDayDetailsProvider(date));
+  ConsumerState<CalendarDayBottomSheet> createState() =>
+      _CalendarDayBottomSheetState();
+}
+
+class _CalendarDayBottomSheetState
+    extends ConsumerState<CalendarDayBottomSheet> {
+  String _query = '';
+
+  void _onSearchChanged(String value) {
+    setState(() => _query = value.trim());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final detailsAsync = ref.watch(calendarDayDetailsProvider(widget.date));
 
     return detailsAsync.when(
       loading: () => const Center(child: OpenVtsLoader()),
@@ -26,7 +40,7 @@ class CalendarDayBottomSheet extends ConsumerWidget {
         padding: const EdgeInsets.all(OpenVtsSpacing.md),
         child: OpenVtsErrorView(
           message: 'Failed to load details',
-          onRetry: () => ref.refresh(calendarDayDetailsProvider(date)),
+          onRetry: () => ref.refresh(calendarDayDetailsProvider(widget.date)),
         ),
       ),
       data: (details) {
@@ -37,18 +51,58 @@ class CalendarDayBottomSheet extends ConsumerWidget {
           );
         }
 
-        return ListView.separated(
-          padding: const EdgeInsets.fromLTRB(
-            OpenVtsSpacing.md,
-            OpenVtsSpacing.md,
-            OpenVtsSpacing.md,
-            OpenVtsSpacing.lg,
-          ),
-          itemCount: details.length,
-          separatorBuilder: (context, index) =>
-              const SizedBox(height: OpenVtsSpacing.sm),
-          itemBuilder: (context, index) =>
-              _CalendarDayEventTile(detail: details[index]),
+        final filtered = _query.isEmpty
+            ? details
+            : details.where((d) {
+                final linkedDetail = d.isUser
+                    ? ref
+                        .read(calendarUserDetailsProvider(d.userId!))
+                        .asData
+                        ?.value
+                    : d.isVehicle
+                        ? ref
+                            .read(calendarVehicleDetailsProvider(d.vehicleId!))
+                            .asData
+                            ?.value
+                        : null;
+                return d.matchesQuery(_query, linkedDetail);
+              }).toList();
+
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                OpenVtsSpacing.md,
+                OpenVtsSpacing.md,
+                OpenVtsSpacing.md,
+                OpenVtsSpacing.sm,
+              ),
+              child: OpenVtsSearchField(
+                hintText: 'Search users, vehicles…',
+                onChanged: _onSearchChanged,
+              ),
+            ),
+            Expanded(
+              child: filtered.isEmpty
+                  ? const OpenVtsEmptyState(
+                      title: 'No matching records',
+                      message: 'Try a different search term',
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(
+                        OpenVtsSpacing.md,
+                        0,
+                        OpenVtsSpacing.md,
+                        OpenVtsSpacing.lg,
+                      ),
+                      itemCount: filtered.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: OpenVtsSpacing.sm),
+                      itemBuilder: (context, index) =>
+                          _CalendarDayEventTile(detail: filtered[index]),
+                    ),
+            ),
+          ],
         );
       },
     );

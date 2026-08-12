@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
+import '../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../controllers/admin_providers.dart';
 import '../../../models/admin_plans_model.dart';
@@ -146,30 +147,13 @@ class _AdminPlanFormSheetState extends ConsumerState<AdminPlanFormSheet> {
                       validator: _validatePrice,
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
-                    DropdownButtonFormField<String>(
-                      initialValue: _currencyCode,
-                      items: currencies
-                          .map(
-                            (item) => DropdownMenuItem<String>(
-                              value: item.code,
-                              child: Text(
-                                item.label,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          )
-                          .toList(growable: false),
-                      decoration: const InputDecoration(
-                        labelText: 'Currency',
-                        prefixIcon: Icon(Icons.language_rounded, size: 20),
-                      ),
-                      onChanged: isSubmitting
-                          ? null
-                          : (value) => setState(() => _currencyCode = value),
-                      validator: (value) =>
-                          (value == null || value.trim().isEmpty)
-                              ? 'Currency is required'
-                              : null,
+                    AdminPlanCurrencyDropdown(
+                      value: _currencyCode,
+                      currencies: currencies,
+                      isLoading: state.isLoadingCurrencies,
+                      enabled: !isSubmitting,
+                      onChanged: (value) =>
+                          setState(() => _currencyCode = value),
                     ),
                     if (!state.isLoadingCurrencies &&
                         currencies.isEmpty &&
@@ -311,5 +295,48 @@ class _AdminPlanFormSheetState extends ConsumerState<AdminPlanFormSheet> {
       return 'Price must be at most 1000000';
     }
     return null;
+  }
+}
+
+class AdminPlanCurrencyDropdown extends StatelessWidget {
+  const AdminPlanCurrencyDropdown({
+    required this.value,
+    required this.currencies,
+    required this.onChanged,
+    this.isLoading = false,
+    this.enabled = true,
+    super.key,
+  });
+
+  final String? value;
+  final List<AdminCurrencyOption> currencies;
+  final ValueChanged<String?> onChanged;
+  final bool isLoading;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return OpenVtsSearchableDropdown<String>(
+      label: 'Currency',
+      value: value,
+      options: currencies
+          .map(
+            (currency) => OpenVtsDropdownOption<String>(
+              value: currency.code,
+              label: currency.label,
+              searchText: '${currency.code} ${currency.label}',
+            ),
+          )
+          .toList(growable: false),
+      searchHintText: 'Search currency code or name',
+      leadingIcon: Icons.language_rounded,
+      isLoading: isLoading,
+      enabled: enabled,
+      required: true,
+      validator: (selected) => (selected == null || selected.trim().isEmpty)
+          ? 'Currency is required'
+          : null,
+      onChanged: onChanged,
+    );
   }
 }

@@ -330,6 +330,15 @@ class CalendarDayDetail {
   bool get isVehicle =>
       type == 'vehicle' && vehicleId != null && vehicleId!.isNotEmpty;
 
+  bool matchesQuery(String query, [CalendarLinkedDetail? linkedDetail]) {
+    if (query.isEmpty) return true;
+    final q = query.toLowerCase();
+    if (title.toLowerCase().contains(q)) return true;
+    if (subtitle.toLowerCase().contains(q)) return true;
+    if (linkedDetail != null && linkedDetail.matchesQuery(query)) return true;
+    return false;
+  }
+
   factory CalendarDayDetail.fromJson(
     Map<String, dynamic> json, {
     String? fallbackType,
@@ -576,6 +585,14 @@ class CalendarLinkedDetail {
   final String title;
   final String subtitle;
   final List<String> metadata;
+
+  bool matchesQuery(String query) {
+    if (query.isEmpty) return true;
+    final q = query.toLowerCase();
+    if (title.toLowerCase().contains(q)) return true;
+    if (subtitle.toLowerCase().contains(q)) return true;
+    return metadata.any((item) => item.toLowerCase().contains(q));
+  }
 
   factory CalendarLinkedDetail.fromUserPayload(dynamic payload) {
     final json = _asMap(payload);

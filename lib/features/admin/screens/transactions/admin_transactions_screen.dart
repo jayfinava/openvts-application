@@ -11,6 +11,7 @@ import '../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../shared/widgets/open_vts_page_scaffold.dart';
+import '../../../../shared/widgets/open_vts_search_field.dart';
 import '../../controllers/admin_providers.dart';
 import '../../controllers/admin_transactions_controller.dart';
 import '../../models/admin_transactions_model.dart';
@@ -29,14 +30,6 @@ class AdminTransactionsScreen extends ConsumerStatefulWidget {
 
 class _AdminTransactionsScreenState
     extends ConsumerState<AdminTransactionsScreen> {
-  Timer? _searchDebounce;
-
-  @override
-  void dispose() {
-    _searchDebounce?.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(adminTransactionsControllerProvider);
@@ -64,6 +57,12 @@ class _AdminTransactionsScreenState
                     loaded: state.transactions.length,
                     total: state.total,
                     onPurchaseCredits: _showPurchaseCreditsDialog,
+                  ),
+                  const SizedBox(height: OpenVtsSpacing.sm),
+                  AdminTransactionsSearchField(
+                    key: ValueKey('transactions-search-${state.searchQuery}'),
+                    currentQuery: state.searchQuery,
+                    onSearch: controller.setSearch,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   AdminTransactionsFiltersCard(
@@ -186,6 +185,48 @@ class _AdminTransactionsScreenState
           ),
         ],
       ),
+    );
+  }
+}
+
+class AdminTransactionsSearchField extends StatefulWidget {
+  const AdminTransactionsSearchField({
+    required this.currentQuery,
+    required this.onSearch,
+    super.key,
+  });
+
+  final String currentQuery;
+  final Future<void> Function(String query) onSearch;
+
+  @override
+  State<AdminTransactionsSearchField> createState() =>
+      _AdminTransactionsSearchFieldState();
+}
+
+class _AdminTransactionsSearchFieldState
+    extends State<AdminTransactionsSearchField> {
+  Timer? _searchDebounce;
+
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return OpenVtsSearchField(
+      hintText: 'Search transactions...',
+      onChanged: (value) {
+        _searchDebounce?.cancel();
+        _searchDebounce = Timer(const Duration(milliseconds: 350), () {
+          final query = value.trim();
+          if (query != widget.currentQuery) {
+            unawaited(widget.onSearch(query));
+          }
+        });
+      },
     );
   }
 }

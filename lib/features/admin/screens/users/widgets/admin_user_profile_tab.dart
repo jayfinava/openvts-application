@@ -1110,6 +1110,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                       prefixIcon: Icons.public_rounded,
                       isLoading: _isLoadingReferences,
                       validator: requiredDropdown,
+                      searchable: true,
                       onChanged: _onCountryChanged,
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
@@ -1121,6 +1122,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                       prefixIcon: Icons.map_outlined,
                       isLoading: _isLoadingStates,
                       validator: requiredDropdown,
+                      searchable: true,
                       onChanged: _countryCode == null ? null : _onStateChanged,
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
@@ -1132,6 +1134,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                       prefixIcon: Icons.location_city_rounded,
                       isLoading: _isLoadingCities,
                       validator: requiredDropdown,
+                      searchable: true,
                       onChanged: _stateCode == null
                           ? null
                           : (value) => setState(() => _city = value),

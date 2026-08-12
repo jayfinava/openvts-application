@@ -616,31 +616,25 @@ class _LanguageDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasValue = options.any((o) => o.code == value);
-    final items = <DropdownMenuItem<String>>[
+    final dropdownOptions = <OpenVtsDropdownOption<String>>[
       if (!hasValue && value.isNotEmpty)
-        DropdownMenuItem(value: value, child: Text(value.toUpperCase())),
+        OpenVtsDropdownOption(
+          value: value,
+          label: value.toUpperCase(),
+          searchText: value,
+        ),
       for (final o in options)
-        DropdownMenuItem(value: o.code, child: Text(o.label)),
+        OpenVtsDropdownOption(
+          value: o.code,
+          label: o.label,
+          searchText: o.code,
+        ),
     ];
-    return _DropdownShell(
+    return OpenVtsSearchableDropdown<String>(
       label: AppLocalizations.of(context).language,
-      child: DropdownButton<String>(
-        value: value.isEmpty ? null : value,
-        isExpanded: true,
-        icon: Icon(
-          Icons.expand_more_rounded,
-          size: 18,
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-        style: TextStyle(
-          fontFamily: OpenVtsTypography.primaryFontFamily,
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-        items: items,
-        onChanged: onChanged,
-      ),
+      value: value.isEmpty ? null : value,
+      options: dropdownOptions,
+      onChanged: onChanged,
     );
   }
 }
@@ -692,51 +686,17 @@ class _TimezoneDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasValue = options.contains(value);
-    final items = <DropdownMenuItem<String>>[
+    final dropdownOptions = <OpenVtsDropdownOption<String>>[
       if (!hasValue && value.isNotEmpty)
-        DropdownMenuItem(value: value, child: Text(value)),
-      for (final o in options) DropdownMenuItem(value: o, child: Text(o)),
+        OpenVtsDropdownOption(value: value, label: value),
+      for (final option in options)
+        OpenVtsDropdownOption(value: option, label: option),
     ];
-    return _DropdownShell(
+    return OpenVtsSearchableDropdown<String>(
       label: AppLocalizations.of(context).timezone,
-      child: DropdownButton<String>(
-        value: value.isEmpty ? null : value,
-        isExpanded: true,
-        icon: Icon(
-          Icons.expand_more_rounded,
-          size: 18,
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-        style: TextStyle(
-          fontFamily: OpenVtsTypography.primaryFontFamily,
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-        items: items,
-        onChanged: onChanged,
-      ),
-    );
-  }
-}
-
-class _DropdownShell extends StatelessWidget {
-  const _DropdownShell({required this.label, required this.child});
-  final String label;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: OpenVtsTypography.label),
-        const SizedBox(height: OpenVtsSpacing.xs),
-        InputDecorator(
-          decoration: const InputDecoration(isDense: true),
-          child: DropdownButtonHideUnderline(child: child),
-        ),
-      ],
+      value: value.isEmpty ? null : value,
+      options: dropdownOptions,
+      onChanged: onChanged,
     );
   }
 }

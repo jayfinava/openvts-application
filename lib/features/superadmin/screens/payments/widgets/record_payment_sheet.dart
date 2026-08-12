@@ -10,6 +10,7 @@ import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
+import '../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../controllers/superadmin_providers.dart';
 import '../../../models/superadmin_payments_model.dart';
 
@@ -209,6 +210,23 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
     _didAttemptSubmit = false;
   }
 
+  List<OpenVtsDropdownOption<int>> _buildAdminOptions(
+    List<SuperadminPaymentAdminOption> admins,
+  ) {
+    return admins.map((admin) {
+      final subtitleParts = <String>[
+        if (admin.username.trim().isNotEmpty) '@${admin.username.trim()}',
+        if (admin.email.trim().isNotEmpty) admin.email.trim(),
+      ];
+      return OpenVtsDropdownOption<int>(
+        value: admin.uid,
+        label: admin.displayName,
+        subtitle: subtitleParts.isNotEmpty ? subtitleParts.join(' • ') : null,
+        searchText: admin.searchText,
+      );
+    }).toList(growable: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(superadminPaymentsControllerProvider);
@@ -227,6 +245,7 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
     final amountError =
         _didAttemptSubmit ? _validateAmount(_amountController.text) : null;
     final isSubmitEnabled = _canSubmit(state.isRecordingPayment);
+    final adminOptions = _buildAdminOptions(admins);
 
     return DraggableScrollableSheet(
       expand: false,
@@ -237,7 +256,7 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
         return DecoratedBox(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.vertical(
+            borderRadius: const BorderRadius.vertical(
               top: Radius.circular(OpenVtsRadius.xl),
             ),
           ),
@@ -292,27 +311,30 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                         controller: scrollController,
                         padding: const EdgeInsets.all(OpenVtsSpacing.md),
                         children: [
-                          DropdownButtonFormField<int>(
-                            initialValue: selectedAdmin?.uid,
-                            isExpanded: true,
-                            decoration: const InputDecoration(
-                              labelText: 'Administrator *',
-                            ),
-                            items: admins
-                                .map(
-                                  (admin) => DropdownMenuItem<int>(
-                                    value: admin.uid,
-                                    child: _AdminMenuLabel(admin: admin),
-                                  ),
-                                )
-                                .toList(growable: false),
-                            onChanged: state.isRecordingPayment
-                                ? null
-                                : (value) {
-                                    setState(() {
-                                      _adminId = value;
-                                    });
-                                  },
+                          OpenVtsSearchableDropdown<int>(
+                            label: 'Administrator',
+                            required: true,
+                            hintText: 'Select administrator',
+                            searchHintText:
+                                'Search by name, username, email or ID',
+                            sheetTitle: 'Select Administrator',
+                            options: adminOptions,
+                            value: _adminId,
+                            isLoading:
+                                state.isLoadingAdmins && admins.isNotEmpty,
+                            enabled: !state.isRecordingPayment,
+                            validator: (value) {
+                              if (!_didAttemptSubmit) return null;
+                              if (value == null || value <= 0) {
+                                return 'Please select an administrator.';
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              setState(() {
+                                _adminId = value;
+                              });
+                            },
                           ),
                           if (admins.isEmpty && !state.isLoadingAdmins)
                             Padding(
@@ -468,30 +490,5 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
     }
 
     return currency;
-  }
-}
-
-class _AdminMenuLabel extends StatelessWidget {
-  const _AdminMenuLabel({required this.admin});
-
-  final SuperadminPaymentAdminOption admin;
-
-  @override
-  Widget build(BuildContext context) {
-    final username = admin.username.trim();
-    final currency = admin.currency.trim();
-    final title = username.isEmpty
-        ? admin.displayName
-        : '${admin.displayName} (@$username)';
-    final text = currency.isEmpty ? title : '$title | $currency';
-
-    return Text(
-      text,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: OpenVtsTypography.body.copyWith(
-        color: Theme.of(context).colorScheme.onSurface,
-      ),
-    );
   }
 }

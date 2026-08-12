@@ -11,6 +11,7 @@ import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../../shared/widgets/open_vts_search_field.dart';
+import '../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../controllers/admin_providers.dart';
 import '../../../models/admin_logs_model.dart';
 import '../widgets/admin_logs_filter_widgets.dart';
@@ -66,17 +67,9 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
           },
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
-        DropdownButtonFormField<String?>(
-          initialValue: state.vehicleVehicleId,
-          decoration: const InputDecoration(labelText: 'Vehicle'),
-          items: [
-            const DropdownMenuItem<String?>(
-                value: null, child: Text('All vehicles')),
-            ...state.options.vehicles.map((v) => DropdownMenuItem<String?>(
-                  value: v.id,
-                  child: Text(v.displayName, overflow: TextOverflow.ellipsis),
-                )),
-          ],
+        AdminVehicleLogsVehicleDropdown(
+          value: state.vehicleVehicleId,
+          vehicles: state.options.vehicles,
           onChanged: (v) {
             controller.setVehicleFilters(
               vehicleId: v,
@@ -86,17 +79,9 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
           },
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
-        DropdownButtonFormField<String?>(
-          initialValue: state.vehicleUserId,
-          decoration: const InputDecoration(labelText: 'Recipient/User'),
-          items: [
-            const DropdownMenuItem<String?>(
-                value: null, child: Text('All users')),
-            ...state.options.users.map((u) => DropdownMenuItem<String?>(
-                  value: u.uid,
-                  child: Text(u.displayName, overflow: TextOverflow.ellipsis),
-                )),
-          ],
+        AdminVehicleRecipientUserDropdown(
+          value: state.vehicleUserId,
+          users: state.options.users,
           onChanged: (v) {
             controller.setVehicleFilters(
               userId: v,
@@ -263,5 +248,88 @@ class _AdminVehicleLogsPanelState extends ConsumerState<AdminVehicleLogsPanel> {
       case AdminReadFilter.unread:
         return items.where((item) => !_isVehicleLogRead(item)).toList();
     }
+  }
+}
+
+class AdminVehicleLogsVehicleDropdown extends StatelessWidget {
+  const AdminVehicleLogsVehicleDropdown({
+    required this.value,
+    required this.vehicles,
+    required this.onChanged,
+    super.key,
+  });
+
+  final String? value;
+  final List<AdminLogsVehicleOption> vehicles;
+  final ValueChanged<String?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return OpenVtsSearchableDropdown<String>(
+      label: 'Vehicle',
+      value: value,
+      hintText: 'All vehicles',
+      searchHintText: 'Search vehicles...',
+      options: vehicles
+          .map(
+            (vehicle) => OpenVtsDropdownOption<String>(
+              value: vehicle.id,
+              label: vehicle.displayName,
+              subtitle: vehicle.imei.trim().isEmpty ? null : vehicle.imei,
+              searchText: [
+                vehicle.displayName,
+                vehicle.id,
+                vehicle.name,
+                vehicle.plateNumber,
+                vehicle.imei,
+              ].join(' '),
+            ),
+          )
+          .toList(growable: false),
+      onChanged: onChanged,
+    );
+  }
+}
+
+class AdminVehicleRecipientUserDropdown extends StatelessWidget {
+  const AdminVehicleRecipientUserDropdown({
+    required this.value,
+    required this.users,
+    required this.onChanged,
+    super.key,
+  });
+
+  final String? value;
+  final List<AdminLogsUserOption> users;
+  final ValueChanged<String?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return OpenVtsSearchableDropdown<String>(
+      label: 'Recipient/User',
+      value: value,
+      hintText: 'All users',
+      searchHintText: 'Search users...',
+      options: users
+          .map(
+            (user) => OpenVtsDropdownOption<String>(
+              value: user.uid,
+              label: user.displayName,
+              subtitle: [
+                user.username.trim(),
+                user.loginType.trim(),
+              ].where((part) => part.isNotEmpty).join(' • '),
+              searchText: [
+                user.displayName,
+                user.uid,
+                user.name,
+                user.username,
+                user.loginType,
+              ].join(' '),
+            ),
+          )
+          .toList(growable: false),
+      onChanged: onChanged,
+    );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +19,9 @@ import '../../../../../../core/utils/unit_formatter.dart';
 import '../user_report_kpi_row.dart';
 import '../user_report_result_toolbar.dart';
 import '../user_report_row_details_sheet.dart';
+
+@visibleForTesting
+const String kTimelineMapTileUserAgent = 'com.openvts.mobile';
 
 class UserTimelineReportResult extends ConsumerWidget {
   const UserTimelineReportResult(
@@ -384,7 +388,7 @@ class _TimelineRowCardState extends ConsumerState<_TimelineRowCard> {
   }
 }
 
-class _MapSection extends StatelessWidget {
+class _MapSection extends StatefulWidget {
   const _MapSection(
       {required this.points,
       required this.loading,
@@ -398,30 +402,54 @@ class _MapSection extends StatelessWidget {
   final double? startLon;
 
   @override
+  State<_MapSection> createState() => _MapSectionState();
+}
+
+class _MapSectionState extends State<_MapSection> {
+  final MapController _mapController = MapController();
+
+  @override
+  void dispose() {
+    _mapController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (loading)
+    if (widget.loading) {
       return const SizedBox(
           height: 200,
           child: Center(child: CircularProgressIndicator(strokeWidth: 2)));
-    if (error != null)
+    }
+    if (widget.error != null) {
       return Padding(
           padding: const EdgeInsets.all(12),
-          child: Text(error!,
+          child: Text(widget.error!,
               style:
                   OpenVtsTypography.meta.copyWith(color: OpenVtsColors.error)));
-    if (points == null) return const SizedBox.shrink();
-    if (points!.isEmpty)
+    }
+    if (widget.points == null) return const SizedBox.shrink();
+    if (widget.points!.isEmpty) {
       return const Padding(
           padding: EdgeInsets.all(12),
           child: Text('No valid GPS location', style: OpenVtsTypography.body));
+    }
 
-    final polyLatLngs = points!
+    final polyLatLngs = widget.points!
         .where((p) => p.isValid)
         .map((p) => LatLng(p.latitude, p.longitude))
         .toList();
-    LatLng center = polyLatLngs.isNotEmpty
+
+    if (polyLatLngs.isEmpty) {
+      return const Padding(
+          padding: EdgeInsets.all(12),
+          child: Text('No valid GPS location', style: OpenVtsTypography.body));
+    }
+
+    final center = polyLatLngs.length == 1
         ? polyLatLngs.first
-        : LatLng(startLat ?? 0, startLon ?? 0);
+        : LatLng(widget.startLat ?? polyLatLngs.first.latitude,
+            widget.startLon ?? polyLatLngs.first.longitude);
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(
@@ -429,10 +457,29 @@ class _MapSection extends StatelessWidget {
       child: SizedBox(
         height: 280,
         child: FlutterMap(
-          options: MapOptions(initialCenter: center, initialZoom: 13),
+          mapController: _mapController,
+          options: MapOptions(
+            initialCenter: center,
+            initialZoom: 13,
+            onMapReady: () {
+              if (polyLatLngs.length >= 2) {
+                _mapController.fitCamera(
+                  CameraFit.bounds(
+                    bounds: LatLngBounds.fromPoints(polyLatLngs),
+                    padding: const EdgeInsets.all(32),
+                    maxZoom: 17,
+                  ),
+                );
+              }
+            },
+          ),
           children: [
             TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'),
+              urlTemplate:
+                  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              subdomains: const ['a', 'b', 'c'],
+              userAgentPackageName: kTimelineMapTileUserAgent,
+            ),
             if (polyLatLngs.length > 1)
               PolylineLayer(polylines: [
                 Polyline(
@@ -441,13 +488,12 @@ class _MapSection extends StatelessWidget {
                     color: OpenVtsColors.info)
               ]),
             MarkerLayer(markers: [
-              if (polyLatLngs.isNotEmpty)
-                Marker(
-                    point: polyLatLngs.first,
-                    width: 20,
-                    height: 20,
-                    child: const Icon(Icons.trip_origin_rounded,
-                        size: 20, color: OpenVtsColors.success)),
+              Marker(
+                  point: polyLatLngs.first,
+                  width: 20,
+                  height: 20,
+                  child: const Icon(Icons.trip_origin_rounded,
+                      size: 20, color: OpenVtsColors.success)),
               if (polyLatLngs.length > 1)
                 Marker(
                     point: polyLatLngs.last,

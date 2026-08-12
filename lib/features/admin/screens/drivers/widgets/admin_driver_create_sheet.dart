@@ -7,6 +7,7 @@ import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_bottom_sheet.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
+import '../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../controllers/admin_drivers_controller.dart';
 import '../../../controllers/admin_providers.dart';
@@ -162,30 +163,11 @@ class _DriverCreateSheetState extends ConsumerState<_DriverCreateSheet> {
                   const LinearProgressIndicator(minHeight: 2),
                   const SizedBox(height: OpenVtsSpacing.md),
                 ],
-                DropdownButtonFormField<String>(
-                  initialValue: _primaryUserId,
-                  isExpanded: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Primary User',
-                    prefixIcon: Icon(Icons.person_search_outlined),
-                  ),
-                  items: _primaryUsers
-                      .map(
-                        (user) => DropdownMenuItem<String>(
-                          value: user.id,
-                          child: Text(
-                            _primaryLabel(user),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      )
-                      .toList(growable: false),
+                AdminDriverPrimaryUserDropdown(
+                  value: _primaryUserId,
+                  users: _primaryUsers,
+                  isLoading: _loadingUsers,
                   onChanged: (value) => setState(() => _primaryUserId = value),
-                  validator: (value) => Validators.required(
-                    value,
-                    fieldName: 'Primary user',
-                  ),
                 ),
                 const SizedBox(height: OpenVtsSpacing.sm),
                 OpenVtsTextField(
@@ -578,18 +560,68 @@ class _DriverCreateSheetState extends ConsumerState<_DriverCreateSheet> {
       );
     }
   }
+}
 
-  String _primaryLabel(AdminDriverListItem user) {
-    final name =
-        user.firstName.trim().isNotEmpty ? user.firstName.trim() : 'User';
-    final email = user.email.trim();
-    if (email.isNotEmpty && email != '-') {
-      return '$name • $email';
+class AdminDriverPrimaryUserDropdown extends StatelessWidget {
+  const AdminDriverPrimaryUserDropdown({
+    super.key,
+    required this.value,
+    required this.users,
+    required this.isLoading,
+    required this.onChanged,
+  });
+
+  final String? value;
+  final List<AdminDriverListItem> users;
+  final bool isLoading;
+  final ValueChanged<String?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return OpenVtsSearchableDropdown<String>(
+      label: 'Primary User',
+      hintText: 'Select primary user',
+      leadingIcon: Icons.person_search_outlined,
+      value: value,
+      options: users
+          .map(
+            (user) => OpenVtsDropdownOption<String>(
+              value: user.id,
+              label: _primaryUserName(user),
+              subtitle: _primaryUserSubtitle(user),
+              searchText: [
+                user.firstName,
+                user.username,
+                user.email,
+                user.phone,
+                user.mobile,
+                user.id,
+              ].join(' '),
+            ),
+          )
+          .toList(growable: false),
+      isLoading: isLoading,
+      required: true,
+      validator: (selected) => Validators.required(
+        selected,
+        fieldName: 'Primary user',
+      ),
+      onChanged: onChanged,
+    );
+  }
+
+  String _primaryUserName(AdminDriverListItem user) {
+    final name = user.firstName.trim();
+    if (name.isNotEmpty && name != '-') return name;
+    final username = user.username.trim();
+    return username.isNotEmpty && username != '-' ? username : 'User';
+  }
+
+  String? _primaryUserSubtitle(AdminDriverListItem user) {
+    for (final value in [user.email, user.phone, user.mobile]) {
+      final normalized = value.trim();
+      if (normalized.isNotEmpty && normalized != '-') return normalized;
     }
-    final phone = user.phone.trim();
-    if (phone.isNotEmpty && phone != '-') {
-      return '$name • $phone';
-    }
-    return name;
+    return null;
   }
 }

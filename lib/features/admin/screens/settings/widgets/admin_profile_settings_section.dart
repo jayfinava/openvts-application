@@ -16,6 +16,7 @@ import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../../shared/widgets/open_vts_role_home.dart';
+import '../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../../auth/controllers/auth_controller.dart';
 import '../../../controllers/admin_providers.dart';
@@ -1738,19 +1739,10 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     children: [
                       Expanded(
                         flex: 4,
-                        child: _DropdownField<String>(
-                          label: 'Prefix',
+                        child: AdminProfileMobilePrefixDropdown(
                           value: _mobilePrefix,
-                          items: _prefixes
-                              .map(
-                                (p) => DropdownMenuItem(
-                                  value: p.value,
-                                  child: Text(
-                                    '${p.value} (${p.countryCode})',
-                                  ),
-                                ),
-                              )
-                              .toList(),
+                          prefixes: _prefixes,
+                          isLoading: _loadingCatalogs,
                           onChanged: (v) => setState(() => _mobilePrefix = v),
                         ),
                       ),
@@ -1777,19 +1769,19 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     controller: _addressLine,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
-                  _DropdownField<String>(
+                  OpenVtsSearchableDropdown<String>(
                     label: 'Country',
                     value: _countryCode,
-                    items: _countries
+                    options: _countries
                         .map(
-                          (c) => DropdownMenuItem(
+                          (c) => OpenVtsDropdownOption(
                             value: c.value,
-                            child: Text(c.label),
+                            label: c.label,
+                            searchText: c.value,
                           ),
                         )
                         .toList(),
                     onChanged: (v) {
-                      // Only clear location if not initializing (user manually changed country)
                       setState(() {
                         _countryCode = v;
                         _stateCode = null;
@@ -1803,21 +1795,21 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     },
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
-                  _DropdownField<String>(
+                  OpenVtsSearchableDropdown<String>(
                     label: 'State',
                     value: _stateCode,
-                    enabled: !_loadingStates && _states.isNotEmpty,
-                    busy: _loadingStates,
-                    items: _states
+                    enabled: !_loadingStates,
+                    isLoading: _loadingStates,
+                    options: _states
                         .map(
-                          (s) => DropdownMenuItem(
+                          (s) => OpenVtsDropdownOption(
                             value: s.value,
-                            child: Text(s.label),
+                            label: s.label,
+                            searchText: s.value,
                           ),
                         )
                         .toList(),
                     onChanged: (v) {
-                      // Only clear city if not initializing (user manually changed state)
                       setState(() {
                         _stateCode = v;
                         if (!_isInitializingProfileLocation) {
@@ -1831,24 +1823,23 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     },
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
-                  _DropdownField<String>(
+                  OpenVtsSearchableDropdown<String>(
                     label: 'City',
                     value: _cityValue,
                     enabled: !_loadingCities &&
                         (_cities.isNotEmpty || _cityValue != null),
-                    busy: _loadingCities,
-                    items: _cities
+                    isLoading: _loadingCities,
+                    options: _cities
                         .map(
-                          (c) => DropdownMenuItem(
+                          (c) => OpenVtsDropdownOption(
                             value: c.value,
-                            child: Text(c.label),
+                            label: c.label,
                           ),
                         )
                         .toList(),
                     onChanged: (v) {
                       setState(() {
                         _cityValue = v;
-                        // Mark initialization complete when user manually selects
                         _isInitializingProfileLocation = false;
                       });
                     },
@@ -1877,6 +1868,42 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class AdminProfileMobilePrefixDropdown extends StatelessWidget {
+  const AdminProfileMobilePrefixDropdown({
+    required this.value,
+    required this.prefixes,
+    required this.onChanged,
+    this.isLoading = false,
+    super.key,
+  });
+
+  final String? value;
+  final List<AdminUserMobilePrefixOption> prefixes;
+  final ValueChanged<String?> onChanged;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    return OpenVtsSearchableDropdown<String>(
+      label: 'Prefix',
+      value: value,
+      options: prefixes
+          .map(
+            (prefix) => OpenVtsDropdownOption<String>(
+              value: prefix.value,
+              label: '${prefix.value} (${prefix.countryCode})',
+              searchText: '${prefix.value} ${prefix.countryCode}',
+            ),
+          )
+          .toList(growable: false),
+      searchHintText: 'Search dial or country code',
+      leadingIcon: Icons.phone_android_rounded,
+      isLoading: isLoading,
+      onChanged: onChanged,
     );
   }
 }

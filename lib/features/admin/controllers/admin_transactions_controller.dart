@@ -46,10 +46,16 @@ class AdminTransactionsController
         state.copyWith(transactions: _applyLocalFilters(_serverTransactions));
   }
 
-  Future<void> setSearchQuery(String value) async {
-    state = state.copyWith(searchQuery: value);
+  Future<void> setSearch(String value) async {
+    final query = value.trim();
+    if (query == state.searchQuery) {
+      return;
+    }
+    state = state.copyWith(searchQuery: query, page: 1);
     await _loadPage(page: 1, refreshing: false, append: false);
   }
+
+  Future<void> setSearchQuery(String value) => setSearch(value);
 
   Future<void> setRangePreset(AdminTransactionsRangePreset value) async {
     state = state.copyWith(

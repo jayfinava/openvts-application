@@ -113,14 +113,16 @@ void main() {
   // A. Service: updateProfile separates PATCH from GET
   // -------------------------------------------------------------------------
   group('SuperadminSettingsService.updateProfile — PATCH/GET separation', () {
-    test('successful PATCH + successful GET returns refreshed profile', () async {
+    test('successful PATCH + successful GET returns refreshed profile',
+        () async {
       final service = _serviceWith(_profileDio());
       final result = await service.updateProfile(_baseRequest);
       expect(result.refreshedProfile, isNotNull);
       expect(result.refreshedProfile!.name, 'Super Admin');
     });
 
-    test('successful PATCH + failed GET returns null refreshedProfile (not a throw)',
+    test(
+        'successful PATCH + failed GET returns null refreshedProfile (not a throw)',
         () async {
       final service = _serviceWith(_profileDio(getStatusCode: 500));
       final result = await service.updateProfile(_baseRequest);
@@ -132,8 +134,7 @@ void main() {
       final requests = <String>[];
       final dio = _profileDio(patchStatusCode: 400);
       dio.interceptors.add(InterceptorsWrapper(
-        onRequest: (options, handler) =>
-            requests.add(options.method),
+        onRequest: (options, handler) => requests.add(options.method),
       ));
       final service = _serviceWith(dio);
       await expectLater(
@@ -221,10 +222,12 @@ void main() {
   // -------------------------------------------------------------------------
   // C. Controller optimistic update when refresh fails
   // -------------------------------------------------------------------------
-  group('SuperadminSettingsController._applyRequestToProfile — optimistic update',
+  group(
+      'SuperadminSettingsController._applyRequestToProfile — optimistic update',
       () {
     // We test this via the model directly since it is a pure data transformation.
-    test('optimistic address reflects empty stateCode for no-state country', () {
+    test('optimistic address reflects empty stateCode for no-state country',
+        () {
       const current = SuperadminProfileSettings(
         name: 'Old',
         address: SuperadminAddressSettings(
@@ -268,7 +271,8 @@ void main() {
       expect(updated.address?.countryCode, 'AX');
     });
 
-    test('optimistic address preserves existing uid and non-address fields', () {
+    test('optimistic address preserves existing uid and non-address fields',
+        () {
       const current = SuperadminProfileSettings(
         uid: 42,
         name: 'Old Admin',

@@ -16,6 +16,7 @@ import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../../shared/widgets/open_vts_role_home.dart';
+import '../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../../auth/controllers/auth_controller.dart';
 import '../../../controllers/superadmin_providers.dart';
@@ -748,9 +749,9 @@ class _VerificationRow extends StatelessWidget {
                 width: 1,
               ),
             ),
-            child: Row(
+            child: const Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 Icon(
                   Icons.check_circle,
                   size: 11,
@@ -1694,6 +1695,47 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     }
   }
 
+  List<OpenVtsDropdownOption<String>> _buildCountryOptions() {
+    return _countries.map((c) {
+      return OpenVtsDropdownOption<String>(
+        value: c.code,
+        label: c.name,
+        searchText: '${c.name} ${c.code}',
+      );
+    }).toList(growable: false);
+  }
+
+  List<OpenVtsDropdownOption<String>> _buildStateOptions() {
+    return _states.map((s) {
+      return OpenVtsDropdownOption<String>(
+        value: s.code,
+        label: s.name,
+        searchText: '${s.name} ${s.code}',
+      );
+    }).toList(growable: false);
+  }
+
+  List<OpenVtsDropdownOption<String>> _buildCityOptions() {
+    return _cities.map((c) {
+      return OpenVtsDropdownOption<String>(
+        value: c.name,
+        label: c.name,
+        searchText: c.name,
+      );
+    }).toList(growable: false);
+  }
+
+  List<OpenVtsDropdownOption<String>> _buildPrefixOptions() {
+    return _prefixes.map((p) {
+      return OpenVtsDropdownOption<String>(
+        value: p.dialCode,
+        label: p.dialCode,
+        subtitle: p.countryCode,
+        searchText: '${p.dialCode} ${p.countryCode}',
+      );
+    }).toList(growable: false);
+  }
+
   Future<void> _submit() async {
     if (_submitting) return;
     if (!_formKey.currentState!.validate()) return;
@@ -1821,19 +1863,14 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     children: [
                       Expanded(
                         flex: 4,
-                        child: _DropdownField<String>(
+                        child: OpenVtsSearchableDropdown<String>(
                           label: 'Prefix',
+                          hintText: 'Select',
+                          searchHintText: 'Dial code or country',
+                          sheetTitle: 'Select Mobile Prefix',
+                          options: _buildPrefixOptions(),
                           value: _mobilePrefix,
-                          items: _prefixes
-                              .map(
-                                (p) => DropdownMenuItem(
-                                  value: p.dialCode,
-                                  child: Text(
-                                    '${p.dialCode} (${p.countryCode})',
-                                  ),
-                                ),
-                              )
-                              .toList(),
+                          isLoading: _loadingCatalogs,
                           onChanged: (v) => setState(() => _mobilePrefix = v),
                         ),
                       ),
@@ -1859,17 +1896,14 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                         (v ?? '').trim().isEmpty ? 'Address is required' : null,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
-                  _DropdownField<String>(
+                  OpenVtsSearchableDropdown<String>(
                     label: 'Country',
+                    hintText: 'Select country',
+                    searchHintText: 'Search country name or code',
+                    sheetTitle: 'Select Country',
+                    options: _buildCountryOptions(),
                     value: _countryCode,
-                    items: _countries
-                        .map(
-                          (c) => DropdownMenuItem(
-                            value: c.code,
-                            child: Text(c.name),
-                          ),
-                        )
-                        .toList(),
+                    isLoading: _loadingCatalogs,
                     onChanged: (v) {
                       setState(() {
                         _countryCode = v;
@@ -1888,26 +1922,21 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     },
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
-                  _DropdownField<String>(
+                  OpenVtsSearchableDropdown<String>(
                     label: 'State',
-                    value: _hasStates ? _stateCode : null,
-                    enabled: _hasStates,
-                    busy: _loadingStates,
-                    hint: _loadingStates
+                    hintText: _loadingStates
                         ? 'Loading…'
                         : _statesLoadFailed
                             ? 'Failed to load — retry'
                             : _statesNotApplicable
                                 ? 'Not applicable'
-                                : 'Select',
-                    items: _states
-                        .map(
-                          (s) => DropdownMenuItem(
-                            value: s.code,
-                            child: Text(s.name),
-                          ),
-                        )
-                        .toList(),
+                                : 'Select state',
+                    searchHintText: 'Search state name or code',
+                    sheetTitle: 'Select State',
+                    options: _buildStateOptions(),
+                    value: _hasStates ? _stateCode : null,
+                    enabled: _hasStates,
+                    isLoading: _loadingStates,
                     onChanged: (v) {
                       setState(() {
                         _stateCode = v;
@@ -1924,28 +1953,23 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     },
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
-                  _DropdownField<String>(
+                  OpenVtsSearchableDropdown<String>(
                     label: 'City',
-                    value: _hasCities ? _cityName : null,
-                    enabled: _hasCities,
-                    busy: _loadingCities,
-                    hint: _loadingCities
+                    hintText: _loadingCities
                         ? 'Loading…'
                         : _citiesLoadFailed
                             ? 'Failed to load — retry'
                             : _citiesNotApplicable
                                 ? 'Not applicable'
                                 : (_hasStates && _stateCode != null)
-                                    ? 'Select'
+                                    ? 'Select city'
                                     : 'Not applicable',
-                    items: _cities
-                        .map(
-                          (c) => DropdownMenuItem(
-                            value: c.name,
-                            child: Text(c.name),
-                          ),
-                        )
-                        .toList(),
+                    searchHintText: 'Search city',
+                    sheetTitle: 'Select City',
+                    options: _buildCityOptions(),
+                    value: _hasCities ? _cityName : null,
+                    enabled: _hasCities,
+                    isLoading: _loadingCities,
                     onChanged: (v) {
                       setState(() {
                         _cityName = v;
@@ -1966,124 +1990,6 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                   ),
                 ],
               ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _DropdownField<T> extends StatelessWidget {
-  const _DropdownField({
-    required this.label,
-    required this.value,
-    required this.items,
-    required this.onChanged,
-    this.enabled = true,
-    this.busy = false,
-    this.hint = 'Select',
-  });
-
-  final String label;
-  final T? value;
-  final List<DropdownMenuItem<T>> items;
-  final ValueChanged<T?> onChanged;
-  final bool enabled;
-  final bool busy;
-  final String hint;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontFamily: OpenVtsTypography.primaryFontFamily,
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-            letterSpacing: 0.3,
-          ),
-        ),
-        const SizedBox(height: 4),
-        InputDecorator(
-          decoration: InputDecoration(
-            isDense: true,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 10,
-            ),
-            filled: true,
-            fillColor: Theme.of(context).colorScheme.surface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.outlineVariant),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.outlineVariant),
-            ),
-            suffixIcon: busy
-                ? const Padding(
-                    padding: EdgeInsets.all(10),
-                    child: SizedBox(
-                      width: 14,
-                      height: 14,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  )
-                : null,
-          ),
-          child: DropdownButtonHideUnderline(
-            child: Builder(
-              builder: (context) {
-                final hasValueInItems =
-                    value != null && items.any((it) => it.value == value);
-                final safeItems = hasValueInItems
-                    ? items
-                    : <DropdownMenuItem<T>>[
-                        if (value != null)
-                          DropdownMenuItem<T>(
-                            value: value,
-                            child: Text(
-                              value.toString(),
-                              style: TextStyle(
-                                fontFamily: OpenVtsTypography.primaryFontFamily,
-                                fontSize: 12.5,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
-                              ),
-                            ),
-                          ),
-                        ...items,
-                      ];
-                return DropdownButton<T>(
-                  value: value,
-                  isExpanded: true,
-                  isDense: true,
-                  onChanged: enabled ? onChanged : null,
-                  items: safeItems,
-                  hint: Text(
-                    hint,
-                    style: TextStyle(
-                      fontFamily: OpenVtsTypography.primaryFontFamily,
-                      fontSize: 12.5,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  style: TextStyle(
-                    fontFamily: OpenVtsTypography.primaryFontFamily,
-                    fontSize: 12.5,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                );
-              },
             ),
           ),
         ),

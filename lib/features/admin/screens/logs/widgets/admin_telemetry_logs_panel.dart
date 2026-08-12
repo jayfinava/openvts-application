@@ -11,6 +11,7 @@ import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../../shared/widgets/open_vts_search_field.dart';
+import '../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../controllers/admin_providers.dart';
 import '../../../models/admin_logs_model.dart';
 import '../widgets/admin_logs_filter_widgets.dart';
@@ -59,18 +60,9 @@ class _AdminTelemetryLogsPanelState
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
-        DropdownButtonFormField<String?>(
-          initialValue: state.telemetryVehicleId,
-          decoration: const InputDecoration(labelText: 'Vehicle'),
-          isExpanded: true,
-          items: [
-            const DropdownMenuItem<String?>(
-                value: null, child: Text('All vehicles')),
-            ...state.options.vehicles.map((v) => DropdownMenuItem<String?>(
-                  value: v.id,
-                  child: Text(v.displayName, overflow: TextOverflow.ellipsis),
-                )),
-          ],
+        AdminTelemetryVehicleDropdown(
+          value: state.telemetryVehicleId,
+          vehicles: state.options.vehicles,
           onChanged: (v) {
             controller.setTelemetryFilters(
               vehicleId: v,
@@ -232,5 +224,45 @@ class _AdminTelemetryLogsPanelState
       case AdminReadFilter.unread:
         return items.where((item) => !_isTelemetryRead(item)).toList();
     }
+  }
+}
+
+class AdminTelemetryVehicleDropdown extends StatelessWidget {
+  const AdminTelemetryVehicleDropdown({
+    required this.value,
+    required this.vehicles,
+    required this.onChanged,
+    super.key,
+  });
+
+  final String? value;
+  final List<AdminLogsVehicleOption> vehicles;
+  final ValueChanged<String?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return OpenVtsSearchableDropdown<String>(
+      label: 'Vehicle',
+      value: value,
+      hintText: 'All vehicles',
+      searchHintText: 'Search vehicles...',
+      options: vehicles
+          .map(
+            (vehicle) => OpenVtsDropdownOption<String>(
+              value: vehicle.id,
+              label: vehicle.displayName,
+              subtitle: vehicle.imei.trim().isEmpty ? null : vehicle.imei,
+              searchText: [
+                vehicle.displayName,
+                vehicle.id,
+                vehicle.name,
+                vehicle.plateNumber,
+                vehicle.imei,
+              ].join(' '),
+            ),
+          )
+          .toList(growable: false),
+      onChanged: onChanged,
+    );
   }
 }

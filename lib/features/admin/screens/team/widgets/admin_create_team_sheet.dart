@@ -5,6 +5,7 @@ import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
+import '../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../controllers/admin_providers.dart';
 import '../../../models/admin_team_model.dart';
@@ -119,40 +120,17 @@ class _AdminCreateTeamSheetState extends ConsumerState<AdminCreateTeamSheet> {
                     final availableWidth = constraints.maxWidth;
                     final isTablet = availableWidth >= 600;
 
-                    final prefixDropdown = DropdownButtonFormField<String>(
+                    final prefixDropdown = AdminTeamMobilePrefixDropdown(
                       key: ValueKey<String?>(
                         'team-mobile-prefix-${_mobilePrefix ?? ''}',
                       ),
-                      initialValue: _mobilePrefix,
-                      items: _mobilePrefixes
-                          .map(
-                            (item) => DropdownMenuItem<String>(
-                              value: item.code,
-                              child: Text(
-                                item.code,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          )
-                          .toList(growable: false),
-                      decoration: const InputDecoration(
-                        labelText: 'Mobile Prefix',
-                        prefixIcon: Icon(
-                          Icons.phone_android_rounded,
-                          size: 18,
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 12,
-                        ),
-                      ),
+                      value: _mobilePrefix,
+                      prefixes: _mobilePrefixes,
+                      isLoading: _isLoadingPrefixes,
+                      enabled: !widget.isSubmitting,
                       onChanged: widget.isSubmitting
-                          ? null
+                          ? (_) {}
                           : (value) => setState(() => _mobilePrefix = value),
-                      validator: (value) => Validators.required(
-                        value,
-                        fieldName: 'Mobile prefix',
-                      ),
                     );
 
                     final numberField = OpenVtsTextField(
@@ -392,5 +370,51 @@ class _AdminCreateTeamSheetState extends ConsumerState<AdminCreateTeamSheet> {
     }
 
     return null;
+  }
+}
+
+class AdminTeamMobilePrefixDropdown extends StatelessWidget {
+  const AdminTeamMobilePrefixDropdown({
+    required this.value,
+    required this.prefixes,
+    required this.onChanged,
+    this.isLoading = false,
+    this.enabled = true,
+    super.key,
+  });
+
+  final String? value;
+  final List<AdminTeamMobilePrefixOption> prefixes;
+  final ValueChanged<String?> onChanged;
+  final bool isLoading;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return OpenVtsSearchableDropdown<String>(
+      label: 'Mobile Prefix',
+      value: value,
+      options: prefixes
+          .map(
+            (item) => OpenVtsDropdownOption<String>(
+              value: item.code,
+              label: item.code,
+              subtitle: item.country.trim().isEmpty ? null : item.country,
+              searchText: '${item.code} ${item.country} ${item.label}',
+            ),
+          )
+          .toList(growable: false),
+      hintText: '+91',
+      searchHintText: 'Search dial code or country',
+      leadingIcon: Icons.phone_android_rounded,
+      isLoading: isLoading,
+      enabled: enabled,
+      required: true,
+      validator: (selected) => Validators.required(
+        selected,
+        fieldName: 'Mobile prefix',
+      ),
+      onChanged: onChanged,
+    );
   }
 }

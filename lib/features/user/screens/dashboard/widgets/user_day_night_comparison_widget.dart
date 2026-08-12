@@ -11,6 +11,7 @@ import '../../../../../core/utils/unit_formatter.dart';
 import '../../../../../shared/widgets/open_vts_date_time_range_selector.dart';
 import '../../../controllers/user_providers.dart';
 import '../../../models/user_dashboard_model.dart';
+import 'user_dashboard_vehicle_selector.dart';
 import 'user_dashboard_widget_card.dart';
 
 class UserDayNightComparisonWidget extends ConsumerStatefulWidget {
@@ -155,7 +156,7 @@ class _UserDayNightComparisonWidgetState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _VehicleSelector(
+        UserDashboardVehicleSelector(
           vehicles: data.vehicles,
           value: selectedVehicleId,
           onChanged: _changeVehicle,
@@ -247,64 +248,6 @@ class _UserDayNightComparisonWidgetState
 
   static DateTime _endOfDay(DateTime value) {
     return DateTime(value.year, value.month, value.day, 23, 59, 59, 999);
-  }
-}
-
-class _VehicleSelector extends StatelessWidget {
-  const _VehicleSelector({
-    required this.vehicles,
-    required this.value,
-    required this.onChanged,
-  });
-
-  final List<UserDashboardVehicleOption> vehicles;
-  final String value;
-  final ValueChanged<String?> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      key: ValueKey(value),
-      initialValue: value,
-      isExpanded: true,
-      decoration: InputDecoration(
-        labelText: 'Vehicle',
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: OpenVtsSpacing.sm,
-          vertical: OpenVtsSpacing.xs,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-          borderSide:
-              BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
-        ),
-      ),
-      items: [
-        const DropdownMenuItem<String>(
-          value: 'all',
-          child: Text('All Vehicles'),
-        ),
-        for (final vehicle in vehicles)
-          DropdownMenuItem<String>(
-            value: vehicle.id,
-            child: Text(
-              _label(vehicle),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-      ],
-      onChanged: onChanged,
-    );
-  }
-
-  static String _label(UserDashboardVehicleOption vehicle) {
-    final plate = vehicle.plateNumber?.trim();
-    if (plate != null && plate.isNotEmpty) {
-      return '${vehicle.name} - $plate';
-    }
-    return vehicle.name;
   }
 }
 

@@ -112,6 +112,18 @@ class SuperadminPaymentAdminOption {
     return uid > 0 ? 'Admin #$uid' : 'Admin';
   }
 
+  /// Space-joined corpus used by [OpenVtsSearchableDropdown] for local search.
+  /// Covers name, username, email, uid string, and currency.
+  String get searchText {
+    return [
+      name,
+      username,
+      email,
+      uid > 0 ? uid.toString() : '',
+      currency,
+    ].where((s) => s.trim().isNotEmpty).join(' ');
+  }
+
   factory SuperadminPaymentAdminOption.fromJson(dynamic json) {
     final source = _asMap(json);
     final uid = _firstInt(

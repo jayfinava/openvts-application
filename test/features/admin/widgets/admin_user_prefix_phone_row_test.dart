@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:open_vts/features/admin/models/admin_users_model.dart';
 import 'package:open_vts/features/admin/screens/users/widgets/admin_user_form_fields.dart';
 
 // ---------------------------------------------------------------------------
@@ -30,6 +29,13 @@ Widget _buildRow({
         ),
       ),
     ),
+  );
+}
+
+Finder _prefixTrigger() {
+  return find.descendant(
+    of: find.byType(AdminUserDropdownField),
+    matching: find.byType(GestureDetector),
   );
 }
 
@@ -94,7 +100,7 @@ void main() {
 
       // The closed selected-item text should be just "+91" (via selectedLabel)
       // The full "+91 IN" label should NOT appear outside the open menu
-      expect(find.text('+91'), findsOneWidget);
+      expect(find.text('+91'), findsWidgets);
       expect(find.text('+91 IN'), findsNothing);
     });
 
@@ -103,11 +109,52 @@ void main() {
       await tester.pump();
 
       // Open the dropdown
-      await tester.tap(find.text('+91'));
+      await tester.tap(_prefixTrigger());
       await tester.pumpAndSettle();
 
       // Full label is now visible in the open menu
       expect(find.text('+91 IN'), findsWidgets);
+    });
+
+    testWidgets('searches full prefix labels by dial and country code', (
+      tester,
+    ) async {
+      String? capturedPrefix;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              child: AdminUserPrefixPhoneRow(
+                prefixValue: '+91',
+                prefixOptions: _prefixOptions(),
+                onPrefixChanged: (value) => capturedPrefix = value,
+                phoneController: TextEditingController(),
+                phoneValidator: null,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(_prefixTrigger());
+      await tester.pumpAndSettle();
+
+      final searchField = find.byType(TextField).last;
+      await tester.enterText(searchField, '234');
+      await tester.pump();
+      expect(find.text('+234 NG'), findsOneWidget);
+      expect(find.text('+91 IN'), findsNothing);
+
+      await tester.enterText(searchField, 'ng');
+      await tester.pump();
+      expect(find.text('+234 NG'), findsOneWidget);
+      expect(find.text('+91 IN'), findsNothing);
+
+      await tester.tap(find.text('+234 NG'));
+      await tester.pumpAndSettle();
+
+      expect(capturedPrefix, '+234');
     });
   });
 
@@ -139,7 +186,7 @@ void main() {
       await tester.pump();
 
       // Change to +234
-      await tester.tap(find.text('+91'));
+      await tester.tap(_prefixTrigger());
       await tester.pumpAndSettle();
       await tester.tap(find.text('+234 NG'));
       await tester.pumpAndSettle();
