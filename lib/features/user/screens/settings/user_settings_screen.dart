@@ -85,10 +85,6 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
         ? state.isProfileRefreshBusy
         : state.isLocalizationRefreshBusy;
 
-    final listBottomPadding = currentTabDirty || currentTabSaving
-        ? 116.0 + MediaQuery.paddingOf(context).bottom
-        : OpenVtsSpacing.md;
-
     Future<void> onRefreshCurrentTab() async {
       if (currentTabRefreshBusy) {
         return;
@@ -181,90 +177,90 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
             alignment: Alignment.topCenter,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: _settingsMaxWidth),
-              child: Stack(
+              child: Column(
                 children: [
-                  RefreshIndicator(
-                    onRefresh: onRefreshCurrentTab,
-                    child: ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: EdgeInsets.only(bottom: listBottomPadding),
-                      children: [
-                        UserSettingsHeader(
-                          selectedTab: selectedTab,
-                          isCurrentTabDirty: currentTabDirty,
-                          isCurrentTabSaving: currentTabSaving,
-                          lastUpdatedAt: state.profile?.updatedAt,
-                        ),
-                        const SizedBox(height: OpenVtsSpacing.sm),
-                        UserSettingsTabSelector(
-                          selectedTab: selectedTab,
-                          onChanged: controller.selectTab,
-                        ),
-                        const SizedBox(height: OpenVtsSpacing.sm),
-                        if (state.errorMessage != null &&
-                            state.errorMessage!.trim().isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: OpenVtsSpacing.sm),
-                            child: _InlineNoticeBanner(
-                              message: state.errorMessage!,
-                              tone: _NoticeTone.error,
-                              onDismiss: controller.clearErrorMessage,
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: onRefreshCurrentTab,
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding:
+                            const EdgeInsets.only(bottom: OpenVtsSpacing.md),
+                        children: [
+                          UserSettingsHeader(
+                            selectedTab: selectedTab,
+                            isCurrentTabDirty: currentTabDirty,
+                            isCurrentTabSaving: currentTabSaving,
+                            lastUpdatedAt: state.profile?.updatedAt,
+                          ),
+                          const SizedBox(height: OpenVtsSpacing.sm),
+                          UserSettingsTabSelector(
+                            selectedTab: selectedTab,
+                            onChanged: controller.selectTab,
+                          ),
+                          const SizedBox(height: OpenVtsSpacing.sm),
+                          if (state.errorMessage != null &&
+                              state.errorMessage!.trim().isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: OpenVtsSpacing.sm),
+                              child: _InlineNoticeBanner(
+                                message: state.errorMessage!,
+                                tone: _NoticeTone.error,
+                                onDismiss: controller.clearErrorMessage,
+                              ),
                             ),
-                          ),
-                        if (!isProfileTab &&
-                            state.localizationErrorMessage != null &&
-                            state.localizationErrorMessage!.trim().isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: OpenVtsSpacing.sm),
-                            child: _InlineNoticeBanner(
-                              message:
-                                  'Using safe defaults. ${state.localizationErrorMessage!}',
-                              tone: _NoticeTone.warning,
-                              onDismiss:
-                                  controller.clearLocalizationErrorMessage,
+                          if (!isProfileTab &&
+                              state.localizationErrorMessage != null &&
+                              state.localizationErrorMessage!.trim().isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: OpenVtsSpacing.sm),
+                              child: _InlineNoticeBanner(
+                                message:
+                                    'Using safe defaults. ${state.localizationErrorMessage!}',
+                                tone: _NoticeTone.warning,
+                                onDismiss:
+                                    controller.clearLocalizationErrorMessage,
+                              ),
                             ),
-                          ),
-                        if (isProfileTab &&
-                            state.profileErrorMessage != null &&
-                            state.profileErrorMessage!.trim().isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: OpenVtsSpacing.sm),
-                            child: _InlineNoticeBanner(
-                              message: state.profileErrorMessage!,
-                              tone: _NoticeTone.error,
-                              onDismiss: controller.clearProfileErrorMessage,
+                          if (isProfileTab &&
+                              state.profileErrorMessage != null &&
+                              state.profileErrorMessage!.trim().isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: OpenVtsSpacing.sm),
+                              child: _InlineNoticeBanner(
+                                message: state.profileErrorMessage!,
+                                tone: _NoticeTone.error,
+                                onDismiss: controller.clearProfileErrorMessage,
+                              ),
                             ),
-                          ),
-                        if (isProfileTab)
-                          UserProfileSettingsTab(
-                            state: state,
-                            controller: controller,
-                          )
-                        else
-                          UserLocalizationSettingsTab(
-                            state: state,
-                            controller: controller,
-                          ),
-                        const SizedBox(height: OpenVtsSpacing.sm),
-                      ],
+                          if (isProfileTab)
+                            UserProfileSettingsTab(
+                              state: state,
+                              controller: controller,
+                            )
+                          else
+                            UserLocalizationSettingsTab(
+                              state: state,
+                              controller: controller,
+                            ),
+                          const SizedBox(height: OpenVtsSpacing.sm),
+                        ],
+                      ),
                     ),
                   ),
                   if (currentTabDirty || currentTabSaving)
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: UserSettingsSaveBar(
-                        selectedTab: selectedTab,
-                        isSaving: currentTabSaving,
-                        canSave: canSaveCurrentTab,
-                        canReset: canResetCurrentTab,
-                        onSave: () {
-                          unawaited(onSaveCurrentTab());
-                        },
-                        onReset: onResetCurrentTab,
-                      ),
+                    UserSettingsSaveBar(
+                      selectedTab: selectedTab,
+                      isSaving: currentTabSaving,
+                      canSave: canSaveCurrentTab,
+                      canReset: canResetCurrentTab,
+                      onSave: () {
+                        unawaited(onSaveCurrentTab());
+                      },
+                      onReset: onResetCurrentTab,
                     ),
                 ],
               ),
