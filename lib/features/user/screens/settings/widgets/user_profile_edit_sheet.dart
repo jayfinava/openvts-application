@@ -8,6 +8,7 @@ import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/validators.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
+import '../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../controllers/user_providers.dart';
 import '../../../controllers/user_settings_controller.dart';
 import '../../../models/user_settings_model.dart';
@@ -270,21 +271,24 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                     validator: Validators.mobilePrefix,
                   )
                 else
-                  _controlledDropdownField<String>(
+                  OpenVtsSearchableDropdown<String>(
                     key: ValueKey('prefix_${mobilePrefixOptions.length}'),
                     label: 'Mobile Prefix',
                     value: safePrefix,
-                    items: mobilePrefixOptions
+                    options: mobilePrefixOptions
                         .map(
-                          (option) => DropdownMenuItem<String>(
+                          (option) => OpenVtsDropdownOption<String>(
                             value: option.value,
-                            child: Text(
-                              option.label,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                            label: option.label,
+                            subtitle: option.countryCode.isNotEmpty
+                                ? option.countryCode
+                                : null,
+                            searchText: '${option.value} ${option.countryCode}',
                           ),
                         )
                         .toList(growable: false),
+                    searchHintText: 'Dial code or country',
+                    sheetTitle: 'Select Mobile Prefix',
                     onChanged: (value) {
                       if (value == null) return;
                       setState(() {
