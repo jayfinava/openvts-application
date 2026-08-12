@@ -596,7 +596,11 @@ class _ActiveToggle extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
     final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final subtitleColor =
+        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
+    final borderColor = value
+        ? OpenVtsColors.success
+        : (isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border);
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -626,7 +630,7 @@ class _ActiveToggle extends StatelessWidget {
                       ? 'Events will trigger for this geofence.'
                       : 'Geofence is paused.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: textColor,
+                    color: subtitleColor,
                   ),
                 ),
               ],
@@ -635,7 +639,14 @@ class _ActiveToggle extends StatelessWidget {
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeThumbColor: bgColor,
+            activeTrackColor: OpenVtsColors.success,
+            activeThumbColor: OpenVtsColors.white,
+            inactiveThumbColor: isDark
+                ? OpenVtsColors.darkTextTertiary
+                : OpenVtsColors.textTertiary,
+            inactiveTrackColor: isDark
+                ? OpenVtsColors.darkSurfaceElevated
+                : OpenVtsColors.divider,
           ),
         ],
       ),
