@@ -202,6 +202,7 @@ class UserReportWorkspaceState {
     // sensor/geofence auxiliary
     this.sensors = const [],
     this.isLoadingSensors = false,
+    this.sensorLoadError,
     this.geofences = const [],
     this.isLoadingGeofences = false,
     this.requestToken = 0,
@@ -236,6 +237,7 @@ class UserReportWorkspaceState {
 
   final List<UserVehicleSensor> sensors;
   final bool isLoadingSensors;
+  final String? sensorLoadError;
   final List<UserGeofence> geofences;
   final bool isLoadingGeofences;
 
@@ -267,6 +269,7 @@ class UserReportWorkspaceState {
     Map<String, String>? validationErrors,
     List<UserVehicleSensor>? sensors,
     bool? isLoadingSensors,
+    String? sensorLoadError,
     List<UserGeofence>? geofences,
     bool? isLoadingGeofences,
     int? requestToken,
@@ -279,6 +282,7 @@ class UserReportWorkspaceState {
     bool clearLoadMoreError = false,
     bool clearDateRange = false,
     bool clearGeneratedAt = false,
+    bool clearSensorLoadError = false,
   }) {
     return UserReportWorkspaceState(
       reportKey: reportKey ?? this.reportKey,
@@ -308,6 +312,9 @@ class UserReportWorkspaceState {
       validationErrors: validationErrors ?? this.validationErrors,
       sensors: sensors ?? this.sensors,
       isLoadingSensors: isLoadingSensors ?? this.isLoadingSensors,
+      sensorLoadError: clearSensorLoadError
+          ? null
+          : (sensorLoadError ?? this.sensorLoadError),
       geofences: geofences ?? this.geofences,
       isLoadingGeofences: isLoadingGeofences ?? this.isLoadingGeofences,
       requestToken: requestToken ?? this.requestToken,

@@ -103,7 +103,7 @@ Map<String, String> validateReportQuery({
 
   // --- Report-specific ---
   if (reportKey == UserReportKey.sensor) {
-    if (sensorFilters.sensorIds.isEmpty) {
+    if (sensorFilters.sensorIds.length != 1) {
       errors['sensorSensor'] = 'reportsValidationSelectSensor';
     }
   }

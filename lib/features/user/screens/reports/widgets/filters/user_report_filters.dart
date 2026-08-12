@@ -250,6 +250,8 @@ class UserSensorReportFilter extends StatelessWidget {
     required this.onVehicleChanged,
     required this.onFiltersChanged,
     this.isLoadingSensors = false,
+    this.sensorLoadError,
+    this.onRetrySensorLoad,
     this.vehicleError,
     this.sensorError,
     this.disabled = false,
@@ -263,6 +265,8 @@ class UserSensorReportFilter extends StatelessWidget {
   final ValueChanged<String?> onVehicleChanged;
   final ValueChanged<SensorFilters> onFiltersChanged;
   final bool isLoadingSensors;
+  final String? sensorLoadError;
+  final VoidCallback? onRetrySensorLoad;
   final String? vehicleError;
   final String? sensorError;
   final bool disabled;
@@ -307,6 +311,20 @@ class UserSensorReportFilter extends StatelessWidget {
           const SizedBox(
               height: 32,
               child: Center(child: CircularProgressIndicator(strokeWidth: 2)))
+        else if (sensorLoadError != null)
+          Row(
+            children: [
+              Expanded(
+                child: Text(sensorLoadError!,
+                    style: OpenVtsTypography.meta
+                        .copyWith(color: OpenVtsColors.error)),
+              ),
+              TextButton(
+                onPressed: disabled ? null : onRetrySensorLoad,
+                child: const Text('Retry'),
+              ),
+            ],
+          )
         else if (sensors.isEmpty)
           Text('No sensors configured for this vehicle',
               style: OpenVtsTypography.meta

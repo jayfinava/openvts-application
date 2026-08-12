@@ -38,24 +38,38 @@ class UserReportService {
     required DateTime to,
     String? cursor,
   }) async {
+    final sensorIds = reportKey == UserReportKey.sensor
+        ? reportList(filters['sensorIds']).map((id) => id.toString()).toList()
+        : const <String>[];
     debugPrint(
         '[Reports] POST ${ApiEndpoints.user.reportByKey(reportKey.apiValue)} '
-        'scope=${vehicleScope['mode']} tz=$timeZone cursor=${cursor ?? 'none'}');
-    final response = await _apiClient.post<UserReportPage>(
-      ApiEndpoints.user.reportByKey(reportKey.apiValue),
-      data: <String, dynamic>{
-        'vehicleScope': vehicleScope,
-        'dateRange': dateRange,
-        'filters': filters,
-        'timeZone': timeZone,
-        'from': from.toUtc().toIso8601String(),
-        'to': to.toUtc().toIso8601String(),
-        if (cursor?.trim().isNotEmpty == true) 'cursor': cursor!.trim(),
-      },
-      options: reportGenerateOptions(),
-      parser: UserReportPage.fromJson,
-    );
-    return response.data;
+        'scope=${vehicleScope['mode']} tz=$timeZone cursor=${cursor ?? 'none'} '
+        '${reportKey == UserReportKey.sensor ? 'sensorIds=$sensorIds' : ''}');
+    try {
+      final response = await _apiClient.post<UserReportPage>(
+        ApiEndpoints.user.reportByKey(reportKey.apiValue),
+        data: <String, dynamic>{
+          'vehicleScope': vehicleScope,
+          'dateRange': dateRange,
+          'filters': filters,
+          'timeZone': timeZone,
+          'from': from.toUtc().toIso8601String(),
+          'to': to.toUtc().toIso8601String(),
+          if (cursor?.trim().isNotEmpty == true) 'cursor': cursor!.trim(),
+        },
+        options: reportGenerateOptions(),
+        parser: UserReportPage.fromJson,
+      );
+      if (reportKey == UserReportKey.sensor) {
+        debugPrint('[Reports][sensor] API rows=${response.data.rows.length}');
+      }
+      return response.data;
+    } catch (e) {
+      if (reportKey == UserReportKey.sensor) {
+        debugPrint('[Reports][sensor] API error=${e.runtimeType}');
+      }
+      rethrow;
+    }
   }
 
   Future<List<UserTimelinePoint>> getTimelineMap({

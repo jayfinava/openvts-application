@@ -394,11 +394,12 @@ class _ExtraFilters extends StatelessWidget {
           onVehicleChanged: (id) {
             if (id != null) {
               notifier.setScope(ReportVehicleScope.single(id));
-              notifier.loadSensorsForVehicle(id);
             }
           },
           onFiltersChanged: notifier.setSensorFilters,
           isLoadingSensors: state.isLoadingSensors,
+          sensorLoadError: state.sensorLoadError,
+          onRetrySensorLoad: notifier.retrySensorLoad,
           disabled: disabled,
           vehicleError: state.validationErrors['sensorVehicle'],
           sensorError: state.validationErrors['sensorSensor'],

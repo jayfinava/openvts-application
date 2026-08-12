@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_exception.dart';
@@ -27,6 +28,7 @@ class UserReportWorkspaceNotifier
   }
 
   final UserReportController _controller;
+  int _sensorRequestToken = 0;
 
   // ---------------------------------------------------------------------------
   // Options
@@ -55,6 +57,7 @@ class UserReportWorkspaceNotifier
 
   void changeReportKey(UserReportKey key) {
     if (key == state.reportKey) return;
+    _sensorRequestToken++;
     state = UserReportWorkspaceState(
       reportKey: key,
       options: state.options,
@@ -78,13 +81,26 @@ class UserReportWorkspaceNotifier
   // ---------------------------------------------------------------------------
 
   void setScope(ReportVehicleScope scope) {
-    state = state.copyWith(scope: scope);
+    final previousVehicleId = state.scope.vehicleId;
+    final vehicleChanged = previousVehicleId != scope.vehicleId;
+    state = state.copyWith(
+      scope: scope,
+      sensorFilters: state.reportKey == UserReportKey.sensor && vehicleChanged
+          ? const SensorFilters()
+          : state.sensorFilters,
+      sensors: state.reportKey == UserReportKey.sensor && vehicleChanged
+          ? const []
+          : state.sensors,
+      clearSensorLoadError: state.reportKey == UserReportKey.sensor,
+    );
     if (scope.mode == ReportScopeMode.single &&
         scope.vehicleId != null &&
         scope.vehicleId!.isNotEmpty) {
-      if (state.reportKey == UserReportKey.sensor) {
+      if (state.reportKey == UserReportKey.sensor && vehicleChanged) {
         unawaited(_loadSensors(scope.vehicleId!));
       }
+    } else if (state.reportKey == UserReportKey.sensor && vehicleChanged) {
+      _sensorRequestToken++;
     }
   }
 
@@ -114,10 +130,17 @@ class UserReportWorkspaceNotifier
   // ---------------------------------------------------------------------------
 
   Future<void> _loadSensors(String vehicleId) async {
-    state = state.copyWith(isLoadingSensors: true, sensors: []);
+    final token = ++_sensorRequestToken;
+    state = state.copyWith(
+      isLoadingSensors: true,
+      sensors: [],
+      clearSensorLoadError: true,
+    );
     try {
       final page = await _controller.getSensors(vehicleId);
-      if (!mounted) return;
+      if (!mounted || token != _sensorRequestToken) return;
+      if (state.reportKey != UserReportKey.sensor) return;
+      if (state.scope.vehicleId != vehicleId) return;
       final sensors = page.items;
       state = state.copyWith(sensors: sensors, isLoadingSensors: false);
       // If previously selected sensor is no longer valid, clear it
@@ -126,14 +149,23 @@ class UserReportWorkspaceNotifier
           !sensors.any((s) => s.id.toString() == currentId)) {
         state = state.copyWith(sensorFilters: const SensorFilters());
       }
-    } catch (_) {
-      if (!mounted) return;
-      state = state.copyWith(isLoadingSensors: false, sensors: []);
+    } catch (e) {
+      if (!mounted || token != _sensorRequestToken) return;
+      if (state.reportKey != UserReportKey.sensor) return;
+      if (state.scope.vehicleId != vehicleId) return;
+      state = state.copyWith(
+        isLoadingSensors: false,
+        sensors: [],
+        sensorLoadError: _extractMessage(e),
+      );
     }
   }
 
-  Future<void> loadSensorsForVehicle(String vehicleId) =>
-      _loadSensors(vehicleId);
+  Future<void> retrySensorLoad() async {
+    final vehicleId = state.scope.vehicleId;
+    if (vehicleId == null || vehicleId.isEmpty) return;
+    await _loadSensors(vehicleId);
+  }
 
   // ---------------------------------------------------------------------------
   // Geofences auxiliary
@@ -167,6 +199,23 @@ class UserReportWorkspaceNotifier
       timelineFilters: s.timelineFilters,
     );
 
+    if (s.reportKey == UserReportKey.sensor) {
+      final selectedIds = s.sensorFilters.sensorIds;
+      final hasValidSelection = selectedIds.length == 1 &&
+          s.sensors.any((sensor) => sensor.id.toString() == selectedIds.single);
+      if (s.isLoadingSensors) {
+        errors['sensorSensor'] = 'Wait for sensors to finish loading';
+      } else if (!hasValidSelection) {
+        errors['sensorSensor'] =
+            'Select one sensor configured for this vehicle';
+      }
+      debugPrint(
+        '[Reports][sensor] generate validationErrors=${errors.keys.toList()} '
+        'vehicleId=${s.scope.vehicleId ?? 'none'} '
+        'sensorId=${selectedIds.length == 1 ? selectedIds.single : 'invalid'}',
+      );
+    }
+
     if (errors.isNotEmpty) {
       state = state.copyWith(validationErrors: errors);
       return;
@@ -186,6 +235,9 @@ class UserReportWorkspaceNotifier
       validationErrors: {},
       requestToken: token,
     );
+    if (s.reportKey == UserReportKey.sensor) {
+      debugPrint('[Reports][sensor] genStatus=loading');
+    }
 
     try {
       final bounds = buildApiDateBounds(s.dateRange!);
@@ -219,10 +271,21 @@ class UserReportWorkspaceNotifier
         source: page.source,
         generatedAt: page.generatedAt,
       );
+      if (s.reportKey == UserReportKey.sensor) {
+        debugPrint(
+          '[Reports][sensor] genStatus=${state.genStatus.name} '
+          'rows=${page.rows.length}',
+        );
+      }
     } catch (e) {
       if (!mounted || state.requestToken != token) return;
       state = state.copyWith(
           genStatus: ReportGenStatus.error, genError: _extractMessage(e));
+      if (s.reportKey == UserReportKey.sensor) {
+        debugPrint(
+          '[Reports][sensor] genStatus=error error=${e.runtimeType}',
+        );
+      }
     }
   }
 
@@ -280,6 +343,7 @@ class UserReportWorkspaceNotifier
   // ---------------------------------------------------------------------------
 
   void reset() {
+    _sensorRequestToken++;
     final key = state.reportKey;
     state = UserReportWorkspaceState(
       reportKey: key,
