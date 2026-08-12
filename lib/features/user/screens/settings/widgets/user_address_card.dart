@@ -8,10 +8,20 @@ import '../../../models/user_settings_model.dart';
 class UserAddressCard extends StatelessWidget {
   const UserAddressCard({
     required this.address,
+    this.countryLabel,
+    this.stateLabel,
     super.key,
   });
 
   final UserSettingsAddress? address;
+
+  /// Human-readable country name (e.g. "India"). Falls back to
+  /// [UserSettingsAddress.countryCode] when null.
+  final String? countryLabel;
+
+  /// Human-readable state/province name (e.g. "Chhattisgarh"). Falls back to
+  /// [UserSettingsAddress.stateCode] when null.
+  final String? stateLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +40,13 @@ class UserAddressCard extends StatelessWidget {
     if (!hasAddress) {
       return const SizedBox.shrink();
     }
+
+    // Prefer human-readable labels; fall back to raw codes for legacy data that
+    // cannot be resolved against the current reference catalogue.
+    final countryDisplay =
+        (countryLabel?.trim().isNotEmpty == true) ? countryLabel! : countryCode;
+    final stateDisplay =
+        (stateLabel?.trim().isNotEmpty == true) ? stateLabel! : stateCode;
 
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
@@ -52,12 +69,12 @@ class UserAddressCard extends StatelessWidget {
           if (countryCode.trim().isNotEmpty)
             _AddressRow(
               label: 'Country',
-              value: countryCode,
+              value: countryDisplay,
             ),
           if (stateCode.trim().isNotEmpty)
             _AddressRow(
               label: 'State',
-              value: stateCode,
+              value: stateDisplay,
             ),
           if (city.trim().isNotEmpty)
             _AddressRow(

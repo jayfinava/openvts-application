@@ -108,6 +108,28 @@ class _UserProfileSettingsTabState
         hasReferenceError &&
         (widget.state.countries.isEmpty || widget.state.mobilePrefixes.isEmpty);
 
+    // Resolve human-readable labels from reference catalogue for the address
+    // card. The statesForCountryCode guard ensures we only use state options
+    // that actually belong to the profile's current country.
+    final profileCountryCode =
+        (draft.address?.countryCode ?? '').trim().toUpperCase();
+    final profileStateCode =
+        (draft.address?.stateCode ?? '').trim().toUpperCase();
+
+    final countryLabel = widget.state.countries
+        .where((c) => c.value == profileCountryCode)
+        .map((c) => c.label)
+        .firstOrNull;
+
+    final stateLabel =
+        (widget.state.statesForCountryCode == profileCountryCode &&
+                profileCountryCode.isNotEmpty)
+            ? widget.state.states
+                .where((s) => s.value == profileStateCode)
+                .map((s) => s.label)
+                .firstOrNull
+            : null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -131,7 +153,11 @@ class _UserProfileSettingsTabState
         const SizedBox(height: OpenVtsSpacing.sm),
         UserProfileInfoCard(profile: draft),
         const SizedBox(height: OpenVtsSpacing.sm),
-        UserAddressCard(address: draft.address),
+        UserAddressCard(
+          address: draft.address,
+          countryLabel: countryLabel,
+          stateLabel: stateLabel,
+        ),
         const SizedBox(height: OpenVtsSpacing.sm),
         UserVerificationCard(
           isEmailVerified: draft.isEmailVerified,
@@ -252,6 +278,13 @@ class _UserProfileSettingsTabState
   }
 
   Future<void> _openProfileEditSheet(UserSettingsProfile profile) async {
+    // Kick off reference loading now so dropdown options arrive as early as
+    // possible. The controller's idempotency guard prevents double-fetching
+    // when references are already loading or loaded.
+    if (widget.state.countries.isEmpty && !widget.state.isLoadingReferences) {
+      unawaited(widget.controller.loadReferenceData());
+    }
+
     final ok = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,

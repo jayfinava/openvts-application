@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,6 +39,9 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
   late final TextEditingController _mobileNumberController;
   late final TextEditingController _addressController;
   late final TextEditingController _pincodeController;
+  // Separate controller used ONLY when the state field falls back to free
+  // text (i.e. the reference API returned no states for this country).
+  late final TextEditingController _stateController;
 
   // Controlled selection state — always drives the dropdown value.
   late String _selectedCountry;
@@ -67,8 +72,19 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
     _selectedCity = (address?.cityName ?? '').trim();
     _selectedMobilePrefix = (widget.profile.mobilePrefix ?? '').trim();
 
+    // Initialise the free-text state controller with the saved state code so
+    // any existing value is visible if the API returns no states list.
+    _stateController =
+        TextEditingController(text: address?.stateCode?.trim() ?? '');
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadDependentOptions();
+      // Ensure reference catalogue is loaded; the controller's idempotency
+      // guard prevents duplicate requests if loading is already in progress.
+      final st = ref.read(userSettingsControllerProvider);
+      if (st.countries.isEmpty && !st.isLoadingReferences) {
+        unawaited(widget.controller.loadReferenceData());
+      }
     });
   }
 
@@ -80,6 +96,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
     _mobileNumberController.dispose();
     _addressController.dispose();
     _pincodeController.dispose();
+    _stateController.dispose();
     super.dispose();
   }
 
@@ -102,6 +119,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
       _selectedCity = '';
       _submitError = null;
     });
+    _stateController.text = '';
     await widget.controller.loadStates(normalized);
   }
 
@@ -113,6 +131,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
       _selectedCity = '';
       _submitError = null;
     });
+    _stateController.text = normalized;
     await widget.controller.loadCities(_selectedCountry, normalized);
   }
 
@@ -319,17 +338,17 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                   validator: Validators.address,
                 ),
                 const SizedBox(height: OpenVtsSpacing.xs),
-                if (countryOptions.isEmpty)
-                  _textField(
-                    controller: TextEditingController(text: _selectedCountry),
-                    label: 'Country Code',
-                    hint: 'US',
-                    textInputAction: TextInputAction.next,
-                    validator: (value) {
-                      final country = (value ?? '').trim();
-                      if (country.isEmpty) return 'Country is required.';
-                      return null;
-                    },
+                if (state.isLoadingReferences && countryOptions.isEmpty)
+                  const _LoadingFieldPlaceholder(label: 'Country')
+                else if (countryOptions.isEmpty)
+                  // Reference load failed. Show error + retry; a FormField
+                  // validator blocks submission while no code is resolved.
+                  _ReferenceRetryField(
+                    label: 'Country',
+                    selectedValue: _selectedCountry,
+                    message: state.errorMessage,
+                    onRetry: () =>
+                        widget.controller.loadReferenceData(force: true),
                   )
                 else
                   _controlledDropdownField<String>(
@@ -353,33 +372,19 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                     },
                   ),
                 const SizedBox(height: OpenVtsSpacing.xs),
-                // State field — shows loading indicator or dropdown/text.
-                if (state.isLoadingStates)
-                  _LoadingFieldPlaceholder(label: 'State')
-                else if (stateOptions.isEmpty && statesAreForCurrentCountry)
-                  _textField(
-                    controller: TextEditingController(text: _selectedState),
-                    label: 'State Code',
-                    hint: 'CA',
-                    textInputAction: TextInputAction.next,
-                    validator: (value) {
-                      final s = (value ?? '').trim();
-                      if (s.isEmpty) return 'State is required.';
-                      return null;
-                    },
-                  )
-                else if (!statesAreForCurrentCountry &&
-                    _selectedCountry.isEmpty)
-                  _textField(
-                    controller: TextEditingController(text: _selectedState),
-                    label: 'State Code',
-                    hint: 'Select country first',
-                    textInputAction: TextInputAction.next,
-                    validator: (value) {
-                      final s = (value ?? '').trim();
-                      if (s.isEmpty) return 'State is required.';
-                      return null;
-                    },
+                // State field — shows loading, dropdown, or a free-text
+                // fallback when the reference API returns no states.
+                if (state.isLoadingStates ||
+                    (!statesAreForCurrentCountry &&
+                        _selectedCountry.isNotEmpty))
+                  // Loading states OR country just changed and states are
+                  // still in-flight / not yet matched.
+                  const _LoadingFieldPlaceholder(label: 'State')
+                else if (_selectedCountry.isEmpty)
+                  // No country selected yet – prompt user to choose first.
+                  const _DisabledFieldPlaceholder(
+                    label: 'State',
+                    hint: 'Select a country first',
                   )
                 else if (stateOptions.isNotEmpty)
                   _controlledDropdownField<String>(
@@ -409,11 +414,21 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                     },
                   )
                 else
-                  _textField(
-                    controller: TextEditingController(text: _selectedState),
-                    label: 'State Code',
-                    hint: 'CA',
+                  // statesAreForCurrentCountry && stateOptions.isEmpty:
+                  // catalogue returned no states for this country — allow
+                  // free-text entry using the tracked _stateController.
+                  TextFormField(
+                    controller: _stateController,
                     textInputAction: TextInputAction.next,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedState = '';
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'State',
+                      hintText: 'Enter state or territory',
+                    ),
                     validator: (value) {
                       final s = (value ?? '').trim();
                       if (s.isEmpty) return 'State is required.';
@@ -423,7 +438,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                 const SizedBox(height: OpenVtsSpacing.xs),
                 // City field — shows loading indicator or dropdown/text.
                 if (state.isLoadingCities)
-                  _LoadingFieldPlaceholder(label: 'City')
+                  const _LoadingFieldPlaceholder(label: 'City')
                 else if (cityOptions.isEmpty && citiesAreForCurrentSelection)
                   _textField(
                     controller: TextEditingController(text: _selectedCity),
@@ -565,7 +580,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
   }) {
     return DropdownButtonFormField<T>(
       key: key,
-      value: value,
+      initialValue: value,
       isExpanded: true,
       decoration: InputDecoration(labelText: label),
       items: items,
@@ -601,7 +616,8 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
   String _effectiveState() {
     final selected = _selectedState.trim().toUpperCase();
     if (selected.isNotEmpty) return selected;
-    return '';
+    // When free-text state field is shown (no states in catalogue), use it.
+    return _stateController.text.trim().toUpperCase();
   }
 
   String _effectiveCity() {
@@ -631,6 +647,98 @@ class _LoadingFieldPlaceholder extends StatelessWidget {
         ),
       ),
       child: const SizedBox(height: 20),
+    );
+  }
+}
+
+/// Shows a disabled hint when a field cannot be populated until a prior
+/// selection is made (e.g. State before a Country is chosen).
+class _DisabledFieldPlaceholder extends StatelessWidget {
+  const _DisabledFieldPlaceholder({
+    required this.label,
+    required this.hint,
+  });
+
+  final String label;
+  final String hint;
+
+  @override
+  Widget build(BuildContext context) {
+    return InputDecorator(
+      decoration: InputDecoration(labelText: label),
+      child: Text(
+        hint,
+        style: OpenVtsTypography.body.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+}
+
+/// Shown when a reference catalogue (e.g. country list) failed to load.
+/// Wraps a [FormField] so that the form validator blocks submission when
+/// [selectedValue] is empty (nothing pre-selected from the profile).
+class _ReferenceRetryField extends StatelessWidget {
+  const _ReferenceRetryField({
+    required this.label,
+    required this.selectedValue,
+    required this.onRetry,
+    this.message,
+  });
+
+  final String label;
+
+  /// The canonical code already resolved from the profile (may be non-empty
+  /// even when the dropdown list has not loaded). Validation passes when
+  /// non-empty so users with an existing selection can still save.
+  final String selectedValue;
+  final VoidCallback onRetry;
+  final String? message;
+
+  @override
+  Widget build(BuildContext context) {
+    return FormField<String>(
+      initialValue: selectedValue,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (value) {
+        if ((value ?? '').trim().isEmpty) {
+          return '$label is required. Tap Retry to reload options.';
+        }
+        return null;
+      },
+      builder: (field) => InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          errorText: field.errorText,
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.sync_problem_rounded,
+              size: 16,
+              color: OpenVtsColors.warning,
+            ),
+            const SizedBox(width: OpenVtsSpacing.xxs),
+            Expanded(
+              child: Text(
+                (message?.trim().isNotEmpty == true)
+                    ? message!.trim()
+                    : 'Options unavailable.',
+                style: OpenVtsTypography.meta.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            TextButton(
+              onPressed: onRetry,
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
