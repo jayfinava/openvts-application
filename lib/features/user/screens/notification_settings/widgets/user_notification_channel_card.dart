@@ -102,8 +102,12 @@ class UserNotificationChannelCard extends StatelessWidget {
         return 'Basic';
       case UserNotificationGroup.overspeed:
         return 'Overspeed';
+      case UserNotificationGroup.duration:
+        return 'Duration';
       case UserNotificationGroup.geofence:
         return 'Geofence';
+      case UserNotificationGroup.route:
+        return 'Route';
     }
   }
 }

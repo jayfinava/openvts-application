@@ -12,6 +12,7 @@ class UserNotificationCompactToggle extends StatelessWidget {
     required this.onChanged,
     this.icon,
     this.semanticsLabel,
+    this.enabled = true,
     super.key,
   });
 
@@ -20,6 +21,7 @@ class UserNotificationCompactToggle extends StatelessWidget {
   final ValueChanged<bool> onChanged;
   final IconData? icon;
   final String? semanticsLabel;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +68,7 @@ class UserNotificationCompactToggle extends StatelessWidget {
               toggled: value,
               child: Switch.adaptive(
                 value: value,
-                onChanged: onChanged,
+                onChanged: enabled ? onChanged : null,
               ),
             ),
           ],

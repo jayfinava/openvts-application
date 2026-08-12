@@ -30,9 +30,19 @@ class UserNotificationGroupTabs extends StatelessWidget {
         icon: Icons.speed_rounded,
       ),
       const _GroupTabItem(
+        group: UserNotificationGroup.duration,
+        label: 'Duration',
+        icon: Icons.timer_outlined,
+      ),
+      const _GroupTabItem(
         group: UserNotificationGroup.geofence,
         label: 'Geofence',
         icon: Icons.location_on_outlined,
+      ),
+      const _GroupTabItem(
+        group: UserNotificationGroup.route,
+        label: 'Route',
+        icon: Icons.alt_route_rounded,
       ),
     ];
 

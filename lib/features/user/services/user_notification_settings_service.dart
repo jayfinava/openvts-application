@@ -53,10 +53,22 @@ class UserNotificationSettingsService {
           'notifyWhatsapp': true,
           'notifyEmail': true,
         },
+        'DURATION': <String, bool>{
+          'notifyWebPush': true,
+          'notifyMobilePush': true,
+          'notifyWhatsapp': false,
+          'notifyEmail': true,
+        },
         'GEOFENCE': <String, bool>{
           'notifyWebPush': true,
           'notifyMobilePush': false,
           'notifyWhatsapp': true,
+          'notifyEmail': true,
+        },
+        'ROUTE': <String, bool>{
+          'notifyWebPush': true,
+          'notifyMobilePush': false,
+          'notifyWhatsapp': false,
           'notifyEmail': true,
         },
       },
@@ -84,6 +96,18 @@ class UserNotificationSettingsService {
             'speedLimitKph': 70 + (index % 4) * 10,
           },
       ],
+      'duration': [
+        for (var index = 0; index < vehicles.length; index++)
+          <String, dynamic>{
+            'vehicleId': index + 1,
+            'runningEnabled': index.isEven,
+            'runningLimitMinutes': index.isEven ? 120 : null,
+            'stopEnabled': false,
+            'stopLimitMinutes': null,
+            'idleEnabled': false,
+            'idleLimitMinutes': null,
+          },
+      ],
       'geofences': [
         for (var index = 0; index < geofences.length; index++)
           <String, dynamic>{
@@ -108,6 +132,8 @@ class UserNotificationSettingsService {
                       (vehicleIndex + geofenceIndex) % 2 == 0,
             },
       ],
+      'routes': const <Map<String, dynamic>>[],
+      'routeMatrix': const <Map<String, dynamic>>[],
     });
   }
 

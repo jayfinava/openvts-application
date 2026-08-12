@@ -20,12 +20,14 @@ import '../../../auth/controllers/auth_controller.dart';
 import '../../controllers/user_providers.dart';
 import '../../models/user_notification_settings_model.dart';
 import 'widgets/user_basic_notification_tab.dart';
+import 'widgets/user_duration_notification_tab.dart';
 import 'widgets/user_geofence_notification_tab.dart';
 import 'widgets/user_mobile_push_diagnostics_card.dart';
 import 'widgets/user_notification_group_tabs.dart';
 import 'widgets/user_notification_save_bar.dart';
 import 'widgets/user_notification_settings_header.dart';
 import 'widgets/user_overspeed_notification_tab.dart';
+import 'widgets/user_route_notification_tab.dart';
 
 const double _notificationSettingsMaxWidth = 920;
 const String _mobilePushTestTooltip =
@@ -375,6 +377,23 @@ class _UserNotificationSettingsScreenBody extends ConsumerWidget {
                               onSpeedLimitChanged:
                                   controller.updateOverspeedLimit,
                             ),
+                          UserNotificationGroup.duration =>
+                            UserDurationNotificationTab(
+                              preferences: preferences,
+                              channelFlags: preferences.channels.flagsFor(
+                                UserNotificationGroup.duration,
+                              ),
+                              onChannelChanged: (channel, value) {
+                                controller.updateChannel(
+                                  UserNotificationGroup.duration,
+                                  channel,
+                                  value,
+                                );
+                              },
+                              onEnabledChanged:
+                                  controller.updateDurationEnabled,
+                              onLimitChanged: controller.updateDurationLimit,
+                            ),
                           UserNotificationGroup.geofence =>
                             UserGeofenceNotificationTab(
                               preferences: preferences,
@@ -389,6 +408,21 @@ class _UserNotificationSettingsScreenBody extends ConsumerWidget {
                                 );
                               },
                               onGeofenceToggle: controller.updateGeofenceToggle,
+                            ),
+                          UserNotificationGroup.route =>
+                            UserRouteNotificationTab(
+                              preferences: preferences,
+                              channelFlags: preferences.channels.flagsFor(
+                                UserNotificationGroup.route,
+                              ),
+                              onChannelChanged: (channel, value) {
+                                controller.updateChannel(
+                                  UserNotificationGroup.route,
+                                  channel,
+                                  value,
+                                );
+                              },
+                              onRouteToggle: controller.updateRouteToggle,
                             ),
                         },
                         const SizedBox(height: OpenVtsSpacing.sm),
