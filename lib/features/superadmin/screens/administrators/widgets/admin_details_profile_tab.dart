@@ -12,6 +12,7 @@ import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
+import '../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../../admin/utils/location_label_resolver.dart';
 import '../../../controllers/superadmin_admin_details_controller.dart';
@@ -821,14 +822,22 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       labels: {for (final c in cities) c.name: c.name},
       current: _cityName,
     );
-    final prefixItems = _withFallback(
-      values: prefixes.map((p) => p.dialCode).toList(),
-      labels: {
-        for (final p in prefixes)
-          p.dialCode: '${p.dialCode} (${p.countryCode})',
-      },
-      current: _mobilePrefix,
-    );
+    final prefixOptions = [
+      for (final p in prefixes)
+        OpenVtsDropdownOption<String>(
+          value: p.dialCode,
+          label: p.dialCode,
+          subtitle: p.countryCode,
+          searchText: '${p.dialCode} ${p.countryCode}',
+        ),
+      if (_mobilePrefix != null &&
+          _mobilePrefix!.isNotEmpty &&
+          !prefixes.any((p) => p.dialCode == _mobilePrefix))
+        OpenVtsDropdownOption<String>(
+          value: _mobilePrefix!,
+          label: _mobilePrefix!,
+        ),
+    ];
 
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
@@ -885,10 +894,13 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                           children: [
                             Expanded(
                               flex: 4,
-                              child: _DropdownField<String>(
+                              child: OpenVtsSearchableDropdown<String>(
                                 label: 'Prefix',
+                                hintText: 'Select',
+                                searchHintText: 'Search dial code or country',
+                                sheetTitle: 'Mobile Prefix',
                                 value: _mobilePrefix,
-                                items: prefixItems,
+                                options: prefixOptions,
                                 onChanged: (v) =>
                                     setState(() => _mobilePrefix = v),
                                 validator: Validators.mobilePrefix,
