@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../models/user_settings_model.dart';
 
@@ -22,6 +22,7 @@ class UserLocalizationPreviewCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final dateTimeFormatter = ref.watch(appDateFormatterProvider);
     final now = DateTime.now();
     final dateText = _formatDate(now, settings.dateFormat, dateTimeFormatter);
@@ -30,7 +31,7 @@ class UserLocalizationPreviewCard extends ConsumerWidget {
     final directionText =
         settings.layoutDirection == UserLayoutDirection.rtl ? 'RTL' : 'LTR';
     final distanceText =
-        settings.units == UserDistanceUnit.miles ? 'Miles' : 'Kilometers';
+        settings.units == UserDistanceUnit.miles ? l10n.miles : l10n.kilometers;
 
     final mapText =
         '${settings.defaultLat.toStringAsFixed(4)}, ${settings.defaultLon.toStringAsFixed(4)} · z${settings.mapZoom}';
@@ -49,7 +50,7 @@ class UserLocalizationPreviewCard extends ConsumerWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                'Localization Preview',
+                l10n.localizationPreview,
                 style: OpenVtsTypography.meta.copyWith(
                   color: Theme.of(context).colorScheme.outline,
                   fontWeight: FontWeight.w700,
@@ -61,13 +62,14 @@ class UserLocalizationPreviewCard extends ConsumerWidget {
           const SizedBox(height: OpenVtsSpacing.xs),
           _PreviewGrid(
             tiles: [
-              _PreviewTile(label: 'Language', value: languageLabel),
-              _PreviewTile(label: 'Direction', value: directionText),
-              _PreviewTile(label: 'Timezone', value: settings.timezoneOffset),
-              _PreviewTile(label: 'Date', value: dateText),
-              _PreviewTile(label: 'Time', value: timeText),
-              _PreviewTile(label: 'Distance Unit', value: distanceText),
-              _PreviewTile(label: 'Map Center', value: mapText),
+              _PreviewTile(label: l10n.language, value: languageLabel),
+              _PreviewTile(label: l10n.direction, value: directionText),
+              _PreviewTile(
+                  label: l10n.timezone, value: settings.timezoneOffset),
+              _PreviewTile(label: l10n.date, value: dateText),
+              _PreviewTile(label: l10n.time, value: timeText),
+              _PreviewTile(label: l10n.units, value: distanceText),
+              _PreviewTile(label: l10n.mapCenter, value: mapText),
             ],
           ),
         ],

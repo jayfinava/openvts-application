@@ -4,6 +4,7 @@ import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 
 class UserLocalizationSelectCard extends StatelessWidget {
@@ -389,7 +390,7 @@ class _LocalizationOptionPickerSheetState<T>
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 24),
                             child: Text(
-                              'No options found.',
+                              AppLocalizations.of(context).noData,
                               style: OpenVtsTypography.meta.copyWith(
                                 color: Theme.of(context)
                                     .colorScheme

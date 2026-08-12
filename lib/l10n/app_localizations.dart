@@ -1353,6 +1353,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile, branding, mail, localization, and platform preferences.'**
   String get settingsHeaderSubtitle;
+
+  /// No description provided for @localizationPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Localization Preview'**
+  String get localizationPreview;
+
+  /// No description provided for @latitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get latitude;
+
+  /// No description provided for @longitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get longitude;
+
+  /// No description provided for @mapZoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Map Zoom'**
+  String get mapZoom;
+
+  /// No description provided for @mapCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Map Center'**
+  String get mapCenter;
+
+  /// No description provided for @kilometers.
+  ///
+  /// In en, this message translates to:
+  /// **'Kilometers'**
+  String get kilometers;
+
+  /// No description provided for @miles.
+  ///
+  /// In en, this message translates to:
+  /// **'Miles'**
+  String get miles;
+
+  /// No description provided for @latitudeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude is required.'**
+  String get latitudeRequired;
+
+  /// No description provided for @validLatitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid latitude.'**
+  String get validLatitude;
+
+  /// No description provided for @latitudeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude must be between -90 and 90.'**
+  String get latitudeRange;
+
+  /// No description provided for @longitudeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude is required.'**
+  String get longitudeRequired;
+
+  /// No description provided for @validLongitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid longitude.'**
+  String get validLongitude;
+
+  /// No description provided for @longitudeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude must be between -180 and 180.'**
+  String get longitudeRange;
+
+  /// No description provided for @mapZoomRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Map zoom is required.'**
+  String get mapZoomRequired;
+
+  /// No description provided for @validMapZoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid zoom level.'**
+  String get validMapZoom;
+
+  /// No description provided for @mapZoomRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Map zoom must be between 1 and 22.'**
+  String get mapZoomRange;
+
+  /// No description provided for @unsupportedLanguageFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved language is not available in the app. Select a supported language; English is used for now.'**
+  String get unsupportedLanguageFallback;
 }
 
 class _AppLocalizationsDelegate

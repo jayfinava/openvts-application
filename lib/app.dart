@@ -34,14 +34,7 @@ class App extends ConsumerWidget {
         darkTheme: OpenVtsTheme.dark,
         themeMode: prefs.themeMode,
         locale: Locale(prefs.languageCode),
-        supportedLocales: const [
-          Locale('en'),
-          Locale('hi'),
-          Locale('ar'),
-          Locale('es'),
-          Locale('fr'),
-          Locale('pt'),
-        ],
+        supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,

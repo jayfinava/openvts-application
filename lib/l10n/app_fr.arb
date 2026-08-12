@@ -137,5 +137,6 @@
   "couldNotLoadLocalization": "Impossible de charger la localisation.",
   "localizationSaved": "Localisation enregistrée",
   "quickPresets": "Présélections rapides",
-  "settingsHeaderSubtitle": "Profil, marque, courrier, localisation et préférences de plateforme."
+  "settingsHeaderSubtitle": "Profil, marque, courrier, localisation et préférences de plateforme.",
+  "localizationPreview": "Aperçu de la localisation", "latitude": "Latitude", "longitude": "Longitude", "mapZoom": "Zoom de la carte", "mapCenter": "Centre de la carte", "kilometers": "Kilomètres", "miles": "Miles", "latitudeRequired": "La latitude est requise.", "validLatitude": "Saisissez une latitude valide.", "latitudeRange": "La latitude doit être comprise entre -90 et 90.", "longitudeRequired": "La longitude est requise.", "validLongitude": "Saisissez une longitude valide.", "longitudeRange": "La longitude doit être comprise entre -180 et 180.", "mapZoomRequired": "Le zoom de la carte est requis.", "validMapZoom": "Saisissez un niveau de zoom valide.", "mapZoomRange": "Le zoom de la carte doit être compris entre 1 et 22.", "unsupportedLanguageFallback": "La langue enregistrée n'est pas disponible dans l'application. Sélectionnez une langue prise en charge ; l'anglais est utilisé pour le moment."
 }

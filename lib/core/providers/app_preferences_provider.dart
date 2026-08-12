@@ -1,26 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../storage/local_cache.dart';
 import '../storage/storage_keys.dart';
 import '../utils/date_time_formatter.dart';
 import 'core_providers.dart';
 
+Set<String> get flutterSupportedLanguageCodes =>
+    AppLocalizations.supportedLocales
+        .map((locale) => locale.languageCode)
+        .toSet();
+
+String flutterLanguageCodeFor(String? value) {
+  if (value == null || value.trim().isEmpty) return 'en';
+  final lower = value.toLowerCase().trim();
+  final namedCode = switch (lower) {
+    final code when code.contains('english') => 'en',
+    final code when code.contains('hindi') => 'hi',
+    final code when code.contains('arabic') => 'ar',
+    final code when code.contains('spanish') => 'es',
+    final code when code.contains('french') => 'fr',
+    final code when code.contains('portuguese') => 'pt',
+    _ => lower.split(RegExp('[-_]')).first,
+  };
+  return flutterSupportedLanguageCodes.contains(namedCode) ? namedCode : 'en';
+}
+
+bool isFlutterLanguageSupported(String value) {
+  final baseCode = value.trim().toLowerCase().split(RegExp('[-_]')).first;
+  return flutterSupportedLanguageCodes.contains(baseCode);
+}
+
 // Normalization helpers for localization values
 class _LocalizationNormalizers {
   /// Normalize language code variants to canonical form
   static String normalizeLanguage(String? value) {
-    if (value == null || value.isEmpty) return 'en';
-    final lower = value.toLowerCase().trim();
-    // Handle variants
-    if (lower.contains('english') || lower == 'en') return 'en';
-    if (lower.contains('hindi') || lower == 'hi') return 'hi';
-    if (lower.contains('arabic') || lower == 'ar') return 'ar';
-    if (lower.contains('spanish') || lower == 'es') return 'es';
-    if (lower.contains('french') || lower == 'fr') return 'fr';
-    if (lower.contains('portuguese') || lower == 'pt') return 'pt';
-    // Fallback to first 2 chars as code if matches known length
-    return lower.length >= 2 ? lower.substring(0, 2) : 'en';
+    return flutterLanguageCodeFor(value);
   }
 
   /// Normalize units variants to canonical form
@@ -134,8 +150,9 @@ class AppLocalizationPreferencesController
   final ThemeModeController _themeModeCtrl;
 
   void hydrate() {
-    final languageCode =
-        _localCache.getString(StorageKeys.appLanguageCode) ?? 'en';
+    final languageCode = _LocalizationNormalizers.normalizeLanguage(
+      _localCache.getString(StorageKeys.appLanguageCode),
+    );
     final dateFormat =
         _localCache.getString(StorageKeys.appDateFormat) ?? 'DD MMM YYYY';
     final timeFormat =
@@ -325,32 +342,6 @@ class AppLocalizationPreferencesController
       case 'LIGHT':
       default:
         return ThemeMode.light;
-    }
-  }
-
-  static String _normalizeLanguageCode(String code) {
-    final normalized = code.trim().toLowerCase();
-    switch (normalized) {
-      case 'english':
-      case 'en':
-        return 'en';
-      case 'hindi':
-      case 'hi':
-        return 'hi';
-      case 'arabic':
-      case 'ar':
-        return 'ar';
-      case 'spanish':
-      case 'es':
-        return 'es';
-      case 'french':
-      case 'fr':
-        return 'fr';
-      case 'portuguese':
-      case 'pt':
-        return 'pt';
-      default:
-        return normalized.isNotEmpty ? normalized : 'en';
     }
   }
 }

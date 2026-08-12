@@ -678,4 +678,56 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get settingsHeaderSubtitle =>
       'Perfil, marca, correio, localização e preferências de plataforma.';
+
+  @override
+  String get localizationPreview => 'Prévia de localização';
+
+  @override
+  String get latitude => 'Latitude';
+
+  @override
+  String get longitude => 'Longitude';
+
+  @override
+  String get mapZoom => 'Zoom do mapa';
+
+  @override
+  String get mapCenter => 'Centro do mapa';
+
+  @override
+  String get kilometers => 'Quilômetros';
+
+  @override
+  String get miles => 'Milhas';
+
+  @override
+  String get latitudeRequired => 'A latitude é obrigatória.';
+
+  @override
+  String get validLatitude => 'Insira uma latitude válida.';
+
+  @override
+  String get latitudeRange => 'A latitude deve estar entre -90 e 90.';
+
+  @override
+  String get longitudeRequired => 'A longitude é obrigatória.';
+
+  @override
+  String get validLongitude => 'Insira uma longitude válida.';
+
+  @override
+  String get longitudeRange => 'A longitude deve estar entre -180 e 180.';
+
+  @override
+  String get mapZoomRequired => 'O zoom do mapa é obrigatório.';
+
+  @override
+  String get validMapZoom => 'Insira um nível de zoom válido.';
+
+  @override
+  String get mapZoomRange => 'O zoom do mapa deve estar entre 1 e 22.';
+
+  @override
+  String get unsupportedLanguageFallback =>
+      'O idioma salvo não está disponível no aplicativo. Selecione um idioma compatível; o inglês será usado por enquanto.';
 }

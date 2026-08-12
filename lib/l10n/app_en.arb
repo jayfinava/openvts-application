@@ -219,5 +219,6 @@
   "couldNotLoadLocalization": "Could not load localization.",
   "localizationSaved": "Localization saved",
   "quickPresets": "Quick presets",
-  "settingsHeaderSubtitle": "Profile, branding, mail, localization, and platform preferences."
+  "settingsHeaderSubtitle": "Profile, branding, mail, localization, and platform preferences.",
+  "localizationPreview": "Localization Preview", "latitude": "Latitude", "longitude": "Longitude", "mapZoom": "Map Zoom", "mapCenter": "Map Center", "kilometers": "Kilometers", "miles": "Miles", "latitudeRequired": "Latitude is required.", "validLatitude": "Enter a valid latitude.", "latitudeRange": "Latitude must be between -90 and 90.", "longitudeRequired": "Longitude is required.", "validLongitude": "Enter a valid longitude.", "longitudeRange": "Longitude must be between -180 and 180.", "mapZoomRequired": "Map zoom is required.", "validMapZoom": "Enter a valid zoom level.", "mapZoomRange": "Map zoom must be between 1 and 22.", "unsupportedLanguageFallback": "The saved language is not available in the app. Select a supported language; English is used for now."
 }

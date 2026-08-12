@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../models/user_settings_model.dart';
 
@@ -19,6 +19,7 @@ class UserSettingsTabSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.xs),
       child: SingleChildScrollView(
@@ -26,14 +27,14 @@ class UserSettingsTabSelector extends StatelessWidget {
         child: Row(
           children: [
             _SettingsTabChip(
-              label: 'Profile',
+              label: l10n.profile,
               icon: Icons.person_outline_rounded,
               selected: selectedTab == UserSettingsTab.profile,
               onTap: () => onChanged(UserSettingsTab.profile),
             ),
             const SizedBox(width: OpenVtsSpacing.xs),
             _SettingsTabChip(
-              label: 'Localization',
+              label: l10n.localization,
               icon: Icons.public_rounded,
               selected: selectedTab == UserSettingsTab.localization,
               onTap: () => onChanged(UserSettingsTab.localization),

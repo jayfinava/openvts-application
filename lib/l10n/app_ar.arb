@@ -137,5 +137,6 @@
   "couldNotLoadLocalization": "تعذر تحميل التوطين.",
   "localizationSaved": "تم حفظ التوطين",
   "quickPresets": "الإعدادات المسبقة السريعة",
-  "settingsHeaderSubtitle": "الملف الشخصي والعلامة التجارية والبريد والتوطين وتفضيلات المنصة."
+  "settingsHeaderSubtitle": "الملف الشخصي والعلامة التجارية والبريد والتوطين وتفضيلات المنصة.",
+  "localizationPreview": "معاينة التوطين", "latitude": "خط العرض", "longitude": "خط الطول", "mapZoom": "تكبير الخريطة", "mapCenter": "مركز الخريطة", "kilometers": "كيلومترات", "miles": "أميال", "latitudeRequired": "خط العرض مطلوب.", "validLatitude": "أدخل خط عرض صالحًا.", "latitudeRange": "يجب أن يكون خط العرض بين -90 و90.", "longitudeRequired": "خط الطول مطلوب.", "validLongitude": "أدخل خط طول صالحًا.", "longitudeRange": "يجب أن يكون خط الطول بين -180 و180.", "mapZoomRequired": "تكبير الخريطة مطلوب.", "validMapZoom": "أدخل مستوى تكبير صالحًا.", "mapZoomRange": "يجب أن يكون تكبير الخريطة بين 1 و22.", "unsupportedLanguageFallback": "اللغة المحفوظة غير متاحة في التطبيق. اختر لغة مدعومة؛ تُستخدم الإنجليزية مؤقتًا."
 }

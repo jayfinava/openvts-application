@@ -673,4 +673,56 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsHeaderSubtitle =>
       'Profile, branding, mail, localization, and platform preferences.';
+
+  @override
+  String get localizationPreview => 'Localization Preview';
+
+  @override
+  String get latitude => 'Latitude';
+
+  @override
+  String get longitude => 'Longitude';
+
+  @override
+  String get mapZoom => 'Map Zoom';
+
+  @override
+  String get mapCenter => 'Map Center';
+
+  @override
+  String get kilometers => 'Kilometers';
+
+  @override
+  String get miles => 'Miles';
+
+  @override
+  String get latitudeRequired => 'Latitude is required.';
+
+  @override
+  String get validLatitude => 'Enter a valid latitude.';
+
+  @override
+  String get latitudeRange => 'Latitude must be between -90 and 90.';
+
+  @override
+  String get longitudeRequired => 'Longitude is required.';
+
+  @override
+  String get validLongitude => 'Enter a valid longitude.';
+
+  @override
+  String get longitudeRange => 'Longitude must be between -180 and 180.';
+
+  @override
+  String get mapZoomRequired => 'Map zoom is required.';
+
+  @override
+  String get validMapZoom => 'Enter a valid zoom level.';
+
+  @override
+  String get mapZoomRange => 'Map zoom must be between 1 and 22.';
+
+  @override
+  String get unsupportedLanguageFallback =>
+      'The saved language is not available in the app. Select a supported language; English is used for now.';
 }

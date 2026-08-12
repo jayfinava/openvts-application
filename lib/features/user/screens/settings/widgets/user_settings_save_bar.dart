@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../models/user_settings_model.dart';
@@ -27,9 +27,11 @@ class UserSettingsSaveBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
-    final tabLabel =
-        selectedTab == UserSettingsTab.profile ? 'Profile' : 'Localization';
+    final tabLabel = selectedTab == UserSettingsTab.profile
+        ? l10n.profile
+        : l10n.localization;
 
     return AnimatedPadding(
       duration: const Duration(milliseconds: 180),
@@ -67,7 +69,7 @@ class UserSettingsSaveBar extends StatelessWidget {
                       children: [
                         Expanded(
                           child: OpenVtsButton(
-                            label: 'Reset',
+                            label: l10n.reset,
                             height: 44,
                             variant: OpenVtsButtonVariant.secondary,
                             onPressed: canReset ? onReset : null,
@@ -77,7 +79,7 @@ class UserSettingsSaveBar extends StatelessWidget {
                         Expanded(
                           flex: 2,
                           child: OpenVtsButton(
-                            label: isSaving ? 'Saving...' : 'Save',
+                            label: isSaving ? l10n.loading : l10n.save,
                             height: 44,
                             isLoading: isSaving,
                             onPressed: canSave ? onSave : null,
@@ -103,7 +105,7 @@ class UserSettingsSaveBar extends StatelessWidget {
                   SizedBox(
                     width: 92,
                     child: OpenVtsButton(
-                      label: 'Reset',
+                      label: l10n.reset,
                       height: 44,
                       variant: OpenVtsButtonVariant.secondary,
                       onPressed: canReset ? onReset : null,
@@ -113,7 +115,7 @@ class UserSettingsSaveBar extends StatelessWidget {
                   SizedBox(
                     width: 120,
                     child: OpenVtsButton(
-                      label: isSaving ? 'Saving...' : 'Save',
+                      label: isSaving ? l10n.loading : l10n.save,
                       height: 44,
                       isLoading: isSaving,
                       onPressed: canSave ? onSave : null,

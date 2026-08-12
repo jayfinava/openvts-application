@@ -137,5 +137,6 @@
   "couldNotLoadLocalization": "Não foi possível carregar a localização.",
   "localizationSaved": "Localização salva",
   "quickPresets": "Predefinições rápidas",
-  "settingsHeaderSubtitle": "Perfil, marca, correio, localização e preferências de plataforma."
+  "settingsHeaderSubtitle": "Perfil, marca, correio, localização e preferências de plataforma.",
+  "localizationPreview": "Prévia de localização", "latitude": "Latitude", "longitude": "Longitude", "mapZoom": "Zoom do mapa", "mapCenter": "Centro do mapa", "kilometers": "Quilômetros", "miles": "Milhas", "latitudeRequired": "A latitude é obrigatória.", "validLatitude": "Insira uma latitude válida.", "latitudeRange": "A latitude deve estar entre -90 e 90.", "longitudeRequired": "A longitude é obrigatória.", "validLongitude": "Insira uma longitude válida.", "longitudeRange": "A longitude deve estar entre -180 e 180.", "mapZoomRequired": "O zoom do mapa é obrigatório.", "validMapZoom": "Insira um nível de zoom válido.", "mapZoomRange": "O zoom do mapa deve estar entre 1 e 22.", "unsupportedLanguageFallback": "O idioma salvo não está disponível no aplicativo. Selecione um idioma compatível; o inglês será usado por enquanto."
 }

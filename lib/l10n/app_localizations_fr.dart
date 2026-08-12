@@ -678,4 +678,58 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settingsHeaderSubtitle =>
       'Profil, marque, courrier, localisation et préférences de plateforme.';
+
+  @override
+  String get localizationPreview => 'Aperçu de la localisation';
+
+  @override
+  String get latitude => 'Latitude';
+
+  @override
+  String get longitude => 'Longitude';
+
+  @override
+  String get mapZoom => 'Zoom de la carte';
+
+  @override
+  String get mapCenter => 'Centre de la carte';
+
+  @override
+  String get kilometers => 'Kilomètres';
+
+  @override
+  String get miles => 'Miles';
+
+  @override
+  String get latitudeRequired => 'La latitude est requise.';
+
+  @override
+  String get validLatitude => 'Saisissez une latitude valide.';
+
+  @override
+  String get latitudeRange => 'La latitude doit être comprise entre -90 et 90.';
+
+  @override
+  String get longitudeRequired => 'La longitude est requise.';
+
+  @override
+  String get validLongitude => 'Saisissez une longitude valide.';
+
+  @override
+  String get longitudeRange =>
+      'La longitude doit être comprise entre -180 et 180.';
+
+  @override
+  String get mapZoomRequired => 'Le zoom de la carte est requis.';
+
+  @override
+  String get validMapZoom => 'Saisissez un niveau de zoom valide.';
+
+  @override
+  String get mapZoomRange =>
+      'Le zoom de la carte doit être compris entre 1 et 22.';
+
+  @override
+  String get unsupportedLanguageFallback =>
+      'La langue enregistrée n\'est pas disponible dans l\'application. Sélectionnez une langue prise en charge ; l\'anglais est utilisé pour le moment.';
 }

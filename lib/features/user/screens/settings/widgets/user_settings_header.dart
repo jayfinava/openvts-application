@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_status_chip.dart';
 import '../../../models/user_settings_model.dart';
@@ -26,17 +26,19 @@ class UserSettingsHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final settingsDateFormatter = ref.watch(appDateFormatterProvider);
-    final tabLabel =
-        selectedTab == UserSettingsTab.profile ? 'Profile' : 'Localization';
+    final tabLabel = selectedTab == UserSettingsTab.profile
+        ? l10n.profile
+        : l10n.localization;
 
     final statusChip = isCurrentTabSaving
-        ? const OpenVtsStatusChip(
-            label: 'Saving',
+        ? OpenVtsStatusChip(
+            label: l10n.loading,
             type: OpenVtsStatusType.info,
           )
         : OpenVtsStatusChip(
-            label: isCurrentTabDirty ? 'Unsaved' : 'Saved',
+            label: isCurrentTabDirty ? l10n.unsavedChanges : l10n.success,
             type: isCurrentTabDirty
                 ? OpenVtsStatusType.warning
                 : OpenVtsStatusType.neutral,
@@ -71,7 +73,7 @@ class UserSettingsHeader extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Settings',
+                      l10n.settings,
                       style: TextStyle(
                         fontFamily: OpenVtsTypography.primaryFontFamily,
                         fontSize: 14,
@@ -82,7 +84,9 @@ class UserSettingsHeader extends ConsumerWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Manage profile, security, and localization preferences.',
+                      selectedTab == UserSettingsTab.localization
+                          ? l10n.localizationDescription
+                          : l10n.settingsDescription,
                       style: TextStyle(
                         fontFamily: OpenVtsTypography.primaryFontFamily,
                         fontSize: 11.5,
@@ -101,7 +105,7 @@ class UserSettingsHeader extends ConsumerWidget {
             runSpacing: OpenVtsSpacing.xs,
             children: [
               OpenVtsStatusChip(
-                label: '$tabLabel tab',
+                label: tabLabel,
                 type: OpenVtsStatusType.neutral,
               ),
               statusChip,

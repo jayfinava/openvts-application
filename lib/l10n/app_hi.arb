@@ -137,5 +137,6 @@
   "couldNotLoadLocalization": "स्थानीयकरण लोड नहीं हो सका।",
   "localizationSaved": "स्थानीयकरण सहेजा गया",
   "quickPresets": "त्वरित प्रीसेट",
-  "settingsHeaderSubtitle": "प्रोफ़ाइल, ब्रांडिंग, मेल, स्थानीयकरण और प्लेटफ़ॉर्म प्राथमिकताएँ।"
+  "settingsHeaderSubtitle": "प्रोफ़ाइल, ब्रांडिंग, मेल, स्थानीयकरण और प्लेटफ़ॉर्म प्राथमिकताएँ।",
+  "localizationPreview": "स्थानीयकरण पूर्वावलोकन", "latitude": "अक्षांश", "longitude": "देशांतर", "mapZoom": "मानचित्र ज़ूम", "mapCenter": "मानचित्र केंद्र", "kilometers": "किलोमीटर", "miles": "मील", "latitudeRequired": "अक्षांश आवश्यक है।", "validLatitude": "मान्य अक्षांश दर्ज करें।", "latitudeRange": "अक्षांश -90 और 90 के बीच होना चाहिए।", "longitudeRequired": "देशांतर आवश्यक है।", "validLongitude": "मान्य देशांतर दर्ज करें।", "longitudeRange": "देशांतर -180 और 180 के बीच होना चाहिए।", "mapZoomRequired": "मानचित्र ज़ूम आवश्यक है।", "validMapZoom": "मान्य ज़ूम स्तर दर्ज करें।", "mapZoomRange": "मानचित्र ज़ूम 1 और 22 के बीच होना चाहिए।", "unsupportedLanguageFallback": "सहेजी गई भाषा ऐप में उपलब्ध नहीं है। समर्थित भाषा चुनें; अभी अंग्रेज़ी का उपयोग किया जा रहा है।"
 }

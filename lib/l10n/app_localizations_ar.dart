@@ -672,4 +672,56 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get settingsHeaderSubtitle =>
       'الملف الشخصي والعلامة التجارية والبريد والتوطين وتفضيلات المنصة.';
+
+  @override
+  String get localizationPreview => 'معاينة التوطين';
+
+  @override
+  String get latitude => 'خط العرض';
+
+  @override
+  String get longitude => 'خط الطول';
+
+  @override
+  String get mapZoom => 'تكبير الخريطة';
+
+  @override
+  String get mapCenter => 'مركز الخريطة';
+
+  @override
+  String get kilometers => 'كيلومترات';
+
+  @override
+  String get miles => 'أميال';
+
+  @override
+  String get latitudeRequired => 'خط العرض مطلوب.';
+
+  @override
+  String get validLatitude => 'أدخل خط عرض صالحًا.';
+
+  @override
+  String get latitudeRange => 'يجب أن يكون خط العرض بين -90 و90.';
+
+  @override
+  String get longitudeRequired => 'خط الطول مطلوب.';
+
+  @override
+  String get validLongitude => 'أدخل خط طول صالحًا.';
+
+  @override
+  String get longitudeRange => 'يجب أن يكون خط الطول بين -180 و180.';
+
+  @override
+  String get mapZoomRequired => 'تكبير الخريطة مطلوب.';
+
+  @override
+  String get validMapZoom => 'أدخل مستوى تكبير صالحًا.';
+
+  @override
+  String get mapZoomRange => 'يجب أن يكون تكبير الخريطة بين 1 و22.';
+
+  @override
+  String get unsupportedLanguageFallback =>
+      'اللغة المحفوظة غير متاحة في التطبيق. اختر لغة مدعومة؛ تُستخدم الإنجليزية مؤقتًا.';
 }

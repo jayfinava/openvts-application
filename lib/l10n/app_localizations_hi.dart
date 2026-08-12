@@ -673,4 +673,56 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get settingsHeaderSubtitle =>
       'प्रोफ़ाइल, ब्रांडिंग, मेल, स्थानीयकरण और प्लेटफ़ॉर्म प्राथमिकताएँ।';
+
+  @override
+  String get localizationPreview => 'स्थानीयकरण पूर्वावलोकन';
+
+  @override
+  String get latitude => 'अक्षांश';
+
+  @override
+  String get longitude => 'देशांतर';
+
+  @override
+  String get mapZoom => 'मानचित्र ज़ूम';
+
+  @override
+  String get mapCenter => 'मानचित्र केंद्र';
+
+  @override
+  String get kilometers => 'किलोमीटर';
+
+  @override
+  String get miles => 'मील';
+
+  @override
+  String get latitudeRequired => 'अक्षांश आवश्यक है।';
+
+  @override
+  String get validLatitude => 'मान्य अक्षांश दर्ज करें।';
+
+  @override
+  String get latitudeRange => 'अक्षांश -90 और 90 के बीच होना चाहिए।';
+
+  @override
+  String get longitudeRequired => 'देशांतर आवश्यक है।';
+
+  @override
+  String get validLongitude => 'मान्य देशांतर दर्ज करें।';
+
+  @override
+  String get longitudeRange => 'देशांतर -180 और 180 के बीच होना चाहिए।';
+
+  @override
+  String get mapZoomRequired => 'मानचित्र ज़ूम आवश्यक है।';
+
+  @override
+  String get validMapZoom => 'मान्य ज़ूम स्तर दर्ज करें।';
+
+  @override
+  String get mapZoomRange => 'मानचित्र ज़ूम 1 और 22 के बीच होना चाहिए।';
+
+  @override
+  String get unsupportedLanguageFallback =>
+      'सहेजी गई भाषा ऐप में उपलब्ध नहीं है। समर्थित भाषा चुनें; अभी अंग्रेज़ी का उपयोग किया जा रहा है।';
 }

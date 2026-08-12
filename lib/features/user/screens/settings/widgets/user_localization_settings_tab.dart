@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../../../../core/providers/app_preferences_provider.dart';
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../controllers/user_settings_controller.dart';
 import '../../../models/user_settings_model.dart';
@@ -86,20 +88,26 @@ class _UserLocalizationSettingsTabState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final draft = _draft;
 
     final languageOptions = _buildLanguageOptions(draft);
     final dateFormatOptions = _buildDateFormatOptions(draft);
     final timezoneOptions = _buildTimezoneOptions(draft);
 
-    final languageLabel = _labelForValue(
-      options: languageOptions,
-      value: draft.language,
-      fallback: draft.language.toUpperCase(),
-    );
+    final hasUnsupportedSavedLanguage =
+        !isFlutterLanguageSupported(draft.language);
+    final languageLabel = hasUnsupportedSavedLanguage
+        ? l10n.en
+        : _labelForValue(
+            options: languageOptions,
+            value: draft.language,
+            fallback: draft.language.toUpperCase(),
+          );
 
     final showReferenceFallbackWarning = !widget.state.isLoadingReferences &&
-        (widget.state.languages.isEmpty ||
+        (hasUnsupportedSavedLanguage ||
+            widget.state.languages.isEmpty ||
             widget.state.dateFormats.isEmpty ||
             widget.state.timezones.isEmpty);
 
@@ -113,7 +121,9 @@ class _UserLocalizationSettingsTabState
         if (showReferenceFallbackWarning) ...[
           const SizedBox(height: OpenVtsSpacing.sm),
           _ReferenceFallbackWarning(
-            message: widget.state.errorMessage,
+            message: hasUnsupportedSavedLanguage
+                ? l10n.unsupportedLanguageFallback
+                : widget.state.errorMessage,
             onRetry: () {
               unawaited(widget.controller.loadReferenceData(force: true));
             },
@@ -121,24 +131,24 @@ class _UserLocalizationSettingsTabState
         ],
         const SizedBox(height: OpenVtsSpacing.sm),
         UserLocalizationSelectCard(
-          title: 'Language',
-          subtitle: 'Language and layout direction.',
+          title: l10n.languageAndDirection,
+          subtitle: l10n.languageAndDirectionSubtitle,
           icon: Icons.translate_rounded,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               UserLocalizationPickerTile(
-                label: 'Language',
+                label: l10n.language,
                 valueLabel: languageLabel,
                 onTap: () => _pickLanguage(languageOptions),
-                hintText: 'Select language',
+                hintText: l10n.selectLanguage,
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               _SegmentedField<UserLayoutDirection>(
-                label: 'Layout Direction',
+                label: l10n.textDirection,
                 child: UserLocalizationSegmentedControl<UserLayoutDirection>(
                   value: draft.layoutDirection,
-                  semanticsLabel: 'Layout direction selector',
+                  semanticsLabel: l10n.textDirection,
                   segments: const [
                     UserLocalizationSegmentOption<UserLayoutDirection>(
                       value: UserLayoutDirection.ltr,
@@ -161,28 +171,28 @@ class _UserLocalizationSettingsTabState
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
         UserLocalizationSelectCard(
-          title: 'Date and Time',
-          subtitle: 'Date format, time style, and timezone.',
+          title: l10n.dateAndTime,
+          subtitle: l10n.dateAndTimeSubtitle,
           icon: Icons.event_note_rounded,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               UserLocalizationPickerTile(
-                label: 'Date Format',
+                label: l10n.dateFormat,
                 valueLabel: _labelForValue(
                   options: dateFormatOptions,
                   value: draft.dateFormat,
                   fallback: draft.dateFormat,
                 ),
                 onTap: () => _pickDateFormat(dateFormatOptions),
-                hintText: 'Select date format',
+                hintText: l10n.selectDateFormat,
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               _SegmentedField<bool>(
-                label: 'Time Format',
+                label: l10n.timeFormat,
                 child: UserLocalizationSegmentedControl<bool>(
                   value: draft.use24Hour,
-                  semanticsLabel: 'Time format selector',
+                  semanticsLabel: l10n.timeFormat,
                   segments: const [
                     UserLocalizationSegmentOption<bool>(
                       value: true,
@@ -200,28 +210,28 @@ class _UserLocalizationSettingsTabState
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               UserLocalizationPickerTile(
-                label: 'Timezone',
+                label: l10n.timezone,
                 valueLabel: _labelForValue(
                   options: timezoneOptions,
                   value: draft.timezoneOffset,
                   fallback: draft.timezoneOffset,
                 ),
                 onTap: () => _pickTimezone(timezoneOptions),
-                hintText: 'Select timezone',
+                hintText: l10n.selectTimezone,
               ),
             ],
           ),
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
         UserLocalizationSelectCard(
-          title: 'Units and Theme',
-          subtitle: 'Distance units and app appearance preference.',
+          title: l10n.unitsAndTheme,
+          subtitle: l10n.unitsAndThemeSubtitle,
           icon: Icons.tune_rounded,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _SegmentedField<UserDistanceUnit>(
-                label: 'Distance Unit',
+                label: l10n.units,
                 child: UserLocalizationSegmentedControl<UserDistanceUnit>(
                   value: draft.units,
                   semanticsLabel: 'Distance unit selector',
@@ -242,22 +252,22 @@ class _UserLocalizationSettingsTabState
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               _SegmentedField<UserThemeMode>(
-                label: 'Theme',
+                label: l10n.theme,
                 child: UserLocalizationSegmentedControl<UserThemeMode>(
                   value: draft.theme,
-                  semanticsLabel: 'Theme selector',
-                  segments: const [
+                  semanticsLabel: l10n.theme,
+                  segments: [
                     UserLocalizationSegmentOption<UserThemeMode>(
                       value: UserThemeMode.system,
-                      label: 'System',
+                      label: l10n.system,
                     ),
                     UserLocalizationSegmentOption<UserThemeMode>(
                       value: UserThemeMode.light,
-                      label: 'Light',
+                      label: l10n.light,
                     ),
                     UserLocalizationSegmentOption<UserThemeMode>(
                       value: UserThemeMode.dark,
-                      label: 'Dark',
+                      label: l10n.dark,
                     ),
                   ],
                   onChanged: (value) {
@@ -293,10 +303,10 @@ class _UserLocalizationSettingsTabState
   ) async {
     final selected = await showLocalizationOptionPicker<String>(
       context: context,
-      title: 'Select Language',
+      title: AppLocalizations.of(context).selectLanguage,
       options: options,
       selectedValue: _draft.language,
-      searchHintText: 'Search language',
+      searchHintText: AppLocalizations.of(context).search,
     );
 
     if (selected == null || !mounted) return;
@@ -308,10 +318,10 @@ class _UserLocalizationSettingsTabState
   ) async {
     final selected = await showLocalizationOptionPicker<String>(
       context: context,
-      title: 'Select Date Format',
+      title: AppLocalizations.of(context).selectDateFormat,
       options: options,
       selectedValue: _draft.dateFormat,
-      searchHintText: 'Search date format',
+      searchHintText: AppLocalizations.of(context).search,
     );
 
     if (selected == null || !mounted) return;
@@ -323,10 +333,10 @@ class _UserLocalizationSettingsTabState
   ) async {
     final selected = await showLocalizationOptionPicker<String>(
       context: context,
-      title: 'Select Timezone',
+      title: AppLocalizations.of(context).selectTimezone,
       options: options,
       selectedValue: _draft.timezoneOffset,
-      searchHintText: 'Search timezone',
+      searchHintText: AppLocalizations.of(context).search,
     );
 
     if (selected == null || !mounted) return;
@@ -337,21 +347,22 @@ class _UserLocalizationSettingsTabState
 
   void _handleLatitudeChanged(String raw) {
     if (_isHydrating) return;
+    final l10n = AppLocalizations.of(context);
 
     final value = raw.trim();
     if (value.isEmpty) {
-      _setLatitudeError('Latitude is required.');
+      _setLatitudeError(l10n.latitudeRequired);
       return;
     }
 
     final parsed = double.tryParse(value);
     if (parsed == null) {
-      _setLatitudeError('Enter a valid latitude.');
+      _setLatitudeError(l10n.validLatitude);
       return;
     }
 
     if (parsed < -90 || parsed > 90) {
-      _setLatitudeError('Latitude must be between -90 and 90.');
+      _setLatitudeError(l10n.latitudeRange);
       return;
     }
 
@@ -361,21 +372,22 @@ class _UserLocalizationSettingsTabState
 
   void _handleLongitudeChanged(String raw) {
     if (_isHydrating) return;
+    final l10n = AppLocalizations.of(context);
 
     final value = raw.trim();
     if (value.isEmpty) {
-      _setLongitudeError('Longitude is required.');
+      _setLongitudeError(l10n.longitudeRequired);
       return;
     }
 
     final parsed = double.tryParse(value);
     if (parsed == null) {
-      _setLongitudeError('Enter a valid longitude.');
+      _setLongitudeError(l10n.validLongitude);
       return;
     }
 
     if (parsed < -180 || parsed > 180) {
-      _setLongitudeError('Longitude must be between -180 and 180.');
+      _setLongitudeError(l10n.longitudeRange);
       return;
     }
 
@@ -385,21 +397,22 @@ class _UserLocalizationSettingsTabState
 
   void _handleMapZoomChanged(String raw) {
     if (_isHydrating) return;
+    final l10n = AppLocalizations.of(context);
 
     final value = raw.trim();
     if (value.isEmpty) {
-      _setMapZoomError('Map zoom is required.');
+      _setMapZoomError(l10n.mapZoomRequired);
       return;
     }
 
     final parsed = int.tryParse(value);
     if (parsed == null) {
-      _setMapZoomError('Enter a valid zoom level.');
+      _setMapZoomError(l10n.validMapZoom);
       return;
     }
 
     if (parsed < 1 || parsed > 22) {
-      _setMapZoomError('Map zoom must be between 1 and 22.');
+      _setMapZoomError(l10n.mapZoomRange);
       return;
     }
 
@@ -482,26 +495,38 @@ class _UserLocalizationSettingsTabState
   List<UserLocalizationOption<String>> _buildLanguageOptions(
     UserLocalizationSettings draft,
   ) {
+    final supportedCodes = flutterSupportedLanguageCodes;
     final options = widget.state.languages
+        .where((item) => isFlutterLanguageSupported(item.code))
         .map(
           (item) => UserLocalizationOption<String>(
             value: item.code,
-            label: item.label,
-            searchTokens: [item.code, item.label],
+            label: _languageOptionLabel(context, item.code),
+            searchTokens: [
+              item.code,
+              item.label,
+              _languageOptionLabel(context, item.code),
+            ],
           ),
         )
         .toList(growable: true);
 
-    if (options.isEmpty) {
-      options.addAll(const [
-        UserLocalizationOption<String>(value: 'en', label: 'English'),
-        UserLocalizationOption<String>(value: 'ar', label: 'Arabic'),
-        UserLocalizationOption<String>(value: 'hi', label: 'Hindi'),
-      ]);
+    for (final locale in AppLocalizations.supportedLocales) {
+      final code = locale.languageCode;
+      if (!options.any((item) => _flutterLocaleCode(item.value) == code)) {
+        options.add(
+          UserLocalizationOption<String>(
+            value: code,
+            label: _localizedLanguageName(context, code),
+            searchTokens: [code, _localizedLanguageName(context, code)],
+          ),
+        );
+      }
     }
 
     final current = draft.language.trim();
-    if (current.isNotEmpty) {
+    if (supportedCodes.contains(_flutterLocaleCode(current)) &&
+        current.isNotEmpty) {
       _prependIfMissing(
         options: options,
         value: current,
@@ -510,7 +535,32 @@ class _UserLocalizationSettingsTabState
       );
     }
 
-    return _distinctBy(options, (item) => item.value.toLowerCase());
+    return _distinctBy(options, (item) => item.value.trim().toLowerCase());
+  }
+
+  String _flutterLocaleCode(String value) =>
+      value.trim().toLowerCase().split(RegExp('[-_]')).first;
+
+  String _localizedLanguageName(BuildContext context, String code) {
+    final l10n = AppLocalizations.of(context);
+    return switch (code) {
+      'ar' => l10n.ar,
+      'es' => l10n.es,
+      'fr' => l10n.fr,
+      'hi' => l10n.hi,
+      'pt' => l10n.pt,
+      _ => l10n.en,
+    };
+  }
+
+  String _languageOptionLabel(BuildContext context, String backendCode) {
+    final normalized = backendCode.trim().replaceAll('_', '-');
+    final baseCode = _flutterLocaleCode(normalized);
+    final languageName = _localizedLanguageName(context, baseCode);
+    final parts = normalized.split('-');
+    return parts.length > 1
+        ? '$languageName (${parts.skip(1).join('-').toUpperCase()})'
+        : languageName;
   }
 
   List<UserLocalizationOption<String>> _buildDateFormatOptions(
@@ -745,9 +795,9 @@ class _ReferenceFallbackWarning extends StatelessWidget {
               Expanded(
                 child: Text(
                   normalizedMessage == null || normalizedMessage.isEmpty
-                      ? 'Reference options are unavailable right now. '
-                          'Fallback options are shown.'
-                      : 'Reference options unavailable. $normalizedMessage',
+                      ? AppLocalizations.of(context).couldNotLoadLocalization
+                      : '${AppLocalizations.of(context).couldNotLoadLocalization} '
+                          '$normalizedMessage',
                   style: OpenVtsTypography.meta.copyWith(
                     color: OpenVtsColors.warning,
                     fontWeight: FontWeight.w600,
@@ -759,7 +809,7 @@ class _ReferenceFallbackWarning extends StatelessWidget {
                 style: TextButton.styleFrom(
                   minimumSize: const Size(0, 44),
                 ),
-                child: const Text('Retry'),
+                child: Text(AppLocalizations.of(context).retry),
               ),
             ],
           ),

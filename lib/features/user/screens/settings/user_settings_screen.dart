@@ -8,6 +8,7 @@ import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/helpers/toast_helper.dart';
 import '../../../../shared/widgets/open_vts_button.dart';
 import '../../../../shared/widgets/open_vts_error_view.dart';
@@ -34,6 +35,7 @@ class UserSettingsScreen extends ConsumerStatefulWidget {
 class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     ref.listen<UserSettingsState>(
       userSettingsControllerProvider,
       _handleStateTransition,
@@ -45,10 +47,10 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
     final isProfileFirstLoad =
         !state.hasProfile && (state.isLoadingInitial || state.isLoadingProfile);
     if (isProfileFirstLoad) {
-      return const OpenVtsPageScaffold(
-        title: 'Settings',
+      return OpenVtsPageScaffold(
+        title: l10n.settings,
         headerMode: OpenVtsPageHeaderMode.closeable,
-        body: OpenVtsLoader(),
+        body: const OpenVtsLoader(),
       );
     }
 
@@ -58,7 +60,7 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
         !state.hasProfile && profileFailureMessage != null;
     if (didProfileLoadFail) {
       return OpenVtsPageScaffold(
-        title: 'Settings',
+        title: l10n.settings,
         headerMode: OpenVtsPageHeaderMode.closeable,
         body: OpenVtsErrorView(
           message: profileFailureMessage,
@@ -96,7 +98,7 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
       if (shouldDiscardUnsaved) {
         final confirmed = await _confirmDiscardAndRefresh(
           context,
-          tabLabel: isProfileTab ? 'Profile' : 'Localization',
+          tabLabel: isProfileTab ? l10n.profile : l10n.localization,
         );
         if (!confirmed) {
           return;
@@ -135,9 +137,7 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
       }
 
       ToastHelper.showSuccess(
-        isProfileTab
-            ? 'Profile settings updated.'
-            : 'Localization settings updated.',
+        isProfileTab ? l10n.profileUpdated : l10n.localizationUpdated,
       );
     }
 
@@ -150,7 +150,7 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
     }
 
     return OpenVtsPageScaffold(
-      title: 'Settings',
+      title: l10n.settings,
       headerMode: OpenVtsPageHeaderMode.closeable,
       padding: const EdgeInsets.fromLTRB(
         OpenVtsSpacing.sm,
@@ -160,7 +160,7 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
       ),
       actions: [
         IconButton(
-          tooltip: 'Refresh current tab',
+          tooltip: l10n.refresh,
           constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
           onPressed: currentTabRefreshBusy
               ? null
@@ -321,6 +321,7 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
     BuildContext context, {
     required String tabLabel,
   }) async {
+    final l10n = AppLocalizations.of(context);
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -349,7 +350,7 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Discard unsaved changes?',
+                    l10n.confirmDiscard,
                     style: OpenVtsTypography.label.copyWith(
                       color: Theme.of(sheetContext).colorScheme.onSurface,
                       fontWeight: FontWeight.w700,
@@ -357,7 +358,7 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
                   ),
                   const SizedBox(height: OpenVtsSpacing.xs),
                   Text(
-                    '$tabLabel has unsaved edits. Refreshing now will discard them.',
+                    l10n.confirmDiscardMessage(tabLabel),
                     style: OpenVtsTypography.body.copyWith(
                       color:
                           Theme.of(sheetContext).colorScheme.onSurfaceVariant,
@@ -368,7 +369,7 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
                     children: [
                       Expanded(
                         child: OpenVtsButton(
-                          label: 'Keep Editing',
+                          label: l10n.keepEditing,
                           height: 44,
                           variant: OpenVtsButtonVariant.secondary,
                           onPressed: () {
@@ -379,7 +380,7 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
                       const SizedBox(width: OpenVtsSpacing.xs),
                       Expanded(
                         child: OpenVtsButton(
-                          label: 'Discard & Refresh',
+                          label: l10n.discardChanges,
                           height: 44,
                           onPressed: () {
                             Navigator.of(sheetContext).pop(true);
