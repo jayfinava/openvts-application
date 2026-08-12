@@ -2017,6 +2017,7 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
   final _confirm = TextEditingController();
   bool _obscureCurrent = true;
   bool _obscureNext = true;
+  bool _obscureConfirm = true;
   bool _submitting = false;
 
   @override
@@ -2117,7 +2118,20 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
                   OpenVtsTextField(
                     label: 'Confirm new password',
                     controller: _confirm,
-                    obscureText: _obscureNext,
+                    obscureText: _obscureConfirm,
+                    suffixIcon: IconButton(
+                      tooltip: _obscureConfirm
+                          ? 'Show confirm password'
+                          : 'Hide confirm password',
+                      icon: Icon(
+                        _obscureConfirm
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        size: 18,
+                      ),
+                      onPressed: () =>
+                          setState(() => _obscureConfirm = !_obscureConfirm),
+                    ),
                     validator: (v) {
                       if ((v ?? '') != _next.text) {
                         return 'Passwords do not match';
