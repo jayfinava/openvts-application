@@ -262,6 +262,7 @@ class _MapLayerDrawerSheetState extends State<_MapLayerDrawerSheet> {
   Widget build(BuildContext context) {
     final primaryOptions = primaryMapLayerOptions;
     final detailOptions = detailMapLayerOptions;
+    final cs = Theme.of(context).colorScheme;
 
     return SafeArea(
       top: false,
@@ -282,7 +283,7 @@ class _MapLayerDrawerSheetState extends State<_MapLayerDrawerSheet> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.08),
+                    color: cs.onSurface.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
                 ),
@@ -296,12 +297,12 @@ class _MapLayerDrawerSheetState extends State<_MapLayerDrawerSheet> {
                       children: [
                         Row(
                           children: [
-                            const Text(
+                            Text(
                               'Map type',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xFF141118),
+                                color: cs.onSurface,
                               ),
                             ),
                             const Spacer(),
@@ -336,16 +337,16 @@ class _MapLayerDrawerSheetState extends State<_MapLayerDrawerSheet> {
                         ),
                         const SizedBox(height: 14),
                         Divider(
-                          color: Colors.black.withValues(alpha: 0.08),
+                          color: cs.outlineVariant,
                           height: 1,
                         ),
                         const SizedBox(height: 16),
-                        const Text(
+                        Text(
                           'Map details',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF141118),
+                            color: cs.onSurface,
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -397,9 +398,9 @@ class _MapLayerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final labelColor = isSelected
-        ? const Color(0xFF1293A6)
-        : Colors.black.withValues(alpha: 0.78);
+    final cs = Theme.of(context).colorScheme;
+    final labelColor =
+        isSelected ? const Color(0xFF1293A6) : cs.onSurfaceVariant;
 
     return InkWell(
       onTap: onTap,
@@ -416,9 +417,8 @@ class _MapLayerCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isSelected
-                      ? const Color(0xFF1293A6)
-                      : Colors.black.withValues(alpha: 0.08),
+                  color:
+                      isSelected ? const Color(0xFF1293A6) : cs.outlineVariant,
                   width: isSelected ? 2 : 1,
                 ),
               ),
