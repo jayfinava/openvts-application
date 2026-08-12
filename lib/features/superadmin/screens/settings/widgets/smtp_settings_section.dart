@@ -385,7 +385,9 @@ class _SmtpSettingsSectionState extends ConsumerState<SmtpSettingsSection> {
                   variant: OpenVtsButtonVariant.secondary,
                   isLoading: state.isTestingSmtp,
                   height: 44,
-                  onPressed: state.isTestingSmtp || state.isSavingSmtp
+                  onPressed: state.isTestingSmtp ||
+                          state.isSavingSmtp ||
+                          widget.state.smtp?.id == null
                       ? null
                       : _openTestSheet,
                 ),

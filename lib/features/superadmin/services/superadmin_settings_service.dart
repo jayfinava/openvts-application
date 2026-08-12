@@ -6,6 +6,7 @@ import 'package:http_parser/http_parser.dart';
 
 import '../../../core/api/api_client.dart';
 import '../../../core/api/api_endpoints.dart';
+import '../../../core/api/api_exception.dart';
 import '../../../core/api/api_options.dart';
 import '../models/superadmin_settings_model.dart';
 
@@ -250,12 +251,25 @@ class SuperadminSettingsService {
   // ---------------------------------------------------------------
 
   Future<SuperadminSmtpSettings> getSmtpSettings() async {
-    final response = await _apiClient.get<dynamic>(
-      ApiEndpoints.superadmin.smtpSettings,
-      options: _readOptions,
-      parser: (json) => json,
-    );
-    return SuperadminSmtpSettings.fromJson(response.data);
+    try {
+      final response = await _apiClient.get<dynamic>(
+        ApiEndpoints.superadmin.smtpSettings,
+        options: _readOptions,
+        parser: (json) => json,
+      );
+      return SuperadminSmtpSettings.fromJson(response.data);
+    } on ApiException catch (e) {
+      if (_isSmtpNotConfigured(e)) return const SuperadminSmtpSettings();
+      rethrow;
+    }
+  }
+
+  static bool _isSmtpNotConfigured(ApiException e) {
+    final details = e.details;
+    if (details is! Map) return false;
+    final action = details['action'];
+    final message = details['message']?.toString().trim().toLowerCase() ?? '';
+    return action == false && message == 'smtp settings not found';
   }
 
   Future<void> updateSmtpSettings(SuperadminSmtpSettings request) async {
