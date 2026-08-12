@@ -11,6 +11,8 @@ import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../models/user_report_model.dart';
+import '../models/user_report_state.dart';
+import '../utils/user_report_format.dart';
 
 /// Shared report export service — CSV, XLSX, JSON, PDF, HTML.
 /// Exports ALL columns including those hidden in the compact view.
@@ -35,13 +37,14 @@ class UserReportExportService {
     DateTime? generatedAt,
     String? warning,
   }) async {
+    final exportRows = normalizeUserReportRowsForExport(reportKey, rows);
     final timestamp = DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now());
     final baseName = '${reportKey.apiValue}_$timestamp';
 
     switch (format) {
       case 'csv':
         await _exportCsv(
-            rows: rows,
+            rows: exportRows,
             allColumns: allColumns,
             columnLabels: columnLabels,
             baseName: baseName,
@@ -51,7 +54,7 @@ class UserReportExportService {
             warning: warning);
       case 'xlsx':
         await _exportXlsx(
-            rows: rows,
+            rows: exportRows,
             allColumns: allColumns,
             columnLabels: columnLabels,
             baseName: baseName,
@@ -61,14 +64,14 @@ class UserReportExportService {
             warning: warning);
       case 'json':
         await _exportJson(
-            rows: rows,
+            rows: exportRows,
             baseName: baseName,
             reportKey: reportKey,
             filters: filters,
             generatedAt: generatedAt);
       case 'pdf':
         await _exportPdf(
-            rows: rows,
+            rows: exportRows,
             allColumns: allColumns,
             columnLabels: columnLabels,
             baseName: baseName,
@@ -78,7 +81,7 @@ class UserReportExportService {
             warning: warning);
       case 'html':
         await _exportHtml(
-            rows: rows,
+            rows: exportRows,
             allColumns: allColumns,
             columnLabels: columnLabels,
             baseName: baseName,
@@ -419,4 +422,21 @@ tr:nth-child(even)td{background:#fafafa}
     if (value is bool) return value ? 'true' : 'false';
     return value.toString();
   }
+}
+
+/// Applies report-specific presentation values once before any export format.
+@visibleForTesting
+List<Map<String, dynamic>> normalizeUserReportRowsForExport(
+  UserReportKey reportKey,
+  List<Map<String, dynamic>> rows,
+) {
+  if (reportKey != UserReportKey.overspeed) return rows;
+
+  return rows.map((raw) {
+    final row = OverspeedRow.fromMap(raw);
+    return <String, dynamic>{
+      ...raw,
+      'address': resolveOverspeedLocation(row.address, row.lat, row.lon),
+    };
+  }).toList(growable: false);
 }

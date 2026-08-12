@@ -5,6 +5,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:open_vts/features/user/models/user_report_model.dart';
 import 'package:open_vts/features/user/models/user_report_state.dart';
+import 'package:open_vts/features/user/services/user_report_export_service.dart';
 import 'package:open_vts/features/user/utils/user_report_format.dart';
 import 'package:open_vts/features/user/utils/user_report_validation.dart';
 
@@ -80,6 +81,48 @@ void main() {
 
     test('returns em-dash for both null', () {
       expect(formatCoordinate(null, null), '—');
+    });
+  });
+
+  group('resolveOverspeedLocation', () {
+    test('prefers and trims an API-provided address', () {
+      expect(resolveOverspeedLocation('  Highway 1  ', 28.6139, 77.209),
+          'Highway 1');
+    });
+
+    test('uses formatted coordinates for empty and whitespace addresses', () {
+      expect(resolveOverspeedLocation('', 28.6139, 77.209),
+          '28.61390, 77.20900');
+      expect(resolveOverspeedLocation('   ', 28.6139, 77.209),
+          '28.61390, 77.20900');
+    });
+
+    test('uses a dash when no complete coordinates are available', () {
+      expect(resolveOverspeedLocation(null, null, 77.209), '-');
+      expect(resolveOverspeedLocation(null, 28.6139, null), '-');
+    });
+  });
+
+  group('overspeed export location normalization', () {
+    test('uses one address value for CSV, XLSX, JSON, PDF, and HTML inputs', () {
+      final rows = normalizeUserReportRowsForExport(
+        UserReportKey.overspeed,
+        <Map<String, dynamic>>[
+          {'address': 'Ring Road', 'lat': 1.0, 'lon': 2.0},
+          {'address': '', 'lat': 28.6139, 'lon': 77.209},
+          {'address': '   ', 'lat': 12.3, 'lon': 45.6},
+          {'address': null, 'lat': null, 'lon': null},
+        ],
+      );
+
+      expect(rows.map((row) => row['address']), <String>[
+        'Ring Road',
+        '28.61390, 77.20900',
+        '12.30000, 45.60000',
+        '-',
+      ]);
+      expect(rows[1]['lat'], 28.6139);
+      expect(rows[1]['lon'], 77.209);
     });
   });
 

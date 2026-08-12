@@ -30,6 +30,19 @@ String formatCoordinate(double? lat, double? lon) {
   return '${lat.toStringAsFixed(5)}, ${lon.toStringAsFixed(5)}';
 }
 
+/// Returns the honest location label used for overspeed display and export.
+/// An API-provided address wins; coordinates are only a fallback label.
+String resolveOverspeedLocation(String? address, double? lat, double? lon) {
+  final normalizedAddress = address?.trim();
+  if (normalizedAddress != null && normalizedAddress.isNotEmpty) {
+    return normalizedAddress;
+  }
+  if (lat != null && lon != null && lat.isFinite && lon.isFinite) {
+    return formatCoordinate(lat, lon);
+  }
+  return '-';
+}
+
 /// Returns a geo: URI string for map launches, null if coordinates invalid.
 String? geoUri(double? lat, double? lon) {
   if (lat == null || lon == null) return null;

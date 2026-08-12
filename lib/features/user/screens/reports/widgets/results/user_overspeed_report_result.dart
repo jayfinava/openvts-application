@@ -161,6 +161,8 @@ class _OverspeedRowCard extends StatelessWidget {
       OverspeedSeverity.medium => (OpenVtsColors.info, 'Medium'),
       OverspeedSeverity.low => (OpenVtsColors.success, 'Low'),
     };
+    final location =
+        resolveOverspeedLocation(row.address, row.lat, row.lon);
     return Padding(
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),
       child: InkWell(
@@ -208,7 +210,7 @@ class _OverspeedRowCard extends StatelessWidget {
                     style: OpenVtsTypography.meta
                         .copyWith(color: OpenVtsColors.textSecondary)),
               ]),
-              if (row.address != null || row.lat != null) ...[
+              if (location != '-') ...[
                 const SizedBox(height: 4),
                 GestureDetector(
                   onTap: () {
@@ -221,7 +223,7 @@ class _OverspeedRowCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Expanded(
                         child: Text(
-                            row.address ?? formatCoordinate(row.lat, row.lon),
+                            location,
                             style: OpenVtsTypography.meta
                                 .copyWith(color: OpenVtsColors.info),
                             overflow: TextOverflow.ellipsis)),
@@ -251,9 +253,9 @@ class _OverspeedRowCard extends StatelessWidget {
           '${row.configuredLimitKmh.toStringAsFixed(1)} km/h'
         ),
         ('Excess', '${row.excessKmh.toStringAsFixed(1)} km/h'),
-        if (row.address != null) ('Address', row.address!),
+        ('Address', resolveOverspeedLocation(row.address, row.lat, row.lon)),
         if (row.lat != null && row.lon != null)
-          ('Location', formatCoordinate(row.lat, row.lon)),
+          ('Coordinates', formatCoordinate(row.lat, row.lon)),
       ],
     );
   }
