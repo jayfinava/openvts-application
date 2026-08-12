@@ -14,6 +14,7 @@ import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
+import '../../../../../shared/widgets/open_vts_search_field.dart';
 import '../../../models/admin_vehicle_model.dart';
 
 class AdminVehicleLogsTab extends ConsumerStatefulWidget {
@@ -21,22 +22,28 @@ class AdminVehicleLogsTab extends ConsumerStatefulWidget {
     super.key,
     required this.imei,
     required this.logs,
+    required this.hasLoadedLogs,
+    required this.searchQuery,
     required this.nextCursor,
     required this.isLoading,
     required this.isLoadingMore,
     required this.onLoad,
     required this.onLoadMore,
     required this.onApplyRange,
+    required this.onSearchChanged,
   });
 
   final String imei;
   final List<AdminVehicleLogItem> logs;
+  final bool hasLoadedLogs;
+  final String searchQuery;
   final String? nextCursor;
   final bool isLoading;
   final bool isLoadingMore;
   final Future<void> Function() onLoad;
   final Future<void> Function() onLoadMore;
   final Future<void> Function(DateTime? from, DateTime? to) onApplyRange;
+  final ValueChanged<String> onSearchChanged;
 
   @override
   ConsumerState<AdminVehicleLogsTab> createState() =>
@@ -85,24 +92,35 @@ class _AdminVehicleLogsTabState extends ConsumerState<AdminVehicleLogsTab> {
           ),
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
+        OpenVtsSearchField(
+          hintText: 'Search loaded logs',
+          onChanged: widget.onSearchChanged,
+        ),
+        const SizedBox(height: OpenVtsSpacing.sm),
         if (widget.isLoading)
           const OpenVtsLoader()
-        else if (widget.logs.isEmpty)
+        else if (!widget.hasLoadedLogs)
           const OpenVtsEmptyState(
             title: 'No logs found for this vehicle',
             message: 'Vehicle activity and system logs will appear here.',
           )
         else ...[
-          ...widget.logs.map(
-            (log) => Padding(
-              padding: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
-              child: _LogCard(
-                log: log,
-                unitFormatter: _unitFormatter,
-                onTap: () => _openDetails(log),
+          if (widget.logs.isEmpty && widget.searchQuery.trim().isNotEmpty)
+            const OpenVtsEmptyState(
+              title: 'No matching logs',
+              message: 'Try a different search term.',
+            )
+          else
+            ...widget.logs.map(
+              (log) => Padding(
+                padding: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
+                child: _LogCard(
+                  log: log,
+                  unitFormatter: _unitFormatter,
+                  onTap: () => _openDetails(log),
+                ),
               ),
             ),
-          ),
           if ((widget.nextCursor ?? '').trim().isNotEmpty)
             OpenVtsButton(
               label: 'Load older',

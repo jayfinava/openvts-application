@@ -260,6 +260,11 @@ class AdminVehicleDetailsController
     }
   }
 
+  void setLogSearchQuery(String value) {
+    if (value == state.logSearchQuery) return;
+    state = state.copyWith(logSearchQuery: value);
+  }
+
   Future<void> setLogRange({DateTime? from, DateTime? to}) async {
     await loadLogs(from: from, to: to);
   }

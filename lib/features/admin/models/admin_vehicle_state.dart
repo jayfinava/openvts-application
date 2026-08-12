@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'admin_vehicle_model.dart';
@@ -199,6 +200,7 @@ class AdminVehicleDetailsState {
     required this.linkedUsers,
     required this.availableUsers,
     required this.logs,
+    required this.logSearchQuery,
     required this.logNextCursor,
     required this.events,
     required this.eventNextCursor,
@@ -254,6 +256,7 @@ class AdminVehicleDetailsState {
       linkedUsers: const <AdminVehicleUserMini>[],
       availableUsers: const <AdminVehicleUserMini>[],
       logs: const <AdminVehicleLogItem>[],
+      logSearchQuery: '',
       logNextCursor: null,
       events: const <AdminVehicleEventItem>[],
       eventNextCursor: null,
@@ -305,6 +308,7 @@ class AdminVehicleDetailsState {
   final List<AdminVehicleUserMini> linkedUsers;
   final List<AdminVehicleUserMini> availableUsers;
   final List<AdminVehicleLogItem> logs;
+  final String logSearchQuery;
   final String? logNextCursor;
   final List<AdminVehicleEventItem> events;
   final String? eventNextCursor;
@@ -350,6 +354,14 @@ class AdminVehicleDetailsState {
   final String? sectionErrorMessage;
   final DateTime? localUpdatedAt;
 
+  List<AdminVehicleLogItem> get filteredLogs {
+    final query = logSearchQuery.trim().toLowerCase();
+    if (query.isEmpty) return logs;
+    return logs
+        .where((log) => _vehicleLogSearchText(log).contains(query))
+        .toList(growable: false);
+  }
+
   static const Object _unset = Object();
 
   AdminVehicleDetailsState copyWith({
@@ -359,6 +371,7 @@ class AdminVehicleDetailsState {
     List<AdminVehicleUserMini>? linkedUsers,
     List<AdminVehicleUserMini>? availableUsers,
     List<AdminVehicleLogItem>? logs,
+    String? logSearchQuery,
     Object? logNextCursor = _unset,
     List<AdminVehicleEventItem>? events,
     Object? eventNextCursor = _unset,
@@ -413,6 +426,7 @@ class AdminVehicleDetailsState {
       linkedUsers: linkedUsers ?? this.linkedUsers,
       availableUsers: availableUsers ?? this.availableUsers,
       logs: logs ?? this.logs,
+      logSearchQuery: logSearchQuery ?? this.logSearchQuery,
       logNextCursor: identical(logNextCursor, _unset)
           ? this.logNextCursor
           : logNextCursor as String?,
@@ -464,4 +478,29 @@ class AdminVehicleDetailsState {
       localUpdatedAt: localUpdatedAt ?? this.localUpdatedAt,
     );
   }
+}
+
+String _vehicleLogSearchText(AdminVehicleLogItem log) {
+  String attributes;
+  try {
+    attributes = jsonEncode(log.attributes);
+  } catch (_) {
+    attributes = log.attributes?.toString() ?? '';
+  }
+
+  String booleanText(String label, bool? value) {
+    if (value == null) return '';
+    return '$label ${value ? 'on true' : 'off false'}';
+  }
+
+  return [
+    log.id,
+    log.imei,
+    log.packetType,
+    log.protocol,
+    log.rawPacket,
+    attributes,
+    booleanText('ignition', log.ignition),
+    booleanText('acc', log.acc),
+  ].join(' ').toLowerCase();
 }

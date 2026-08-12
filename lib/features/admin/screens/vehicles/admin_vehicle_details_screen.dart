@@ -146,6 +146,7 @@ class _AdminVehicleDetailsScreenState
                 onUnlinkUser: controller.unlinkUser,
                 onLoadLogs: () => controller.loadLogs(),
                 onLoadMoreLogs: controller.loadMoreLogs,
+                onLogSearchChanged: controller.setLogSearchQuery,
                 onSetLogRange: ({from, to}) =>
                     controller.setLogRange(from: from, to: to),
                 onLoadEvents: () => controller.loadEvents(),
@@ -778,6 +779,7 @@ class _TabBody extends StatelessWidget {
     required this.onUnlinkUser,
     required this.onLoadLogs,
     required this.onLoadMoreLogs,
+    required this.onLogSearchChanged,
     required this.onSetLogRange,
     required this.onLoadEvents,
     required this.onLoadMoreEvents,
@@ -810,6 +812,7 @@ class _TabBody extends StatelessWidget {
   final Future<void> Function(String userId) onUnlinkUser;
   final Future<void> Function() onLoadLogs;
   final Future<void> Function() onLoadMoreLogs;
+  final ValueChanged<String> onLogSearchChanged;
   final Future<void> Function({DateTime? from, DateTime? to}) onSetLogRange;
   final Future<void> Function() onLoadEvents;
   final Future<void> Function() onLoadMoreEvents;
@@ -882,12 +885,15 @@ class _TabBody extends StatelessWidget {
       case AdminVehicleDetailsTab.logs:
         return AdminVehicleLogsTab(
           imei: state.vehicle?.imei ?? '',
-          logs: state.logs,
+          logs: state.filteredLogs,
+          hasLoadedLogs: state.logs.isNotEmpty,
+          searchQuery: state.logSearchQuery,
           nextCursor: state.logNextCursor,
           isLoading: state.isLoadingLogs,
           isLoadingMore: state.isLoadingMoreLogs,
           onLoad: onLoadLogs,
           onLoadMore: onLoadMoreLogs,
+          onSearchChanged: onLogSearchChanged,
           onApplyRange: (from, to) => onSetLogRange(from: from, to: to),
         );
       case AdminVehicleDetailsTab.commands:
