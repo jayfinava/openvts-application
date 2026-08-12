@@ -549,11 +549,12 @@ class _MapControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: cs.outlineVariant),
       ),
       padding: const EdgeInsets.all(2),
       child: Column(
@@ -613,7 +614,7 @@ class _ControlDivider extends StatelessWidget {
     return Container(
       height: 1,
       margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
-      color: OpenVtsColors.divider,
+      color: Theme.of(context).colorScheme.outlineVariant,
     );
   }
 }
