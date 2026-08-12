@@ -464,7 +464,7 @@ class _ConversationHeader extends StatelessWidget {
             children: [
               _MetaChip(
                   label: ticket.status.label,
-                  color: _statusColor(ticket.status)),
+                  color: _statusColor(context, ticket.status)),
               _SupportStatusActionButton(
                 status: ticket.status,
                 isLoading: state.isUpdatingStatus,
@@ -1259,13 +1259,15 @@ Color _priorityColor(SuperadminSupportTicketPriority priority) {
   }
 }
 
-Color _statusColor(SuperadminSupportTicketStatus status) {
+Color _statusColor(BuildContext context, SuperadminSupportTicketStatus status) {
+  final cs = Theme.of(context).colorScheme;
+  final isDark = Theme.of(context).brightness == Brightness.dark;
   switch (status) {
     case SuperadminSupportTicketStatus.open:
-      return OpenVtsColors.success;
+      return isDark ? const Color(0xFF5DB588) : OpenVtsColors.success;
     case SuperadminSupportTicketStatus.inProgress:
-      return OpenVtsColors.warning;
+      return isDark ? const Color(0xFFD4A852) : OpenVtsColors.warning;
     case SuperadminSupportTicketStatus.closed:
-      return OpenVtsColors.textTertiary;
+      return cs.onSurfaceVariant;
   }
 }
