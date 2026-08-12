@@ -11,6 +11,7 @@ import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
+import '../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../controllers/admin_providers.dart';
 import '../../../controllers/admin_settings_controller.dart';
@@ -658,31 +659,21 @@ class _DateFormatDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasValue = options.any((o) => o.value == value);
-    final items = <DropdownMenuItem<String>>[
+    final dropdownOptions = <OpenVtsDropdownOption<String>>[
       if (!hasValue && value.isNotEmpty)
-        DropdownMenuItem(value: value, child: Text(value)),
+        OpenVtsDropdownOption(value: value, label: value, searchText: value),
       for (final o in options)
-        DropdownMenuItem(value: o.value, child: Text(o.label)),
+        OpenVtsDropdownOption(
+          value: o.value,
+          label: o.label,
+          searchText: o.value,
+        ),
     ];
-    return _DropdownShell(
+    return OpenVtsSearchableDropdown<String>(
       label: AppLocalizations.of(context).dateFormat,
-      child: DropdownButton<String>(
-        value: value.isEmpty ? null : value,
-        isExpanded: true,
-        icon: Icon(
-          Icons.expand_more_rounded,
-          size: 18,
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-        style: TextStyle(
-          fontFamily: OpenVtsTypography.primaryFontFamily,
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-        items: items,
-        onChanged: onChanged,
-      ),
+      value: value.isEmpty ? null : value,
+      options: dropdownOptions,
+      onChanged: onChanged,
     );
   }
 }
