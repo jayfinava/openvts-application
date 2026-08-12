@@ -807,21 +807,51 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     final states = state.stateOptions;
     final cities = state.cityOptions;
 
-    final countryItems = _withFallback(
-      values: countries.map((c) => c.code).toList(),
-      labels: {for (final c in countries) c.code: c.name},
-      current: _countryCode,
-    );
-    final stateItems = _withFallback(
-      values: states.map((s) => s.code).toList(),
-      labels: {for (final s in states) s.code: s.name},
-      current: _stateCode,
-    );
-    final cityItems = _withFallback(
-      values: cities.map((c) => c.name).toList(),
-      labels: {for (final c in cities) c.name: c.name},
-      current: _cityName,
-    );
+    final countryOptions = [
+      for (final c in countries)
+        OpenVtsDropdownOption<String>(
+          value: c.code,
+          label: c.name,
+          searchText: '${c.name} ${c.code}',
+        ),
+      if (_countryCode != null &&
+          _countryCode!.isNotEmpty &&
+          !countries.any((c) => c.code == _countryCode))
+        OpenVtsDropdownOption<String>(
+          value: _countryCode!,
+          label: _countryCode!,
+        ),
+    ];
+    final stateOptions = [
+      for (final s in states)
+        OpenVtsDropdownOption<String>(
+          value: s.code,
+          label: s.name,
+          searchText: '${s.name} ${s.code}',
+        ),
+      if (_stateCode != null &&
+          _stateCode!.isNotEmpty &&
+          !states.any((s) => s.code == _stateCode))
+        OpenVtsDropdownOption<String>(
+          value: _stateCode!,
+          label: _stateCode!,
+        ),
+    ];
+    final cityOptions = [
+      for (final c in cities)
+        OpenVtsDropdownOption<String>(
+          value: c.name,
+          label: c.name,
+          searchText: c.name,
+        ),
+      if (_cityName != null &&
+          _cityName!.isNotEmpty &&
+          !cities.any((c) => c.name == _cityName))
+        OpenVtsDropdownOption<String>(
+          value: _cityName!,
+          label: _cityName!,
+        ),
+    ];
     final prefixOptions = [
       for (final p in prefixes)
         OpenVtsDropdownOption<String>(
@@ -943,10 +973,14 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                         const SizedBox(height: OpenVtsSpacing.md),
                         const _FormSectionLabel(label: 'LOCATION'),
                         const SizedBox(height: OpenVtsSpacing.xs),
-                        _DropdownField<String>(
+                        OpenVtsSearchableDropdown<String>(
                           label: 'Country',
+                          hintText: 'Select country',
+                          searchHintText: 'Search country name or code',
+                          sheetTitle: 'Country',
                           value: _countryCode,
-                          items: countryItems,
+                          options: countryOptions,
+                          isLoading: state.isCatalogLoading,
                           onChanged: (v) async {
                             setState(() {
                               _countryCode = v;
@@ -969,10 +1003,14 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                               : null,
                         ),
                         const SizedBox(height: OpenVtsSpacing.sm),
-                        _DropdownField<String>(
+                        OpenVtsSearchableDropdown<String>(
                           label: 'State',
+                          hintText: 'Select state',
+                          searchHintText: 'Search state name or code',
+                          sheetTitle: 'State',
                           value: _stateCode,
-                          items: stateItems,
+                          options: stateOptions,
+                          isLoading: state.isLoadingStates,
                           onChanged: (v) async {
                             setState(() {
                               _stateCode = v;
@@ -994,10 +1032,14 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                               : null,
                         ),
                         const SizedBox(height: OpenVtsSpacing.sm),
-                        _DropdownField<String>(
+                        OpenVtsSearchableDropdown<String>(
                           label: 'City',
+                          hintText: 'Select city',
+                          searchHintText: 'Search city',
+                          sheetTitle: 'City',
                           value: _cityName,
-                          items: cityItems,
+                          options: cityOptions,
+                          isLoading: state.isLoadingCities,
                           onChanged: (v) => setState(() => _cityName = v),
                           validator: (v) => (v == null || v.trim().isEmpty)
                               ? 'City is required'
@@ -1651,41 +1693,6 @@ class _DropdownField<T> extends StatelessWidget {
 // =============================================================================
 // Helpers
 // =============================================================================
-
-List<DropdownMenuItem<String>> _withFallback({
-  required List<String> values,
-  required Map<String, String> labels,
-  required String? current,
-}) {
-  final items = <DropdownMenuItem<String>>[
-    for (final v in values)
-      DropdownMenuItem<String>(
-        value: v,
-        child: Text(
-          labels[v] ?? v,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-  ];
-  if (current != null &&
-      current.trim().isNotEmpty &&
-      !values.contains(current)) {
-    items.insert(
-      0,
-      DropdownMenuItem<String>(
-        value: current,
-        child: Text(
-          current,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: OpenVtsColors.textSecondary),
-        ),
-      ),
-    );
-  }
-  return items;
-}
 
 String _normalizeUrl(String input) {
   final s = input.trim();
