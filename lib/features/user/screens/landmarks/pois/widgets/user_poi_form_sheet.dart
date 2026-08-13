@@ -522,10 +522,7 @@ class _ActiveToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final scheme = Theme.of(context).colorScheme;
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -533,9 +530,9 @@ class _ActiveToggle extends StatelessWidget {
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: bgColor,
+        color: scheme.surfaceContainer,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: borderColor),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Row(
         children: [
@@ -546,7 +543,7 @@ class _ActiveToggle extends StatelessWidget {
                 Text(
                   'Active',
                   style: OpenVtsTypography.label.copyWith(
-                    color: textColor,
+                    color: scheme.onSurface,
                   ),
                 ),
                 Text(
@@ -554,7 +551,7 @@ class _ActiveToggle extends StatelessWidget {
                       ? 'Visible on live map and proximity alerts.'
                       : 'Hidden from alerts; stays in the list.',
                   style: OpenVtsTypography.meta.copyWith(
-                    color: textColor,
+                    color: scheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -563,7 +560,6 @@ class _ActiveToggle extends StatelessWidget {
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeThumbColor: bgColor,
           ),
         ],
       ),

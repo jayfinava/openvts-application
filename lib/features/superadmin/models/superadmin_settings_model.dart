@@ -7,7 +7,6 @@ import 'dart:typed_data';
 enum SuperadminSettingsSection {
   profile,
   whiteLabel,
-  smtp,
   localization,
   general,
 }

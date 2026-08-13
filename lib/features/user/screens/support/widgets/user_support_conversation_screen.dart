@@ -378,11 +378,11 @@ class _ConversationHeader extends ConsumerWidget {
             children: [
               _MetaChip(
                 label: ticket.status.label,
-                color: _statusColor(ticket.status),
+                color: _statusColor(context, ticket.status),
               ),
               _MetaChip(
                 label: ticket.priority.label,
-                color: _priorityColor(ticket.priority),
+                color: _priorityColor(context, ticket.priority),
               ),
               _MetaChip(label: ticket.category.label),
               _MetaChip(
@@ -671,24 +671,28 @@ String _ticketNumber(UserSupportTicketDetail ticket) {
   return '#${ticket.id}';
 }
 
-Color _statusColor(UserSupportTicketStatus status) {
+Color _statusColor(BuildContext context, UserSupportTicketStatus status) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
   switch (status) {
     case UserSupportTicketStatus.open:
-      return OpenVtsColors.success;
+      return isDark ? const Color(0xFF5DB588) : OpenVtsColors.success;
     case UserSupportTicketStatus.inProgress:
-      return OpenVtsColors.warning;
+      return isDark ? const Color(0xFFD4A852) : OpenVtsColors.warning;
     case UserSupportTicketStatus.closed:
-      return OpenVtsColors.textTertiary;
+      return isDark
+          ? OpenVtsColors.darkTextTertiary
+          : OpenVtsColors.textTertiary;
   }
 }
 
-Color _priorityColor(UserSupportTicketPriority priority) {
+Color _priorityColor(BuildContext context, UserSupportTicketPriority priority) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
   switch (priority) {
     case UserSupportTicketPriority.high:
-      return OpenVtsColors.warning;
+      return isDark ? const Color(0xFFD4A852) : OpenVtsColors.warning;
     case UserSupportTicketPriority.medium:
-      return OpenVtsColors.brandInk;
+      return isDark ? const Color(0xFF7BAFD4) : OpenVtsColors.brandInk;
     case UserSupportTicketPriority.low:
-      return OpenVtsColors.success;
+      return isDark ? const Color(0xFF5DB588) : OpenVtsColors.success;
   }
 }

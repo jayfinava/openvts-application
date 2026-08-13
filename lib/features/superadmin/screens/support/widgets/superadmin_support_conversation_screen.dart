@@ -473,7 +473,7 @@ class _ConversationHeader extends StatelessWidget {
               _MetaChip(label: ticket.category.label),
               _MetaChip(
                   label: ticket.priority.label,
-                  color: _priorityColor(ticket.priority)),
+                  color: _priorityColor(context, ticket.priority)),
               _MetaChip(
                   label:
                       'From: $fromName${fromEmail.isNotEmpty ? ' ($fromEmail)' : ''}'),
@@ -1248,14 +1248,16 @@ String _resolveAttachmentUrl(String baseUrl, String path) {
   return apiRoot.resolve(relativePath).toString();
 }
 
-Color _priorityColor(SuperadminSupportTicketPriority priority) {
+Color _priorityColor(
+    BuildContext context, SuperadminSupportTicketPriority priority) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
   switch (priority) {
     case SuperadminSupportTicketPriority.high:
-      return OpenVtsColors.warning;
+      return isDark ? const Color(0xFFD4A852) : OpenVtsColors.warning;
     case SuperadminSupportTicketPriority.medium:
-      return OpenVtsColors.brandInk;
+      return isDark ? const Color(0xFF7BAFD4) : OpenVtsColors.brandInk;
     case SuperadminSupportTicketPriority.low:
-      return OpenVtsColors.success;
+      return isDark ? const Color(0xFF5DB588) : OpenVtsColors.success;
   }
 }
 

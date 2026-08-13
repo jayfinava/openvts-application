@@ -55,9 +55,6 @@ class SuperadminSettingsController
       case SuperadminSettingsSection.whiteLabel:
         await loadWhiteLabel();
         break;
-      case SuperadminSettingsSection.smtp:
-        await loadSmtp();
-        break;
       case SuperadminSettingsSection.localization:
         await loadLocalization();
         break;

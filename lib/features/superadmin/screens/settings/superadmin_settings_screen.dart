@@ -16,7 +16,6 @@ import '../../models/superadmin_settings_state.dart';
 import 'widgets/general_settings_section.dart';
 import 'widgets/localization_settings_section.dart';
 import 'widgets/profile_settings_section.dart';
-import 'widgets/smtp_settings_section.dart';
 import 'widgets/white_label_settings_section.dart';
 
 class SuperadminSettingsScreen extends ConsumerStatefulWidget {
@@ -163,11 +162,6 @@ List<_SectionItem> _buildSections(AppLocalizations l10n) => [
         Icons.palette_outlined,
       ),
       _SectionItem(
-        SuperadminSettingsSection.smtp,
-        l10n.smtp,
-        Icons.mail_outline_rounded,
-      ),
-      _SectionItem(
         SuperadminSettingsSection.localization,
         l10n.localization,
         Icons.public_rounded,
@@ -284,8 +278,6 @@ class _SectionContent extends ConsumerWidget {
         return ProfileSettingsSection(state: state);
       case SuperadminSettingsSection.whiteLabel:
         return WhiteLabelSettingsSection(state: state);
-      case SuperadminSettingsSection.smtp:
-        return SmtpSettingsSection(state: state);
       case SuperadminSettingsSection.localization:
         return LocalizationSettingsSection(state: state);
       case SuperadminSettingsSection.general:

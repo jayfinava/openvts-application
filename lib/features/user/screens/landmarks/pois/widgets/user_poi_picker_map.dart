@@ -575,6 +575,7 @@ class _Panel extends StatelessWidget {
                                 FilteringTextInputFormatter.allow(
                                     RegExp(r'[0-9.]')),
                               ],
+                              cursorColor: OpenVtsColors.white,
                               style: OpenVtsTypography.numeric.copyWith(
                                 color: OpenVtsColors.white,
                                 fontWeight: FontWeight.w700,
@@ -582,6 +583,7 @@ class _Panel extends StatelessWidget {
                               textAlign: TextAlign.center,
                               decoration: const InputDecoration(
                                 isDense: true,
+                                filled: false,
                                 hintText: '0',
                                 hintStyle:
                                     TextStyle(color: OpenVtsColors.white),
@@ -640,6 +642,7 @@ class _CoordField extends StatelessWidget {
       inputFormatters: <TextInputFormatter>[
         FilteringTextInputFormatter.allow(RegExp(r'[0-9.\-]')),
       ],
+      cursorColor: OpenVtsColors.white,
       style: OpenVtsTypography.numeric.copyWith(
         color: OpenVtsColors.white,
       ),
@@ -647,6 +650,7 @@ class _CoordField extends StatelessWidget {
       onEditingComplete: onSubmitted,
       decoration: InputDecoration(
         isDense: true,
+        filled: false,
         labelText: label,
         labelStyle: OpenVtsTypography.meta.copyWith(
           color: OpenVtsColors.white,
@@ -759,11 +763,13 @@ class _SearchBar extends StatelessWidget {
             child: TextField(
               controller: controller,
               onChanged: (_) => onSearch(),
+              cursorColor: OpenVtsColors.white,
               style: OpenVtsTypography.body.copyWith(
                 color: OpenVtsColors.white,
               ),
               decoration: InputDecoration(
                 isDense: true,
+                filled: false,
                 hintText: 'Search place...',
                 hintStyle: OpenVtsTypography.body.copyWith(
                   color: OpenVtsColors.white.withValues(alpha: 0.6),
