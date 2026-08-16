@@ -621,13 +621,7 @@ class _PreviewTile extends StatelessWidget {
 // Dropdowns
 // =====================================================================
 
-/// Base language codes Flutter can actually render, derived from the ARB files.
-/// Adding a new app_XX.arb and re-running gen-l10n automatically expands this.
-Set<String> get _kSupportedLangCodes =>
-    AppLocalizations.supportedLocales.map((l) => l.languageCode).toSet();
-
-/// Strips regional sub-tags (pt-BR → pt, en-US → en) to match Flutter locales,
-/// which are registered by base language code only.
+/// Strips regional sub-tags (pt-BR → pt, en-US → en) for deduplication.
 String _normalizeLangCode(String code) =>
     code.split('-').first.split('_').first.toLowerCase();
 
@@ -646,12 +640,12 @@ class _LanguageDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    // Build a deduplicated list of options whose normalized code is supported.
+    // Build a deduplicated list of all options from the backend.
     final seen = <String>{};
     final filtered = <SuperadminLanguageOption>[];
     for (final o in options) {
       final normalized = _normalizeLangCode(o.code);
-      if (_kSupportedLangCodes.contains(normalized) && seen.add(normalized)) {
+      if (seen.add(normalized)) {
         filtered
             .add(SuperadminLanguageOption(code: normalized, label: o.label));
       }

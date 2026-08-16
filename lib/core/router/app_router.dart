@@ -22,7 +22,6 @@ import '../../features/admin/screens/settings/admin_settings_screen.dart';
 import '../../features/admin/screens/support/admin_create_support_ticket_screen.dart';
 import '../../features/admin/screens/support/admin_support_screen.dart';
 import '../../features/admin/screens/team/admin_team_screen.dart';
-import '../../features/admin/screens/transactions/admin_transactions_screen.dart';
 import '../../features/admin/screens/users/admin_create_user_screen.dart';
 import '../../features/admin/screens/users/admin_user_details_screen.dart';
 import '../../features/admin/screens/users/admin_users_screen.dart';
@@ -325,10 +324,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: RoutePaths.adminInventory,
             builder: (context, state) => const AdminInventoryScreen(),
-          ),
-          GoRoute(
-            path: RoutePaths.adminTransactions,
-            builder: (context, state) => const AdminTransactionsScreen(),
           ),
           GoRoute(
             path: RoutePaths.adminPayments,

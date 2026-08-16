@@ -192,11 +192,16 @@ class _UserRouteSearchPanelState extends State<UserRouteSearchPanel> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fgColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk,
+        color: bgColor,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-        border: Border.all(color: OpenVtsColors.white),
+        border: Border.all(color: borderColor),
       ),
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       child: Column(
@@ -205,17 +210,13 @@ class _UserRouteSearchPanelState extends State<UserRouteSearchPanel> {
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.alt_route,
-                size: 16,
-                color: OpenVtsColors.white,
-              ),
+              Icon(Icons.alt_route, size: 16, color: fgColor),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   'Generate from search',
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.white,
+                    color: fgColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -224,13 +225,9 @@ class _UserRouteSearchPanelState extends State<UserRouteSearchPanel> {
                 InkResponse(
                   onTap: widget.onClose,
                   radius: 18,
-                  child: const Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Icon(
-                      Icons.close,
-                      size: 16,
-                      color: OpenVtsColors.white,
-                    ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(Icons.close, size: 16, color: fgColor),
                   ),
                 ),
             ],
@@ -316,6 +313,11 @@ class _SearchInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fgColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
+    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
@@ -325,33 +327,38 @@ class _SearchInput extends StatelessWidget {
           child: TextField(
             controller: controller,
             onChanged: onChanged,
-            style: OpenVtsTypography.body.copyWith(color: OpenVtsColors.white),
+            style: OpenVtsTypography.body.copyWith(color: fgColor),
             decoration: InputDecoration(
               isDense: true,
+              filled: true,
+              fillColor: bgColor,
               hintText: label,
-              hintStyle:
-                  OpenVtsTypography.body.copyWith(color: OpenVtsColors.white),
+              hintStyle: OpenVtsTypography.body.copyWith(
+                color: isDark
+                    ? OpenVtsColors.darkTextSecondary
+                    : OpenVtsColors.textSecondary,
+              ),
               prefixIcon: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
                   label,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.white,
+                    color: fgColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
               prefixIconConstraints: const BoxConstraints(minWidth: 0),
               suffixIcon: loading
-                  ? const Padding(
-                      padding: EdgeInsets.all(10),
+                  ? Padding(
+                      padding: const EdgeInsets.all(10),
                       child: SizedBox(
                         width: 14,
                         height: 14,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              OpenVtsColors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(fgColor),
                         ),
                       ),
                     )
@@ -360,10 +367,7 @@ class _SearchInput extends StatelessWidget {
                           iconSize: 16,
                           splashRadius: 18,
                           onPressed: onClear,
-                          icon: const Icon(
-                            Icons.close,
-                            color: OpenVtsColors.white,
-                          ),
+                          icon: Icon(Icons.close, color: fgColor),
                         )
                       : null),
               contentPadding: const EdgeInsets.symmetric(
@@ -371,18 +375,15 @@ class _SearchInput extends StatelessWidget {
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(color: OpenVtsColors.white),
+                borderSide: BorderSide(color: borderColor),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(color: OpenVtsColors.white),
+                borderSide: BorderSide(color: borderColor),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(
-                  color: OpenVtsColors.white,
-                  width: 1.4,
-                ),
+                borderSide: BorderSide(color: fgColor, width: 1.4),
               ),
             ),
           ),
@@ -392,17 +393,19 @@ class _SearchInput extends StatelessWidget {
             margin: const EdgeInsets.only(top: 4),
             constraints: const BoxConstraints(maxHeight: 180),
             decoration: BoxDecoration(
-              color: OpenVtsColors.brandInk,
+              color: bgColor,
               borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-              border: Border.all(color: OpenVtsColors.white),
+              border: Border.all(color: borderColor),
             ),
             child: ListView.separated(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
               itemCount: suggestions.length,
-              separatorBuilder: (_, __) => const Divider(
+              separatorBuilder: (_, __) => Divider(
                 height: 1,
-                color: Color(0xFF444444),
+                color: isDark
+                    ? const Color(0xFF444444)
+                    : OpenVtsColors.divider,
               ),
               itemBuilder: (context, i) {
                 final s = suggestions[i];
@@ -418,7 +421,7 @@ class _SearchInput extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: OpenVtsTypography.meta.copyWith(
-                        color: OpenVtsColors.white,
+                        color: fgColor,
                       ),
                     ),
                   ),

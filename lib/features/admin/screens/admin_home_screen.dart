@@ -50,11 +50,6 @@ class AdminHomeScreen extends ConsumerWidget {
           route: RoutePaths.adminMap,
         ),
         OpenVtsRoleHomeItem(
-          label: l10n.transactions,
-          icon: Icons.receipt_long_outlined,
-          route: RoutePaths.adminTransactions,
-        ),
-        OpenVtsRoleHomeItem(
           label: l10n.payments,
           icon: Icons.payments_outlined,
           route: RoutePaths.adminPayments,

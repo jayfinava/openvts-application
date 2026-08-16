@@ -49,7 +49,6 @@ class RoutePaths {
       '/admin/drivers/$driverId';
   static const adminTeam = '/admin/team';
   static const adminInventory = '/admin/inventory';
-  static const adminTransactions = '/admin/transactions';
   static const adminPayments = '/admin/payments';
   static const adminSupport = '/admin/support';
   static const adminSupportCreate = '/admin/support/create';

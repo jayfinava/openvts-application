@@ -306,7 +306,6 @@ const _adminStaticRoutes = <String>{
   RoutePaths.adminDrivers,
   RoutePaths.adminTeam,
   RoutePaths.adminInventory,
-  RoutePaths.adminTransactions,
   RoutePaths.adminPayments,
   RoutePaths.adminSupport,
   RoutePaths.adminNotifications,
