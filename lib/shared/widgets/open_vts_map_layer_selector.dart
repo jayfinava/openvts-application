@@ -39,7 +39,6 @@ enum MapLayerPreviewStyle {
 }
 
 const List<String> _googleTileSubdomains = ['mt0', 'mt1', 'mt2', 'mt3'];
-const List<String> _osmTileSubdomains = ['a', 'b', 'c'];
 const List<String> _cartoTileSubdomains = ['a', 'b', 'c', 'd'];
 
 const List<MapLayerOption> primaryMapLayerOptions = [
@@ -83,8 +82,8 @@ const List<MapLayerOption> detailMapLayerOptions = [
     id: 'osm',
     name: 'OpenStreetMap',
     shortLabel: 'OSM',
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    subdomains: _osmTileSubdomains,
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    subdomains: <String>[],
     previewStyle: MapLayerPreviewStyle.osm,
   ),
   MapLayerOption(

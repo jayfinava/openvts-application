@@ -269,7 +269,8 @@ class _ProfileSettingsSectionState
   Future<void> _openChangePasswordSheet() async {
     final ok = await _showSheet<bool>(child: const _ChangePasswordSheet());
     if (ok == true && mounted) {
-      ToastHelper.showSuccess('Password changed');
+      ToastHelper.showSuccess('Password changed. Please sign in again.');
+      await ref.read(authControllerProvider.notifier).logoutAllRoles();
     }
   }
 
@@ -1750,16 +1751,6 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       missingField = 'Address is required';
     } else if (_countryCode == null) {
       missingField = 'Country is required';
-    } else if (_statesLoadFailed) {
-      // Cannot determine whether State is applicable — block save.
-      missingField = 'State options failed to load. Please retry.';
-    } else if (_hasStates && _stateCode == null) {
-      missingField = 'State is required';
-    } else if (_hasStates && _citiesLoadFailed) {
-      // Cannot determine whether City is applicable — block save.
-      missingField = 'City options failed to load. Please retry.';
-    } else if (_hasCities && (_cityName == null || _cityName!.trim().isEmpty)) {
-      missingField = 'City is required';
     }
 
     if (missingField != null) {
@@ -1787,7 +1778,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     final ok = await controller.updateProfile(
       SuperadminUpdateProfileRequest(
         name: _name.text.trim(),
-        email: _email.text.trim().isEmpty ? null : _email.text.trim(),
+        email: _email.text.trim(),
         mobilePrefix: _mobilePrefix,
         mobileNumber: _mobile.text.trim(),
         addressLine: _addressLine.text.trim(),

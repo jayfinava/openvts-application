@@ -475,7 +475,7 @@ class _SuperadminCreateAdminScreenState
         ),
         OpenVtsSearchableDropdown<String>(
           label: 'State',
-          required: statesApplicable,
+          required: false,
           enabled: stateEnabled,
           hintText: stateHint,
           searchHintText: 'Search state',
@@ -484,11 +484,6 @@ class _SuperadminCreateAdminScreenState
           options: stateOptions,
           value: _selectedStateCode,
           isLoading: state.isLoadingStates,
-          validator: statesApplicable
-              ? (value) => value == null || value.trim().isEmpty
-                  ? 'State is required'
-                  : null
-              : null,
           onChanged: (value) async {
             if (!stateEnabled) return;
             setState(() {
@@ -515,7 +510,7 @@ class _SuperadminCreateAdminScreenState
         ),
         OpenVtsSearchableDropdown<String>(
           label: 'City',
-          required: citiesApplicable,
+          required: false,
           enabled: cityEnabled,
           hintText: cityHint,
           searchHintText: 'Search city',
@@ -524,11 +519,6 @@ class _SuperadminCreateAdminScreenState
           options: cityOptions,
           value: _selectedCityName,
           isLoading: state.isLoadingCities,
-          validator: citiesApplicable
-              ? (value) => value == null || value.trim().isEmpty
-                  ? 'City is required'
-                  : null
-              : null,
           onChanged: (value) {
             if (!cityEnabled) return;
             setState(() => _selectedCityName = value);
@@ -590,24 +580,6 @@ class _SuperadminCreateAdminScreenState
     if (selectedCountry == null) {
       ToastHelper.showError(
         'Country is required.',
-        context: context,
-      );
-      return;
-    }
-
-    // Require state selection only when the country actually has states.
-    if (state.hasStates && _selectedStateCode == null) {
-      ToastHelper.showError(
-        'Please select a state.',
-        context: context,
-      );
-      return;
-    }
-
-    // Require city selection only when the selected state actually has cities.
-    if (state.hasCities && _selectedCityName == null) {
-      ToastHelper.showError(
-        'Please select a city.',
         context: context,
       );
       return;

@@ -80,7 +80,11 @@ class UserHomeScreen extends ConsumerWidget {
 
     return OpenVtsRoleHome(
       displayName: user?.name.isNotEmpty == true ? user!.name : 'User',
-      roleLabel: authState.isDemo ? 'Demo • Read-only' : 'User',
+      roleLabel: authState.isDemo
+          ? 'Demo • Read-only'
+          : user?.isSubuser == true
+              ? 'Sub User'
+              : 'User',
       profileImageUrl: resolveProfileImageUrl(baseUrl, user?.profileUrl),
       items: _items,
       onToggleTheme: () async {

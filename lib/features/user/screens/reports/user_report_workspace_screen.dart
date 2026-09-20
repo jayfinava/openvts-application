@@ -496,17 +496,35 @@ class _ReportResult extends StatelessWidget {
   final UserReportWorkspaceState state;
   final UserReportWorkspaceNotifier notifier;
 
-  void _handleExport(BuildContext context, String format) {
-    final exportService = UserReportExportService();
-    exportService.export(
-      reportKey: state.reportKey,
-      rows: state.rows,
-      allColumns: state.reportKey.preferredColumns,
-      columnLabels: state.reportKey.columnLabels,
-      format: format,
-      generatedAt: state.generatedAt,
-      warning: state.warning,
+  Future<void> _handleExport(BuildContext context, String format) async {
+    final screenBounds = Offset.zero & MediaQuery.sizeOf(context);
+    final renderBox = context.findRenderObject();
+    final visibleBounds = renderBox is RenderBox && renderBox.hasSize
+        ? (renderBox.localToGlobal(Offset.zero) & renderBox.size)
+            .intersect(screenBounds)
+        : Rect.zero;
+    final shareOrigin = visibleBounds.isEmpty
+        ? Rect.fromCenter(center: screenBounds.center, width: 1, height: 1)
+        : visibleBounds;
+    final exportService = UserReportExportService(
+      sharePositionOrigin: shareOrigin,
     );
+    try {
+      await exportService.export(
+        reportKey: state.reportKey,
+        rows: state.rows,
+        allColumns: state.reportKey.preferredColumns,
+        columnLabels: state.reportKey.columnLabels,
+        format: format,
+        generatedAt: state.generatedAt,
+        warning: state.warning,
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to export the report. Please try again.')),
+      );
+    }
   }
 
   @override

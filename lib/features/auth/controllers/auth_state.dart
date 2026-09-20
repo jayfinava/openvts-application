@@ -1,5 +1,6 @@
 import '../../../shared/models/user_role.dart';
 import '../models/current_user.dart';
+import '../models/mfa_login_challenge.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated }
 
@@ -9,6 +10,8 @@ class AuthState {
     this.user,
     this.errorMessage,
     this.isDemo = false,
+    this.mfaChallenge,
+    this.isVerifyingMfa = false,
   });
 
   const AuthState.initial() : this(status: AuthStatus.initial);
@@ -28,6 +31,8 @@ class AuthState {
   final CurrentUser? user;
   final String? errorMessage;
   final bool isDemo;
+  final MfaLoginChallenge? mfaChallenge;
+  final bool isVerifyingMfa;
 
   bool get isAuthenticated =>
       status == AuthStatus.authenticated && user != null;

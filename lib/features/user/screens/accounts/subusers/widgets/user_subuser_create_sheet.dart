@@ -159,7 +159,7 @@ class _UserSubUserCreateSheetState
                       ),
                       const SizedBox(height: OpenVtsSpacing.sm),
                       OpenVtsTextField(
-                        label: 'Password (optional)',
+                        label: 'Password',
                         controller: _passwordController,
                         obscureText: _obscurePassword,
                         textInputAction: TextInputAction.done,
@@ -180,7 +180,7 @@ class _UserSubUserCreateSheetState
                             size: 18,
                           ),
                         ),
-                        validator: _optionalPasswordValidator,
+                        validator: _passwordValidator,
                       ),
                       const SizedBox(height: OpenVtsSpacing.sm),
                       Container(
@@ -280,7 +280,7 @@ class _UserSubUserCreateSheetState
       email: _optionalValue(_emailController.text),
       mobilePrefix: _selectedMobilePrefix,
       mobileNumber: _optionalValue(_mobileNumberController.text),
-      password: _optionalValue(_passwordController.text),
+      password: _passwordController.text,
       isActive: _isActive,
     );
 
@@ -348,13 +348,13 @@ class _UserSubUserCreateSheetState
     return null;
   }
 
-  String? _optionalPasswordValidator(String? value) {
-    final normalized = value ?? '';
-    if (normalized.trim().isEmpty) {
-      return null;
+  String? _passwordValidator(String? value) {
+    final password = value ?? '';
+    if (password.trim().isEmpty) {
+      return 'Password is required';
     }
-    if (normalized.length < 6) {
-      return 'Password must be at least 6 characters';
+    if (password.length < 6 || password.length > 100) {
+      return 'Password must be between 6 and 100 characters';
     }
     return null;
   }

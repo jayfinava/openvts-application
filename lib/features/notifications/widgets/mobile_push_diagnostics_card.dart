@@ -30,6 +30,11 @@ class MobilePushDiagnosticsCard extends ConsumerWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
+          const SizedBox(height: OpenVtsSpacing.sm),
+          const Text(
+            'Notifications are optional. Enable them to receive vehicle alerts. '
+            'Your push token is shared with this server and Firebase for delivery.',
+          ),
           const SizedBox(height: OpenVtsSpacing.md),
           _DiagnosticRow(
             label: 'Platform',
@@ -93,7 +98,7 @@ class MobilePushDiagnosticsCard extends ConsumerWidget {
                 child: OpenVtsButton(
                   label: 'Enable/Refresh',
                   isLoading: pushState.isInitializing,
-                  onPressed: pushState.isInitialized
+                  onPressed: !pushState.isInitializing && !pushState.isTesting
                       ? () async {
                           await ref
                               .read(mobilePushControllerProvider.notifier)
@@ -108,7 +113,7 @@ class MobilePushDiagnosticsCard extends ConsumerWidget {
                   label: 'Test Push',
                   isLoading: pushState.isTesting,
                   variant: OpenVtsButtonVariant.secondary,
-                  onPressed: pushState.isInitialized
+                  onPressed: !pushState.isInitializing && !pushState.isTesting
                       ? () async {
                           final controller =
                               ref.read(mobilePushControllerProvider.notifier);

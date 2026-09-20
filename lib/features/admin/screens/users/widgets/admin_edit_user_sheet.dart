@@ -116,13 +116,13 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     OpenVtsTextField(
-                      label: 'Email',
+                      label: 'Email (optional)',
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.email],
                       prefixIcon: Icons.mail_outline_rounded,
-                      validator: Validators.email,
+                      validator: Validators.adminEmailOptional,
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     AdminUserPrefixPhoneRow(
@@ -187,7 +187,7 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     AdminUserDropdownField(
-                      label: 'State',
+                      label: 'State (optional)',
                       value: _stateCode,
                       options: _stateOptions,
                       hintText: _countryCode == null
@@ -197,9 +197,7 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
                               : 'Select state',
                       prefixIcon: Icons.map_outlined,
                       isLoading: _isLoadingStates,
-                      validator: (_statesLoaded && _states.isNotEmpty)
-                          ? requiredDropdown
-                          : null,
+                      validator: null,
                       onChanged: (_countryCode == null ||
                               (_statesLoaded && _states.isEmpty))
                           ? null
@@ -207,7 +205,7 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     AdminUserDropdownField(
-                      label: 'City',
+                      label: 'City (optional)',
                       value: _city,
                       options: _cityOptions,
                       hintText: _stateCode == null
@@ -217,9 +215,7 @@ class _AdminEditUserSheetState extends ConsumerState<AdminEditUserSheet> {
                               : 'Select city',
                       prefixIcon: Icons.location_city_rounded,
                       isLoading: _isLoadingCities,
-                      validator: (_citiesLoaded && _cities.isNotEmpty)
-                          ? requiredDropdown
-                          : null,
+                      validator: null,
                       onChanged: (_stateCode == null ||
                               (_citiesLoaded && _cities.isEmpty))
                           ? null

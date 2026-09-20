@@ -64,6 +64,8 @@ class MobilePushLocalNotifications {
     }
   }
 
+  Future<void> cancelAll() => _notifications.cancelAll();
+
   Future<void> showForegroundMessage(MobilePushMessage message) async {
     if (!_initialized) {
       await initialize(onTap: _tapHandler);

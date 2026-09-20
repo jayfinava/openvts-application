@@ -1037,12 +1037,12 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     OpenVtsTextField(
-                      label: 'Email',
+                      label: 'Email (optional)',
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       prefixIcon: Icons.mail_outline_rounded,
-                      validator: Validators.email,
+                      validator: Validators.adminEmailOptional,
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     AdminUserPrefixPhoneRow(
@@ -1115,25 +1115,23 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     AdminUserDropdownField(
-                      label: 'State',
+                      label: 'State (optional)',
                       value: _stateCode,
                       options: _stateOptions,
                       hintText: 'Select state',
                       prefixIcon: Icons.map_outlined,
                       isLoading: _isLoadingStates,
-                      validator: requiredDropdown,
                       searchable: true,
                       onChanged: _countryCode == null ? null : _onStateChanged,
                     ),
                     const SizedBox(height: OpenVtsSpacing.sm),
                     AdminUserDropdownField(
-                      label: 'City',
+                      label: 'City (optional)',
                       value: _city,
                       options: _cityOptions,
                       hintText: 'Select city',
                       prefixIcon: Icons.location_city_rounded,
                       isLoading: _isLoadingCities,
-                      validator: requiredDropdown,
                       searchable: true,
                       onChanged: _stateCode == null
                           ? null

@@ -9,6 +9,7 @@ import '../../../shared/models/user_role.dart';
 import '../models/current_user.dart';
 import '../models/login_request.dart';
 import '../models/login_response.dart';
+import '../models/mfa_login_challenge.dart';
 
 class AuthService {
   AuthService(this._apiClient);
@@ -53,18 +54,55 @@ class AuthService {
       );
     }
 
-    final response = await _apiClient.post<LoginResponse>(
+    final response = await _apiClient.post<Map<String, dynamic>>(
       ApiEndpoints.auth.login,
       data: request.toJson(),
-      parser: (json) => LoginResponse.fromJson(json as Map<String, dynamic>),
+      parser: _mapPayload,
     );
-
-    if (response.data.accessToken.isEmpty ||
-        response.data.refreshToken.isEmpty) {
-      throw const ApiException(message: 'Login response is missing tokens');
+    if (response.data['mfaRequired'] == true) {
+      throw MfaLoginChallenge.fromJson(response.data);
     }
+    return _validatedLogin(response.data);
+  }
 
-    return response.data;
+  Future<LoginResponse> verifyMfaLogin({
+    required String challengeToken,
+    required String code,
+  }) async {
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      ApiEndpoints.auth.verifyMfaLogin,
+      data: {'challengeToken': challengeToken, 'code': code.trim()},
+      parser: _mapPayload,
+    );
+    return _validatedLogin(response.data);
+  }
+
+  static LoginResponse _validatedLogin(Map<String, dynamic> data) {
+    final result = LoginResponse.fromJson(data);
+    if (result.accessToken.isEmpty || result.refreshToken.isEmpty ||
+        result.user.id.isEmpty) {
+      throw const ApiException(message: 'Login response is incomplete.');
+    }
+    return result;
+  }
+
+  /// The supplied backend closes accounts recoverably; it does not erase data.
+  Future<void> closeAccount({
+    required String currentPassword,
+    String? code,
+  }) async {
+    final response = await _apiClient.delete<Map<String, dynamic>>(
+      ApiEndpoints.auth.account,
+      options: Options(receiveTimeout: const Duration(seconds: 30)),
+      data: {
+        'currentPassword': currentPassword,
+        if (code != null && code.trim().isNotEmpty) 'code': code.trim(),
+      },
+      parser: _mapPayload,
+    );
+    if (response.data['deleted'] != true) {
+      throw const ApiException(message: 'The server did not confirm account closure.');
+    }
   }
 
   Future<String> requestPasswordReset(String identifier) async {

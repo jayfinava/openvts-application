@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/app_preferences_provider.dart';
+import '../../../../core/widgets/app_legal_links.dart';
+import '../../../auth/widgets/account_closure_card.dart';
 import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
@@ -50,7 +52,11 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
       return OpenVtsPageScaffold(
         title: l10n.settings,
         headerMode: OpenVtsPageHeaderMode.closeable,
-        body: const OpenVtsLoader(),
+        body: ListView(children: const [
+          SizedBox(height: 100, child: OpenVtsLoader()),
+          AccountClosureCard(),
+          AppLegalLinks(),
+        ]),
       );
     }
 
@@ -62,10 +68,12 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
       return OpenVtsPageScaffold(
         title: l10n.settings,
         headerMode: OpenVtsPageHeaderMode.closeable,
-        body: OpenVtsErrorView(
-          message: profileFailureMessage,
-          onRetry: controller.loadProfile,
-        ),
+        body: ListView(children: [
+          SizedBox(height: 260, child: OpenVtsErrorView(
+            message: profileFailureMessage, onRetry: controller.loadProfile)),
+          const AccountClosureCard(),
+          const AppLegalLinks(),
+        ]),
       );
     }
 

@@ -65,7 +65,11 @@ final dioProvider = Provider<Dio>((ref) {
       },
     ),
   );
+  // Cancel the old server's in-flight requests before a new server can use
+  // this account store. An old 401 must never retry with new credentials.
+  ref.onDispose(() => dio.close(force: true));
 
+  dio.interceptors.add(_ServerUrlPolicyInterceptor());
   dio.interceptors.add(_BodylessDeleteContentTypeInterceptor());
 
   final tokenStorage = ref.watch(tokenStorageProvider);
@@ -81,6 +85,28 @@ final dioProvider = Provider<Dio>((ref) {
 
   return dio;
 });
+
+class _ServerUrlPolicyInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    final error = AppConfig.validateApiBaseUrl(options.baseUrl);
+    // Validate the origin of absolute endpoints too, before attaching tokens.
+    final target = options.uri;
+    final targetError = AppConfig.validateApiBaseUrl(
+      target.replace(query: null, fragment: null).toString().split('?').first.split('#').first,
+    );
+    if (error != null || targetError != null) {
+      handler.reject(DioException(
+        requestOptions: options,
+        type: DioExceptionType.unknown,
+        message: error ?? targetError,
+        error: FormatException(error ?? targetError!),
+      ));
+      return;
+    }
+    handler.next(options);
+  }
+}
 
 class _BodylessDeleteContentTypeInterceptor extends Interceptor {
   @override
@@ -128,10 +154,12 @@ final mobilePushControllerProvider =
 });
 
 final socketServiceProvider = Provider<SocketService>((ref) {
-  return SocketService(
+  final service = SocketService(
     ref.watch(tokenStorageProvider),
     apiBaseUrl: ref.watch(apiBaseUrlProvider),
   );
+  ref.onDispose(service.dispose);
+  return service;
 });
 
 class ThemeModeController extends StateNotifier<ThemeMode> {
@@ -191,6 +219,8 @@ class ApiBaseUrlController extends StateNotifier<String> {
   bool get isUsingDefault => state == defaultUrl;
 
   Future<void> saveCustomUrl(String value) async {
+    final error = AppConfig.validateApiBaseUrl(value);
+    if (error != null) throw FormatException(error);
     final normalizedValue = _normalizeUrl(value);
     await _localCache.setString(
         StorageKeys.apiBaseUrlOverride, normalizedValue);

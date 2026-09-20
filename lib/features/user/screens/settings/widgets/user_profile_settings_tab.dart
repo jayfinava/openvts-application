@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../../core/providers/core_providers.dart';
+import '../../../../../core/widgets/app_legal_links.dart';
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
@@ -13,6 +14,7 @@ import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_role_home.dart';
 import '../../../../auth/controllers/auth_controller.dart';
+import '../../../../auth/widgets/account_closure_card.dart';
 import '../../../controllers/user_providers.dart';
 import '../../../controllers/user_settings_controller.dart';
 import '../../../models/user_settings_model.dart';
@@ -181,7 +183,8 @@ class _UserProfileSettingsTabState
               : () => _openCompanyEditSheet(draft.company!),
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
-        _PasswordActionCard(onPressed: _openPasswordSheet),
+        if (ref.watch(authControllerProvider).user?.isSubuser != true)
+          _PasswordActionCard(onPressed: _openPasswordSheet),
         const SizedBox(height: OpenVtsSpacing.sm),
         UserEmailSubscriptionCard(
           subscription: widget.state.emailSubscription,
@@ -194,7 +197,10 @@ class _UserProfileSettingsTabState
           onSubscribe: _subscribeEmail,
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
+        const AccountClosureCard(),
+        const SizedBox(height: OpenVtsSpacing.sm),
         UserLogoutCard(onLogout: _handleLogout),
+        const AppLegalLinks(),
       ],
     );
   }
@@ -326,8 +332,9 @@ class _UserProfileSettingsTabState
       ),
     );
 
-    if (ok == true) {
-      ToastHelper.showSuccess('Password changed');
+    if (ok == true && mounted) {
+      ToastHelper.showSuccess('Password changed. Please sign in again.');
+      await ref.read(authControllerProvider.notifier).logoutAllRoles();
     }
   }
 

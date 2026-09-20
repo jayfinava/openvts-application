@@ -492,12 +492,6 @@ class SuperadminSettingsController
     }
   }
 
-  Future<void> debugTestLocalizationFields(
-    SuperadminLocalizationSettings request,
-  ) async {
-    await _service.testLocalizationPayloadFields(request);
-  }
-
   // ---------------------------------------------------------------
   // Software config / data retention
   // ---------------------------------------------------------------

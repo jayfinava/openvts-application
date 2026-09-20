@@ -4,19 +4,19 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/api/api_exception.dart';
 import '../../../core/notifications/mobile_push_controller.dart';
 import '../../../core/notifications/mobile_push_perf.dart';
 import '../../../core/performance/open_vts_perf.dart';
 import '../../../core/providers/app_preferences_provider.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/demo/demo_mode_store.dart';
-import '../../../core/demo/demo_session.dart';
-import '../../../core/demo/demo_session_service.dart';
 import '../../../core/storage/token_storage.dart';
 import '../../../shared/models/user_role.dart';
 import '../models/current_user.dart';
 import '../models/login_request.dart';
 import '../models/login_response.dart';
+import '../models/mfa_login_challenge.dart';
 import '../services/auth_service.dart';
 import 'auth_state.dart';
 
@@ -31,7 +31,6 @@ final authControllerProvider =
     mobilePushController: ref.watch(mobilePushControllerProvider.notifier),
     tokenStorage: ref.watch(tokenStorageProvider),
     demoModeStore: ref.watch(demoModeStoreProvider),
-    demoSessionService: ref.watch(demoSessionServiceProvider),
     appPreferencesCtrl: ref.watch(appLocalizationPreferencesProvider.notifier),
   );
 });
@@ -42,13 +41,11 @@ class AuthController extends StateNotifier<AuthState> {
     required MobilePushController mobilePushController,
     required TokenStorage tokenStorage,
     required DemoModeStore demoModeStore,
-    required DemoSessionService demoSessionService,
     required AppLocalizationPreferencesController appPreferencesCtrl,
   })  : _authService = authService,
         _mobilePushController = mobilePushController,
         _tokenStorage = tokenStorage,
         _demoModeStore = demoModeStore,
-        _demoSessionService = demoSessionService,
         _appPreferencesCtrl = appPreferencesCtrl,
         super(const AuthState.initial());
 
@@ -56,7 +53,6 @@ class AuthController extends StateNotifier<AuthState> {
   final MobilePushController _mobilePushController;
   final TokenStorage _tokenStorage;
   final DemoModeStore _demoModeStore;
-  final DemoSessionService _demoSessionService;
   final AppLocalizationPreferencesController _appPreferencesCtrl;
 
   CurrentUser? get currentUser => state.user;
@@ -87,15 +83,27 @@ class AuthController extends StateNotifier<AuthState> {
         final response = await _authService.login(
           LoginRequest(identifier: identifier, password: password),
         );
+        if (!mounted) return;
         await setSession(response);
+      } on MfaLoginChallenge catch (challenge) {
+        if (!mounted) return;
+        state = AuthState(status: AuthStatus.unauthenticated, mfaChallenge: challenge);
       } catch (error) {
+        if (!mounted) return;
         _setUnauthenticated(errorMessage: _friendlyLoginError(error));
       }
     });
   }
 
   static String _friendlyLoginError(Object error) {
+    if (error is ApiException) return error.message;
     if (error is DioException) {
+      final responseData = error.response?.data;
+      if (responseData is Map) {
+        final message = responseData['message'];
+        if (message is String && message.trim().isNotEmpty &&
+            (error.response?.statusCode ?? 500) < 500) return message;
+      }
       if (error.type == DioExceptionType.connectionError ||
           error.type == DioExceptionType.unknown) {
         final msg = error.message ?? '';
@@ -134,23 +142,57 @@ class AuthController extends StateNotifier<AuthState> {
     return cleaned.isNotEmpty ? cleaned : raw;
   }
 
-  Future<void> enterDemo() {
-    return OpenVtsPerf.traceAsync('auth.demo', () async {
-      state = const AuthState.loading();
-      try {
-        final session = await _demoSessionService.openSession();
-        if (!session.permissions.readOnly) {
-          throw const FormatException(
-            'The server did not return a read-only demo session.',
-          );
-        }
-        await _demoModeStore.enable(session);
-        _setDemoSession(session);
-      } catch (error) {
-        await _demoModeStore.clear();
-        _setUnauthenticated(errorMessage: error.toString());
-      }
-    });
+  Future<void> verifyMfaLogin(String code) async {
+    final challenge = state.mfaChallenge;
+    if (challenge == null || state.isVerifyingMfa) return;
+    if (challenge.isExpired) {
+      _setUnauthenticated(errorMessage: 'Verification expired. Please sign in again.');
+      return;
+    }
+    state = AuthState(status: AuthStatus.unauthenticated,
+        mfaChallenge: challenge, isVerifyingMfa: true);
+    try {
+      final response = await _authService.verifyMfaLogin(
+        challengeToken: challenge.token, code: code,
+      );
+      if (!mounted) return;
+      await setSession(response);
+    } catch (error) {
+      if (!mounted) return;
+      state = AuthState(status: AuthStatus.unauthenticated,
+          mfaChallenge: challenge, errorMessage: _friendlyLoginError(error));
+    }
+  }
+
+  void cancelMfaLogin() {
+    if (!state.isVerifyingMfa) _setUnauthenticated();
+  }
+
+  Future<void> closeAccount({required String currentPassword, String? code}) async {
+    if (state.isDemo || state.user?.canCloseAccount != true) {
+      throw const ApiException(message: 'Account closure is unavailable for this account.');
+    }
+    final closingUser = state.user!;
+    final closingRevision = _tokenStorage.sessionRevision;
+    await _authService.closeAccount(currentPassword: currentPassword, code: code);
+    if (!mounted || _tokenStorage.sessionRevision != closingRevision ||
+        state.user?.id != closingUser.id ||
+        state.user?.effectiveBackendRole != closingUser.effectiveBackendRole) return;
+    // Also clear this device's push token and notifications. The service cleans
+    // up locally even though account closure already revoked the server token.
+    await _deregisterPushForCurrentSession();
+    if (!mounted || _tokenStorage.sessionRevision != closingRevision ||
+        state.user?.id != closingUser.id ||
+        state.user?.effectiveBackendRole != closingUser.effectiveBackendRole) return;
+    // Server revokes every session. Remove saved roles too, so the app cannot
+    // silently return to an earlier account after this deliberate exit.
+    await _demoModeStore.clear();
+    if (!mounted || _tokenStorage.sessionRevision != closingRevision) return;
+    final expectedClearedRevision = closingRevision + 1;
+    await _tokenStorage.clearAllSessions();
+    if (mounted && _tokenStorage.sessionRevision == expectedClearedRevision) {
+      _setUnauthenticated();
+    }
   }
 
   Future<String> requestPasswordReset(String identifier) {
@@ -169,7 +211,9 @@ class AuthController extends StateNotifier<AuthState> {
 
   Future<void> setSession(LoginResponse response) {
     return OpenVtsPerf.traceAsync('auth.setSession', () async {
+      if (!mounted) return;
       await _demoModeStore.clear();
+      if (!mounted) return;
       await _tokenStorage.saveSessionForRole(
         role: response.user.role,
         accessToken: response.accessToken,
@@ -195,14 +239,16 @@ class AuthController extends StateNotifier<AuthState> {
       return;
     }
 
+    // A late profile response must never overwrite a different signed-in user.
+    if (activeSession.user.id != user.id) return;
     final role = activeSession.role;
-    await _tokenStorage.saveSessionForRole(
-      role: role,
+    final saved = await _tokenStorage.saveRefreshedSession(
+      expectedSession: activeSession,
       accessToken: activeSession.accessToken,
       refreshToken: activeSession.refreshToken,
       currentUserJson: jsonEncode(user.copyWith(role: role).toJson()),
     );
-    await _setStateFromActiveSession();
+    if (saved && mounted) await _setStateFromActiveSession();
   }
 
   Future<UserRole?> logout() async {
@@ -248,12 +294,8 @@ class AuthController extends StateNotifier<AuthState> {
   }
 
   Future<void> _setStateFromActiveSession() async {
-    final demoSession = _demoModeStore.cachedSession;
-    if (_demoModeStore.isEnabled && demoSession != null) {
-      _setDemoSession(demoSession);
-      return;
-    }
-    if (_demoModeStore.isEnabled || demoSession != null) {
+    // Demo access is disabled, including persisted sessions from older builds.
+    if (_demoModeStore.isEnabled || _demoModeStore.cachedSession != null) {
       await _demoModeStore.clear();
     }
 
@@ -267,29 +309,6 @@ class AuthController extends StateNotifier<AuthState> {
     _mobilePushController.updateAuthenticationState(isAuthenticated: true);
 
     // Rehydrate localization preferences from LocalCache on session restore
-    _appPreferencesCtrl.rehydrate();
-  }
-
-  void _setDemoSession(DemoSession session) {
-    final user = CurrentUser(
-      id: session.user.id,
-      name: session.user.name,
-      email: session.user.email,
-      role: UserRole.user,
-      username: 'demo.fleet',
-      phoneNumber: '+1 555 010 0000',
-      mobilePrefix: '+1',
-      mobileNumber: '5550100000',
-      accountStatus: 'active',
-      isVerified: true,
-      addressLine: '100 Demo Fleet Avenue',
-      countryCode: 'US',
-      stateCode: 'NY',
-      cityName: 'New York City',
-      pincode: '10001',
-    );
-    state = AuthState.authenticated(user, isDemo: true);
-    _mobilePushController.updateAuthenticationState(isAuthenticated: false);
     _appPreferencesCtrl.rehydrate();
   }
 

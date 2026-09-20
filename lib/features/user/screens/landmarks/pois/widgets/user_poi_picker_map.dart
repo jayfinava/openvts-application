@@ -7,6 +7,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/widgets/map_attribution.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
@@ -322,6 +323,7 @@ class _UserPoiPickerMapState extends State<UserPoiPickerMap> {
                             ),
                           ],
                         ),
+                      OpenVtsMapAttribution(layerId: _selectedLayerId),
                     ],
                   ),
                   // Layer button at top-right

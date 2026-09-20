@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' show Rect;
 
 import 'package:excel/excel.dart';
 import 'package:flutter/foundation.dart';
@@ -17,7 +18,10 @@ import '../utils/user_report_format.dart';
 /// Shared report export service — CSV, XLSX, JSON, PDF, HTML.
 /// Exports ALL columns including those hidden in the compact view.
 class UserReportExportService {
-  const UserReportExportService();
+  const UserReportExportService({required this.sharePositionOrigin});
+
+  /// The visible source rectangle is required by the iPad share popover.
+  final Rect sharePositionOrigin;
 
   // ---------------------------------------------------------------------------
   // Public API
@@ -403,14 +407,14 @@ tr:nth-child(even)td{background:#fafafa}
       // Web: use share_plus which handles download
       await Share.shareXFiles(
           [XFile.fromData(bytes, name: fileName, mimeType: mimeType)],
-          subject: fileName);
+          subject: fileName, sharePositionOrigin: sharePositionOrigin);
       return;
     }
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/$fileName');
     await file.writeAsBytes(bytes);
     await Share.shareXFiles([XFile(file.path, mimeType: mimeType)],
-        subject: fileName);
+        subject: fileName, sharePositionOrigin: sharePositionOrigin);
   }
 
   // ---------------------------------------------------------------------------

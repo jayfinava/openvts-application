@@ -14,6 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/socket/socket_service.dart';
+import '../../../core/widgets/map_attribution.dart';
 import '../../../core/utils/date_time_formatter.dart';
 import '../../../core/utils/unit_formatter.dart';
 import '../../../shared/helpers/toast_helper.dart';
@@ -1959,6 +1960,15 @@ class _LiveMapState extends ConsumerState<_LiveMap>
               onClear: _clearReplay,
             ),
           ),
+        Positioned.fill(
+          child: SafeArea(
+            child: OpenVtsMapAttribution(
+              layerId: _selectedMapLayer.id,
+              alignment: Alignment.topRight,
+              padding: const EdgeInsets.only(top: 84, right: 4),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -10817,7 +10827,7 @@ enum _LayerPreviewStyle {
 }
 
 const List<String> _googleTileSubdomains = ['mt0', 'mt1', 'mt2', 'mt3'];
-const List<String> _osmTileSubdomains = ['a', 'b', 'c'];
+const List<String> _osmTileSubdomains = [];
 const List<String> _cartoTileSubdomains = ['a', 'b', 'c', 'd'];
 
 const List<_MapLayerOption> _primaryMapLayerOptions = [
@@ -10861,7 +10871,7 @@ const List<_MapLayerOption> _detailMapLayerOptions = [
     id: 'osm',
     name: 'OpenStreetMap',
     shortLabel: 'OSM',
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     subdomains: _osmTileSubdomains,
     previewStyle: _LayerPreviewStyle.osm,
   ),

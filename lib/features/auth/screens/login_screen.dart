@@ -13,6 +13,8 @@ import '../../../shared/helpers/toast_helper.dart';
 import '../controllers/auth_controller.dart';
 import '../controllers/auth_state.dart';
 import '../widgets/login_form.dart';
+import '../widgets/mfa_login_form.dart';
+import '../../../core/widgets/app_legal_links.dart';
 
 class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
@@ -20,10 +22,10 @@ class LoginScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<AuthState>(authControllerProvider, (previous, next) {
-      if (previous?.status == AuthStatus.loading &&
+      if (previous?.status != AuthStatus.authenticated &&
           next.status == AuthStatus.authenticated) {
         ToastHelper.showSuccess(
-          next.isDemo ? 'Demo workspace opened' : 'Login successful',
+          'Login successful',
         );
       }
 
@@ -89,9 +91,10 @@ class LoginScreen extends ConsumerWidget {
                               password: password,
                             );
                       },
-                      onDemo: () {
-                        ref.read(authControllerProvider.notifier).enterDemo();
-                      },
+                      mfaRequired: authState.mfaChallenge != null,
+                      isVerifyingMfa: authState.isVerifyingMfa,
+                      onVerifyMfa: (code) => ref.read(authControllerProvider.notifier).verifyMfaLogin(code),
+                      onCancelMfa: () => ref.read(authControllerProvider.notifier).cancelMfaLogin(),
                     ),
                   ),
                 ),
@@ -192,14 +195,20 @@ class _LoginPanel extends StatelessWidget {
   const _LoginPanel({
     required this.isLoading,
     required this.onSubmit,
-    required this.onDemo,
+    required this.mfaRequired,
+    required this.isVerifyingMfa,
+    required this.onVerifyMfa,
+    required this.onCancelMfa,
     this.errorMessage,
   });
 
   final bool isLoading;
   final String? errorMessage;
   final void Function(String email, String password) onSubmit;
-  final VoidCallback onDemo;
+  final bool mfaRequired;
+  final bool isVerifyingMfa;
+  final ValueChanged<String> onVerifyMfa;
+  final VoidCallback onCancelMfa;
 
   @override
   Widget build(BuildContext context) {
@@ -242,11 +251,13 @@ class _LoginPanel extends StatelessWidget {
             },
           ),
           const SizedBox(height: OpenVtsSpacing.xl),
-          LoginForm(
-            isLoading: isLoading,
-            onSubmit: onSubmit,
-            onDemo: onDemo,
-          ),
+          if (mfaRequired)
+            MfaLoginForm(isLoading: isVerifyingMfa,
+              onSubmit: onVerifyMfa, onCancel: onCancelMfa)
+          else
+            LoginForm(isLoading: isLoading, onSubmit: onSubmit),
+          const SizedBox(height: OpenVtsSpacing.md),
+          const AppLegalLinks(),
           if (errorMessage != null) ...[
             const SizedBox(height: OpenVtsSpacing.md),
             Container(

@@ -53,19 +53,70 @@ class SuperadminVehicleService {
       return _buildTelemetryFromVehicles(_mockMapVehicles);
     }
 
+    return loadMapTelemetryEndpoint(
+      ApiEndpoints.superadmin.mapTelemetry,
+      refreshKey: refreshKey,
+    );
+  }
+
+  /// Read every cursor page before deriving the fleet and socket IMEI scope.
+  /// The backend defaults to 100 records, even when the account has more.
+  Future<SuperadminMapTelemetry> loadMapTelemetryEndpoint(
+    String endpoint, {
+    String? refreshKey,
+  }) async {
     final requestKey =
         refreshKey ?? DateTime.now().millisecondsSinceEpoch.toString();
+    final now = DateTime.now();
+    final localDayStart = DateTime(now.year, now.month, now.day);
+    final dayKey = '${now.year.toString().padLeft(4, '0')}-'
+        '${now.month.toString().padLeft(2, '0')}-'
+        '${now.day.toString().padLeft(2, '0')}';
+    final vehicles = <VehicleSummary>[];
+    final seenCursors = <String>{};
+    String? cursor;
 
-    final response = await _apiClient.get<SuperadminMapTelemetry>(
-      ApiEndpoints.superadmin.mapTelemetry,
-      queryParameters: <String, dynamic>{
-        'rk': requestKey,
-      },
-      options: _readOptions,
-      parser: _parseMapTelemetry,
-    );
+    do {
+      final response = await _apiClient.get<dynamic>(
+        endpoint,
+        queryParameters: <String, dynamic>{
+          'rk': requestKey,
+          'dayStart': localDayStart.toUtc().toIso8601String(),
+          'dayKey': dayKey,
+          'limit': 500,
+          if (cursor != null) 'cursor': cursor,
+        },
+        options: _readOptions,
+        parser: (json) => json,
+      );
+      final payload = response.data;
+      vehicles.addAll(_parseMapTelemetry(payload).vehicles.map((vehicle) {
+        if (vehicle.browserDayKey != null) return vehicle;
+        // When analytics cannot supply a local-day baseline, the fallback
+        // counter is for the account owner's day. Keep Today unknown instead
+        // of labelling that counter as the phone's local day.
+        return vehicle.copyWith(
+          distanceKm: null,
+          browserDayKey: dayKey,
+          browserDayStart: localDayStart,
+          browserDayBaseOdometer: null,
+        );
+      }));
+      final page = payload is Map ? payload : const <String, dynamic>{};
+      final next = (page['nextCursor'] ?? page['cursor'])?.toString().trim();
+      if (page['hasMore'] == false || next == null || next.isEmpty) {
+        if (page['hasMore'] == true) {
+          throw StateError('The map response is missing its next-page cursor.');
+        }
+        break;
+      }
+      if (!seenCursors.add(next)) {
+        throw StateError('The map response repeated its next-page cursor.');
+      }
+      cursor = next;
+    } while (true);
 
-    return response.data;
+    return _buildTelemetryFromVehicles(vehicles);
   }
 
   Future<SuperadminVehicleDetails> getVehicleDetailsByImei(String imei) async {
@@ -2397,18 +2448,12 @@ class SuperadminVehicleService {
         'km_today',
         'dailyDistance',
         'daily_distance',
-        'travelDistance',
-        'travel_distance',
-        'coveredDistance',
-        'covered_distance',
-        'tripDistance',
-        'trip_distance',
-        'coveredKm',
-        'covered_km',
-        'distance',
-        'distanceKm',
-        'distance_km',
       ]),
+      browserDayKey: _firstStringInMaps(candidateMaps, const ['browserDayKey']),
+      browserDayStart: _firstDateInMaps(candidateMaps, const ['browserDayStart']),
+      browserDayBaseOdometer: _firstDoubleByKeyPriority(
+        candidateMaps, const ['browserDayBaseOdometer'],
+      ),
       odometerKm: _firstOdometerKmByKeyPriority(candidateMaps, const [
         'odometer',
         'odometerKm',
@@ -2779,17 +2824,6 @@ class SuperadminVehicleService {
         'km_today',
         'dailyDistance',
         'daily_distance',
-        'travelDistance',
-        'travel_distance',
-        'coveredDistance',
-        'covered_distance',
-        'tripDistance',
-        'trip_distance',
-        'coveredKm',
-        'covered_km',
-        'distance',
-        'distanceKm',
-        'distance_km',
       ]),
       updatedAt: _firstDateInMaps(candidateMaps, const [
         'updatedAt',
@@ -3197,7 +3231,7 @@ class SuperadminVehicleService {
         }
 
         final normalizedValue = _normalizeOdometerKm(key, value);
-        if (normalizedValue.isFinite && normalizedValue > 0) {
+        if (normalizedValue.isFinite && normalizedValue >= 0) {
           return normalizedValue;
         }
       }

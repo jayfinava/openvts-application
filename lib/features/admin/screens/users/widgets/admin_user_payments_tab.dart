@@ -14,6 +14,7 @@ import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../controllers/admin_providers.dart';
 import '../../../models/admin_user_details_model.dart';
+import '../../../models/admin_subscription_policy.dart';
 
 const DateTimeFormatter _dateFormatter = DateTimeFormatter();
 const List<String> _paymentModes = <String>[
@@ -94,6 +95,7 @@ class _AdminUserPaymentsTabState extends ConsumerState<AdminUserPaymentsTab> {
   }
 
   Future<void> _showRenewSheet() async {
+    if (!AdminSubscriptionPolicy.allowsRenewals) return;
     final provider = adminUserDetailsControllerProvider(widget.userId);
     final controller = ref.read(provider.notifier);
     final state = ref.read(provider);
@@ -190,16 +192,17 @@ class _SummaryCard extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(
-            height: 34,
-            child: OpenVtsButton(
-              label: 'Renew Vehicle',
+          if (AdminSubscriptionPolicy.allowsRenewals)
+            SizedBox(
               height: 34,
-              isLoading: isRenewing,
-              onPressed: onRenew,
-              trailingIcon: Icons.autorenew_rounded,
+              child: OpenVtsButton(
+                label: 'Renew Vehicle',
+                height: 34,
+                isLoading: isRenewing,
+                onPressed: onRenew,
+                trailingIcon: Icons.autorenew_rounded,
+              ),
             ),
-          ),
         ],
       ),
     );

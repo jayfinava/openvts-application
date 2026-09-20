@@ -206,13 +206,13 @@ class _AdminCreateUserSheetState extends ConsumerState<AdminCreateUserSheet> {
           validator: Validators.adminName,
         ),
         OpenVtsTextField(
-          label: 'Email',
+          label: 'Email (optional)',
           hintText: 'jane@company.com',
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
           maxLength: Validators.maxEmailLength,
-          validator: Validators.email,
+          validator: Validators.adminEmailOptional,
         ),
         LayoutBuilder(
           builder: (context, constraints) {
@@ -445,8 +445,8 @@ class _AdminCreateUserSheetState extends ConsumerState<AdminCreateUserSheet> {
           },
         ),
         OpenVtsSearchableDropdown<String>(
-          label: 'State',
-          required: _statesLoaded && _states.isNotEmpty,
+          label: 'State (optional)',
+          required: false,
           enabled: _selectedCountryCode != null &&
               _statesLoaded &&
               _states.isNotEmpty,
@@ -461,12 +461,6 @@ class _AdminCreateUserSheetState extends ConsumerState<AdminCreateUserSheet> {
           options: stateOptions,
           value: _selectedStateCode,
           isLoading: _isLoadingStates,
-          validator: (value) {
-            if (!_statesLoaded || _states.isEmpty) return null;
-            return value == null || value.trim().isEmpty
-                ? 'State is required'
-                : null;
-          },
           onChanged: (value) async {
             setState(() {
               _selectedStateCode = value;
@@ -481,8 +475,8 @@ class _AdminCreateUserSheetState extends ConsumerState<AdminCreateUserSheet> {
           },
         ),
         OpenVtsSearchableDropdown<String>(
-          label: 'City',
-          required: _citiesLoaded && _cities.isNotEmpty,
+          label: 'City (optional)',
+          required: false,
           enabled: _selectedCountryCode != null &&
               _citiesLoaded &&
               _cities.isNotEmpty,
@@ -497,12 +491,6 @@ class _AdminCreateUserSheetState extends ConsumerState<AdminCreateUserSheet> {
           options: cityOptions,
           value: _selectedCityName,
           isLoading: _isLoadingCities,
-          validator: (value) {
-            if (!_citiesLoaded || _cities.isEmpty) return null;
-            return value == null || value.trim().isEmpty
-                ? 'City is required'
-                : null;
-          },
           onChanged: (value) => setState(() => _selectedCityName = value),
         ),
         OpenVtsTextField(
@@ -595,22 +583,6 @@ class _AdminCreateUserSheetState extends ConsumerState<AdminCreateUserSheet> {
     if (_selectedCountryCode == null) {
       ToastHelper.showError(
         'Country is required.',
-        context: context,
-      );
-      return;
-    }
-
-    if (_statesLoaded && _states.isNotEmpty && _selectedStateCode == null) {
-      ToastHelper.showError(
-        'State is required.',
-        context: context,
-      );
-      return;
-    }
-
-    if (_citiesLoaded && _cities.isNotEmpty && _selectedCityName == null) {
-      ToastHelper.showError(
-        'City is required.',
         context: context,
       );
       return;

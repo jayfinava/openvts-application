@@ -1027,9 +1027,6 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                               } catch (_) {}
                             }
                           },
-                          validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'State is required'
-                              : null,
                         ),
                         const SizedBox(height: OpenVtsSpacing.sm),
                         OpenVtsSearchableDropdown<String>(
@@ -1041,9 +1038,6 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                           options: cityOptions,
                           isLoading: state.isLoadingCities,
                           onChanged: (v) => setState(() => _cityName = v),
-                          validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'City is required'
-                              : null,
                         ),
                       ],
                     ),

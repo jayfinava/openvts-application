@@ -17,7 +17,6 @@ import '../../features/admin/screens/map/admin_map_screen.dart';
 import '../../features/admin/screens/notifications/admin_notifications_screen.dart';
 import '../../features/admin/screens/payments/admin_payments_screen.dart';
 import '../../features/admin/screens/plans/admin_plans_screen.dart';
-import '../../features/admin/screens/roles/admin_roles_screen.dart';
 import '../../features/admin/screens/settings/admin_settings_screen.dart';
 import '../../features/admin/screens/support/admin_create_support_ticket_screen.dart';
 import '../../features/admin/screens/support/admin_support_screen.dart';
@@ -79,7 +78,6 @@ import '../../features/user/screens/user_home_screen.dart';
 import '../../features/user/screens/user_shell.dart';
 import '../../features/user/screens/vehicles/user_vehicle_details_screen.dart';
 import '../../features/user/screens/vehicles/user_vehicles_screen.dart';
-import '../../shared/widgets/placeholder_role_screen.dart';
 import 'route_paths.dart';
 
 final appRootNavigatorKey = GlobalKey<NavigatorState>();
@@ -145,6 +143,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       if (isSplash || isAuthRoute) {
         return activeRole.homePath;
+      }
+
+      if (authState.user?.isSubuser == true &&
+          (path == RoutePaths.userSubUsers ||
+              path.startsWith('${RoutePaths.userSubUsers}/'))) {
+        return RoutePaths.userAccounts;
       }
 
       if (!path.startsWith(activeRole.routePrefix)) {
@@ -219,10 +223,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: RoutePaths.superadminDevices,
-            builder: (context, state) => const PlaceholderRoleScreen(
-              title: 'Devices',
-              message: 'Device management screen placeholder.',
-            ),
+            redirect: (context, state) => RoutePaths.superadminVehicles,
           ),
           GoRoute(
             path: RoutePaths.superadminNotifications,
@@ -369,7 +370,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: RoutePaths.adminRoles,
-            builder: (context, state) => const AdminRolesScreen(),
+            redirect: (context, state) => RoutePaths.adminDashboard,
           ),
         ],
       ),

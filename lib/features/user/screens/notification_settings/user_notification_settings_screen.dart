@@ -308,6 +308,11 @@ class _UserNotificationSettingsScreenBody extends ConsumerWidget {
                             onChanged: controller.setSelectedTab,
                           ),
                           const SizedBox(height: OpenVtsSpacing.sm),
+                          const Text(
+                            'Notifications are optional. Enabling or testing notifications '
+                            'shares a push token with your server and Firebase to deliver alerts.',
+                          ),
+                          const SizedBox(height: OpenVtsSpacing.sm),
                           _GroupActionsCard(
                             isTestNotifyLoading: mobilePushState.isTesting,
                             onTestNotify: isMobilePushBusy

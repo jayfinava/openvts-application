@@ -12,6 +12,8 @@ class _AuthEndpoints {
   const _AuthEndpoints();
 
   String get login => '/auth/login';
+  String get verifyMfaLogin => '/auth/mfa/verify-login';
+  String get account => '/auth/account';
   String get refreshToken => '/auth/refresh-token';
   String get forgotPassword => '/auth/forgot-password';
   String get resetPassword => '/auth/reset-password';

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/app_legal_links.dart';
 import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
@@ -61,6 +62,7 @@ class _SuperadminSettingsScreenState
           _SectionSelector(selected: state.selectedSection),
           const SizedBox(height: OpenVtsSpacing.sm),
           _SectionContent(state: state),
+            const AppLegalLinks(),
         ],
       ),
     );

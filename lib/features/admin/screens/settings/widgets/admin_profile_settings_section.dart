@@ -298,7 +298,8 @@ class _ProfileSettingsSectionState
   Future<void> _openChangePasswordSheet() async {
     final ok = await _showSheet<bool>(child: const AdminChangePasswordSheet());
     if (ok == true && mounted) {
-      ToastHelper.showSuccess('Password changed');
+      ToastHelper.showSuccess('Password changed. Please sign in again.');
+      await ref.read(authControllerProvider.notifier).logoutAllRoles();
     }
   }
 
@@ -1729,10 +1730,10 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   OpenVtsTextField(
-                    label: 'Email',
+                    label: 'Email (optional)',
                     controller: _email,
                     keyboardType: TextInputType.emailAddress,
-                    validator: Validators.adminEmailRequired,
+                    validator: Validators.adminEmailOptional,
                   ),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   Row(

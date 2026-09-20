@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/route_paths.dart';
+import '../../../auth/controllers/auth_controller.dart';
 import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
@@ -10,11 +12,14 @@ import '../../../../shared/widgets/open_vts_button.dart';
 import '../../../../shared/widgets/open_vts_card.dart';
 import '../../../../shared/widgets/open_vts_page_scaffold.dart';
 
-class UserAccountsScreen extends StatelessWidget {
+class UserAccountsScreen extends ConsumerWidget {
   const UserAccountsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isSubuser = ref.watch(
+      authControllerProvider.select((state) => state.user?.isSubuser == true),
+    );
     return OpenVtsPageScaffold(
       title: 'Accounts',
       headerMode: OpenVtsPageHeaderMode.closeable,
@@ -39,10 +44,10 @@ class UserAccountsScreen extends StatelessWidget {
                   const _AccountsHeaderCard(),
                   const SizedBox(height: OpenVtsSpacing.sm),
                   if (useTwoColumns)
-                    const Row(
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                           child: _AccountsOptionCard(
                             icon: Icons.badge_outlined,
                             title: 'Drivers',
@@ -52,23 +57,25 @@ class UserAccountsScreen extends StatelessWidget {
                             route: RoutePaths.userDrivers,
                           ),
                         ),
-                        SizedBox(width: OpenVtsSpacing.sm),
-                        Expanded(
-                          child: _AccountsOptionCard(
-                            icon: Icons.groups_2_outlined,
-                            title: 'Sub Users',
-                            description:
-                                'Create sub users and control which vehicles they can access.',
-                            ctaLabel: 'Open Sub Users',
-                            route: RoutePaths.userSubUsers,
+                        if (!isSubuser) ...[
+                          const SizedBox(width: OpenVtsSpacing.sm),
+                          const Expanded(
+                            child: _AccountsOptionCard(
+                              icon: Icons.groups_2_outlined,
+                              title: 'Sub Users',
+                              description:
+                                  'Create sub users and control which vehicles they can access.',
+                              ctaLabel: 'Open Sub Users',
+                              route: RoutePaths.userSubUsers,
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     )
                   else
-                    const Column(
+                    Column(
                       children: [
-                        _AccountsOptionCard(
+                        const _AccountsOptionCard(
                           icon: Icons.badge_outlined,
                           title: 'Drivers',
                           description:
@@ -76,15 +83,17 @@ class UserAccountsScreen extends StatelessWidget {
                           ctaLabel: 'Open Drivers',
                           route: RoutePaths.userDrivers,
                         ),
-                        SizedBox(height: OpenVtsSpacing.sm),
-                        _AccountsOptionCard(
-                          icon: Icons.groups_2_outlined,
-                          title: 'Sub Users',
-                          description:
-                              'Create sub users and control which vehicles they can access.',
-                          ctaLabel: 'Open Sub Users',
-                          route: RoutePaths.userSubUsers,
-                        ),
+                        if (!isSubuser) ...[
+                          const SizedBox(height: OpenVtsSpacing.sm),
+                          const _AccountsOptionCard(
+                            icon: Icons.groups_2_outlined,
+                            title: 'Sub Users',
+                            description:
+                                'Create sub users and control which vehicles they can access.',
+                            ctaLabel: 'Open Sub Users',
+                            route: RoutePaths.userSubUsers,
+                          ),
+                        ],
                       ],
                     ),
                 ],
@@ -136,7 +145,7 @@ class _AccountsHeaderCard extends StatelessWidget {
                 ),
                 const SizedBox(height: OpenVtsSpacing.xxs),
                 Text(
-                  'Manage drivers and sub users linked to your fleet.',
+                  'Manage the accounts linked to your fleet.',
                   style: OpenVtsTypography.meta.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),

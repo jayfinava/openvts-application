@@ -825,10 +825,13 @@ class CreateUserGeofenceRequest {
       'name': name.trim(),
       if (description != null) 'description': description!.trim(),
       if (color != null && color!.trim().isNotEmpty) 'color': color!.trim(),
-      if (toleranceMeters != null) 'toleranceMeters': toleranceMeters,
       'isActive': isActive,
       'type': _typeFromGeoData(geodata)?.apiValue ?? geodata.kind,
-      'geodata': geodata.toJson(),
+      'geodata': <String, dynamic>{
+        ...geodata.toJson(),
+        if (geodata is UserLineGeoData && toleranceMeters != null)
+          'toleranceM': toleranceMeters,
+      },
     };
   }
 }
@@ -855,12 +858,15 @@ class UpdateUserGeofenceRequest {
     if (name != null) payload['name'] = name!.trim();
     if (description != null) payload['description'] = description!.trim();
     if (color != null) payload['color'] = color!.trim();
-    if (toleranceMeters != null) payload['toleranceMeters'] = toleranceMeters;
     if (isActive != null) payload['isActive'] = isActive;
     final geo = geodata;
     if (geo != null) {
       payload['type'] = _typeFromGeoData(geo)?.apiValue ?? geo.kind;
-      payload['geodata'] = geo.toJson();
+      payload['geodata'] = <String, dynamic>{
+        ...geo.toJson(),
+        if (geo is UserLineGeoData && toleranceMeters != null)
+          'toleranceM': toleranceMeters,
+      };
     }
     return payload;
   }
@@ -901,6 +907,8 @@ class CreateUserPoiRequest {
       if (category != null && category!.trim().isNotEmpty)
         'category': category!.trim(),
       if (color != null && color!.trim().isNotEmpty) 'color': color!.trim(),
+      if (iconSlug != null && iconSlug!.trim().isNotEmpty)
+        'iconSlug': iconSlug!.trim(),
       if (toleranceMeters != null) 'toleranceMeters': toleranceMeters,
       'isActive': isActive,
       'coordinates': <String, double>{
@@ -938,6 +946,7 @@ class UpdateUserPoiRequest {
     if (description != null) payload['description'] = description!.trim();
     if (category != null) payload['category'] = category!.trim();
     if (color != null) payload['color'] = color!.trim();
+    if (iconSlug != null) payload['iconSlug'] = iconSlug!.trim();
     if (toleranceMeters != null) payload['toleranceMeters'] = toleranceMeters;
     if (isActive != null) payload['isActive'] = isActive;
     if (coordinates != null) {
@@ -1277,8 +1286,8 @@ class CreateUserLandmarkBulkJobRequest {
   Map<String, dynamic> toJson() {
     validate();
     return <String, dynamic>{
-      'entity': entityType.apiValue,
-      'rows': rows,
+      'entityType': entityType.name,
+      '${entityType.name}Rows': rows,
     };
   }
 }
