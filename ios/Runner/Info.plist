@@ -51,6 +51,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Open VTS uses the camera to take photos for your profile picture.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Open VTS accesses the photos you choose to upload a profile picture.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
