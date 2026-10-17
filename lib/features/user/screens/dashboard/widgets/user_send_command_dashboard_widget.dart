@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../core/errors/app_error.dart';
+import '../../../../../core/errors/error_mapper.dart';
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
@@ -33,7 +35,7 @@ class _UserSendCommandDashboardWidgetState
   String? _selectedVehicleId;
   String? _selectedCommandId;
   bool _isSending = false;
-  Object? _sendError;
+  AppError? _sendError;
   UserDashboardSendCommandResult? _result;
   int _refreshKey = 0;
 
@@ -87,9 +89,9 @@ class _UserSendCommandDashboardWidgetState
   }
 
   void _reload() => setState(() {
-    _refreshKey++;
-    _sendError = null;
-  });
+        _refreshKey++;
+        _sendError = null;
+      });
 
   void _selectVehicle(String? value) {
     if (value == null || value == _selectedVehicleId) return;
@@ -118,7 +120,7 @@ class _UserSendCommandDashboardWidgetState
     final rawCommand = _commandController.text;
     final validationError = _validate(vehicle: vehicle, command: rawCommand);
     if (validationError != null) {
-      setState(() => _sendError = validationError);
+      setState(() => _sendError = AppError(message: validationError));
       return;
     }
 
@@ -130,13 +132,16 @@ class _UserSendCommandDashboardWidgetState
       now: DateTime.now(),
     );
     if (resolvedCommand.trim().isEmpty) {
-      setState(() => _sendError = 'Command text is required.');
+      setState(() =>
+          _sendError = const AppError(message: 'Command text is required.'));
       return;
     }
     if (resolvedCommand.length > _maxCommandLength) {
       setState(
-        () => _sendError =
-            'Resolved command must be $_maxCommandLength characters or less.',
+        () => _sendError = const AppError(
+          message:
+              'Resolved command must be $_maxCommandLength characters or less.',
+        ),
       );
       return;
     }
@@ -168,7 +173,7 @@ class _UserSendCommandDashboardWidgetState
       setState(() => _result = result);
     } catch (error) {
       if (!mounted) return;
-      setState(() => _sendError = error);
+      setState(() => _sendError = ErrorMapper.from(error));
     } finally {
       if (mounted) {
         setState(() => _isSending = false);
@@ -245,18 +250,17 @@ class _UserSendCommandDashboardWidgetState
 
   Widget _buildBody(
     AsyncValue<
-      ({
-        List<UserDashboardVehicleOption> allVehicles,
-        List<UserDashboardVehicleOption> vehicles,
-        List<UserDashboardCustomCommand> commands,
-        List<UserDashboardSystemVariable> variables,
-      })
-    >
-    state,
+            ({
+              List<UserDashboardVehicleOption> allVehicles,
+              List<UserDashboardVehicleOption> vehicles,
+              List<UserDashboardCustomCommand> commands,
+              List<UserDashboardSystemVariable> variables,
+            })>
+        state,
   ) {
     if (state.hasError) {
       return UserDashboardWidgetError(
-        message: userDashboardErrorText(state.error!),
+        error: state.error!,
         onRetry: _reload,
       );
     }
@@ -307,18 +311,17 @@ class _UserSendCommandDashboardWidgetState
               icon: Icons.lock_outline_rounded,
               text: context
                   .mobileText("{value1} blocked vehicle{value2} excluded.", {
-                    'value1': (blockedCount).toString(),
-                    'value2': (blockedCount == 1 ? '' : 's').toString(),
-                  }),
+                'value1': (blockedCount).toString(),
+                'value2': (blockedCount == 1 ? '' : 's').toString(),
+              }),
             ),
           ],
           const SizedBox(height: OpenVtsSpacing.sm),
           _CommandSelector(
             commands: data.commands,
             value: selectedCommandId,
-            onChanged: _isSending
-                ? null
-                : (value) => _selectCommand(value, data),
+            onChanged:
+                _isSending ? null : (value) => _selectCommand(value, data),
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
           TextField(
@@ -361,7 +364,7 @@ class _UserSendCommandDashboardWidgetState
           if (_sendError != null) ...[
             const SizedBox(height: OpenVtsSpacing.sm),
             UserDashboardWidgetError(
-              message: userDashboardErrorText(_sendError!),
+              error: _sendError!,
             ),
           ],
           if (_result != null) ...[
@@ -692,22 +695,22 @@ class _CommandResultRow extends StatelessWidget {
     final statusLabel = failed
         ? 'Failed'
         : queued
-        ? 'Queued'
-        : sent
-        ? 'Sent'
-        : 'Requested';
+            ? 'Queued'
+            : sent
+                ? 'Sent'
+                : 'Requested';
     final statusColor = failed
         ? OpenVtsColors.error
         : queued
-        ? OpenVtsColors.warning
-        : sent
-        ? OpenVtsColors.success
-        : Theme.of(context).colorScheme.onSurfaceVariant;
+            ? OpenVtsColors.warning
+            : sent
+                ? OpenVtsColors.success
+                : Theme.of(context).colorScheme.onSurfaceVariant;
     final vehicleLabel = (result.vehicleName ?? '').trim().isNotEmpty
         ? result.vehicleName!
         : (result.plateNumber ?? '').trim().isNotEmpty
-        ? result.plateNumber!
-        : result.vehicleId ?? 'Vehicle';
+            ? result.plateNumber!
+            : result.vehicleId ?? 'Vehicle';
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

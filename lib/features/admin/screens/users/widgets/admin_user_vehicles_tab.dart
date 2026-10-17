@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,6 +10,9 @@ import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../shared/helpers/mobile_text.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
+import '../../../../../shared/helpers/widget_localizations.dart';
+import '../../../../../shared/paging/server_list_pager.dart';
+import '../../../../../shared/paging/server_list_pagination.dart';
 import '../../../../../shared/widgets/open_vts_bottom_sheet.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
@@ -35,6 +40,16 @@ class _AdminUserVehiclesTabState extends ConsumerState<AdminUserVehiclesTab> {
   var _filter = _VehicleFilter.all;
 
   @override
+  void didUpdateWidget(covariant AdminUserVehiclesTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.userId != widget.userId) {
+      _searchController.clear();
+      _query = '';
+      _filter = _VehicleFilter.all;
+    }
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
@@ -45,8 +60,7 @@ class _AdminUserVehiclesTabState extends ConsumerState<AdminUserVehiclesTab> {
     final provider = adminUserDetailsControllerProvider(widget.userId);
     final state = ref.watch(provider);
     final controller = ref.read(provider.notifier);
-    final isInitialLoading =
-        state.isLoadingVehicles &&
+    final isInitialLoading = state.isLoadingVehicles &&
         state.linkedVehicles.isEmpty &&
         state.availableVehicles.isEmpty;
 
@@ -63,10 +77,11 @@ class _AdminUserVehiclesTabState extends ConsumerState<AdminUserVehiclesTab> {
       );
     }
 
-    final assigned = state.linkedVehicles.where(_matchesFilters).toList();
-    final blockedCount = state.linkedVehicles
-        .where((v) => v.isLicenseBlocked)
-        .length;
+    final assigned = controller.vehiclesPager == null
+        ? state.linkedVehicles.where(_matchesFilters).toList()
+        : state.linkedVehicles;
+    final blockedCount =
+        state.linkedVehicles.where((v) => v.isLicenseBlocked).length;
     final expiringCount = state.linkedVehicles
         .where((v) => _isExpiringSoon(v.secondaryExpiry))
         .length;
@@ -74,19 +89,27 @@ class _AdminUserVehiclesTabState extends ConsumerState<AdminUserVehiclesTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _StatsGrid(
-          total: state.linkedVehicles.length,
-          available: state.availableVehicles.length,
-          blocked: blockedCount,
-          expiring: expiringCount,
-        ),
+        if (controller.vehiclesPager == null)
+          _StatsGrid(
+            total: state.linkedVehicles.length,
+            available: state.availableVehicles.length,
+            blocked: blockedCount,
+            expiring: expiringCount,
+          ),
         const SizedBox(height: OpenVtsSpacing.sm),
         _SummaryCard(
-          assignedCount: state.linkedVehicles.length,
-          availableCount: state.availableVehicles.length,
+          assignedCount:
+              state.vehiclesPagination?.total ?? state.linkedVehicles.length,
+          availableCount: controller.vehiclesPager != null
+              ? controller.availableVehiclesPager?.search.isNotEmpty == true
+                  ? null
+                  : state.availableVehiclesPagination?.total
+              : state.availableVehicles.length,
           isLoading: state.isLoadingVehicles,
           isAssigning: state.isLinkingVehicle,
-          onAssign: state.availableVehicles.isEmpty || state.isLinkingVehicle
+          onAssign: (controller.availableVehiclesPager == null &&
+                      state.availableVehicles.isEmpty) ||
+                  state.isLinkingVehicle
               ? null
               : () => _showAssignSheet(state.availableVehicles, controller),
         ),
@@ -97,13 +120,20 @@ class _AdminUserVehiclesTabState extends ConsumerState<AdminUserVehiclesTab> {
         ],
         _SearchField(
           controller: _searchController,
-          onChanged: (value) => setState(() => _query = value),
+          onChanged: (value) {
+            setState(() => _query = value);
+            if (controller.vehiclesPager != null) {
+              unawaited(controller.vehiclesPager!
+                  .change(page: 1, search: value, debounce: true));
+            }
+          },
         ),
         const SizedBox(height: OpenVtsSpacing.xs),
-        _FilterChips(
-          value: _filter,
-          onChanged: (next) => setState(() => _filter = next),
-        ),
+        if (controller.vehiclesPager == null)
+          _FilterChips(
+            value: _filter,
+            onChanged: (next) => setState(() => _filter = next),
+          ),
         const SizedBox(height: OpenVtsSpacing.sm),
         if (assigned.isEmpty)
           _EmptyCard(
@@ -123,6 +153,11 @@ class _AdminUserVehiclesTabState extends ConsumerState<AdminUserVehiclesTab> {
             if (vehicle != assigned.last)
               const SizedBox(height: OpenVtsSpacing.sm),
           ],
+        if (controller.vehiclesPager != null)
+          ServerListPagination(
+              meta: state.vehiclesPagination,
+              loading: state.isLoadingVehicles,
+              onPageChanged: controller.vehiclesPager!.goToPage),
       ],
     );
   }
@@ -180,14 +215,15 @@ class _AdminUserVehiclesTabState extends ConsumerState<AdminUserVehiclesTab> {
       maxChildSize: 0.92,
       child: _AssignVehicleSheet(
         vehicles: availableVehicles,
-        onAssign: (vehicle) async {
-          final ok = await controller.linkVehicle(vehicle.id);
+        pager: controller.availableVehiclesPager,
+        onAssign: (ids) async {
+          final result = await controller.linkVehicles(ids);
           if (!mounted) {
-            return false;
+            return result;
           }
-          if (ok) {
+          if (result.isSuccess) {
             ToastHelper.showSuccess(
-              context.mobileText('Vehicle assigned.'),
+              context.mobileText('Vehicles assigned.'),
               context: context,
             );
           } else {
@@ -197,7 +233,7 @@ class _AdminUserVehiclesTabState extends ConsumerState<AdminUserVehiclesTab> {
               context: context,
             );
           }
-          return ok;
+          return result;
         },
       ),
     );
@@ -340,76 +376,67 @@ class _SummaryCard extends StatelessWidget {
   });
 
   final int assignedCount;
-  final int availableCount;
+  final int? availableCount;
   final bool isLoading;
   final bool isAssigning;
   final VoidCallback? onAssign;
 
   @override
   Widget build(BuildContext context) {
+    final summary =
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(children: [
+        Icon(Icons.directions_car_filled_outlined,
+            size: 17, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        const SizedBox(width: OpenVtsSpacing.xs),
+        Flexible(
+            child: Text(context.mobileText('Vehicles'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: OpenVtsTypography.label.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w800))),
+        if (isLoading)
+          const Padding(
+              padding: EdgeInsets.only(left: 8),
+              child: SizedBox(
+                  width: 13,
+                  height: 13,
+                  child: CircularProgressIndicator(strokeWidth: 2))),
+      ]),
+      const SizedBox(height: OpenVtsSpacing.xs),
+      Text(
+          context.mobileText('{value1} assigned - {value2} available', {
+            'value1': '$assignedCount',
+            'value2': availableCount?.toString() ?? '—',
+          }),
+          style: OpenVtsTypography.meta.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w700)),
+    ]);
+    final action = AdminActionGate(
+        capability: 'users.update',
+        child: OpenVtsButton(
+            label: context.mobileText('Assign Vehicle'),
+            height: 48,
+            isLoading: isAssigning,
+            onPressed: onAssign,
+            trailingIcon: Icons.add_rounded));
     return OpenVtsCard(
-      padding: const EdgeInsets.all(OpenVtsSpacing.md),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.directions_car_filled_outlined,
-                      size: 17,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: OpenVtsSpacing.xs),
-                    Text(
-                      context.mobileText('Vehicles'),
-                      style: OpenVtsTypography.label.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    if (isLoading) ...[
-                      const SizedBox(width: OpenVtsSpacing.xs),
-                      const SizedBox(
-                        width: 13,
-                        height: 13,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: OpenVtsSpacing.xs),
-                Text(
-                  context.mobileText("{value1} assigned - {value2} available", {
-                    'value1': (assignedCount).toString(),
-                    'value2': (availableCount).toString(),
-                  }),
-                  style: OpenVtsTypography.meta.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 34,
-            child: AdminActionGate(
-              capability: 'users.update',
-              child: OpenVtsButton(
-                label: context.mobileText('Assign Vehicle'),
-                height: 34,
-                isLoading: isAssigning,
-                onPressed: onAssign,
-                trailingIcon: Icons.add_rounded,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+        padding: const EdgeInsets.all(OpenVtsSpacing.md),
+        child: LayoutBuilder(builder: (context, constraints) {
+          if (constraints.maxWidth < 480 ||
+              MediaQuery.textScalerOf(context).scale(14) > 20) {
+            return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [summary, const SizedBox(height: 12), action]);
+          }
+          return Row(children: [
+            Expanded(child: summary),
+            const SizedBox(width: 12),
+            action
+          ]);
+        }));
   }
 }
 
@@ -683,10 +710,13 @@ class _VehicleCard extends StatelessWidget {
 }
 
 class _AssignVehicleSheet extends StatefulWidget {
-  const _AssignVehicleSheet({required this.vehicles, required this.onAssign});
+  const _AssignVehicleSheet(
+      {required this.vehicles, required this.onAssign, this.pager});
+  final ServerListPager<AdminUserVehicle>? pager;
 
   final List<AdminUserVehicle> vehicles;
-  final Future<bool> Function(AdminUserVehicle vehicle) onAssign;
+  final Future<AdminVehicleAssignmentResult> Function(Set<String> vehicleIds)
+      onAssign;
 
   @override
   State<_AssignVehicleSheet> createState() => _AssignVehicleSheetState();
@@ -694,20 +724,42 @@ class _AssignVehicleSheet extends StatefulWidget {
 
 class _AssignVehicleSheetState extends State<_AssignVehicleSheet> {
   final _searchController = TextEditingController();
-  String? _selectedId;
+  final _selectedIds = <String>{};
+  final _assignedIds = <String>{};
   var _query = '';
   var _isSubmitting = false;
 
+  void Function()? _previousPageListener;
+  @override
+  void initState() {
+    super.initState();
+    final pager = widget.pager;
+    if (pager != null) {
+      _previousPageListener = pager.onChanged;
+      pager.onChanged = () {
+        _previousPageListener?.call();
+        if (mounted) setState(() {});
+      };
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(pager.change(page: 1, search: '', force: true));
+      });
+    }
+  }
+
   @override
   void dispose() {
+    if (widget.pager != null) widget.pager!.onChanged = _previousPageListener;
     _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final matches = widget.vehicles.where(_matchesQuery).toList();
-    final selectedVehicle = _selectedVehicle;
+    final matches = (widget.pager?.items ?? widget.vehicles)
+        .where((v) =>
+            !_assignedIds.contains(v.id) &&
+            (widget.pager != null || _matchesQuery(v)))
+        .toList();
 
     return Column(
       children: [
@@ -715,7 +767,13 @@ class _AssignVehicleSheetState extends State<_AssignVehicleSheet> {
           padding: const EdgeInsets.all(OpenVtsSpacing.md),
           child: TextField(
             controller: _searchController,
-            onChanged: (value) => setState(() => _query = value),
+            onChanged: (value) {
+              setState(() => _query = value);
+              if (widget.pager != null) {
+                unawaited(widget.pager!
+                    .change(page: 1, search: value, debounce: true));
+              }
+            },
             cursorColor: Theme.of(context).colorScheme.primary,
             style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             decoration: InputDecoration(
@@ -732,40 +790,90 @@ class _AssignVehicleSheetState extends State<_AssignVehicleSheet> {
           ),
         ),
         Expanded(
-          child: matches.isEmpty
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: OpenVtsSpacing.md,
-                  ),
-                  child: _EmptyCard(
-                    label: _query.trim().isEmpty
-                        ? context.mobileText('No available vehicles')
-                        : context.mobileText('No vehicles match your search'),
-                  ),
-                )
-              : ListView.separated(
-                  controller: PrimaryScrollController.maybeOf(context),
-                  padding: const EdgeInsets.fromLTRB(
-                    OpenVtsSpacing.md,
-                    0,
-                    OpenVtsSpacing.md,
-                    OpenVtsSpacing.md,
-                  ),
-                  itemCount: matches.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: OpenVtsSpacing.xs),
+          child: widget.pager != null
+              ? ListView.builder(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: OpenVtsSpacing.md),
+                  itemCount: matches.length + 1,
                   itemBuilder: (context, index) {
+                    if (index == matches.length) {
+                      return Column(children: [
+                        if (widget.pager!.loading)
+                          const LinearProgressIndicator(),
+                        if (widget.pager!.error != null)
+                          TextButton(
+                              onPressed: widget.pager!.load,
+                              child: Text(widget.pager!.error!)),
+                        if (matches.isEmpty && !widget.pager!.loading)
+                          const Text('No available vehicles'),
+                        ServerListPagination(
+                            meta: widget.pager!.meta,
+                            loading: widget.pager!.loading || _isSubmitting,
+                            onPageChanged: widget.pager!.goToPage),
+                      ]);
+                    }
                     final vehicle = matches[index];
-                    final isSelected = vehicle.id == _selectedId;
                     return _SelectableVehicleTile(
-                      vehicle: vehicle,
-                      isSelected: isSelected,
-                      onTap: () => setState(() => _selectedId = vehicle.id),
-                    );
+                        vehicle: vehicle,
+                        isSelected: _selectedIds.contains(vehicle.id),
+                        onTap: () {
+                          if (!_isSubmitting) {
+                            setState(() {
+                              if (!_selectedIds.add(vehicle.id)) {
+                                _selectedIds.remove(vehicle.id);
+                              }
+                            });
+                          }
+                        });
                   },
-                ),
+                )
+              : matches.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: OpenVtsSpacing.md,
+                      ),
+                      child: _EmptyCard(
+                        label: _query.trim().isEmpty
+                            ? context.mobileText('No available vehicles')
+                            : context
+                                .mobileText('No vehicles match your search'),
+                      ),
+                    )
+                  : ListView.separated(
+                      controller: PrimaryScrollController.maybeOf(context),
+                      padding: const EdgeInsets.fromLTRB(
+                        OpenVtsSpacing.md,
+                        0,
+                        OpenVtsSpacing.md,
+                        OpenVtsSpacing.md,
+                      ),
+                      itemCount: matches.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: OpenVtsSpacing.xs),
+                      itemBuilder: (context, index) {
+                        final vehicle = matches[index];
+                        final isSelected = _selectedIds.contains(vehicle.id);
+                        return _SelectableVehicleTile(
+                          vehicle: vehicle,
+                          isSelected: isSelected,
+                          onTap: () {
+                            if (!_isSubmitting) {
+                              setState(() {
+                                if (!_selectedIds.add(vehicle.id)) {
+                                  _selectedIds.remove(vehicle.id);
+                                }
+                              });
+                            }
+                          },
+                        );
+                      },
+                    ),
         ),
         const Divider(height: 1),
+        Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(context.widgetL10n
+                .mobilePluralSelectedVehicles(_selectedIds.length))),
         SafeArea(
           top: false,
           child: Padding(
@@ -789,9 +897,8 @@ class _AssignVehicleSheetState extends State<_AssignVehicleSheet> {
                     height: 40,
                     isLoading: _isSubmitting,
                     trailingIcon: Icons.check_rounded,
-                    onPressed: selectedVehicle == null || _isSubmitting
-                        ? null
-                        : () => _assign(selectedVehicle),
+                    onPressed:
+                        _selectedIds.isEmpty || _isSubmitting ? null : _assign,
                   ),
                 ),
               ],
@@ -800,19 +907,6 @@ class _AssignVehicleSheetState extends State<_AssignVehicleSheet> {
         ),
       ],
     );
-  }
-
-  AdminUserVehicle? get _selectedVehicle {
-    final selectedId = _selectedId;
-    if (selectedId == null) {
-      return null;
-    }
-    for (final vehicle in widget.vehicles) {
-      if (vehicle.id == selectedId) {
-        return vehicle;
-      }
-    }
-    return null;
   }
 
   bool _matchesQuery(AdminUserVehicle vehicle) {
@@ -828,14 +922,18 @@ class _AssignVehicleSheetState extends State<_AssignVehicleSheet> {
     ].any((value) => value.toLowerCase().contains(normalized));
   }
 
-  Future<void> _assign(AdminUserVehicle vehicle) async {
+  Future<void> _assign() async {
     setState(() => _isSubmitting = true);
-    final ok = await widget.onAssign(vehicle);
+    final result = await widget.onAssign(Set.of(_selectedIds));
     if (!mounted) {
       return;
     }
-    setState(() => _isSubmitting = false);
-    if (ok) {
+    setState(() {
+      _isSubmitting = false;
+      _assignedIds.addAll(result.assignedIds);
+      _selectedIds.removeAll(result.assignedIds);
+    });
+    if (result.isSuccess) {
       Navigator.of(context).pop();
     }
   }
@@ -873,8 +971,8 @@ class _SelectableVehicleTile extends StatelessWidget {
             children: [
               Icon(
                 isSelected
-                    ? Icons.radio_button_checked_rounded
-                    : Icons.radio_button_unchecked_rounded,
+                    ? Icons.check_box_rounded
+                    : Icons.check_box_outline_blank_rounded,
                 size: 18,
                 color: isSelected
                     ? OpenVtsColors.brandInk

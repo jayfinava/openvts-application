@@ -329,7 +329,7 @@ class _HeaderCard extends StatelessWidget {
             children: [
               Expanded(
                 child: SizedBox(
-                  height: 36,
+                  height: 48,
                   child: FilledButton.icon(
                     onPressed: onNew,
                     icon: const Icon(Icons.add_rounded, size: 18),

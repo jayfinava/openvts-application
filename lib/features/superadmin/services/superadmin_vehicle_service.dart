@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../core/access/workspace_scope_provider.dart';
 import '../../../core/api/api_client.dart';
@@ -19,21 +22,53 @@ class SuperadminVehicleService {
 
   final ApiClient _apiClient;
 
-  Future<SuperadminVehiclePage> getVehicles({String? refreshKey}) async {
+  Future<SuperadminVehiclePage> getVehicles(
+      {String? refreshKey,
+      SuperadminVehicleQuery query = const SuperadminVehicleQuery(),
+      CancelToken? cancelToken}) async {
     if (AppConfig.useMockData) {
-      return SuperadminVehiclePage.fromJson(_mockVehiclesPayload);
+      final all = SuperadminVehiclePage.fromJson(_mockVehiclesPayload).items;
+      final filtered = all
+          .where((v) =>
+              (query.search.isEmpty ||
+                  v.searchContent.contains(query.search.toLowerCase())) &&
+              (query.status == 'all' || v.status.toLowerCase() == query.status))
+          .toList();
+      filtered.sort((a, b) => query.sortBy == 'name'
+          ? a.name.toLowerCase().compareTo(b.name.toLowerCase())
+          : (a.createdAt ?? DateTime(1970))
+              .compareTo(b.createdAt ?? DateTime(1970)));
+      final ordered = query.sortDir == 'desc' ? filtered.reversed : filtered;
+      return SuperadminVehiclePage(
+          items: ordered
+              .skip((query.page - 1) * query.limit)
+              .take(query.limit)
+              .toList(),
+          totalCount: filtered.length);
     }
 
     final response = await _apiClient.get<dynamic>(
       ApiEndpoints.superadmin.vehicles,
       queryParameters: <String, dynamic>{
+        'page': query.page.clamp(1, 1000000),
+        'limit': query.limit.clamp(1, 100),
+        if (query.search.trim().isNotEmpty) 'search': query.search.trim(),
+        'sortBy': query.sortBy,
+        'sortDir': query.sortDir,
+        if (query.status == 'active' || query.status == 'inactive')
+          'filters': jsonEncode({'status': query.status == 'active'}),
         'rk': refreshKey ?? DateTime.now().millisecondsSinceEpoch.toString(),
       },
+      cancelToken: cancelToken,
       options: _readOptions,
       parser: (json) => json,
     );
 
-    return SuperadminVehiclePage.fromJson(response.data);
+    final page = SuperadminVehiclePage.fromJson(response.data);
+    if (page.items.length > query.limit.clamp(1, 100)) {
+      throw const FormatException('Vehicle pagination was not honored.');
+    }
+    return page;
   }
 
   Future<List<VehicleSummary>> getMapVehicles({String? refreshKey}) async {
@@ -61,6 +96,7 @@ class SuperadminVehicleService {
   Future<SuperadminMapTelemetry> loadMapTelemetryEndpoint(
     String endpoint, {
     String? refreshKey,
+    CancelToken? cancelToken,
   }) async {
     // Map telemetry is cursor-paginated (default 100, maximum 500). Collect
     // the complete authorized fleet before publishing any baseline, otherwise
@@ -68,8 +104,7 @@ class SuperadminVehicleService {
     // Keep one device-local day context across every page, matching the web.
     final now = DateTime.now();
     final localDay = DateTime(now.year, now.month, now.day);
-    final dayKey =
-        '${now.year.toString().padLeft(4, '0')}-'
+    final dayKey = '${now.year.toString().padLeft(4, '0')}-'
         '${now.month.toString().padLeft(2, '0')}-'
         '${now.day.toString().padLeft(2, '0')}';
     final requestKey = refreshKey ?? now.millisecondsSinceEpoch.toString();
@@ -78,6 +113,7 @@ class SuperadminVehicleService {
       isDemo: _apiClient.isDemoMode,
     );
     void ensureSameScope() {
+      if (cancelToken?.isCancelled == true) throw cancelToken!.cancelError!;
       if (workspaceDataScope(
             _apiClient.activeUser,
             isDemo: _apiClient.isDemoMode,
@@ -93,7 +129,7 @@ class SuperadminVehicleService {
 
     while (true) {
       ensureSameScope();
-      final response = await _apiClient.get<_CompleteMapTelemetryPage>(
+      final response = await _apiClient.get<dynamic>(
         endpoint,
         queryParameters: <String, dynamic>{
           'rk': requestKey,
@@ -103,10 +139,21 @@ class SuperadminVehicleService {
           if (cursor != null) 'cursor': cursor,
         },
         options: _readOptions,
-        parser: _parseMapTelemetryPage,
+        cancelToken: cancelToken,
+        parser: (json) => json,
       );
       ensureSameScope();
-      final page = response.data;
+      final raw = response.data;
+      final source = raw is Map && raw['data'] is Map ? raw['data'] : raw;
+      final items = source is Map
+          ? source['items'] ?? source['vehicles'] ?? source['data']
+          : source;
+      // Telemetry normalization is CPU work. Keep 500-row startup pages off
+      // the Flutter UI isolate, as well as Dio's large JSON decoding work.
+      final page = items is List && items.length >= 200
+          ? await compute(_parseMapTelemetryPageInBackground, raw)
+          : _parseMapTelemetryPage(raw);
+      ensureSameScope();
       for (final rawVehicle in page.telemetry.vehicles) {
         final vehicle = rawVehicle.browserDayKey == dayKey
             ? rawVehicle.withTodayDistanceFrom(
@@ -120,9 +167,8 @@ class SuperadminVehicleService {
                 browserDayStart: localDay.toUtc(),
                 browserDayBaseOdometer: null,
               );
-        final identity = vehicle.id.isNotEmpty
-            ? 'id:${vehicle.id}'
-            : 'imei:${vehicle.imei}';
+        final identity =
+            vehicle.id.isNotEmpty ? 'id:${vehicle.id}' : 'imei:${vehicle.imei}';
         vehiclesByIdentity[identity] = vehicle;
       }
       if (!page.hasMore) {
@@ -138,6 +184,8 @@ class SuperadminVehicleService {
         throw StateError('Map telemetry pagination did not advance.');
       }
       cursor = nextCursor;
+      // Give input, camera and loading frames a turn between large pages.
+      await Future<void>.delayed(Duration.zero);
     }
   }
 
@@ -199,8 +247,8 @@ class SuperadminVehicleService {
     final normalizedLimit = limit < 1
         ? 100
         : limit > 500
-        ? 500
-        : limit;
+            ? 500
+            : limit;
     final normalizedCursor = beforeId?.trim() ?? '';
 
     if (AppConfig.useMockData) {
@@ -237,8 +285,8 @@ class SuperadminVehicleService {
     final normalizedLimit = limit < 1
         ? 50
         : limit > 300
-        ? 300
-        : limit;
+            ? 300
+            : limit;
     final normalizedCursor = beforeId?.trim() ?? '';
 
     if (AppConfig.useMockData) {
@@ -341,8 +389,8 @@ class SuperadminVehicleService {
     final normalizedLimit = limit < 1
         ? 50
         : limit > 100
-        ? 100
-        : limit;
+            ? 100
+            : limit;
     final normalizedCursor = cursorId?.trim() ?? '';
 
     if (AppConfig.useMockData) {
@@ -666,7 +714,7 @@ class SuperadminVehicleService {
       Map<String, dynamic> raw =>
         (raw['items'] ?? raw['rows'] ?? raw['data'] ?? raw['vehicles']) is List
             ? (raw['items'] ?? raw['rows'] ?? raw['data'] ?? raw['vehicles'])
-                  as List<dynamic>
+                as List<dynamic>
             : const <dynamic>[],
       _ => const <dynamic>[],
     };
@@ -1175,16 +1223,14 @@ class SuperadminVehicleService {
       _asMap(source['start']),
       _asMap(source['end']),
     ].where((candidate) => candidate.isNotEmpty).toList(growable: false);
-    final id =
-        _firstStringInMaps(candidateMaps, const [
+    final id = _firstStringInMaps(candidateMaps, const [
           'id',
           '_id',
           'segmentId',
           'segment_id',
         ]) ??
         '';
-    final rawType =
-        _firstStringInMaps(candidateMaps, const [
+    final rawType = _firstStringInMaps(candidateMaps, const [
           'type',
           'kind',
           'category',
@@ -1236,8 +1282,7 @@ class SuperadminVehicleService {
       'timestamp_end',
     ]);
     final durationSec = _parseVehicleHistoryDurationSec(candidateMaps);
-    final address =
-        _firstStringInMaps(candidateMaps, const [
+    final address = _firstStringInMaps(candidateMaps, const [
           'address',
           'formattedAddress',
           'formatted_address',
@@ -1248,8 +1293,7 @@ class SuperadminVehicleService {
           'description',
         ]) ??
         '';
-    final reason =
-        _firstStringInMaps(candidateMaps, const [
+    final reason = _firstStringInMaps(candidateMaps, const [
           'reason',
           'stopReason',
           'stop_reason',
@@ -1630,8 +1674,7 @@ class SuperadminVehicleService {
       return null;
     }
 
-    final segmentId =
-        _firstStringInMaps(candidateMaps, const [
+    final segmentId = _firstStringInMaps(candidateMaps, const [
           'segmentId',
           'segment_id',
           'id',
@@ -1679,8 +1722,7 @@ class SuperadminVehicleService {
       'stop_end',
     ]);
     final durationSec = _parseVehicleHistoryDurationSec(candidateMaps);
-    final address =
-        _firstStringInMaps(candidateMaps, const [
+    final address = _firstStringInMaps(candidateMaps, const [
           'address',
           'formattedAddress',
           'formatted_address',
@@ -1691,8 +1733,7 @@ class SuperadminVehicleService {
           'description',
         ]) ??
         '';
-    final reason =
-        _firstStringInMaps(candidateMaps, const [
+    final reason = _firstStringInMaps(candidateMaps, const [
           'reason',
           'stopReason',
           'stop_reason',
@@ -1870,8 +1911,7 @@ class SuperadminVehicleService {
       'accessoryOn',
       'accessory_on',
     ]);
-    final status =
-        _firstStringInMaps(candidateMaps, const [
+    final status = _firstStringInMaps(candidateMaps, const [
           'status',
           'state',
           'vehicleStatus',
@@ -1880,8 +1920,7 @@ class SuperadminVehicleService {
           'motion_state',
         ]) ??
         '';
-    final eventLabel =
-        _firstStringInMaps(candidateMaps, const [
+    final eventLabel = _firstStringInMaps(candidateMaps, const [
           'event',
           'eventType',
           'event_type',
@@ -1891,8 +1930,7 @@ class SuperadminVehicleService {
           'name',
         ]) ??
         '';
-    final address =
-        _firstStringInMaps(candidateMaps, const [
+    final address = _firstStringInMaps(candidateMaps, const [
           'address',
           'formattedAddress',
           'formatted_address',
@@ -1940,9 +1978,8 @@ class SuperadminVehicleService {
       address: address,
       eventLabel: eventLabel,
       distanceKm: distanceKm,
-      stopDuration: stopDurationSec == null
-          ? null
-          : Duration(seconds: stopDurationSec),
+      stopDuration:
+          stopDurationSec == null ? null : Duration(seconds: stopDurationSec),
     );
   }
 
@@ -1953,13 +1990,13 @@ class SuperadminVehicleService {
     final list = switch (json) {
       List<dynamic> raw => raw,
       Map<String, dynamic> raw => _firstList(raw, const [
-        'items',
-        'rows',
-        'data',
-        'telemetry',
-        'counts',
-        'stats',
-      ]),
+          'items',
+          'rows',
+          'data',
+          'telemetry',
+          'counts',
+          'stats',
+        ]),
       _ => null,
     };
 
@@ -2147,9 +2184,8 @@ class SuperadminVehicleService {
         'id': id.toString(),
         'imei': imei,
         'serverTime': serverTime.toIso8601String(),
-        'deviceTime': serverTime
-            .subtract(const Duration(seconds: 2))
-            .toIso8601String(),
+        'deviceTime':
+            serverTime.subtract(const Duration(seconds: 2)).toIso8601String(),
         'packetType': id.isEven ? 'location' : 'heartbeat',
         'protocol': 'gt06',
         'speedKph': id.isEven ? 24 + (id % 6) : 0,
@@ -2319,9 +2355,8 @@ class SuperadminVehicleService {
         'requestedAt': requestedAt.toIso8601String(),
         'sentAt': requestedAt.add(const Duration(seconds: 1)).toIso8601String(),
         if (id.isEven)
-          'respondedAt': requestedAt
-              .add(const Duration(seconds: 4))
-              .toIso8601String(),
+          'respondedAt':
+              requestedAt.add(const Duration(seconds: 4)).toIso8601String(),
         if (id.isEven) 'responseRaw': 'OK',
         'metadata': <String, dynamic>{'mock': true},
       };
@@ -2359,12 +2394,26 @@ class SuperadminVehicleService {
       ...candidateMaps,
     ];
     final coordinates = _firstCoordinatesInMaps(telemetryMaps);
+    final gpsValid = _firstBoolByKeyPriority(telemetryMaps, const [
+      'valid',
+      'gpsValid',
+      'gps_valid',
+    ]);
+    final gpsSatellites = _firstIntByKeyPriority(telemetryMaps, const [
+      'satellites',
+      'satelliteCount',
+      'satellite_count',
+      'gpsSatellites',
+      'gps_satellites',
+    ]);
+    final hasUsableFix = coordinates != null &&
+        gpsValid != false &&
+        (gpsSatellites == null || gpsSatellites >= 3);
     if (coordinates == null && requireCoordinates) {
       return null;
     }
 
-    final plateNumber =
-        _firstStringInMaps(candidateMaps, const [
+    final plateNumber = _firstStringInMaps(candidateMaps, const [
           'plateNumber',
           'plate_number',
           'plateNo',
@@ -2377,20 +2426,18 @@ class SuperadminVehicleService {
           'registration_number',
         ]) ??
         '';
-    final name =
-        (_firstStringInMaps(candidateMaps, const [
-                  'vehicleNumber',
-                  'vehicle_number',
-                  'name',
-                  'vehicleName',
-                  'vehicle_name',
-                  'label',
-                  'title',
-                ]) ??
-                '')
-            .trim();
-    final imei =
-        _firstStringInMaps(candidateMaps, const [
+    final name = (_firstStringInMaps(candidateMaps, const [
+              'vehicleNumber',
+              'vehicle_number',
+              'name',
+              'vehicleName',
+              'vehicle_name',
+              'label',
+              'title',
+            ]) ??
+            '')
+        .trim();
+    final imei = _firstStringInMaps(candidateMaps, const [
           'imei',
           'deviceImei',
           'device_imei',
@@ -2404,25 +2451,43 @@ class SuperadminVehicleService {
       'isLicenseBlocked',
       'is_license_blocked',
     ]);
+    final serviceBlocked = _firstBoolByKeyPriority(candidateMaps, const [
+              'serviceBlocked',
+              'service_blocked',
+            ]) ==
+            true ||
+        _firstBoolByKeyPriority(
+              [_asMap(json['service'])],
+              const ['liveAllowed'],
+            ) ==
+            false;
+    final receiveTime = _firstDateByKeyPriority(telemetryMaps, const [
+          'serverTime',
+          'server_time',
+          'serverTimeMs',
+          'server_time_ms',
+        ]) ??
+        (!json.containsKey('telemetry')
+            ? _firstDate(json, const ['timestamp'])
+            : null);
     final status = licenseBlocked == true
         ? 'license_blocked'
         : _firstStringInMaps(candidateMaps, const [
-                'status',
-                'state',
-                'vehicleStatus',
-                'vehicle_status',
-                'liveStatus',
-                'live_status',
-                'connectionStatus',
-                'connection_status',
-                'lastStatus',
-                'last_status',
-              ]) ??
-              'unknown';
+              'status',
+              'state',
+              'vehicleStatus',
+              'vehicle_status',
+              'liveStatus',
+              'live_status',
+              'connectionStatus',
+              'connection_status',
+              'lastStatus',
+              'last_status',
+            ]) ??
+            'unknown';
 
     return VehicleSummary(
-      id:
-          _firstStringInMaps(candidateMaps, const [
+      id: _firstStringInMaps(candidateMaps, const [
             'id',
             '_id',
             'vehicleId',
@@ -2434,8 +2499,7 @@ class SuperadminVehicleService {
       name: name.isNotEmpty ? name : plateNumber,
       plateNumber: plateNumber,
       status: status,
-      speed:
-          _firstDoubleInMaps(telemetryMaps, const [
+      speed: _firstDoubleInMaps(telemetryMaps, const [
             'speed',
             'vehicleSpeed',
             'vehicle_speed',
@@ -2449,8 +2513,7 @@ class SuperadminVehicleService {
           0,
       latitude: coordinates?.latitude ?? 28.6139,
       longitude: coordinates?.longitude ?? 77.2090,
-      deviceTypeId:
-          _firstIntByKeyPriority(telemetryMaps, const [
+      deviceTypeId: _firstIntByKeyPriority(telemetryMaps, const [
             'deviceTypeId',
             'device_type_id',
             'trackerDeviceTypeId',
@@ -2458,7 +2521,9 @@ class SuperadminVehicleService {
           ]) ??
           _firstInt(_asMap(json['deviceType']), const ['id']) ??
           _firstInt(_asMap(json['device_type']), const ['id']),
-      hasValidLocation: coordinates != null,
+      hasValidLocation:
+          hasUsableFix && licenseBlocked != true && !serviceBlocked,
+      locationServerTime: hasUsableFix ? receiveTime : null,
       // Only server receive time drives live freshness. A GPS time or heartbeat
       // must not keep an otherwise silent vehicle moving on the map.
       updatedAt: _firstDateByKeyPriority(telemetryMaps, const [
@@ -2471,16 +2536,7 @@ class SuperadminVehicleService {
         'lastUpdatedAtMs',
         'last_updated_at_ms',
       ]),
-      serverTime:
-          _firstDateByKeyPriority(telemetryMaps, const [
-            'serverTime',
-            'server_time',
-            'serverTimeMs',
-            'server_time_ms',
-          ]) ??
-          (!json.containsKey('telemetry')
-              ? _firstDate(json, const ['timestamp'])
-              : null),
+      serverTime: receiveTime,
       deviceTime: _firstDateByKeyPriority(telemetryMaps, const [
         'deviceTime',
         'device_time',
@@ -2488,8 +2544,8 @@ class SuperadminVehicleService {
         'gps_time',
       ]),
       licenseBlocked: licenseBlocked == true,
-      vehicleTypeSlug:
-          _firstStringInMaps(candidateMaps, const [
+      serviceBlocked: serviceBlocked,
+      vehicleTypeSlug: _firstStringInMaps(candidateMaps, const [
             'vehicleTypeSlug',
             'vehicle_type_slug',
           ]) ??
@@ -2503,8 +2559,7 @@ class SuperadminVehicleService {
         'motionStateSince',
         'motion_state_since',
       ]),
-      pendingMotionState:
-          _firstStringInMaps(deviceStatusMaps, const [
+      pendingMotionState: _firstStringInMaps(deviceStatusMaps, const [
             'pendingMotionState',
             'pending_motion_state',
           ]) ??
@@ -2852,8 +2907,7 @@ class SuperadminVehicleService {
     final coordinates = _extractCoordinates(source);
 
     return SuperadminVehicleDetails(
-      imei:
-          _firstStringInMaps(candidateMaps, const [
+      imei: _firstStringInMaps(candidateMaps, const [
             'imei',
             'deviceImei',
             'device_imei',
@@ -2861,8 +2915,7 @@ class SuperadminVehicleService {
             'tracker_imei',
           ]) ??
           '',
-      name:
-          _firstStringInMaps(candidateMaps, const [
+      name: _firstStringInMaps(candidateMaps, const [
             'name',
             'vehicleName',
             'vehicle_name',
@@ -2872,8 +2925,7 @@ class SuperadminVehicleService {
             'label',
           ]) ??
           '',
-      plateNumber:
-          _firstStringInMaps(candidateMaps, const [
+      plateNumber: _firstStringInMaps(candidateMaps, const [
             'plateNumber',
             'plate_number',
             'plateNo',
@@ -2886,8 +2938,7 @@ class SuperadminVehicleService {
             'registration_number',
           ]) ??
           '',
-      status:
-          _firstStringInMaps(candidateMaps, const [
+      status: _firstStringInMaps(candidateMaps, const [
             'status',
             'vehicleStatus',
             'vehicle_status',
@@ -2957,8 +3008,7 @@ class SuperadminVehicleService {
       latitude: coordinates?.latitude,
       longitude: coordinates?.longitude,
       sections: _buildVehicleDetailsSections(source),
-      deviceTypeId:
-          _firstIntByKeyPriority(candidateMaps, const [
+      deviceTypeId: _firstIntByKeyPriority(candidateMaps, const [
             'deviceTypeId',
             'device_type_id',
             'trackerDeviceTypeId',
@@ -3127,9 +3177,8 @@ class SuperadminVehicleService {
       }
 
       for (var index = 0; index < value.length; index++) {
-        final nestedPath = path.isEmpty
-            ? 'Item ${index + 1}'
-            : '$path ${index + 1}';
+        final nestedPath =
+            path.isEmpty ? 'Item ${index + 1}' : '$path ${index + 1}';
         _appendVehicleDetailRows(rows, nestedPath, value[index]);
       }
       return;
@@ -3185,36 +3234,33 @@ class SuperadminVehicleService {
     }
 
     final segments = trimmed.split('/');
-    return segments
-        .map((segment) {
-          final normalized = segment
-              .replaceAll(RegExp(r'[_-]+'), ' ')
-              .replaceAll(RegExp(r'(?<=[a-z0-9])(?=[A-Z])'), ' ')
-              .replaceAll(RegExp(r'\s+'), ' ')
-              .trim();
+    return segments.map((segment) {
+      final normalized = segment
+          .replaceAll(RegExp(r'[_-]+'), ' ')
+          .replaceAll(RegExp(r'(?<=[a-z0-9])(?=[A-Z])'), ' ')
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .trim();
 
-          if (normalized.isEmpty) {
-            return 'Value';
-          }
+      if (normalized.isEmpty) {
+        return 'Value';
+      }
 
-          final lower = normalized.toLowerCase();
-          return switch (lower) {
-            'imei' => 'IMEI',
-            'id' => 'ID',
-            'gps' => 'GPS',
-            'sim' => 'SIM',
-            _ =>
-              normalized
-                  .split(' ')
-                  .map(
-                    (word) => word.isEmpty
-                        ? word
-                        : '${word[0].toUpperCase()}${word.substring(1)}',
-                  )
-                  .join(' '),
-          };
-        })
-        .join(' / ');
+      final lower = normalized.toLowerCase();
+      return switch (lower) {
+        'imei' => 'IMEI',
+        'id' => 'ID',
+        'gps' => 'GPS',
+        'sim' => 'SIM',
+        _ => normalized
+            .split(' ')
+            .map(
+              (word) => word.isEmpty
+                  ? word
+                  : '${word[0].toUpperCase()}${word.substring(1)}',
+            )
+            .join(' '),
+      };
+    }).join(' / ');
   }
 
   bool _isValidCoordinatePair(double? latitude, double? longitude) {
@@ -3396,7 +3442,7 @@ class SuperadminVehicleService {
 
   double? _asEngineHours(dynamic value) {
     if (value is num) {
-      return value.toDouble();
+      return value.isFinite ? value.toDouble() : null;
     }
 
     if (value is String) {
@@ -3487,7 +3533,7 @@ class SuperadminVehicleService {
       final trimmed = value.trim();
       final direct = double.tryParse(trimmed);
       if (direct != null) {
-        return direct;
+        return direct.isFinite ? direct : null;
       }
 
       final match = RegExp(r'-?\d+(?:\.\d+)?').firstMatch(trimmed);
@@ -3553,12 +3599,13 @@ class SuperadminVehicleService {
     }
 
     if (value is num) {
-      return value.toInt();
+      return value.isFinite ? value.toInt() : null;
     }
 
     if (value is String) {
       final trimmed = value.trim();
-      return int.tryParse(trimmed) ?? double.tryParse(trimmed)?.toInt();
+      final parsed = num.tryParse(trimmed);
+      return parsed != null && parsed.isFinite ? parsed.toInt() : null;
     }
 
     return null;
@@ -3630,16 +3677,16 @@ class SuperadminVehicleDetails {
   });
 
   const SuperadminVehicleDetails.empty({this.imei = ''})
-    : name = '',
-      plateNumber = '',
-      status = '',
-      speed = null,
-      distanceKm = null,
-      updatedAt = null,
-      latitude = null,
-      longitude = null,
-      sections = const <SuperadminVehicleDetailsSection>[],
-      deviceTypeId = null;
+      : name = '',
+        plateNumber = '',
+        status = '',
+        speed = null,
+        distanceKm = null,
+        updatedAt = null,
+        latitude = null,
+        longitude = null,
+        sections = const <SuperadminVehicleDetailsSection>[],
+        deviceTypeId = null;
 
   final String imei;
   final String name;
@@ -3806,6 +3853,17 @@ const _mockMapVehicles = [
     longitude: 72.8777,
   ),
 ];
+
+// Top-level entry point: do not capture a service, Dio, provider or UI state
+// when transferring page parsing to another isolate.
+_CompleteMapTelemetryPage _parseMapTelemetryPageInBackground(dynamic raw) {
+  final dio = Dio();
+  try {
+    return SuperadminVehicleService(ApiClient(dio))._parseMapTelemetryPage(raw);
+  } finally {
+    dio.close();
+  }
+}
 
 class _CompleteMapTelemetryPage {
   const _CompleteMapTelemetryPage({

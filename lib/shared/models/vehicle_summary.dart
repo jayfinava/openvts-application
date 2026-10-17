@@ -31,8 +31,10 @@ class VehicleSummary {
     this.lastSeenAt,
     this.serverTime,
     this.deviceTime,
+    this.locationServerTime,
     this.vehicleTypeSlug,
     this.licenseBlocked = false,
+    this.serviceBlocked = false,
     this.motionState,
     this.motionStateSince,
     this.pendingMotionState,
@@ -66,8 +68,13 @@ class VehicleSummary {
   final DateTime? lastSeenAt;
   final DateTime? serverTime;
   final DateTime? deviceTime;
+
+  /// Receive time of the accepted GPS fix, independent of newer packets that
+  /// do not contain a usable position. Never replaced by a connection heartbeat.
+  final DateTime? locationServerTime;
   final String? vehicleTypeSlug;
   final bool licenseBlocked;
+  final bool serviceBlocked;
   final String? motionState;
   final DateTime? motionStateSince;
   final String? pendingMotionState;
@@ -149,6 +156,16 @@ class VehicleSummary {
             json['gpsTime'] ??
             json['gps_time'],
       ),
+      locationServerTime: hasValidLocation
+          ? _asDateTime(
+              json['locationServerTime'] ??
+                  json['serverTime'] ??
+                  json['server_time'] ??
+                  json['serverTimeMs'] ??
+                  json['server_time_ms'] ??
+                  json['timestamp'],
+            )
+          : null,
       vehicleTypeSlug:
           json['vehicleTypeSlug']?.toString() ??
           (json['vehicleType'] is Map
@@ -156,6 +173,8 @@ class VehicleSummary {
               : null),
       licenseBlocked:
           _asBool(json['licenseBlocked'] ?? json['license_blocked']) ?? false,
+      serviceBlocked:
+          _asBool(json['serviceBlocked'] ?? json['service_blocked']) ?? false,
       motionState: json['motionState']?.toString(),
       motionStateSince: _asDateTime(json['motionStateSince']),
       pendingMotionState:
@@ -292,8 +311,10 @@ class VehicleSummary {
     Object? lastSeenAt = _unset,
     Object? serverTime = _unset,
     Object? deviceTime = _unset,
+    Object? locationServerTime = _unset,
     Object? vehicleTypeSlug = _unset,
     bool? licenseBlocked,
+    bool? serviceBlocked,
     Object? motionState = _unset,
     Object? motionStateSince = _unset,
     Object? pendingMotionState = _unset,
@@ -356,10 +377,14 @@ class VehicleSummary {
       deviceTime: identical(deviceTime, _unset)
           ? this.deviceTime
           : deviceTime as DateTime?,
+      locationServerTime: identical(locationServerTime, _unset)
+          ? this.locationServerTime
+          : locationServerTime as DateTime?,
       vehicleTypeSlug: identical(vehicleTypeSlug, _unset)
           ? this.vehicleTypeSlug
           : vehicleTypeSlug as String?,
       licenseBlocked: licenseBlocked ?? this.licenseBlocked,
+      serviceBlocked: serviceBlocked ?? this.serviceBlocked,
       motionState: identical(motionState, _unset)
           ? this.motionState
           : motionState as String?,

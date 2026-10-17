@@ -4,27 +4,64 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/errors/error_mapper.dart';
+import '../../../shared/paging/server_list_pager.dart';
 import '../models/admin_user_details_model.dart';
 import '../models/admin_user_details_state.dart';
 import '../services/admin_user_details_service.dart';
 
 class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
   AdminUserDetailsController({
+    this.vehiclesPager,
+    this.availableVehiclesPager,
     required String userId,
     required AdminUserDetailsService service,
     AdminUserDetails? initialUser,
-  }) : _userId = userId,
-       _service = service,
-       super(
-         AdminUserDetailsState.initial(
-           userId: userId,
-           initialUser: initialUser,
-         ),
-       );
+  })  : _userId = userId,
+        _service = service,
+        super(
+          AdminUserDetailsState.initial(
+            userId: userId,
+            initialUser: initialUser,
+          ),
+        ) {
+    vehiclesPager?.onChanged = _syncVehiclesPage;
+    availableVehiclesPager?.onChanged = _syncAvailablePage;
+  }
+
+  final ServerListPager<AdminUserVehicle>? vehiclesPager;
+  final ServerListPager<AdminUserVehicle>? availableVehiclesPager;
+  void _syncVehiclesPage() {
+    final p = vehiclesPager!;
+    if (!mounted) return;
+    state = state.copyWith(
+        linkedVehicles: p.items,
+        vehiclesPagination: p.meta,
+        vehicleCount: p.search.isEmpty
+            ? p.meta?.total ?? state.vehicleCount
+            : state.vehicleCount,
+        isLoadingVehicles: p.loading,
+        sectionErrorMessage: p.error);
+  }
+
+  void _syncAvailablePage() {
+    final p = availableVehiclesPager!;
+    if (!mounted) return;
+    state = state.copyWith(
+        availableVehicles: p.items, availableVehiclesPagination: p.meta);
+  }
+
+  @override
+  void dispose() {
+    vehiclesPager?.dispose();
+    availableVehiclesPager?.dispose();
+    super.dispose();
+  }
 
   final String _userId;
   final AdminUserDetailsService _service;
   final Set<AdminUserDetailsTab> _loadedTabs = <AdminUserDetailsTab>{};
+  int _logsGeneration = 0;
 
   /// Seed initial data from list item to preserve values that detail API may omit.
   void seedInitialData({DateTime? lastLogin}) {
@@ -329,6 +366,11 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
   }
 
   Future<void> loadVehicles() async {
+    if (vehiclesPager != null) {
+      _loadedTabs.add(AdminUserDetailsTab.vehicles);
+      await vehiclesPager!.load();
+      return;
+    }
     state = state.copyWith(isLoadingVehicles: true, sectionErrorMessage: null);
     try {
       final results = await Future.wait<List<AdminUserVehicle>>([
@@ -365,6 +407,51 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
         sectionErrorMessage: _errorMessage(error),
       );
       return false;
+    }
+  }
+
+  Future<AdminVehicleAssignmentResult> linkVehicles(
+      Set<String> vehicleIds) async {
+    if (!mounted || state.isLinkingVehicle) {
+      return AdminVehicleAssignmentResult(
+          assignedIds: const {}, failedIds: vehicleIds);
+    }
+    state = state.copyWith(isLinkingVehicle: true, sectionErrorMessage: null);
+    try {
+      final result = await _service.linkVehicles(_userId, vehicleIds);
+      if (!mounted) return result;
+      if (vehiclesPager != null) {
+        state = state.copyWith(
+            isLinkingVehicle: false,
+            sectionErrorMessage:
+                result.isSuccess ? null : 'Unable to assign vehicle.');
+        unawaited(vehiclesPager!.load());
+        unawaited(availableVehiclesPager!.load());
+        return result;
+      }
+      final linked = [
+        ...state.linkedVehicles,
+        ...state.availableVehicles.where((vehicle) =>
+            result.assignedIds.contains(vehicle.id) &&
+            !state.linkedVehicles.any((linked) => linked.id == vehicle.id)),
+      ];
+      state = state.copyWith(
+          isLinkingVehicle: false,
+          linkedVehicles: linked,
+          availableVehicles: state.availableVehicles
+              .where((v) => !result.assignedIds.contains(v.id))
+              .toList(),
+          vehicleCount: linked.length,
+          sectionErrorMessage:
+              result.isSuccess ? null : 'Unable to assign vehicle.');
+      return result;
+    } catch (error) {
+      if (mounted) {
+        state = state.copyWith(
+            isLinkingVehicle: false, sectionErrorMessage: _errorMessage(error));
+      }
+      return AdminVehicleAssignmentResult(
+          assignedIds: const {}, failedIds: vehicleIds);
     }
   }
 
@@ -676,23 +763,49 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
   Future<bool> renewVehiclesPayment(
     AdminRenewVehiclesPaymentRequest request,
   ) async {
+    if (!mounted || state.isRenewingPayment) return false;
     state = state.copyWith(isRenewingPayment: true, sectionErrorMessage: null);
     try {
-      await _service.renewVehiclesPayment(request);
+      final result = await _service.renewVehiclesPayment(request);
+      if (!mounted) return true;
       state = state.copyWith(isRenewingPayment: false);
-      await Future.wait<void>([loadPayments(), loadVehicles()]);
+      if (result.transaction case final transaction?) {
+        state = state.copyWith(payments: [
+          transaction,
+          ...state.payments.where((payment) => payment.id != transaction.id)
+        ]);
+      }
+      unawaited(_refreshAfterRenewal(result));
       return true;
     } catch (error) {
+      if (!mounted) return false;
       state = state.copyWith(
         isRenewingPayment: false,
-        sectionErrorMessage: _errorMessage(error),
+        sectionErrorMessage: ErrorMapper.from(error).message,
       );
       return false;
     }
   }
 
+  Future<void> _refreshAfterRenewal(
+      AdminRenewVehiclesPaymentResult result) async {
+    await Future.wait<void>([loadPayments(), loadVehicles()]);
+    if (!mounted) return;
+    if (result.transaction case final transaction?) {
+      state = state.copyWith(payments: [
+        transaction,
+        ...state.payments.where((payment) => payment.id != transaction.id)
+      ]);
+    }
+  }
+
   Future<void> loadLogs({int limit = 20}) async {
-    state = state.copyWith(isLoadingLogs: true, sectionErrorMessage: null);
+    if (!mounted) return;
+    final generation = ++_logsGeneration;
+    state = state.copyWith(
+        isLoadingLogs: true,
+        isLoadingMoreLogs: false,
+        sectionErrorMessage: null);
     try {
       final page = await _service.getActivityLogs(
         userId: _userId,
@@ -701,6 +814,7 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
         from: _formatDateTimeForApi(state.logFrom),
         to: _formatDateTimeForApi(state.logTo),
       );
+      if (!mounted || generation != _logsGeneration) return;
       _loadedTabs.add(AdminUserDetailsTab.logs);
       state = state.copyWith(
         logs: page.items,
@@ -709,6 +823,7 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
         isLoadingLogs: false,
       );
     } catch (error) {
+      if (!mounted || generation != _logsGeneration) return;
       state = state.copyWith(
         isLoadingLogs: false,
         sectionErrorMessage: _errorMessage(error),
@@ -717,9 +832,11 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
   }
 
   Future<void> loadMoreLogs({int limit = 20}) async {
+    if (!mounted) return;
     if (!state.logsHasMore || state.isLoadingMoreLogs || state.isLoadingLogs) {
       return;
     }
+    final generation = _logsGeneration;
     state = state.copyWith(isLoadingMoreLogs: true);
     try {
       final page = await _service.getActivityLogs(
@@ -730,6 +847,7 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
         from: _formatDateTimeForApi(state.logFrom),
         to: _formatDateTimeForApi(state.logTo),
       );
+      if (!mounted || generation != _logsGeneration) return;
       state = state.copyWith(
         logs: <AdminUserActivityLog>[...state.logs, ...page.items],
         logsNextCursorId: page.nextCursorId,
@@ -737,6 +855,7 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
         isLoadingMoreLogs: false,
       );
     } catch (error) {
+      if (!mounted || generation != _logsGeneration) return;
       state = state.copyWith(
         isLoadingMoreLogs: false,
         sectionErrorMessage: _errorMessage(error),
@@ -752,7 +871,11 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
     bool clearFrom = false,
     bool clearTo = false,
   }) {
+    if (!mounted) return;
+    _logsGeneration++;
     state = state.copyWith(
+      isLoadingLogs: false,
+      isLoadingMoreLogs: false,
       logSearch: q ?? state.logSearch,
       // logActionPrefix stores the selected quick-chip keyword; reused field name
       // so state shape stays unchanged.
@@ -787,15 +910,13 @@ class AdminUserDetailsController extends StateNotifier<AdminUserDetailsState> {
       return tickets;
     }
     var replaced = false;
-    final next = tickets
-        .map((item) {
-          if (item.id == id) {
-            replaced = true;
-            return ticket;
-          }
-          return item;
-        })
-        .toList(growable: false);
+    final next = tickets.map((item) {
+      if (item.id == id) {
+        replaced = true;
+        return ticket;
+      }
+      return item;
+    }).toList(growable: false);
     if (replaced) {
       return next;
     }

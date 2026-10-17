@@ -14,7 +14,9 @@ class MobilePushLocalNotifications {
     FlutterLocalNotificationsPlugin? notifications,
   }) : _notifications = notifications ?? FlutterLocalNotificationsPlugin();
 
-  static const androidChannelId = 'open_vts_alerts';
+  // Android channels keep their original sound after creation, so use a new
+  // channel ID when changing the tune for existing installations.
+  static const androidChannelId = 'open_vts_alerts_v2';
   static const androidChannelName = 'OpenVTS Alerts';
   static const androidChannelDescription =
       'Vehicle alerts and operational notifications';
@@ -25,6 +27,8 @@ class MobilePushLocalNotifications {
     androidChannelName,
     description: androidChannelDescription,
     importance: Importance.high,
+    playSound: true,
+    sound: RawResourceAndroidNotificationSound('open_vts_notification'),
   );
 
   static const _androidNotificationIcon = 'ic_stat_open_vts';
@@ -135,11 +139,15 @@ class MobilePushLocalNotifications {
               : null,
           importance: Importance.high,
           priority: Priority.high,
+          playSound: true,
+          sound: const RawResourceAndroidNotificationSound(
+              'open_vts_notification'),
         ),
         iOS: const DarwinNotificationDetails(
           presentAlert: true,
           presentBadge: true,
           presentSound: true,
+          sound: 'open_vts_notification.wav',
           presentBanner: true,
           presentList: true,
         ),

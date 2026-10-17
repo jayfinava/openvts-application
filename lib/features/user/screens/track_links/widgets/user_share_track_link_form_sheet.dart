@@ -865,7 +865,7 @@ class _ActionButton extends StatelessWidget {
     final fgColor = isDark ? OpenVtsColors.white : Colors.white;
     final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.brandInk;
     return SizedBox(
-      height: 42,
+      height: 48,
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(

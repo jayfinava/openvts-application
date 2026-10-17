@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/errors/app_error.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
@@ -56,19 +57,16 @@ class _UserDashboardScreenState extends ConsumerState<UserDashboardScreen>
     if (ref.read(userDashboardControllerProvider).isRefreshing) return;
     if (_resumeRefreshPending) return;
     _resumeRefreshPending = true;
-    controller
-        .refresh()
-        .then((_) {
-          if (!mounted) return;
-          setState(() {
-            _resumeRefreshPending = false;
-            _refreshTick++;
-          });
-        })
-        .catchError((_) {
-          if (!mounted) return;
-          setState(() => _resumeRefreshPending = false);
-        });
+    controller.refresh().then((_) {
+      if (!mounted) return;
+      setState(() {
+        _resumeRefreshPending = false;
+        _refreshTick++;
+      });
+    }).catchError((_) {
+      if (!mounted) return;
+      setState(() => _resumeRefreshPending = false);
+    });
   }
 
   Future<void> _refresh() async {
@@ -158,7 +156,7 @@ class _DashboardBody extends StatelessWidget {
       return SizedBox(
         height: MediaQuery.sizeOf(context).height * 0.62,
         child: OpenVtsErrorView(
-          message: state.errorMessage!,
+          message: context.mobileText(state.errorMessage!),
           onRetry: onRetryInitial,
         ),
       );
@@ -188,7 +186,7 @@ class _DashboardBody extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
             child: _DashboardInlineError(
-              message: state.errorMessage!,
+              message: context.mobileText(state.errorMessage!),
               onRetry: onRefresh,
             ),
           ),
@@ -207,7 +205,7 @@ class _DashboardBody extends StatelessWidget {
           SizedBox(
             height: MediaQuery.sizeOf(context).height * 0.46,
             child: OpenVtsErrorView(
-              message: state.selectedDashboardError!,
+              message: context.mobileText(state.selectedDashboardError!),
               onRetry: onRetrySelected,
             ),
           )
@@ -405,9 +403,8 @@ class _DashboardSelectorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selected = dashboards
-        .where((item) => item.id == selectedDashboardId)
-        .firstOrNull;
+    final selected =
+        dashboards.where((item) => item.id == selectedDashboardId).firstOrNull;
 
     return OutlinedButton.icon(
       onPressed: () => _openSelector(context),
@@ -575,47 +572,9 @@ class _DashboardInlineError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(OpenVtsSpacing.sm),
-      decoration: BoxDecoration(
-        color: Theme.of(
-          context,
-        ).colorScheme.errorContainer.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.error_outline_rounded,
-            size: 17,
-            color: Theme.of(context).colorScheme.error,
-          ),
-          const SizedBox(width: OpenVtsSpacing.xs),
-          Expanded(
-            child: Text(
-              message,
-              style: OpenVtsTypography.meta.copyWith(
-                color: Theme.of(context).colorScheme.onErrorContainer,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => onRetry(),
-            style: TextButton.styleFrom(
-              minimumSize: const Size(52, 28),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              padding: const EdgeInsets.symmetric(
-                horizontal: OpenVtsSpacing.xs,
-              ),
-            ),
-            child: Text(context.mobileText('Retry')),
-          ),
-        ],
-      ),
+    return UserDashboardWidgetError(
+      error: AppError(message: message),
+      onRetry: () => onRetry(),
     );
   }
 }

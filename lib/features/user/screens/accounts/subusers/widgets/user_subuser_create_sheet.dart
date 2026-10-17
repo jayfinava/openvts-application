@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../../core/theme/open_vts_colors.dart';
-import '../../../../../../core/theme/open_vts_spacing.dart';
-import '../../../../../../core/theme/open_vts_typography.dart';
-import '../../../../../../core/utils/validators.dart';
+import '../../../../../../core/access/workspace_scope_provider.dart';
+import '../../../../../../core/errors/error_mapper.dart';
 import '../../../../../../shared/helpers/mobile_text.dart';
 import '../../../../../../shared/helpers/toast_helper.dart';
-import '../../../../../../shared/widgets/open_vts_button.dart';
+import '../../../../../../shared/widgets/open_vts_searchable_dropdown.dart';
 import '../../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../../controllers/user_providers.dart';
+import '../../../../models/user_driver_model.dart';
 import '../../../../models/user_subuser_model.dart';
+import '../../../../utils/user_account_form_rules.dart';
+import '../../widgets/user_account_form_sheet.dart';
 
 class UserSubUserCreateSheet extends ConsumerStatefulWidget {
   const UserSubUserCreateSheet({required this.onSubmit, super.key});
-
   final Future<UserSubUser?> Function(CreateUserSubUserRequest request)
-  onSubmit;
-
+      onSubmit;
   @override
   ConsumerState<UserSubUserCreateSheet> createState() =>
       _UserSubUserCreateSheetState();
@@ -26,435 +26,210 @@ class UserSubUserCreateSheet extends ConsumerStatefulWidget {
 class _UserSubUserCreateSheetState
     extends ConsumerState<UserSubUserCreateSheet> {
   final _formKey = GlobalKey<FormState>();
+  final _name = TextEditingController(), _username = TextEditingController();
+  final _email = TextEditingController(), _mobile = TextEditingController();
+  final _password = TextEditingController();
+  late final String _scope;
+  List<UserDriverMobilePrefixOption> _prefixes = [];
+  String? _prefix;
+  bool _loading = true, _loadFailed = false, _active = true;
+  bool _obscure = true, _submitting = false, _attempted = false;
+  bool get _current =>
+      mounted && ref.read(workspaceDataScopeProvider) == _scope;
 
-  final _nameController = TextEditingController();
-  final _usernameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _mobileNumberController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  var _isActive = true;
-  var _obscurePassword = true;
-  String? _selectedMobilePrefix;
-
-  static const List<String> _mobilePrefixes = [
-    '+1',
-    '+44',
-    '+91',
-    '+86',
-    '+81',
-    '+33',
-    '+49',
-    '+39',
-    '+34',
-    '+61',
-    '+64',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _scope = ref.read(workspaceDataScopeProvider);
+    _loadPrefixes();
+  }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _usernameController.dispose();
-    _emailController.dispose();
-    _mobileNumberController.dispose();
-    _passwordController.dispose();
+    for (final field in [_name, _username, _email, _mobile, _password]) {
+      field.dispose();
+    }
     super.dispose();
+  }
+
+  Future<void> _loadPrefixes() async {
+    setState(() {
+      _loading = true;
+      _loadFailed = false;
+    });
+    try {
+      final values =
+          await ref.read(userDriversServiceProvider).fetchMobilePrefixes();
+      if (!mounted || !_current) return;
+      setState(() {
+        _prefixes = values;
+        _loading = false;
+        _loadFailed = values.isEmpty;
+      });
+    } catch (_) {
+      if (mounted && _current) {
+        setState(() {
+          _loading = false;
+          _loadFailed = true;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isSubmitting = ref.watch(
-      userSubUsersControllerProvider.select((state) => state.isCreating),
-    );
-    final viewInsets = MediaQuery.of(context).viewInsets;
-    final maxHeight = MediaQuery.of(context).size.height * 0.9;
-
-    return AnimatedPadding(
-      duration: const Duration(milliseconds: 180),
-      curve: Curves.easeOut,
-      padding: EdgeInsets.only(bottom: viewInsets.bottom),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: maxHeight),
-        child: Material(
-          color: Theme.of(context).colorScheme.surface,
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView(
-                    controller: PrimaryScrollController.maybeOf(context),
-                    padding: const EdgeInsets.fromLTRB(
-                      OpenVtsSpacing.md,
-                      OpenVtsSpacing.md,
-                      OpenVtsSpacing.md,
-                      OpenVtsSpacing.lg,
-                    ),
-                    children: [
-                      Text(
-                        context.mobileText('Create Sub User'),
-                        style: OpenVtsTypography.label.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        context.mobileText(
-                          'Create a compact login profile with controlled access.',
-                        ),
-                        style: OpenVtsTypography.meta.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: OpenVtsSpacing.md),
-                      OpenVtsTextField(
-                        label: context.mobileText('Name'),
-                        controller: _nameController,
-                        textInputAction: TextInputAction.next,
-                        prefixIcon: Icons.person_outline_rounded,
-                        validator: _nameValidator,
-                      ),
-                      const SizedBox(height: OpenVtsSpacing.sm),
-                      OpenVtsTextField(
-                        label: context.mobileText('Username (optional)'),
-                        controller: _usernameController,
-                        textInputAction: TextInputAction.next,
-                        prefixIcon: Icons.alternate_email_rounded,
-                        validator: _optionalUsernameValidator,
-                      ),
-                      const SizedBox(height: OpenVtsSpacing.sm),
-                      OpenVtsTextField(
-                        label: context.mobileText('Email (optional)'),
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        prefixIcon: Icons.mail_outline_rounded,
-                        validator: _optionalEmailValidator,
-                      ),
-                      const SizedBox(height: OpenVtsSpacing.sm),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: 124,
-                            child: _buildMobilePrefixDropdown(
-                              selectedPrefix: _selectedMobilePrefix,
-                              onChanged: (value) {
-                                setState(() => _selectedMobilePrefix = value);
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: OpenVtsSpacing.sm),
-                          Expanded(
-                            child: OpenVtsTextField(
-                              label: context.mobileText('Mobile (optional)'),
-                              controller: _mobileNumberController,
-                              keyboardType: TextInputType.phone,
-                              textInputAction: TextInputAction.next,
-                              prefixIcon: Icons.phone_rounded,
-                              validator: _optionalMobileValidator,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: OpenVtsSpacing.sm),
-                      OpenVtsTextField(
-                        label: context.mobileText('Password'),
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        textInputAction: TextInputAction.done,
-                        prefixIcon: Icons.lock_outline_rounded,
-                        suffixIcon: IconButton(
-                          tooltip: _obscurePassword
-                              ? context.mobileText('Show password')
-                              : context.mobileText('Hide password'),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                            size: 18,
-                          ),
-                        ),
-                        validator: _optionalPasswordValidator,
-                      ),
-                      const SizedBox(height: OpenVtsSpacing.sm),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: OpenVtsSpacing.sm,
-                          vertical: OpenVtsSpacing.xs,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.outlineVariant,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                context.mobileText('Active account'),
-                                style: OpenVtsTypography.meta.copyWith(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            Transform.scale(
-                              scale: 0.9,
-                              child: Switch.adaptive(
-                                value: _isActive,
-                                activeThumbColor: OpenVtsColors.brandInk,
-                                activeTrackColor: OpenVtsColors.brandInk
-                                    .withValues(alpha: 0.35),
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                                onChanged: isSubmitting
-                                    ? null
-                                    : (value) {
-                                        setState(() => _isActive = value);
-                                      },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(height: 1),
-                SafeArea(
-                  top: false,
-                  child: Padding(
-                    padding: const EdgeInsets.all(OpenVtsSpacing.md),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: OpenVtsButton(
-                            label: context.mobileText('Cancel'),
-                            height: 40,
-                            variant: OpenVtsButtonVariant.secondary,
-                            onPressed: isSubmitting
-                                ? null
-                                : () => Navigator.of(context).pop(),
-                          ),
-                        ),
-                        const SizedBox(width: OpenVtsSpacing.sm),
-                        Expanded(
-                          child: OpenVtsButton(
-                            label: context.mobileText('Create Sub User'),
-                            height: 40,
-                            trailingIcon: Icons.person_add_alt_1_rounded,
-                            isLoading: isSubmitting,
-                            onPressed: isSubmitting ? null : _submit,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+    final busy = _submitting ||
+        ref.watch(userSubUsersControllerProvider.select((s) => s.isCreating));
+    return UserAccountFormSheet(
+        formKey: _formKey,
+        title: context.mobileText('Create Sub User'),
+        submitting: busy,
+        attempted: _attempted,
+        onSubmit: _submit,
+        fields: [
+          OpenVtsTextField(
+              label: context.mobileText('Name'),
+              controller: _name,
+              maxLength: UserAccountFormRules.nameMax,
+              enabled: !busy,
+              textInputAction: TextInputAction.next,
+              autofillHints: const [AutofillHints.name],
+              validator: UserAccountFormRules.name),
+          OpenVtsTextField(
+              label: context.mobileText('Email (optional)'),
+              controller: _email,
+              maxLength: UserAccountFormRules.emailMax,
+              enabled: !busy,
+              autocorrect: false,
+              enableSuggestions: false,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              autofillHints: const [AutofillHints.email],
+              validator: UserAccountFormRules.email),
+          LayoutBuilder(builder: (context, box) {
+            final code = OpenVtsSearchableDropdown<String>(
+                label: context.mobileText('Prefix'),
+                value: _prefix,
+                hintText: context.mobileText('Select'),
+                searchHintText: 'Search code or country',
+                options: [
+                  OpenVtsDropdownOption(
+                      value: '', label: context.mobileText('None')),
+                  for (final item in _prefixes)
+                    OpenVtsDropdownOption(
+                        value: item.value,
+                        label: item.value,
+                        subtitle: item.label,
+                        searchText: item.label),
+                ],
+                enabled: !busy && !_loading && !_loadFailed,
+                isLoading: _loading,
+                validator: (_) => UserAccountFormRules.prefix(_prefix,
+                    number: _mobile.text, required: false),
+                onChanged: (value) =>
+                    setState(() => _prefix = value == '' ? null : value));
+            final number = OpenVtsTextField(
+                label: context.mobileText('Mobile (optional)'),
+                controller: _mobile,
+                enabled: !busy,
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.next,
+                autofillHints: const [AutofillHints.telephoneNumberNational],
+                maxLength: UserAccountFormRules.mobileMax,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                validator: (value) =>
+                    UserAccountFormRules.mobile(value, required: false));
+            if (box.maxWidth < 400 ||
+                MediaQuery.textScalerOf(context).scale(1) > 1.3) {
+              return Column(
+                  children: [code, const SizedBox(height: 12), number]);
+            }
+            return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              SizedBox(width: 140, child: code),
+              const SizedBox(width: 12),
+              Expanded(child: number)
+            ]);
+          }),
+          if (_loadFailed)
+            TextButton(
+                onPressed: busy ? null : _loadPrefixes,
+                child: Text('${context.mobileText('Unable to load form options.')} ${context.mobileText('Retry')}')),
+          OpenVtsTextField(
+              label: context.mobileText('Username (optional)'),
+              controller: _username,
+              maxLength: UserAccountFormRules.usernameMax,
+              enabled: !busy,
+              autocorrect: false,
+              enableSuggestions: false,
+              keyboardType: TextInputType.visiblePassword,
+              textInputAction: TextInputAction.next,
+              autofillHints: const [AutofillHints.username],
+              validator: (value) =>
+                  UserAccountFormRules.username(value, required: false)),
+          OpenVtsTextField(
+              label: context.mobileText('Password'),
+              controller: _password,
+              maxLength: UserAccountFormRules.passwordMax,
+              enabled: !busy,
+              autocorrect: false,
+              enableSuggestions: false,
+              keyboardType: TextInputType.visiblePassword,
+              textInputAction: TextInputAction.done,
+              autofillHints: const [AutofillHints.newPassword],
+              obscureText: _obscure,
+              suffixIcon: IconButton(
+                  onPressed:
+                      busy ? null : () => setState(() => _obscure = !_obscure),
+                  icon: Icon(_obscure
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined)),
+              validator: UserAccountFormRules.password),
+          SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(context.mobileText('Active')),
+              value: _active,
+              onChanged:
+                  busy ? null : (value) => setState(() => _active = value)),
+        ]);
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
+    if (!_current ||
+        _submitting ||
+        ref.read(userSubUsersControllerProvider).isCreating) {
       return;
     }
-
-    final request = CreateUserSubUserRequest(
-      name: _nameController.text.trim(),
-      username: _optionalValue(_usernameController.text),
-      email: _optionalValue(_emailController.text),
-      mobilePrefix: _selectedMobilePrefix,
-      mobileNumber: _optionalValue(_mobileNumberController.text),
-      password: _passwordController.text,
-      isActive: _isActive,
-    );
-
-    final created = await widget.onSubmit(request);
-    if (!mounted) {
-      return;
+    setState(() => _attempted = true);
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _submitting = true);
+    try {
+      final result = await widget.onSubmit(CreateUserSubUserRequest(
+          name: UserAccountFormRules.display(_name.text),
+          username: _optional(_username.text),
+          email: _optional(UserAccountFormRules.emailValue(_email.text)),
+          mobilePrefix: _optional(_prefix),
+          mobileNumber: _optional(UserAccountFormRules.digits(_mobile.text)),
+          password: _password.text,
+          isActive: _active));
+      if (!mounted || !_current) return;
+      if (result != null) {
+        Navigator.of(context).pop(result);
+      } else {
+        ToastHelper.showError(
+            ref.read(userSubUsersControllerProvider).errorMessage ??
+                context.mobileText('Unable to create sub user.'),
+            context: context);
+      }
+    } catch (error) {
+      if (mounted && _current) {
+        ToastHelper.showError(ErrorMapper.from(error).message,
+            context: context);
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
     }
-
-    if (created == null) {
-      final message =
-          ref.read(userSubUsersControllerProvider).errorMessage ??
-          'Unable to create sub user.';
-      ToastHelper.showError(message, context: context);
-      return;
-    }
-
-    Navigator.of(context).pop(created);
   }
 
-  String? _nameValidator(String? value) {
-    final normalized = value?.trim() ?? '';
-    if (normalized.isEmpty) {
-      return 'Name is required';
-    }
-    if (normalized.length < 2) {
-      return 'Name must be at least 2 characters';
-    }
-    return null;
-  }
-
-  String? _optionalUsernameValidator(String? value) {
-    final normalized = value?.trim() ?? '';
-    if (!Validators.isPrintableAscii(normalized)) {
-      return 'Username must contain ASCII characters only';
-    }
-    if (normalized.isEmpty) {
-      return null;
-    }
-    if (normalized.length < 3) {
-      return 'Username must be at least 3 characters';
-    }
-    return null;
-  }
-
-  String? _optionalEmailValidator(String? value) {
-    final normalized = value?.trim() ?? '';
-    if (!Validators.isPrintableAscii(normalized)) {
-      return 'Email must contain ASCII characters only';
-    }
-    if (normalized.isEmpty) {
-      return null;
-    }
-
-    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    if (!emailRegex.hasMatch(normalized)) {
-      return 'Enter a valid email address';
-    }
-    return null;
-  }
-
-  String? _optionalMobileValidator(String? value) {
-    final normalized = value?.trim() ?? '';
-    if (normalized.isEmpty) {
-      return null;
-    }
-
-    final digitsOnly = RegExp(r'^\d{7,15}$');
-    if (!digitsOnly.hasMatch(normalized)) {
-      return 'Enter 7 to 15 digits';
-    }
-
-    return null;
-  }
-
-  String? _optionalPasswordValidator(String? value) {
-    final normalized = value ?? '';
-    if (!Validators.isPrintableAscii(normalized)) {
-      return 'Password must contain ASCII characters only';
-    }
-    if (normalized.length > 100) {
-      return 'Password must be 100 characters or fewer';
-    }
-    if (normalized.trim().isEmpty) {
-      return 'Password is required';
-    }
-    if (normalized.length < 6) {
-      return 'Password must be at least 6 characters';
-    }
-    return null;
-  }
-
-  String? _optionalValue(String? value) {
-    final normalized = value?.trim();
-    if (normalized == null || normalized.isEmpty) {
-      return null;
-    }
-    return normalized;
-  }
-
-  Widget _buildMobilePrefixDropdown({
-    required String? selectedPrefix,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),
-          child: Text(
-            context.mobileText('Prefix'),
-            style: OpenVtsTypography.meta.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.outlineVariant,
-            ),
-          ),
-          child: DropdownButton<String?>(
-            value: selectedPrefix,
-            isExpanded: true,
-            underline: const SizedBox.shrink(),
-            hint: Padding(
-              padding: const EdgeInsets.only(left: 12),
-              child: Text(
-                context.mobileText('Select'),
-                style: OpenVtsTypography.meta.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ),
-            items: [
-              DropdownMenuItem(
-                value: null,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 12),
-                  child: Text(
-                    context.mobileText('Select'),
-                    style: OpenVtsTypography.meta.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ),
-              ..._mobilePrefixes.map((prefix) {
-                return DropdownMenuItem(
-                  value: prefix,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: Text(
-                      prefix,
-                      style: OpenVtsTypography.meta.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            ],
-            onChanged: onChanged,
-            dropdownColor: Theme.of(context).brightness == Brightness.dark
-                ? OpenVtsColors.darkSurfaceElevated
-                : Theme.of(context).colorScheme.surface,
-          ),
-        ),
-      ],
-    );
-  }
+  String? _optional(String? value) =>
+      value == null || value.trim().isEmpty ? null : value.trim();
 }

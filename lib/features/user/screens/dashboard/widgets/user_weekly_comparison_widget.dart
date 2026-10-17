@@ -37,8 +37,7 @@ class _UserWeeklyComparisonWidgetState
   @override
   void initState() {
     super.initState();
-    _selectedVehicleId =
-        userDashboardPropString(widget.config.props, const [
+    _selectedVehicleId = userDashboardPropString(widget.config.props, const [
           'vehicleId',
           'vehicle_id',
         ]) ??
@@ -92,17 +91,16 @@ class _UserWeeklyComparisonWidgetState
 
   Widget _buildBody(
     AsyncValue<
-      ({
-        List<UserDashboardVehicleOption> vehicles,
-        UserDashboardWeeklyComparison comparison,
-      })
-    >
-    state,
+            ({
+              List<UserDashboardVehicleOption> vehicles,
+              UserDashboardWeeklyComparison comparison,
+            })>
+        state,
     UnitFormatter unitFormatter,
   ) {
     if (state.hasError) {
       return UserDashboardWidgetError(
-        message: state.error.toString(),
+        error: state.error!,
         onRetry: _reload,
       );
     }

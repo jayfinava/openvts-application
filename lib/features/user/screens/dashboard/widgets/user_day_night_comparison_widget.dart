@@ -40,8 +40,7 @@ class _UserDayNightComparisonWidgetState
   @override
   void initState() {
     super.initState();
-    _selectedVehicleId =
-        userDashboardPropString(widget.config.props, const [
+    _selectedVehicleId = userDashboardPropString(widget.config.props, const [
           'vehicleId',
           'vehicle_id',
         ]) ??
@@ -130,17 +129,16 @@ class _UserDayNightComparisonWidgetState
 
   Widget _buildBody(
     AsyncValue<
-      ({
-        List<UserDashboardVehicleOption> vehicles,
-        UserDashboardDayNightComparison comparison,
-      })
-    >
-    state,
+            ({
+              List<UserDashboardVehicleOption> vehicles,
+              UserDashboardDayNightComparison comparison,
+            })>
+        state,
     UnitFormatter unitFormatter,
   ) {
     if (state.hasError) {
       return UserDashboardWidgetError(
-        message: state.error.toString(),
+        error: state.error!,
         onRetry: _reload,
       );
     }
@@ -357,9 +355,8 @@ class _DayNightChartPainter extends CustomPainter {
     final chartWidth = math.max(size.width - left - right, 1).toDouble();
     final chartHeight = math.max(size.height - top - bottom, 1).toDouble();
     final origin = Offset(left, top + chartHeight);
-    final visiblePoints = points.length > 14
-        ? points.sublist(points.length - 14)
-        : points;
+    final visiblePoints =
+        points.length > 14 ? points.sublist(points.length - 14) : points;
     final maxValue = visiblePoints.fold<double>(0, (maxValue, point) {
       return math.max(
         maxValue,
@@ -392,11 +389,9 @@ class _DayNightChartPainter extends CustomPainter {
     for (var index = 0; index < visiblePoints.length; index++) {
       final point = visiblePoints[index];
       final centerX = left + slot * index + slot / 2;
-      final dayHeight =
-          chartHeight *
+      final dayHeight = chartHeight *
           (metric.valueOf(point.day) / scale).clamp(0.0, 1.0).toDouble();
-      final nightHeight =
-          chartHeight *
+      final nightHeight = chartHeight *
           (metric.valueOf(point.night) / scale).clamp(0.0, 1.0).toDouble();
 
       canvas.drawRRect(

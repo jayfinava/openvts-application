@@ -1,16 +1,119 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_exception.dart';
+import '../../../shared/paging/server_list_pager.dart';
 import '../models/admin_inventory_model.dart';
 import '../models/admin_inventory_state.dart';
 import '../services/admin_inventory_service.dart';
 
 class AdminInventoryController extends StateNotifier<AdminInventoryState> {
-  AdminInventoryController({required AdminInventoryService service})
+  AdminInventoryController(
+      {required AdminInventoryService service,
+      this.devicesPager,
+      this.simsPager})
       : _service = service,
-        super(const AdminInventoryState.initial());
+        super(const AdminInventoryState.initial()) {
+    devicesPager?.onChanged = _syncDevicesPage;
+    simsPager?.onChanged = _syncSimsPage;
+  }
 
+  final ServerListPager<AdminInventoryDevice>? devicesPager;
+  final ServerListPager<AdminInventorySimCard>? simsPager;
+  bool get isServerPaged => devicesPager != null;
+  void _syncDevicesPage() {
+    final p = devicesPager!;
+    if (!mounted) return;
+    state = state.copyWith(
+        devices: p.items,
+        filteredDevices: p.items,
+        devicesPagination: p.meta,
+        deviceCurrentPage: p.meta?.page ?? state.deviceCurrentPage,
+        deviceRecordsPerPage: p.meta?.limit ?? state.deviceRecordsPerPage,
+        isLoadingDevices: p.loading && p.meta == null,
+        isRefreshingDevices: p.loading && p.meta != null,
+        devicesErrorMessage: p.error);
+  }
+
+  void _syncSimsPage() {
+    final p = simsPager!;
+    if (!mounted) return;
+    state = state.copyWith(
+        simCards: p.items,
+        filteredSimCards: p.items,
+        simsPagination: p.meta,
+        simCurrentPage: p.meta?.page ?? state.simCurrentPage,
+        simRecordsPerPage: p.meta?.limit ?? state.simRecordsPerPage,
+        isLoadingSimCards: p.loading && p.meta == null,
+        isRefreshingSimCards: p.loading && p.meta != null,
+        simCardsErrorMessage: p.error);
+  }
+
+  @override
+  void dispose() {
+    devicesPager?.dispose();
+    simsPager?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _queryDevicesPage({bool debounce = false}) =>
+      devicesPager!.change(
+          page: 1,
+          search: state.deviceSearchQuery,
+          debounce: debounce,
+          sortBy: switch (state.deviceSortOption) {
+            AdminInventoryDeviceSortOption.imeiAsc => 'imei',
+            AdminInventoryDeviceSortOption.typeAsc => 'deviceType',
+            AdminInventoryDeviceSortOption.activeFirst => 'isActive',
+            _ => 'createdAt'
+          },
+          sortDir: state.deviceSortOption ==
+                      AdminInventoryDeviceSortOption.imeiAsc ||
+                  state.deviceSortOption ==
+                      AdminInventoryDeviceSortOption.typeAsc
+              ? 'asc'
+              : 'desc',
+          filters: {
+            if (state.deviceStatusFilter != AdminInventoryStatusFilter.all)
+              'status': state.deviceStatusFilter.name == 'inStock'
+                  ? 'IN_STOCK'
+                  : state.deviceStatusFilter.name == 'inUse'
+                      ? 'IN_USE'
+                      : 'IN_SCRAP',
+            if (state.deviceActiveFilter != AdminInventoryActiveFilter.all)
+              'isActive':
+                  state.deviceActiveFilter == AdminInventoryActiveFilter.active
+          });
+  Future<void> _querySimsPage({bool debounce = false}) => simsPager!.change(
+          page: 1,
+          search: state.simSearchQuery,
+          debounce: debounce,
+          sortBy: switch (state.simSortOption) {
+            AdminInventorySimSortOption.simNumberAsc => 'simNumber',
+            AdminInventorySimSortOption.providerAsc => 'provider',
+            AdminInventorySimSortOption.activeFirst => 'isActive',
+            _ => 'id'
+          },
+          sortDir: state.simSortOption ==
+                      AdminInventorySimSortOption.simNumberAsc ||
+                  state.simSortOption == AdminInventorySimSortOption.providerAsc
+              ? 'asc'
+              : 'desc',
+          filters: {
+            if (state.simStatusFilter != AdminInventoryStatusFilter.all)
+              'status': state.simStatusFilter.name == 'inStock'
+                  ? 'IN_STOCK'
+                  : state.simStatusFilter.name == 'inUse'
+                      ? 'IN_USE'
+                      : 'IN_SCRAP',
+            if (state.simActiveFilter != AdminInventoryActiveFilter.all)
+              'isActive':
+                  state.simActiveFilter == AdminInventoryActiveFilter.active,
+            if (state.deviceProviderFilter?.isNotEmpty == true)
+              'provider': state.deviceProviderFilter
+          });
   final AdminInventoryService _service;
 
   Future<void> loadInitial() => loadDevices();
@@ -25,6 +128,7 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
   }
 
   Future<void> loadDevices() async {
+    if (devicesPager != null) return devicesPager!.load();
     final hasData = state.devices.isNotEmpty;
     state = state.copyWith(
       isLoadingDevices: !hasData,
@@ -60,6 +164,7 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
   }
 
   Future<void> loadSimCards() async {
+    if (simsPager != null) return simsPager!.load();
     final hasData = state.simCards.isNotEmpty;
     state = state.copyWith(
       isLoadingSimCards: !hasData,
@@ -101,6 +206,7 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
   }
 
   Future<void> refreshDevices() async {
+    if (devicesPager != null) return devicesPager!.load();
     final key = state.devicesRefreshKey + 1;
     state = state.copyWith(
       devicesRefreshKey: key,
@@ -129,6 +235,7 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
   }
 
   Future<void> refreshSimCards() async {
+    if (simsPager != null) return simsPager!.load();
     final key = state.simCardsRefreshKey + 1;
     state = state.copyWith(
       simCardsRefreshKey: key,
@@ -157,6 +264,11 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
   }
 
   void setDeviceSearchQuery(String value) {
+    if (devicesPager != null) {
+      state = state.copyWith(deviceSearchQuery: value);
+      unawaited(_queryDevicesPage(debounce: true));
+      return;
+    }
     state = _applyDeviceFilters(
       state.copyWith(
         deviceSearchQuery: value,
@@ -167,6 +279,11 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
   }
 
   void setSimSearchQuery(String value) {
+    if (simsPager != null) {
+      state = state.copyWith(simSearchQuery: value);
+      unawaited(_querySimsPage(debounce: true));
+      return;
+    }
     state = _applySimFilters(
       state.copyWith(
         simSearchQuery: value,
@@ -177,42 +294,77 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
   }
 
   void setDeviceStatusFilter(AdminInventoryStatusFilter value) {
+    if (devicesPager != null) {
+      state = state.copyWith(deviceStatusFilter: value);
+      unawaited(_queryDevicesPage(debounce: false));
+      return;
+    }
     state = _applyDeviceFilters(
       state.copyWith(deviceStatusFilter: value, deviceCurrentPage: 1),
     );
   }
 
   void setSimStatusFilter(AdminInventoryStatusFilter value) {
+    if (simsPager != null) {
+      state = state.copyWith(simStatusFilter: value);
+      unawaited(_querySimsPage(debounce: false));
+      return;
+    }
     state = _applySimFilters(
       state.copyWith(simStatusFilter: value, simCurrentPage: 1),
     );
   }
 
   void setDeviceActiveFilter(AdminInventoryActiveFilter value) {
+    if (devicesPager != null) {
+      state = state.copyWith(deviceActiveFilter: value);
+      unawaited(_queryDevicesPage(debounce: false));
+      return;
+    }
     state = _applyDeviceFilters(
       state.copyWith(deviceActiveFilter: value, deviceCurrentPage: 1),
     );
   }
 
   void setSimActiveFilter(AdminInventoryActiveFilter value) {
+    if (simsPager != null) {
+      state = state.copyWith(simActiveFilter: value);
+      unawaited(_querySimsPage(debounce: false));
+      return;
+    }
     state = _applySimFilters(
       state.copyWith(simActiveFilter: value, simCurrentPage: 1),
     );
   }
 
   void setDeviceSortOption(AdminInventoryDeviceSortOption value) {
+    if (devicesPager != null) {
+      state = state.copyWith(deviceSortOption: value);
+      unawaited(_queryDevicesPage(debounce: false));
+      return;
+    }
     state = _applyDeviceFilters(
       state.copyWith(deviceSortOption: value, deviceCurrentPage: 1),
     );
   }
 
   void setSimSortOption(AdminInventorySimSortOption value) {
+    if (simsPager != null) {
+      state = state.copyWith(simSortOption: value);
+      unawaited(_querySimsPage(debounce: false));
+      return;
+    }
     state = _applySimFilters(
       state.copyWith(simSortOption: value, simCurrentPage: 1),
     );
   }
 
   void setDeviceProviderFilter(String? value) {
+    if (simsPager != null) {
+      state = state.copyWith(deviceProviderFilter: value);
+      unawaited(_querySimsPage());
+      return;
+    }
     final normalized = value?.trim();
     state = _applySimFilters(
       state.copyWith(
@@ -224,22 +376,47 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
   }
 
   void setDeviceRecordsPerPage(int value) {
+    if (devicesPager != null) {
+      unawaited(devicesPager!.change(page: 1, limit: value));
+      return;
+    }
     state = state.copyWith(deviceRecordsPerPage: value, deviceCurrentPage: 1);
   }
 
   void setSimRecordsPerPage(int value) {
+    if (simsPager != null) {
+      unawaited(simsPager!.change(page: 1, limit: value));
+      return;
+    }
     state = state.copyWith(simRecordsPerPage: value, simCurrentPage: 1);
   }
 
   void goToDevicePage(int value) {
+    if (devicesPager != null) {
+      unawaited(devicesPager!.goToPage(value));
+      return;
+    }
     state = state.copyWith(deviceCurrentPage: value);
   }
 
   void goToSimPage(int value) {
+    if (simsPager != null) {
+      unawaited(simsPager!.goToPage(value));
+      return;
+    }
     state = state.copyWith(simCurrentPage: value);
   }
 
   void clearDeviceFilters() {
+    if (devicesPager != null) {
+      state = state.copyWith(
+          deviceSearchQuery: '',
+          deviceStatusFilter: AdminInventoryStatusFilter.all,
+          deviceActiveFilter: AdminInventoryActiveFilter.all,
+          deviceSortOption: AdminInventoryDeviceSortOption.newest);
+      unawaited(_queryDevicesPage());
+      return;
+    }
     state = _applyDeviceFilters(
       state.copyWith(
         deviceSearchQuery: '',
@@ -252,6 +429,16 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
   }
 
   void clearSimFilters() {
+    if (simsPager != null) {
+      state = state.copyWith(
+          simSearchQuery: '',
+          simStatusFilter: AdminInventoryStatusFilter.all,
+          simActiveFilter: AdminInventoryActiveFilter.all,
+          simSortOption: AdminInventorySimSortOption.newest,
+          deviceProviderFilter: null);
+      unawaited(_querySimsPage());
+      return;
+    }
     state = _applySimFilters(
       state.copyWith(
         simSearchQuery: '',
@@ -304,8 +491,11 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
     try {
       final device = await _service.createDevice(request);
       if (!mounted) return null;
-      state = state.copyWith(isCreating: false, createErrorMessage: null);
-      await refreshDevices();
+      state = _applyDeviceFilters(state.copyWith(devices: [
+        device,
+        ...state.devices.where((item) => item.id != device.id)
+      ], isCreating: false, createErrorMessage: null));
+      unawaited(refreshDevices());
       return device;
     } catch (error) {
       if (!mounted) return null;
@@ -324,7 +514,7 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
       await _service.createSimCard(request);
       if (!mounted) return false;
       state = state.copyWith(isCreating: false, createErrorMessage: null);
-      await refreshSimCards();
+      unawaited(refreshSimCards());
       return true;
     } catch (error) {
       if (!mounted) return false;
@@ -344,7 +534,7 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
       await _service.createDeviceAndSim(request);
       if (!mounted) return false;
       state = state.copyWith(isCreating: false, createErrorMessage: null);
-      await Future.wait([refreshDevices(), refreshSimCards()]);
+      unawaited(Future.wait([refreshDevices(), refreshSimCards()]));
       return true;
     } catch (error) {
       if (!mounted) return false;
@@ -411,6 +601,9 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
   }
 
   AdminInventoryState _applyDeviceFilters(AdminInventoryState next) {
+    if (devicesPager != null) {
+      return next.copyWith(filteredDevices: next.devices);
+    }
     final normalized = next.deviceSearchQuery.trim().toLowerCase();
 
     final filtered = next.devices.where((item) {
@@ -475,6 +668,9 @@ class AdminInventoryController extends StateNotifier<AdminInventoryState> {
   }
 
   AdminInventoryState _applySimFilters(AdminInventoryState next) {
+    if (simsPager != null) {
+      return next.copyWith(filteredSimCards: next.simCards);
+    }
     final normalized = next.simSearchQuery.trim().toLowerCase();
 
     final filtered = next.simCards.where((item) {

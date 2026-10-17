@@ -29,11 +29,24 @@ class _PersistentMapBottomDrawer extends StatefulWidget {
 class _PersistentMapBottomDrawerState
     extends State<_PersistentMapBottomDrawer> {
   late final DraggableScrollableController _sheetController;
+  late bool _keepDrawerMounted;
+  List<VehicleSummary> _drawerVehicles = const [];
 
   @override
   void initState() {
     super.initState();
     _sheetController = DraggableScrollableController();
+    _keepDrawerMounted = widget.isOpen;
+    _drawerVehicles = widget.vehicles;
+  }
+
+  @override
+  void didUpdateWidget(covariant _PersistentMapBottomDrawer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isOpen) {
+      _keepDrawerMounted = true;
+      _drawerVehicles = widget.vehicles;
+    }
   }
 
   @override
@@ -50,41 +63,52 @@ class _PersistentMapBottomDrawerState
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOutCubic,
         offset: widget.isOpen ? Offset.zero : const Offset(0, 1.08),
-        child: SafeArea(
-          top: false,
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: DraggableScrollableSheet(
-              controller: _sheetController,
-              expand: false,
-              initialChildSize: _mapDrawerInitialChildSize,
-              minChildSize: _mapDrawerMinChildSize,
-              maxChildSize: _mapDrawerMaxChildSize,
-              snap: true,
-              snapSizes: const [
-                _mapDrawerMinChildSize,
-                _mapDrawerInitialChildSize,
-                _mapDrawerMaxChildSize,
-              ],
-              builder: (context, scrollController) {
-                return _MapBottomDrawer(
-                  vehicles: widget.vehicles,
-                  alerts: widget.alerts,
-                  isAlertsLoading: widget.isAlertsLoading,
-                  onClose: widget.onClose,
-                  onVehicleSelected: widget.onVehicleSelected,
-                  selectedHistorySegmentId: widget.selectedHistorySegmentId,
-                  onHistoryEntrySelected: widget.onHistoryEntrySelected,
-                  sheetController: _sheetController,
-                  minChildSize: _mapDrawerMinChildSize,
-                  initialChildSize: _mapDrawerInitialChildSize,
-                  maxChildSize: _mapDrawerMaxChildSize,
-                  scrollController: scrollController,
-                );
-              },
-            ),
-          ),
-        ),
+        onEnd: () {
+          if (!widget.isOpen && _keepDrawerMounted && mounted) {
+            setState(() {
+              _keepDrawerMounted = false;
+              _drawerVehicles = const [];
+            });
+          }
+        },
+        child: !_keepDrawerMounted
+            ? const SizedBox.shrink()
+            : SafeArea(
+                top: false,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: DraggableScrollableSheet(
+                    controller: _sheetController,
+                    expand: false,
+                    initialChildSize: _mapDrawerInitialChildSize,
+                    minChildSize: _mapDrawerMinChildSize,
+                    maxChildSize: _mapDrawerMaxChildSize,
+                    snap: true,
+                    snapSizes: const [
+                      _mapDrawerMinChildSize,
+                      _mapDrawerInitialChildSize,
+                      _mapDrawerMaxChildSize,
+                    ],
+                    builder: (context, scrollController) {
+                      return _MapBottomDrawer(
+                        vehicles: _drawerVehicles,
+                        alerts: widget.alerts,
+                        isAlertsLoading: widget.isAlertsLoading,
+                        onClose: widget.onClose,
+                        onVehicleSelected: widget.onVehicleSelected,
+                        selectedHistorySegmentId:
+                            widget.selectedHistorySegmentId,
+                        onHistoryEntrySelected: widget.onHistoryEntrySelected,
+                        sheetController: _sheetController,
+                        minChildSize: _mapDrawerMinChildSize,
+                        initialChildSize: _mapDrawerInitialChildSize,
+                        maxChildSize: _mapDrawerMaxChildSize,
+                        scrollController: scrollController,
+                      );
+                    },
+                  ),
+                ),
+              ),
       ),
     );
   }
@@ -190,18 +214,38 @@ class _MapSideActionButtons extends StatelessWidget {
     required this.onNorthResetTap,
     required this.onLayerTap,
     required this.onSettingsTap,
+    this.followEnabled,
+    this.onFollowTap,
   });
 
   final bool showNorthReset;
   final VoidCallback onNorthResetTap;
   final VoidCallback onLayerTap;
   final VoidCallback onSettingsTap;
+  final bool? followEnabled;
+  final VoidCallback? onFollowTap;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        if (followEnabled != null) ...[
+          Tooltip(
+            message: followEnabled!
+                ? context.mobileText('Pause following vehicle')
+                : context.mobileText('Follow vehicle'),
+            child: IconButton.filledTonal(
+              key: const ValueKey('single-vehicle-follow-control'),
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+              onPressed: onFollowTap,
+              isSelected: followEnabled,
+              icon: const Icon(Icons.my_location_rounded),
+              selectedIcon: const Icon(Icons.gps_fixed_rounded),
+            ),
+          ),
+          const SizedBox(height: 10),
+        ],
         if (showNorthReset) ...[
           _MapNorthResetButton(onTap: onNorthResetTap),
           const SizedBox(height: 10),
@@ -563,491 +607,344 @@ class _MapLayerCard extends StatelessWidget {
 
 class _MapLayerPreview extends StatelessWidget {
   const _MapLayerPreview({required this.option});
-
   final _MapLayerOption option;
-
   @override
   Widget build(BuildContext context) {
     switch (option.previewStyle) {
       case _LayerPreviewStyle.road:
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
+        return Stack(fit: StackFit.expand, children: [
+          const DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFD6F1E4), Color(0xFFB8E3E8)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-            Positioned(
+                  gradient: LinearGradient(
+                      colors: [Color(0xFFD6F1E4), Color(0xFFB8E3E8)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight))),
+          Positioned(
               left: -8,
               bottom: -6,
               child: Transform.rotate(
-                angle: -0.28,
-                child: Container(
-                  width: 70,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF7EFE0),
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
+                  angle: -0.28,
+                  child: Container(
+                      width: 70,
+                      height: 30,
+                      decoration: BoxDecoration(
+                          color: const Color(0xFFF7EFE0),
+                          borderRadius: BorderRadius.circular(18))))),
+          Positioned(
               right: -6,
               top: -4,
               child: Transform.rotate(
-                angle: 0.8,
-                child: Container(
-                  width: 56,
-                  height: 18,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF7EC6DF),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
+                  angle: 0.8,
+                  child: Container(
+                      width: 56,
+                      height: 18,
+                      decoration: BoxDecoration(
+                          color: const Color(0xFF7EC6DF),
+                          borderRadius: BorderRadius.circular(14))))),
+          Positioned(
               left: 18,
               top: 10,
               child: Transform.rotate(
-                angle: -0.75,
-                child: Container(
-                  width: 60,
-                  height: 7,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
+                  angle: -0.75,
+                  child: Container(
+                      width: 60,
+                      height: 7,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10)))))
+        ]);
       case _LayerPreviewStyle.satellite:
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
+        return Stack(fit: StackFit.expand, children: [
+          const DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF6A7266), Color(0xFF444A42)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-            Positioned(
+                  gradient: LinearGradient(
+                      colors: [Color(0xFF6A7266), Color(0xFF444A42)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight))),
+          Positioned(
               left: -8,
               top: 22,
               child: Transform.rotate(
-                angle: 0.64,
-                child: Container(
-                  width: 92,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD3D1CB),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
+                  angle: 0.64,
+                  child: Container(
+                      width: 92,
+                      height: 12,
+                      decoration: BoxDecoration(
+                          color: const Color(0xFFD3D1CB),
+                          borderRadius: BorderRadius.circular(8))))),
+          Positioned(
               left: -6,
               top: 24,
               child: Transform.rotate(
-                angle: 0.64,
-                child: Container(
-                  width: 92,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF7D8378),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
+                  angle: 0.64,
+                  child: Container(
+                      width: 92,
+                      height: 4,
+                      decoration: BoxDecoration(
+                          color: const Color(0xFF7D8378),
+                          borderRadius: BorderRadius.circular(8)))))
+        ]);
       case _LayerPreviewStyle.terrain:
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
+        return Stack(fit: StackFit.expand, children: [
+          const DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFD6E0D0), Color(0xFFA9BC9D)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-            Positioned(
+                  gradient: LinearGradient(
+                      colors: [Color(0xFFD6E0D0), Color(0xFFA9BC9D)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight))),
+          Positioned(
               right: -8,
               top: -6,
               child: Transform.rotate(
-                angle: 0.42,
-                child: Container(
-                  width: 50,
-                  height: 82,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF4F0E6),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
+                  angle: 0.42,
+                  child: Container(
+                      width: 50,
+                      height: 82,
+                      decoration: BoxDecoration(
+                          color: const Color(0xFFF4F0E6),
+                          borderRadius: BorderRadius.circular(24))))),
+          Positioned(
               right: 10,
               top: 4,
               child: Transform.rotate(
-                angle: 0.38,
-                child: Container(
-                  width: 7,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF7BB9A8),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
+                  angle: 0.38,
+                  child: Container(
+                      width: 7,
+                      height: 70,
+                      decoration: BoxDecoration(
+                          color: const Color(0xFF7BB9A8),
+                          borderRadius: BorderRadius.circular(10)))))
+        ]);
       case _LayerPreviewStyle.hybrid:
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
+        return Stack(fit: StackFit.expand, children: [
+          const DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF49514A), Color(0xFF313731)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-            Positioned(
+                  gradient: LinearGradient(
+                      colors: [Color(0xFF49514A), Color(0xFF313731)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight))),
+          Positioned(
               left: -8,
               top: 22,
               child: Transform.rotate(
-                angle: 0.58,
-                child: Container(
-                  width: 96,
-                  height: 11,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
+                  angle: 0.58,
+                  child: Container(
+                      width: 96,
+                      height: 11,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8))))),
+          Positioned(
               left: -6,
               top: 24,
               child: Transform.rotate(
-                angle: 0.58,
-                child: Container(
-                  width: 96,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF879180),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
+                  angle: 0.58,
+                  child: Container(
+                      width: 96,
+                      height: 4,
+                      decoration: BoxDecoration(
+                          color: const Color(0xFF879180),
+                          borderRadius: BorderRadius.circular(8)))))
+        ]);
       case _LayerPreviewStyle.osm:
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
+        return Stack(fit: StackFit.expand, children: [
+          const DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFE8F5EC), Color(0xFFD6E7F3)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-            Positioned(
+                  gradient: LinearGradient(
+                      colors: [Color(0xFFE8F5EC), Color(0xFFD6E7F3)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight))),
+          Positioned(
               left: -4,
               bottom: 10,
               child: Transform.rotate(
-                angle: 0.1,
-                child: Container(
-                  width: 86,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F1E3),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
+                  angle: 0.1,
+                  child: Container(
+                      width: 86,
+                      height: 10,
+                      decoration: BoxDecoration(
+                          color: const Color(0xFFF8F1E3),
+                          borderRadius: BorderRadius.circular(12))))),
+          Positioned(
               left: 8,
               top: -10,
               child: Transform.rotate(
-                angle: 0.8,
-                child: Container(
-                  width: 54,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
+                  angle: 0.8,
+                  child: Container(
+                      width: 54,
+                      height: 10,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10)))))
+        ]);
       case _LayerPreviewStyle.dark:
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
+        return Stack(fit: StackFit.expand, children: [
+          const DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF22272E), Color(0xFF111419)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-            Positioned(
+                  gradient: LinearGradient(
+                      colors: [Color(0xFF22272E), Color(0xFF111419)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight))),
+          Positioned(
               left: 6,
               top: 10,
               child: Container(
-                width: 56,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.7),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            Positioned(
+                  width: 56,
+                  height: 5,
+                  decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.7),
+                      borderRadius: BorderRadius.circular(8)))),
+          Positioned(
               right: 6,
               bottom: 12,
               child: Container(
-                width: 44,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-          ],
-        );
+                  width: 44,
+                  height: 5,
+                  decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(8))))
+        ]);
       case _LayerPreviewStyle.light:
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
+        return Stack(fit: StackFit.expand, children: [
+          const DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFF8F8F8), Color(0xFFE8ECEF)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-            Positioned(
+                  gradient: LinearGradient(
+                      colors: [Color(0xFFF8F8F8), Color(0xFFE8ECEF)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight))),
+          Positioned(
               left: -2,
               bottom: 12,
               child: Container(
-                width: 88,
-                height: 7,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFC7CDD3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            Positioned(
+                  width: 88,
+                  height: 7,
+                  decoration: BoxDecoration(
+                      color: const Color(0xFFC7CDD3),
+                      borderRadius: BorderRadius.circular(10)))),
+          Positioned(
               left: 12,
               top: -8,
               child: Transform.rotate(
-                angle: 0.84,
-                child: Container(
-                  width: 54,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD4D8DE),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
+                  angle: 0.84,
+                  child: Container(
+                      width: 54,
+                      height: 6,
+                      decoration: BoxDecoration(
+                          color: const Color(0xFFD4D8DE),
+                          borderRadius: BorderRadius.circular(8)))))
+        ]);
       case _LayerPreviewStyle.voyager:
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
+        return Stack(fit: StackFit.expand, children: [
+          const DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFE5F6F1), Color(0xFFF4F3E6)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-            Positioned(
+                  gradient: LinearGradient(
+                      colors: [Color(0xFFE5F6F1), Color(0xFFF4F3E6)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight))),
+          Positioned(
               left: 10,
               top: 10,
               child: Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  border: Border.all(color: const Color(0xFF87C8B4), width: 7),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-            Positioned(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                      border:
+                          Border.all(color: const Color(0xFF87C8B4), width: 7),
+                      shape: BoxShape.circle))),
+          Positioned(
               left: -10,
               top: 22,
               child: Container(
-                width: 60,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFB7D9E7),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ],
-        );
+                  width: 60,
+                  height: 8,
+                  decoration: BoxDecoration(
+                      color: const Color(0xFFB7D9E7),
+                      borderRadius: BorderRadius.circular(10))))
+        ]);
       case _LayerPreviewStyle.esriSatellite:
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
+        return Stack(fit: StackFit.expand, children: [
+          const DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF4E5C58), Color(0xFF29322F)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-            Positioned(
+                  gradient: LinearGradient(
+                      colors: [Color(0xFF4E5C58), Color(0xFF29322F)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight))),
+          Positioned(
               right: -12,
               top: 8,
               child: Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6F8D86).withValues(alpha: 0.7),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-            Positioned(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                      color: const Color(0xFF6F8D86).withValues(alpha: 0.7),
+                      shape: BoxShape.circle))),
+          Positioned(
               left: 8,
               bottom: 8,
               child: Container(
-                width: 36,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.72),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ],
-        );
+                  width: 36,
+                  height: 8,
+                  decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.72),
+                      borderRadius: BorderRadius.circular(10))))
+        ]);
       case _LayerPreviewStyle.toner:
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
-              decoration: BoxDecoration(color: Color(0xFFF4F4F4)),
-            ),
-            Positioned(
+        return Stack(fit: StackFit.expand, children: [
+          const DecoratedBox(
+              decoration: BoxDecoration(color: Color(0xFFF4F4F4))),
+          Positioned(
               left: -10,
               top: 20,
               child: Transform.rotate(
-                angle: 0.55,
-                child: Container(
-                  width: 100,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
+                  angle: 0.55,
+                  child: Container(
+                      width: 100,
+                      height: 10,
+                      decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(10))))),
+          Positioned(
               left: 18,
               bottom: 14,
               child: Container(
-                width: 38,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.65),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-          ],
-        );
+                  width: 38,
+                  height: 5,
+                  decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.65),
+                      borderRadius: BorderRadius.circular(8))))
+        ]);
       case _LayerPreviewStyle.watercolor:
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
+        return Stack(fit: StackFit.expand, children: [
+          const DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFF8E2D0), Color(0xFFD6ECF2)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-            Positioned(
+                  gradient: LinearGradient(
+                      colors: [Color(0xFFF8E2D0), Color(0xFFD6ECF2)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight))),
+          Positioned(
               left: -8,
               top: 4,
               child: Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE3C8A5).withValues(alpha: 0.7),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-            Positioned(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                      color: const Color(0xFFE3C8A5).withValues(alpha: 0.7),
+                      shape: BoxShape.circle))),
+          Positioned(
               right: -6,
               bottom: -6,
               child: Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF8EC3D9).withValues(alpha: 0.72),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ],
-        );
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                      color: const Color(0xFF8EC3D9).withValues(alpha: 0.72),
+                      shape: BoxShape.circle)))
+        ]);
     }
   }
 }
 
-class _MapSettingsDrawer extends StatefulWidget {
+class _MapSettingsDrawer extends ConsumerStatefulWidget {
   const _MapSettingsDrawer({
     required this.initialSettings,
     required this.config,
@@ -1059,10 +956,10 @@ class _MapSettingsDrawer extends StatefulWidget {
   final ValueChanged<_MapVisualSettings> onChanged;
 
   @override
-  State<_MapSettingsDrawer> createState() => _MapSettingsDrawerState();
+  ConsumerState<_MapSettingsDrawer> createState() => _MapSettingsDrawerState();
 }
 
-class _MapSettingsDrawerState extends State<_MapSettingsDrawer> {
+class _MapSettingsDrawerState extends ConsumerState<_MapSettingsDrawer> {
   late _MapVisualSettings _settings;
 
   @override
@@ -1094,7 +991,7 @@ class _MapSettingsDrawerState extends State<_MapSettingsDrawer> {
         icon: Icons.layers_outlined,
         title: context.mobileText('Cluster'),
         subtitle: context.mobileText(
-          'Group nearby vehicles into clusters at lower zoom',
+          'Group nearby vehicles. Dense views are grouped automatically to keep the map responsive.',
         ),
         value: _settings.cluster,
         onChanged: (value) => _update(_settings.copyWith(cluster: value)),
@@ -1144,7 +1041,35 @@ class _MapSettingsDrawerState extends State<_MapSettingsDrawer> {
       separatorBuilder: (_, __) => const SizedBox(height: 6),
       itemBuilder: (context, index) {
         final item = items[index];
-        return _MapSettingTile(data: item);
+        final AsyncValue<dynamic>? overlay = switch (item.icon) {
+          Icons.hexagon_outlined when _settings.geofence =>
+            ref.watch(liveMapGeofencesProvider),
+          Icons.place_outlined when _settings.poi =>
+            ref.watch(liveMapPoisProvider),
+          Icons.route_outlined when _settings.route =>
+            ref.watch(liveMapRoutesProvider),
+          _ => null,
+        };
+        return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _MapSettingTile(data: item),
+              if (overlay?.hasError == true)
+                TextButton.icon(
+                    icon: const Icon(Icons.refresh),
+                    label: Text(context.mobileText('Retry')),
+                    onPressed: () {
+                      if (item.icon == Icons.hexagon_outlined) {
+                        ref.invalidate(liveMapGeofencesProvider);
+                      }
+                      if (item.icon == Icons.place_outlined) {
+                        ref.invalidate(liveMapPoisProvider);
+                      }
+                      if (item.icon == Icons.route_outlined) {
+                        ref.invalidate(liveMapRoutesProvider);
+                      }
+                    }),
+            ]);
       },
     );
   }
@@ -1233,7 +1158,7 @@ class _SettingTileData {
   final ValueChanged<bool> onChanged;
 }
 
-class _MapBottomDrawer extends StatefulWidget {
+class _MapBottomDrawer extends ConsumerStatefulWidget {
   const _MapBottomDrawer({
     required this.vehicles,
     required this.alerts,
@@ -1263,19 +1188,21 @@ class _MapBottomDrawer extends StatefulWidget {
   final ScrollController scrollController;
 
   @override
-  State<_MapBottomDrawer> createState() => _MapBottomDrawerState();
+  ConsumerState<_MapBottomDrawer> createState() => _MapBottomDrawerState();
 }
 
-class _MapBottomDrawerState extends State<_MapBottomDrawer>
+class _MapBottomDrawerState extends ConsumerState<_MapBottomDrawer>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   late final TextEditingController _vehicleSearchController;
   int _selectedTabIndex = 0;
+  late final LiveMapController _liveController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _liveController = ref.read(liveMapControllerProvider.notifier);
     _vehicleSearchController = TextEditingController()
       ..addListener(_handleVehicleSearchChanged);
   }
@@ -1286,6 +1213,9 @@ class _MapBottomDrawerState extends State<_MapBottomDrawer>
       ..removeListener(_handleVehicleSearchChanged)
       ..dispose();
     _tabController.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_liveController.mounted) _liveController.setAlertsVisible(false);
+    });
     super.dispose();
   }
 
@@ -1305,6 +1235,7 @@ class _MapBottomDrawerState extends State<_MapBottomDrawer>
     setState(() {
       _selectedTabIndex = index;
     });
+    ref.read(liveMapControllerProvider.notifier).setAlertsVisible(index == 2);
   }
 
   @override
@@ -1394,23 +1325,29 @@ class _MapBottomDrawerState extends State<_MapBottomDrawer>
 
   Widget _buildActiveTabBody() {
     return switch (_selectedTabIndex) {
-      0 => _VehiclesTab(
-        vehicles: widget.vehicles,
-        onVehicleSelected: widget.onVehicleSelected,
-        searchController: _vehicleSearchController,
-        scrollController: widget.scrollController,
-      ),
+      0 => ref.watch(liveMapControllerProvider).fleet != null
+          ? _FleetVehiclesTab(
+              onVehicleSelected: widget.onVehicleSelected,
+              searchController: _vehicleSearchController,
+              scrollController: widget.scrollController,
+            )
+          : _VehiclesTab(
+              vehicles: widget.vehicles,
+              onVehicleSelected: widget.onVehicleSelected,
+              searchController: _vehicleSearchController,
+              scrollController: widget.scrollController,
+            ),
       1 => _HistoryTab(
-        vehicles: widget.vehicles,
-        selectedHistorySegmentId: widget.selectedHistorySegmentId,
-        onEntrySelected: widget.onHistoryEntrySelected,
-        scrollController: widget.scrollController,
-      ),
+          vehicles: widget.vehicles,
+          selectedHistorySegmentId: widget.selectedHistorySegmentId,
+          onEntrySelected: widget.onHistoryEntrySelected,
+          scrollController: widget.scrollController,
+        ),
       _ => _AlertsTab(
-        alerts: widget.alerts,
-        isLoading: widget.isAlertsLoading,
-        scrollController: widget.scrollController,
-      ),
+          alerts: widget.alerts,
+          isLoading: widget.isAlertsLoading,
+          scrollController: widget.scrollController,
+        ),
     };
   }
 }

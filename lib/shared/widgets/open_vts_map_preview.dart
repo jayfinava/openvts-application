@@ -27,9 +27,8 @@ class OpenVtsMapPreview extends StatelessWidget {
         ),
         children: [
           TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'com.openvts.mobile',
-          ),
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.openvts.mobile'),
           MarkerLayer(
             markers: vehicles
                 .map(

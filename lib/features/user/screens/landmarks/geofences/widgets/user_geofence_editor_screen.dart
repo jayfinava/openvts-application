@@ -9,13 +9,14 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../../shared/helpers/mobile_text.dart';
 import '../../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../../shared/widgets/open_vts_map_layer_selector.dart';
+
 import '../../../../controllers/user_landmark_geometry_editor_controller.dart';
 import '../../../../controllers/user_providers.dart';
 import '../../../../models/user_landmark_model.dart';
@@ -119,8 +120,7 @@ class _UserGeofenceEditorScreenState
     _searchCtrl = TextEditingController();
     _searchFocus = FocusNode();
     _ownsNominatimDio = widget.searchClient == null;
-    _nominatimDio =
-        widget.searchClient ??
+    _nominatimDio = widget.searchClient ??
         Dio(
           BaseOptions(
             connectTimeout: const Duration(seconds: 6),
@@ -378,8 +378,7 @@ class _UserGeofenceEditorScreenState
   /// Best human-readable primary label from a Nominatim result.
   String _primaryLabel(Map<String, dynamic> item, Map<String, dynamic>? addr) {
     if (addr != null) {
-      final name =
-          addr['name']?.toString().trim() ??
+      final name = addr['name']?.toString().trim() ??
           addr['amenity']?.toString().trim() ??
           addr['building']?.toString().trim() ??
           addr['road']?.toString().trim();
@@ -469,12 +468,12 @@ class _UserGeofenceEditorScreenState
     final interactFlags = _dragActive
         ? InteractiveFlag.none
         : InteractiveFlag.drag |
-              InteractiveFlag.pinchZoom |
-              InteractiveFlag.doubleTapZoom |
-              InteractiveFlag.scrollWheelZoom;
+            InteractiveFlag.pinchZoom |
+            InteractiveFlag.doubleTapZoom |
+            InteractiveFlag.scrollWheelZoom;
 
     return Scaffold(
-      backgroundColor: OpenVtsColors.background,
+      backgroundColor: OpenVtsMapColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -491,8 +490,7 @@ class _UserGeofenceEditorScreenState
                     child: FlutterMap(
                       mapController: _mapController,
                       options: MapOptions(
-                        initialCenter:
-                            widget.initialCenter ??
+                        initialCenter: widget.initialCenter ??
                             const LatLng(20.5937, 78.9629),
                         initialZoom: widget.initialCenter == null ? 5 : 14,
                         minZoom: 3,
@@ -615,11 +613,10 @@ class _UserGeofenceEditorScreenState
     final selectedLayer = _getSelectedLayer();
     final layers = <Widget>[
       TileLayer(
-        key: ValueKey<String>(_selectedLayerId),
-        urlTemplate: selectedLayer.url,
-        subdomains: selectedLayer.subdomains,
-        userAgentPackageName: 'com.openvts.mobile',
-      ),
+          key: ValueKey<String>(_selectedLayerId),
+          urlTemplate: selectedLayer.url,
+          subdomains: selectedLayer.subdomains,
+          userAgentPackageName: 'com.openvts.mobile'),
     ];
 
     switch (state.editorMode) {
@@ -664,8 +661,8 @@ class _UserGeofenceEditorScreenState
               point: center,
               radius: state.circleRadiusM!,
               useRadiusInMeter: true,
-              color: OpenVtsColors.info.withValues(alpha: 0.18),
-              borderColor: OpenVtsColors.brandInk,
+              color: OpenVtsMapColors.info.withValues(alpha: 0.18),
+              borderColor: OpenVtsMapColors.brandInk,
               borderStrokeWidth: 2,
             ),
           ],
@@ -699,8 +696,8 @@ class _UserGeofenceEditorScreenState
           polygons: [
             Polygon(
               points: pts,
-              color: OpenVtsColors.info.withValues(alpha: 0.18),
-              borderColor: OpenVtsColors.brandInk,
+              color: OpenVtsMapColors.info.withValues(alpha: 0.18),
+              borderColor: OpenVtsMapColors.brandInk,
               borderStrokeWidth: 1.6,
             ),
           ],
@@ -713,7 +710,7 @@ class _UserGeofenceEditorScreenState
           polylines: [
             Polyline(
               points: pts,
-              color: OpenVtsColors.brandInk,
+              color: OpenVtsMapColors.brandInk,
               strokeWidth: 1.6,
             ),
           ],
@@ -753,8 +750,8 @@ class _UserGeofenceEditorScreenState
           polygons: [
             Polygon(
               points: corners,
-              color: OpenVtsColors.info.withValues(alpha: 0.18),
-              borderColor: OpenVtsColors.brandInk,
+              color: OpenVtsMapColors.info.withValues(alpha: 0.18),
+              borderColor: OpenVtsMapColors.brandInk,
               borderStrokeWidth: 1.6,
             ),
           ],
@@ -807,7 +804,7 @@ class _UserGeofenceEditorScreenState
           polylines: [
             Polyline(
               points: pts,
-              color: OpenVtsColors.brandInk,
+              color: OpenVtsMapColors.brandInk,
               strokeWidth: 3,
             ),
           ],
@@ -856,16 +853,16 @@ class _UserGeofenceEditorScreenState
     double borderWidth;
 
     if (isDragging) {
-      dotColor = OpenVtsColors.brandInk;
-      borderColor = OpenVtsColors.white;
+      dotColor = OpenVtsMapColors.brandInk;
+      borderColor = OpenVtsMapColors.white;
       borderWidth = 2.5;
     } else if (isSelected) {
-      dotColor = OpenVtsColors.brandInk;
-      borderColor = OpenVtsColors.white;
+      dotColor = OpenVtsMapColors.brandInk;
+      borderColor = OpenVtsMapColors.white;
       borderWidth = 2.0;
     } else {
-      dotColor = OpenVtsColors.white;
-      borderColor = OpenVtsColors.brandInk;
+      dotColor = OpenVtsMapColors.white;
+      borderColor = OpenVtsMapColors.brandInk;
       borderWidth = 1.4;
     }
 
@@ -903,8 +900,8 @@ class _UserGeofenceEditorScreenState
                 '${index + 1}',
                 style: OpenVtsTypography.meta.copyWith(
                   color: isSelected || isDragging
-                      ? OpenVtsColors.white
-                      : OpenVtsColors.brandInk,
+                      ? OpenVtsMapColors.white
+                      : OpenVtsMapColors.brandInk,
                   fontWeight: FontWeight.w700,
                   fontSize: 10,
                 ),
@@ -939,9 +936,9 @@ class _UserGeofenceEditorScreenState
             width: isDragging ? dotSize + 4 : dotSize,
             height: isDragging ? dotSize + 4 : dotSize,
             decoration: BoxDecoration(
-              color: OpenVtsColors.brandInk,
+              color: OpenVtsMapColors.brandInk,
               shape: BoxShape.circle,
-              border: Border.all(color: OpenVtsColors.white, width: 2),
+              border: Border.all(color: OpenVtsMapColors.white, width: 2),
               boxShadow: isDragging
                   ? const [
                       BoxShadow(
@@ -986,8 +983,10 @@ class _UserGeofenceEditorScreenState
             width: isDragging ? dotSize + 4 : dotSize,
             height: isDragging ? dotSize + 4 : dotSize,
             decoration: BoxDecoration(
-              color: isDragging ? OpenVtsColors.brandInk : OpenVtsColors.white,
-              border: Border.all(color: OpenVtsColors.brandInk, width: 2),
+              color: isDragging
+                  ? OpenVtsMapColors.brandInk
+                  : OpenVtsMapColors.white,
+              border: Border.all(color: OpenVtsMapColors.brandInk, width: 2),
               boxShadow: isDragging
                   ? const [
                       BoxShadow(
@@ -1006,25 +1005,25 @@ class _UserGeofenceEditorScreenState
 
   /// Static (non-draggable) corner for the first tap of a rectangle.
   Marker _staticCornerMarker(LatLng point) => Marker(
-    point: point,
-    width: 16,
-    height: 16,
-    child: Container(
-      decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk,
-        border: Border.all(color: OpenVtsColors.white, width: 2),
-      ),
-    ),
-  );
+        point: point,
+        width: 16,
+        height: 16,
+        child: Container(
+          decoration: BoxDecoration(
+            color: OpenVtsMapColors.brandInk,
+            border: Border.all(color: OpenVtsMapColors.white, width: 2),
+          ),
+        ),
+      );
 
   /// Temporary pin shown after a search result is selected.
   Marker _searchPinMarker(LatLng point) => Marker(
-    point: point,
-    width: 32,
-    height: 40,
-    alignment: const Alignment(0, -1),
-    child: const _SearchPinWidget(),
-  );
+        point: point,
+        width: 32,
+        height: 40,
+        alignment: const Alignment(0, -1),
+        child: const _SearchPinWidget(),
+      );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1043,11 +1042,12 @@ class _SearchPinWidget extends StatelessWidget {
           width: 26,
           height: 26,
           decoration: BoxDecoration(
-            color: OpenVtsColors.brandInk,
+            color: OpenVtsMapColors.brandInk,
             shape: BoxShape.circle,
-            border: Border.all(color: OpenVtsColors.white, width: 2),
+            border: Border.all(color: OpenVtsMapColors.white, width: 2),
           ),
-          child: const Icon(Icons.search, size: 14, color: OpenVtsColors.white),
+          child:
+              const Icon(Icons.search, size: 14, color: OpenVtsMapColors.white),
         ),
         CustomPaint(size: const Size(10, 8), painter: _DropTailPainter()),
       ],
@@ -1058,7 +1058,7 @@ class _SearchPinWidget extends StatelessWidget {
 class _DropTailPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = OpenVtsColors.brandInk;
+    final paint = Paint()..color = OpenVtsMapColors.brandInk;
     final path = ui.Path()
       ..moveTo(0, 0)
       ..lineTo(size.width, 0)
@@ -1089,9 +1089,12 @@ class _EditorTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(
@@ -1123,7 +1126,7 @@ class _EditorTopBar extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 36,
+            height: 48,
             child: ElevatedButton(
               onPressed: onSave,
               style: ElevatedButton.styleFrom(
@@ -1169,8 +1172,10 @@ class _ModeToggleBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
 
     return Container(
       decoration: BoxDecoration(
@@ -1233,13 +1238,12 @@ class _ModeChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final selectedBg = isDark
-        ? OpenVtsColors.brandInk
-        : OpenVtsColors.textPrimary;
-    final selectedFg = OpenVtsColors.white;
+    final selectedBg =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.textPrimary;
+    final selectedFg = OpenVtsMapColors.white;
     final unselectedFg = isDark
         ? Theme.of(context).colorScheme.onSurface
-        : OpenVtsColors.textPrimary;
+        : OpenVtsMapColors.textPrimary;
 
     return InkWell(
       onTap: onTap,
@@ -1302,8 +1306,10 @@ class _EditorMapControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
 
     return Container(
       decoration: BoxDecoration(
@@ -1373,7 +1379,7 @@ class _ControlDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      const Divider(height: 1, color: OpenVtsColors.divider);
+      const Divider(height: 1, color: OpenVtsMapColors.divider);
 }
 
 class _ControlButton extends StatelessWidget {
@@ -1396,8 +1402,8 @@ class _ControlButton extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final disabled = !enabled || onTap == null;
     final activeBg = isDark
-        ? OpenVtsColors.brandInk.withValues(alpha: 0.08)
-        : OpenVtsColors.textPrimary.withValues(alpha: 0.08);
+        ? OpenVtsMapColors.brandInk.withValues(alpha: 0.08)
+        : OpenVtsMapColors.textPrimary.withValues(alpha: 0.08);
     final iconColor = disabled
         ? Theme.of(context).colorScheme.outline
         : Theme.of(context).colorScheme.onSurface;
@@ -1431,9 +1437,12 @@ class _BottomEditorPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
 
     return Container(
       decoration: BoxDecoration(
@@ -1467,7 +1476,7 @@ class _BottomEditorPanel extends StatelessWidget {
             Text(
               state.validationError!,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.error,
+                color: OpenVtsMapColors.error,
               ),
             ),
           ],
@@ -1533,8 +1542,10 @@ class _CircleControlsState extends State<_CircleControls> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
     final value = widget.state.circleRadiusM ?? 0;
 
     return Column(
@@ -1643,8 +1654,10 @@ class _LineControlsState extends State<_LineControls> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
     final value = widget.state.toleranceM ?? 0;
 
     return Row(
@@ -1713,7 +1726,8 @@ class _VertexControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
     final selected = state.selectedVertexIndex;
     final count = state.points.length;
 
@@ -1734,13 +1748,13 @@ class _VertexControls extends StatelessWidget {
             if (selected != null)
               TextButton.icon(
                 style: TextButton.styleFrom(
-                  foregroundColor: OpenVtsColors.error,
+                  foregroundColor: OpenVtsMapColors.error,
                   padding: const EdgeInsets.symmetric(
                     horizontal: OpenVtsSpacing.sm,
                     vertical: 0,
                   ),
                   minimumSize: const Size(0, 32),
-                  side: const BorderSide(color: OpenVtsColors.error),
+                  side: const BorderSide(color: OpenVtsMapColors.error),
                 ),
                 onPressed: () => controller.removePoint(selected),
                 icon: const Icon(Icons.delete_outline, size: 14),
@@ -1750,7 +1764,7 @@ class _VertexControls extends StatelessWidget {
                   }),
                   style: OpenVtsTypography.meta.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: OpenVtsColors.error,
+                    color: OpenVtsMapColors.error,
                   ),
                 ),
               ),
@@ -1777,7 +1791,8 @@ class _NudgeRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
 
     return Padding(
       padding: const EdgeInsets.only(top: OpenVtsSpacing.xs),
@@ -1821,10 +1836,10 @@ class _NudgeBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.textPrimary;
-    final borderColor = isDark
-        ? OpenVtsColors.white
-        : OpenVtsColors.textPrimary;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
 
     return Padding(
       padding: const EdgeInsets.only(left: 4),
@@ -1839,7 +1854,7 @@ class _NudgeBtn extends StatelessWidget {
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
             border: Border.all(color: borderColor),
           ),
-          child: Icon(icon, size: 14, color: OpenVtsColors.white),
+          child: Icon(icon, size: 14, color: OpenVtsMapColors.white),
         ),
       ),
     );
@@ -1886,15 +1901,18 @@ class _SearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
     final secondaryColor = isDark
-        ? OpenVtsColors.white.withValues(alpha: 0.55)
-        : OpenVtsColors.textSecondary;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+        ? OpenVtsMapColors.white.withValues(alpha: 0.55)
+        : OpenVtsMapColors.textSecondary;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
     final hintColor = isDark
-        ? OpenVtsColors.white.withValues(alpha: 0.6)
-        : OpenVtsColors.textSecondary;
+        ? OpenVtsMapColors.white.withValues(alpha: 0.6)
+        : OpenVtsMapColors.textSecondary;
 
     return Container(
       decoration: BoxDecoration(
@@ -1944,11 +1962,11 @@ class _SearchBar extends StatelessWidget {
                         ),
                       )
                     : controller.text.isNotEmpty
-                    ? IconButton(
-                        icon: Icon(Icons.close, size: 18, color: textColor),
-                        onPressed: onClear,
-                      )
-                    : null,
+                        ? IconButton(
+                            icon: Icon(Icons.close, size: 18, color: textColor),
+                            onPressed: onClear,
+                          )
+                        : null,
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 10),
               ),

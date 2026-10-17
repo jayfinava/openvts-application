@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../core/errors/error_mapper.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -122,17 +123,18 @@ class UserDashboardWidgetCard extends StatelessWidget {
 
 class UserDashboardWidgetError extends StatelessWidget {
   const UserDashboardWidgetError({
-    required this.message,
+    required this.error,
     this.onRetry,
     super.key,
   });
 
-  final String message;
+  final Object error;
   final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final failure = ErrorMapper.from(error);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
@@ -147,28 +149,35 @@ class UserDashboardWidgetError extends StatelessWidget {
           Icon(Icons.error_outline_rounded, size: 17, color: colorScheme.error),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
-            child: Text(
-              userDashboardErrorText(message),
-              style: OpenVtsTypography.meta.copyWith(
-                color: colorScheme.onErrorContainer,
-                fontWeight: FontWeight.w600,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  context.mobileText(failure.message),
+                  style: OpenVtsTypography.meta.copyWith(
+                    color: colorScheme.onErrorContainer,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (onRetry != null && failure.canRetry)
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: TextButton(
+                      onPressed: onRetry,
+                      style: TextButton.styleFrom(
+                        minimumSize: const Size(52, 48),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: OpenVtsSpacing.xs,
+                        ),
+                      ),
+                      child: Text(context.mobileText('Retry')),
+                    ),
+                  ),
+              ],
             ),
           ),
-          if (onRetry != null) ...[
-            const SizedBox(width: OpenVtsSpacing.xs),
-            TextButton(
-              onPressed: onRetry,
-              style: TextButton.styleFrom(
-                minimumSize: const Size(52, 28),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: OpenVtsSpacing.xs,
-                ),
-              ),
-              child: Text(context.mobileText('Retry')),
-            ),
-          ],
         ],
       ),
     );
@@ -376,14 +385,6 @@ String userDashboardFormatShortTime(
   if (value == null) return 'No time';
   if (formatter != null) return formatter.formatDate(value);
   return DateFormat('dd MMM, hh:mm a').format(value);
-}
-
-String userDashboardErrorText(Object error) {
-  final text = error.toString().trim();
-  if (text.startsWith('Exception: ')) {
-    return text.substring('Exception: '.length).trim();
-  }
-  return text.isEmpty ? 'Widget could not be loaded.' : text;
 }
 
 String? userDashboardPropString(Map<String, dynamic> props, List<String> keys) {

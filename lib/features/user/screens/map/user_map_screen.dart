@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import '../../../auth/controllers/auth_controller.dart';
 import '../../../live_map/controllers/live_map_providers.dart';
 import '../../../live_map/models/live_map_role_config.dart';
+import '../../../live_map/models/live_map_vehicle_target.dart';
 import '../../../live_map/screens/live_map_screen.dart';
 import '../../models/user_landmark_model.dart';
 import '../landmarks/geofences/widgets/user_geofence_form_sheet.dart';
@@ -21,7 +22,9 @@ import '../landmarks/pois/widgets/user_poi_form_sheet.dart';
 /// Non-demo sessions additionally expose a 2-second press-and-hold to create
 /// POIs and Geofences directly from the map canvas.
 class UserMapScreen extends ConsumerWidget {
-  const UserMapScreen({super.key});
+  const UserMapScreen({super.key, this.vehicleTarget});
+
+  final LiveMapVehicleTarget? vehicleTarget;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,9 +33,11 @@ class UserMapScreen extends ConsumerWidget {
     );
     return LiveMapScreen(
       config: isDemo ? LiveMapRoleConfig.demo() : LiveMapRoleConfig.user(),
+      vehicleTarget: vehicleTarget,
       onCreatePoiAt: isDemo ? null : (point) => _createPoi(context, ref, point),
-      onCreateGeofenceAt:
-          isDemo ? null : (point) => _createGeofence(context, ref, point),
+      onCreateGeofenceAt: isDemo
+          ? null
+          : (point) => _createGeofence(context, ref, point),
     );
   }
 
@@ -43,8 +48,10 @@ class UserMapScreen extends ConsumerWidget {
   ) async {
     final created = await UserPoiFormSheet.show(
       context: context,
-      initialCoordinates:
-          UserGeoPoint(lat: point.latitude, lon: point.longitude),
+      initialCoordinates: UserGeoPoint(
+        lat: point.latitude,
+        lon: point.longitude,
+      ),
     );
     if (created == null) return;
     // Invalidate the live-map POI overlay so the new POI appears immediately.

@@ -152,13 +152,12 @@ class _UserSupportConversationPaneState
       return;
     }
 
-    final detail = await ref
-        .read(userSupportControllerProvider.notifier)
-        .replyToTicket(
-          ticketId: ticket.id,
-          message: message,
-          attachments: _attachments,
-        );
+    final detail =
+        await ref.read(userSupportControllerProvider.notifier).replyToTicket(
+              ticketId: ticket.id,
+              message: message,
+              attachments: _attachments,
+            );
     if (!mounted) {
       return;
     }
@@ -696,9 +695,9 @@ Color _statusColor(BuildContext context, UserSupportTicketStatus status) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
   switch (status) {
     case UserSupportTicketStatus.open:
-      return isDark ? const Color(0xFF5DB588) : OpenVtsColors.success;
+      return isDark ? const Color(0xFF9F9F9F) : OpenVtsColors.success;
     case UserSupportTicketStatus.inProgress:
-      return isDark ? const Color(0xFFD4A852) : OpenVtsColors.warning;
+      return isDark ? const Color(0xFFABABAB) : OpenVtsColors.warning;
     case UserSupportTicketStatus.closed:
       return isDark
           ? OpenVtsColors.darkTextTertiary
@@ -710,10 +709,10 @@ Color _priorityColor(BuildContext context, UserSupportTicketPriority priority) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
   switch (priority) {
     case UserSupportTicketPriority.high:
-      return isDark ? const Color(0xFFD4A852) : OpenVtsColors.warning;
+      return isDark ? const Color(0xFFABABAB) : OpenVtsColors.warning;
     case UserSupportTicketPriority.medium:
-      return isDark ? const Color(0xFF7BAFD4) : OpenVtsColors.brandInk;
+      return isDark ? const Color(0xFFA7A7A7) : OpenVtsColors.brandInk;
     case UserSupportTicketPriority.low:
-      return isDark ? const Color(0xFF5DB588) : OpenVtsColors.success;
+      return isDark ? const Color(0xFF9F9F9F) : OpenVtsColors.success;
   }
 }

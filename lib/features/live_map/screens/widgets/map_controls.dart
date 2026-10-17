@@ -1,5 +1,98 @@
 part of '../live_map_screen.dart';
 
+class _SingleVehicleTrackingStatus extends StatelessWidget {
+  const _SingleVehicleTrackingStatus({
+    required this.vehicle,
+    required this.isConnected,
+  });
+
+  final VehicleSummary? vehicle;
+  final bool isConnected;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final vehicle = this.vehicle;
+    final fixTime = vehicle?.locationServerTime;
+    final detail = vehicle == null
+        ? context.mobileText('Waiting for vehicle…')
+        : vehicle.licenseBlocked
+            ? context.mobileText('Tracking unavailable: license blocked')
+            : vehicle.serviceBlocked
+                ? context.mobileText('Tracking unavailable: service blocked')
+                : vehicle.imei.trim().isEmpty
+                    ? context.mobileText('No tracking device assigned')
+                    : fixTime == null
+                        ? vehicle.hasValidLocation
+                            ? context.mobileText('GPS timestamp unavailable')
+                            : context.mobileText('Waiting for GPS location')
+                        : '${context.mobileText('Last GPS')}: ${DateFormat('d MMM, HH:mm:ss').format(fixTime.toLocal())}';
+    return Material(
+      color: scheme.surface,
+      elevation: 2,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        key: const ValueKey('single-vehicle-tracking-status'),
+        constraints: BoxConstraints(
+          minHeight: 54,
+          maxWidth: math.min(
+            280,
+            math.max(120, MediaQuery.sizeOf(context).width - 88),
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Tooltip(
+              message: isConnected
+                  ? context.mobileText('Live connection connected')
+                  : context.mobileText('Live tracking reconnecting…'),
+              child: Icon(
+                isConnected ? Icons.sensors_rounded : Icons.sync_rounded,
+                size: 20,
+                color: isConnected ? scheme.primary : scheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    vehicle == null
+                        ? context.mobileText('Vehicle tracking')
+                        : _vehicleDisplayName(vehicle),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: scheme.onSurface,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    detail,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: scheme.onSurfaceVariant,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _MapTelemetryFilters extends StatelessWidget {
   const _MapTelemetryFilters({
     required this.selectedFilter,

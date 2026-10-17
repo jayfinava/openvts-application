@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/route_paths.dart';
-import '../../../../core/theme/open_vts_colors.dart';
+import '../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
@@ -68,8 +68,8 @@ class UserLandmarkStudioScreen extends StatelessWidget {
               final crossAxisCount = width >= 880
                   ? 3
                   : width >= 600
-                  ? 2
-                  : 1;
+                      ? 2
+                      : 1;
               return SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
@@ -101,14 +101,14 @@ class _StudioHeaderCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final iconBg = isDark
-        ? OpenVtsColors.darkSurface
-        : OpenVtsColors.surfaceElevated;
+        ? OpenVtsMapColors.darkSurface
+        : OpenVtsMapColors.surfaceElevated;
     final titleColor = isDark
-        ? OpenVtsColors.darkTextPrimary
-        : OpenVtsColors.textPrimary;
+        ? OpenVtsMapColors.darkTextPrimary
+        : OpenVtsMapColors.textPrimary;
     final subtitleColor = isDark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
+        ? OpenVtsMapColors.darkTextSecondary
+        : OpenVtsMapColors.textSecondary;
 
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
@@ -121,7 +121,7 @@ class _StudioHeaderCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: iconBg,
               borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-              border: Border.all(color: OpenVtsColors.border),
+              border: Border.all(color: OpenVtsMapColors.border),
             ),
             child: Icon(Icons.map_outlined, size: 18, color: titleColor),
           ),
@@ -200,8 +200,7 @@ class _OptionsGrid extends StatelessWidget {
     final maxWidth = MediaQuery.sizeOf(
       context,
     ).width.clamp(0.0, UserLandmarkStudioScreen._maxContentWidth);
-    final available =
-        maxWidth -
+    final available = maxWidth -
         (OpenVtsSpacing.md * 2) -
         (OpenVtsSpacing.sm * (columns - 1));
     return available / columns;
@@ -235,14 +234,14 @@ class _LandmarkOptionCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final iconBg = isDark
-        ? OpenVtsColors.darkSurface
-        : OpenVtsColors.surfaceElevated;
+        ? OpenVtsMapColors.darkSurface
+        : OpenVtsMapColors.surfaceElevated;
     final titleColor = isDark
-        ? OpenVtsColors.darkTextPrimary
-        : OpenVtsColors.textPrimary;
+        ? OpenVtsMapColors.darkTextPrimary
+        : OpenVtsMapColors.textPrimary;
     final subtitleColor = isDark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
+        ? OpenVtsMapColors.darkTextSecondary
+        : OpenVtsMapColors.textSecondary;
 
     return OpenVtsCard(
       onTap: onTap,
@@ -259,7 +258,7 @@ class _LandmarkOptionCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: iconBg,
                   borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-                  border: Border.all(color: OpenVtsColors.border),
+                  border: Border.all(color: OpenVtsMapColors.border),
                 ),
                 child: Icon(option.icon, size: 18, color: titleColor),
               ),

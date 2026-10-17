@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../../core/theme/open_vts_chart_theme.dart';
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
@@ -14,6 +15,7 @@ import '../../../../utils/user_report_format.dart';
 import '../user_report_kpi_row.dart';
 import '../user_report_result_toolbar.dart';
 import '../user_report_row_details_sheet.dart';
+
 
 class UserDetailsReportResult extends ConsumerWidget {
   const UserDetailsReportResult({
@@ -131,22 +133,22 @@ class _DayNightDonut extends StatelessWidget {
                       sections: [
                         PieChartSectionData(
                           value: dayDist,
-                          color: OpenVtsColors.warning,
+                          color: OpenVtsChartTheme.series(context, 1),
                           title: context.mobileText('Day'),
                           radius: 42,
                           titleStyle: OpenVtsTypography.meta.copyWith(
                             fontSize: 9,
-                            color: OpenVtsColors.white,
+                            color: OpenVtsChartTheme.labelOn(OpenVtsChartTheme.series(context, 1)),
                           ),
                         ),
                         PieChartSectionData(
                           value: nightDist,
-                          color: OpenVtsColors.info,
+                          color: OpenVtsChartTheme.series(context, 2),
                           title: context.mobileText('Night'),
                           radius: 42,
                           titleStyle: OpenVtsTypography.meta.copyWith(
                             fontSize: 9,
-                            color: OpenVtsColors.white,
+                            color: OpenVtsChartTheme.labelOn(OpenVtsChartTheme.series(context, 2)),
                           ),
                         ),
                       ],

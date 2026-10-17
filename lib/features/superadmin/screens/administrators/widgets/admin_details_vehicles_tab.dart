@@ -7,6 +7,7 @@ import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../shared/helpers/mobile_text.dart';
+import '../../../../../shared/paging/server_list_pagination.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
@@ -39,6 +40,19 @@ class _AdminDetailsVehiclesTabState
   _VehicleFilter? _lastFilter;
 
   @override
+  void didUpdateWidget(covariant AdminDetailsVehiclesTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.adminId != widget.adminId) {
+      _debounce?.cancel();
+      _search.clear();
+      _debouncedQuery = '';
+      _filter = _VehicleFilter.all;
+      _cachedFiltered = null;
+      _lastVehicles = null;
+    }
+  }
+
+  @override
   void dispose() {
     _debounce?.cancel();
     _search.dispose();
@@ -46,6 +60,13 @@ class _AdminDetailsVehiclesTabState
   }
 
   void _onSearchChanged() {
+    final pager = ref
+        .read(superadminAdminDetailsControllerProvider(widget.adminId).notifier)
+        .vehiclesPager;
+    if (pager != null) {
+      unawaited(pager.change(page: 1, search: _search.text, debounce: true));
+      return;
+    }
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 250), () {
       if (!mounted) return;
@@ -83,26 +104,24 @@ class _AdminDetailsVehiclesTabState
   List<SuperadminAdminVehicle> _applyFilters(
     List<SuperadminAdminVehicle> vehicles,
   ) {
-    return vehicles
-        .where((v) {
-          switch (_filter) {
-            case _VehicleFilter.all:
-              break;
-            case _VehicleFilter.activeLicense:
-              if (v.isLicenseBlocked) return false;
-            case _VehicleFilter.blockedLicense:
-              if (!v.isLicenseBlocked) return false;
-            case _VehicleFilter.expiring:
-              if (!_isExpiringSoon(v.primaryExpiry)) return false;
-          }
-          if (_debouncedQuery.isEmpty) return true;
-          return v.name.toLowerCase().contains(_debouncedQuery) ||
-              v.imei.toLowerCase().contains(_debouncedQuery) ||
-              v.simNumber.toLowerCase().contains(_debouncedQuery) ||
-              v.vehicleTypeName.toLowerCase().contains(_debouncedQuery) ||
-              v.vehicleTypeSlug.toLowerCase().contains(_debouncedQuery);
-        })
-        .toList(growable: false);
+    return vehicles.where((v) {
+      switch (_filter) {
+        case _VehicleFilter.all:
+          break;
+        case _VehicleFilter.activeLicense:
+          if (v.isLicenseBlocked) return false;
+        case _VehicleFilter.blockedLicense:
+          if (!v.isLicenseBlocked) return false;
+        case _VehicleFilter.expiring:
+          if (!_isExpiringSoon(v.primaryExpiry)) return false;
+      }
+      if (_debouncedQuery.isEmpty) return true;
+      return v.name.toLowerCase().contains(_debouncedQuery) ||
+          v.imei.toLowerCase().contains(_debouncedQuery) ||
+          v.simNumber.toLowerCase().contains(_debouncedQuery) ||
+          v.vehicleTypeName.toLowerCase().contains(_debouncedQuery) ||
+          v.vehicleTypeSlug.toLowerCase().contains(_debouncedQuery);
+    }).toList(growable: false);
   }
 
   @override
@@ -137,12 +156,13 @@ class _AdminDetailsVehiclesTabState
       );
     }
 
-    final total = vehicles.length;
+    final pagination = ref.watch(provider.select((s) => s.vehiclesPagination));
+    final total = pagination?.total ?? vehicles.length;
     final blocked = vehicles.where((v) => v.isLicenseBlocked).length;
-    final expiring = vehicles
-        .where((v) => _isExpiringSoon(v.primaryExpiry))
-        .length;
-    final filtered = _getFiltered(vehicles);
+    final expiring =
+        vehicles.where((v) => _isExpiringSoon(v.primaryExpiry)).length;
+    final filtered =
+        controller.vehiclesPager == null ? _getFiltered(vehicles) : vehicles;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -171,10 +191,11 @@ class _AdminDetailsVehiclesTabState
         const SizedBox(height: OpenVtsSpacing.sm),
         _SearchField(controller: _search, onChanged: _onSearchChanged),
         const SizedBox(height: OpenVtsSpacing.xs),
-        _FilterChips(
-          value: _filter,
-          onChanged: (next) => setState(() => _filter = next),
-        ),
+        if (controller.vehiclesPager == null)
+          _FilterChips(
+            value: _filter,
+            onChanged: (next) => setState(() => _filter = next),
+          ),
         const SizedBox(height: OpenVtsSpacing.sm),
         if (vehicles.isEmpty)
           _EmptyState(message: context.mobileText('No vehicles assigned.'))
@@ -193,6 +214,11 @@ class _AdminDetailsVehiclesTabState
             itemBuilder: (context, index) =>
                 _VehicleCard(vehicle: filtered[index]),
           ),
+        if (controller.vehiclesPager != null)
+          ServerListPagination(
+              meta: pagination,
+              loading: isLoading,
+              onPageChanged: controller.vehiclesPager!.goToPage),
       ],
     );
   }
@@ -236,7 +262,7 @@ class _SummaryRow extends StatelessWidget {
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: _SummaryTile(
-            label: context.mobileText('Blocked'),
+            label: context.mobileText('Blocked on page'),
             value: blocked.toString(),
             icon: Icons.lock_outline,
           ),
@@ -244,7 +270,7 @@ class _SummaryRow extends StatelessWidget {
         const SizedBox(width: OpenVtsSpacing.xs),
         Expanded(
           child: _SummaryTile(
-            label: context.mobileText('Expired'),
+            label: context.mobileText('Expiring on page'),
             value: expiring.toString(),
             icon: Icons.schedule_outlined,
           ),
@@ -427,13 +453,11 @@ class _FilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = selected
-        ? (isDark ? Colors.black : Colors.white)
-        : Colors.transparent;
+    final backgroundColor =
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
     final textColor = isDark ? Colors.white : Colors.black;
-    final borderColor = isDark
-        ? Colors.white
-        : Colors.black.withValues(alpha: 0.2);
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
 
     return InkWell(
       onTap: onTap,
@@ -448,9 +472,8 @@ class _FilterChip extends StatelessWidget {
           color: backgroundColor,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
           border: Border.all(
-            color: selected
-                ? (isDark ? Colors.white : Colors.black)
-                : borderColor,
+            color:
+                selected ? (isDark ? Colors.white : Colors.black) : borderColor,
           ),
         ),
         child: Text(

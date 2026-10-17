@@ -8,12 +8,14 @@ import '../../../models/user_vehicle_state.dart';
 
 class UserVehicleStatusSegment extends StatelessWidget {
   const UserVehicleStatusSegment({
+    this.serverPaged = false,
     required this.current,
     required this.onChanged,
     this.counts,
     super.key,
   });
 
+  final bool serverPaged;
   final UserVehicleStatusFilter current;
   final ValueChanged<UserVehicleStatusFilter> onChanged;
   final Map<UserVehicleStatusFilter, int>? counts;
@@ -24,7 +26,9 @@ class UserVehicleStatusSegment extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          for (final filter in UserVehicleStatusFilter.values) ...[
+          for (final filter in UserVehicleStatusFilter.values.where((value) =>
+              !serverPaged ||
+              value != UserVehicleStatusFilter.licenseBlocked)) ...[
             ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 48),
               child: _TabChip(

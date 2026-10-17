@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -154,16 +154,16 @@ class _SummaryRow extends StatelessWidget {
         vertical: OpenVtsSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: OpenVtsMapColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsMapColors.border),
       ),
       child: Row(
         children: [
           const Icon(
             Icons.file_download_outlined,
             size: 18,
-            color: OpenVtsColors.brandInk,
+            color: OpenVtsMapColors.brandInk,
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
           Expanded(
@@ -174,14 +174,14 @@ class _SummaryRow extends StatelessWidget {
                 Text(
                   label,
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: OpenVtsMapColors.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 Text(
                   fileName,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: OpenVtsMapColors.textSecondary,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -207,9 +207,9 @@ class _PreviewBox extends StatelessWidget {
     return Container(
       height: 200,
       decoration: BoxDecoration(
-        color: OpenVtsColors.background,
+        color: OpenVtsMapColors.background,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsMapColors.border),
       ),
       child: Scrollbar(
         child: SingleChildScrollView(
@@ -218,7 +218,7 @@ class _PreviewBox extends StatelessWidget {
             preview,
             style: OpenVtsTypography.meta.copyWith(
               fontFamily: 'monospace',
-              color: OpenVtsColors.textSecondary,
+              color: OpenVtsMapColors.textSecondary,
               height: 1.3,
             ),
           ),

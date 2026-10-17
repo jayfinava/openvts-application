@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
@@ -149,7 +149,7 @@ class _UserRouteEditorScreenState extends State<UserRouteEditorScreen> {
     final initial = _points[index];
     await showModalBottomSheet<void>(
       context: context,
-      backgroundColor: OpenVtsColors.surfaceElevated,
+      backgroundColor: OpenVtsMapColors.surfaceElevated,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -211,13 +211,12 @@ class _UserRouteEditorScreenState extends State<UserRouteEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final initialCenter = _points.isNotEmpty
-        ? _points.first
-        : const LatLng(20.5937, 78.9629);
+    final initialCenter =
+        _points.isNotEmpty ? _points.first : const LatLng(20.5937, 78.9629);
     final initialZoom = _points.isNotEmpty ? 12.0 : 5.0;
 
     return Scaffold(
-      backgroundColor: OpenVtsColors.background,
+      backgroundColor: OpenVtsMapColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -238,8 +237,7 @@ class _UserRouteEditorScreenState extends State<UserRouteEditorScreen> {
                         minZoom: 3,
                         maxZoom: 19,
                         interactionOptions: const InteractionOptions(
-                          flags:
-                              InteractiveFlag.drag |
+                          flags: InteractiveFlag.drag |
                               InteractiveFlag.pinchZoom |
                               InteractiveFlag.doubleTapZoom |
                               InteractiveFlag.scrollWheelZoom,
@@ -250,11 +248,10 @@ class _UserRouteEditorScreenState extends State<UserRouteEditorScreen> {
                       ),
                       children: [
                         TileLayer(
-                          urlTemplate:
-                              'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
-                          subdomains: const ['mt0', 'mt1', 'mt2', 'mt3'],
-                          userAgentPackageName: 'com.openvts.mobile',
-                        ),
+                            urlTemplate:
+                                'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+                            subdomains: const ['mt0', 'mt1', 'mt2', 'mt3'],
+                            userAgentPackageName: 'com.openvts.mobile'),
                         if (_points.length >= 2)
                           PolylineLayer(
                             polylines: [
@@ -262,7 +259,7 @@ class _UserRouteEditorScreenState extends State<UserRouteEditorScreen> {
                                 points: _points,
                                 color: widget.routeColor,
                                 strokeWidth: 4,
-                                borderColor: OpenVtsColors.white,
+                                borderColor: OpenVtsMapColors.white,
                                 borderStrokeWidth: 1.5,
                               ),
                             ],
@@ -361,8 +358,7 @@ class _UserRouteEditorScreenState extends State<UserRouteEditorScreen> {
       final lat2 = b.latitude * math.pi / 180;
       final dLat = (b.latitude - a.latitude) * math.pi / 180;
       final dLon = (b.longitude - a.longitude) * math.pi / 180;
-      final h =
-          math.sin(dLat / 2) * math.sin(dLat / 2) +
+      final h = math.sin(dLat / 2) * math.sin(dLat / 2) +
           math.cos(lat1) *
               math.cos(lat2) *
               math.sin(dLon / 2) *
@@ -392,23 +388,23 @@ class _TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: OpenVtsColors.brandInk,
+        color: OpenVtsMapColors.brandInk,
         border: Border(
-          bottom: BorderSide(color: OpenVtsColors.white, width: 1),
+          bottom: BorderSide(color: OpenVtsMapColors.white, width: 1),
         ),
       ),
       padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.close, color: OpenVtsColors.white),
+            icon: const Icon(Icons.close, color: OpenVtsMapColors.white),
             onPressed: onCancel,
           ),
           Expanded(
             child: Text(
               title,
               style: OpenVtsTypography.titleSmall.copyWith(
-                color: OpenVtsColors.white,
+                color: OpenVtsMapColors.white,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -416,14 +412,14 @@ class _TopBar extends StatelessWidget {
           ElevatedButton(
             onPressed: onSave,
             style: ElevatedButton.styleFrom(
-              backgroundColor: OpenVtsColors.brandInk,
-              foregroundColor: OpenVtsColors.white,
-              side: const BorderSide(color: OpenVtsColors.white, width: 1),
+              backgroundColor: OpenVtsMapColors.brandInk,
+              foregroundColor: OpenVtsMapColors.white,
+              side: const BorderSide(color: OpenVtsMapColors.white, width: 1),
             ),
             child: Text(
               context.mobileText('Save'),
               style: OpenVtsTypography.label.copyWith(
-                color: OpenVtsColors.white,
+                color: OpenVtsMapColors.white,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -448,9 +444,9 @@ class _ModeToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk,
+        color: OpenVtsMapColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: OpenVtsColors.white),
+        border: Border.all(color: OpenVtsMapColors.white),
       ),
       padding: const EdgeInsets.all(2),
       child: Row(
@@ -499,9 +495,9 @@ class _ModeChip extends StatelessWidget {
           vertical: 6,
         ),
         decoration: BoxDecoration(
-          color: selected ? OpenVtsColors.brandInk : Colors.transparent,
+          color: selected ? OpenVtsMapColors.brandInk : Colors.transparent,
           border: Border.all(
-            color: selected ? OpenVtsColors.white : Colors.transparent,
+            color: selected ? OpenVtsMapColors.white : Colors.transparent,
             width: 1,
           ),
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -509,12 +505,12 @@ class _ModeChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 14, color: OpenVtsColors.white),
+            Icon(icon, size: 14, color: OpenVtsMapColors.white),
             const SizedBox(width: 4),
             Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.white,
+                color: OpenVtsMapColors.white,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -588,7 +584,7 @@ class _ControlButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final disabled = onTap == null;
     final color = destructive
-        ? OpenVtsColors.error
+        ? OpenVtsMapColors.error
         : Theme.of(context).colorScheme.onSurface;
     return InkWell(
       onTap: onTap,
@@ -642,10 +638,10 @@ class _VertexPin extends StatelessWidget {
         height: 22,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isEndpoint ? color : OpenVtsColors.white,
+          color: isEndpoint ? color : OpenVtsMapColors.white,
           shape: BoxShape.circle,
           border: Border.all(
-            color: isEndpoint ? OpenVtsColors.white : color,
+            color: isEndpoint ? OpenVtsMapColors.white : color,
             width: 2,
           ),
           boxShadow: const [
@@ -659,7 +655,7 @@ class _VertexPin extends StatelessWidget {
         child: Text(
           '${index + 1}',
           style: OpenVtsTypography.meta.copyWith(
-            color: isEndpoint ? OpenVtsColors.white : color,
+            color: isEndpoint ? OpenVtsMapColors.white : color,
             fontSize: 9,
             fontWeight: FontWeight.w700,
           ),
@@ -689,9 +685,12 @@ class _BottomPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final fgColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final fgColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
 
     return Container(
       decoration: BoxDecoration(
@@ -753,7 +752,7 @@ class _BottomPanel extends StatelessWidget {
                     activeColor: fgColor,
                     inactiveColor: isDark
                         ? const Color(0xFF666666)
-                        : OpenVtsColors.divider,
+                        : OpenVtsMapColors.divider,
                   ),
                 ),
               ),
@@ -836,9 +835,12 @@ class _MetaChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final fgColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final fgColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
 
     return Container(
       decoration: BoxDecoration(
@@ -931,12 +933,9 @@ class _VertexEditorSheetState extends State<_VertexEditorSheet> {
         111111.0 * math.cos(current.latitude * math.pi / 180).abs();
     final nextLat = (current.latitude + dLat * stepMeters / metersPerDegLat)
         .clamp(-90.0, 90.0);
-    final nextLon =
-        (current.longitude +
-                dLon *
-                    stepMeters /
-                    (metersPerDegLon == 0 ? 1 : metersPerDegLon))
-            .clamp(-180.0, 180.0);
+    final nextLon = (current.longitude +
+            dLon * stepMeters / (metersPerDegLon == 0 ? 1 : metersPerDegLon))
+        .clamp(-180.0, 180.0);
     setState(() {
       _lat.text = nextLat.toStringAsFixed(6);
       _lon.text = nextLon.toStringAsFixed(6);
@@ -973,7 +972,7 @@ class _VertexEditorSheetState extends State<_VertexEditorSheet> {
                 IconButton(
                   icon: const Icon(
                     Icons.delete_outline,
-                    color: OpenVtsColors.error,
+                    color: OpenVtsMapColors.error,
                   ),
                   onPressed: widget.onRemove,
                 ),
@@ -1070,7 +1069,7 @@ class _CoordField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-              borderSide: const BorderSide(color: OpenVtsColors.border),
+              borderSide: const BorderSide(color: OpenVtsMapColors.border),
             ),
           ),
         ),
@@ -1095,9 +1094,9 @@ class _NudgeBtn extends StatelessWidget {
         height: 36,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: OpenVtsColors.surface,
+          color: OpenVtsMapColors.surface,
           borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-          border: Border.all(color: OpenVtsColors.border),
+          border: Border.all(color: OpenVtsMapColors.border),
         ),
         child: Icon(
           icon,

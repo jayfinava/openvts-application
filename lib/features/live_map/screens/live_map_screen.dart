@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -34,10 +35,15 @@ import '../../superadmin/models/superadmin_map_overlay_model.dart';
 import '../../superadmin/models/superadmin_vehicle_history_model.dart';
 import '../../superadmin/models/superadmin_vehicle_model.dart';
 import '../../superadmin/services/superadmin_vehicle_service.dart';
+import '../controllers/live_map_controller.dart';
 import '../controllers/live_map_providers.dart';
+import '../models/live_map_fleet.dart';
 import '../models/live_map_role_config.dart';
+import '../models/live_map_vehicle_target.dart';
+import '../rendering/fleet_marker_layout.dart';
 
 part 'markers/map_markers.dart';
+part 'panels/fleet_vehicles_tab.dart';
 part 'panels/map_drawers.dart';
 part 'replay/replay_widgets.dart';
 part 'widgets/map_controls.dart';
@@ -47,9 +53,6 @@ const double _mapDrawerMinChildSize = 0.28;
 const double _mapDrawerInitialChildSize = 0.42;
 const double _mapDrawerMaxChildSize = 0.78;
 const double _vehicleMarkerMinMoveMeters = 2;
-const double _vehicleMarkerStationaryDriftSpeedKph = 5;
-const double _vehicleMarkerStationaryDriftMeters = 25;
-const double _vehicleMarkerMaxImpliedSpeedKph = 320;
 const Duration _vehicleMarkerMinMotionDuration = Duration(milliseconds: 700);
 const Duration _vehicleMarkerMaxMotionDuration = Duration(milliseconds: 3000);
 const double _vehicleMarkerTimestampDurationScale = 0.90;
@@ -59,11 +62,13 @@ class LiveMapScreen extends ConsumerWidget {
   const LiveMapScreen({
     super.key,
     required this.config,
+    this.vehicleTarget,
     this.onCreatePoiAt,
     this.onCreateGeofenceAt,
   });
 
   final LiveMapRoleConfig config;
+  final LiveMapVehicleTarget? vehicleTarget;
 
   /// Optional callback invoked when the user completes a 2-second hold on the
   /// map and selects "Create POI". Only wired up for roles that support it.
@@ -81,8 +86,15 @@ class LiveMapScreen extends ConsumerWidget {
     final user = ref.read(authControllerProvider).user;
     final scopedConfig = config.forSession(user);
     return ProviderScope(
-      key: ValueKey(workspaceScope),
-      overrides: [currentLiveMapConfigProvider.overrideWithValue(scopedConfig)],
+      key: ValueKey((
+        workspaceScope,
+        scopedConfig.role,
+        vehicleTarget?.identity,
+      )),
+      overrides: [
+        currentLiveMapConfigProvider.overrideWithValue(scopedConfig),
+        currentLiveMapVehicleTargetProvider.overrideWithValue(vehicleTarget),
+      ],
       child: Consumer(
         builder: (context, ref, _) {
           final liveState = ref.watch(liveMapControllerProvider);
@@ -100,9 +112,8 @@ class LiveMapScreen extends ConsumerWidget {
               alerts: liveState.alerts,
               isAlertsLoading: liveState.isAlertsLoading,
               onCreatePoiAt: scopedConfig.supportsPoi ? onCreatePoiAt : null,
-              onCreateGeofenceAt: scopedConfig.supportsGeofence
-                  ? onCreateGeofenceAt
-                  : null,
+              onCreateGeofenceAt:
+                  scopedConfig.supportsGeofence ? onCreateGeofenceAt : null,
             ),
           );
         },
@@ -277,9 +288,101 @@ class _LiveMap extends ConsumerStatefulWidget {
   ConsumerState<_LiveMap> createState() => _LiveMapState();
 }
 
+/// Navigator overlays outlive the subtree that opened them. Close these routes
+/// when the map's account/target scope is replaced, before they can use its
+/// disposed provider container again.
+class _MapOverlayOwner {
+  final Set<ModalRoute<dynamic>> _routes = {};
+  bool isActive = true;
+  bool _dismissScheduled = false;
+
+  void register(ModalRoute<dynamic> route) {
+    _routes.add(route);
+    if (!isActive) _scheduleDismiss();
+  }
+
+  void unregister(ModalRoute<dynamic> route) => _routes.remove(route);
+
+  void dispose() {
+    isActive = false;
+    _scheduleDismiss();
+  }
+
+  void _scheduleDismiss() {
+    if (_dismissScheduled) return;
+    _dismissScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _dismissScheduled = false;
+      for (final route in _routes.toList(growable: false)) {
+        final navigator = route.navigator;
+        if (route.isActive && navigator != null && navigator.mounted) {
+          navigator.removeRoute(route);
+        }
+      }
+      _routes.clear();
+    });
+  }
+}
+
+class _ScopedMapOverlay extends StatefulWidget {
+  const _ScopedMapOverlay({
+    required this.owner,
+    required this.container,
+    required this.child,
+  });
+
+  final _MapOverlayOwner owner;
+  final ProviderContainer container;
+  final Widget child;
+
+  @override
+  State<_ScopedMapOverlay> createState() => _ScopedMapOverlayState();
+}
+
+class _ScopedMapOverlayState extends State<_ScopedMapOverlay> {
+  ModalRoute<dynamic>? _route;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route == null || route == _route) return;
+    if (_route != null) widget.owner.unregister(_route!);
+    _route = route;
+    widget.owner.register(route);
+  }
+
+  @override
+  void dispose() {
+    if (_route != null) widget.owner.unregister(_route!);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.owner.isActive
+      ? UncontrolledProviderScope(
+          container: widget.container,
+          child: widget.child,
+        )
+      : const SizedBox.shrink();
+}
+
+(_MapOverlayOwner, ProviderContainer)? _mapOverlayBinding(
+  BuildContext context,
+) {
+  if (!context.mounted) return null;
+  final owner = context
+          .findAncestorStateOfType<_LiveMapState>()
+          ?._overlayOwner ??
+      context.findAncestorStateOfType<_ScopedMapOverlayState>()?.widget.owner;
+  if (owner == null || !owner.isActive) return null;
+  return (owner, ProviderScope.containerOf(context, listen: false));
+}
+
 class _LiveMapState extends ConsumerState<_LiveMap>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   final MapController _mapController = MapController();
+  final _MapOverlayOwner _overlayOwner = _MapOverlayOwner();
   late final Ticker _vehicleAnimationTicker;
   late final AnimationController _historyCameraAnimationController;
   Animation<LatLng>? _historyCameraCenterAnimation;
@@ -287,6 +390,16 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   SuperadminVehicleHistory? _lastAutoFocusedHistory;
   String? _selectedHistorySegmentId;
   bool _didFitBounds = false;
+  bool _mapReady = false;
+  bool _fitScheduled = false;
+  bool _followScheduled = false;
+  bool _followSingleVehicle = true;
+  int _cameraGeneration = 0;
+  int? _historyRequestCameraGeneration;
+  MapCamera? _savedLiveCamera;
+  bool _savedLiveFollow = true;
+  MapCamera? _preReplayCamera;
+  SuperadminVehicleHistory? _preReplayHistory;
   bool _isDrawerOpen = false;
   String? _selectedLiveVehicleKey;
   bool _replayOpen = false;
@@ -298,6 +411,7 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   bool _replayPlaying = false;
   double _replaySpeed = 1;
   Timer? _replayTimer;
+  CancelToken? _replayRequestToken;
   List<double> _replayCumulativeDistanceKm = const <double>[];
   List<SuperadminReplayStopMarker> _replayStopMarkers =
       const <SuperadminReplayStopMarker>[];
@@ -309,6 +423,9 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   _MapLayerOption _selectedMapLayer = _primaryMapLayerOptions.first;
   Map<String, _AnimatedVehicleMotion> _animatedVehicleMotions =
       <String, _AnimatedVehicleMotion>{};
+  Set<String> _motionEligibleVehicleKeys = <String>{};
+  Set<String> _activeAnimationKeys = <String>{};
+  Duration? _lastVehicleAnimationFrame;
   late final ValueNotifier<DateTime> _vehicleMotionFrameNotifier =
       ValueNotifier<DateTime>(DateTime.now());
   _MapVisualSettings _visualSettings = _MapVisualSettings.defaults;
@@ -322,11 +439,14 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _vehicleAnimationTicker = createTicker(_handleVehicleAnimationTick);
     _historyCameraAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 360),
-    )..addListener(_handleHistoryCameraAnimationTick);
+    )
+      ..addListener(_handleHistoryCameraAnimationTick)
+      ..addStatusListener(_handleCameraAnimationStatus);
     _loadPersistedMapSettings();
     _syncAnimatedVehicles(widget.vehicles, animateChanges: false);
   }
@@ -354,12 +474,19 @@ class _LiveMapState extends ConsumerState<_LiveMap>
     _visualSettings = loaded;
     _selectedMapLayer =
         _mapLayerOptionById(cache.getString(config.mapLayerStorageKey)) ??
-        _primaryMapLayerOptions.first;
+            _primaryMapLayerOptions.first;
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final visible = TickerMode.valuesOf(context).enabled;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(liveMapControllerProvider.notifier).setScreenVisible(visible);
+        if (!visible) _pauseReplayPlayback();
+      }
+    });
     _scheduleFitVehicles();
   }
 
@@ -367,20 +494,22 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   void didUpdateWidget(covariant _LiveMap oldWidget) {
     super.didUpdateWidget(oldWidget);
 
+    _scheduleFitVehicles();
+
     if (widget.vehicles == oldWidget.vehicles) {
       return;
     }
 
     _syncAnimatedVehicles(widget.vehicles, animateChanges: true);
 
-    final previousVisibleVehicles = _visibleMapVehiclesFor(oldWidget.vehicles);
-    final currentVisibleVehicles = _visibleMapVehicles();
-    if (previousVisibleVehicles.isNotEmpty || currentVisibleVehicles.isEmpty) {
+    if (_isSingleVehicleMap) {
+      _scheduleFitVehicles();
+      _scheduleSingleVehicleFollow();
       return;
     }
 
-    _didFitBounds = false;
-    _scheduleFitVehicles();
+    // Scene replacement can switch between clusters and leaves. It must never
+    // reset a camera already chosen by initial fit, cluster navigation or pan.
   }
 
   // --- 2-second hold-to-create logic ---------------------------------------
@@ -426,27 +555,32 @@ class _LiveMapState extends ConsumerState<_LiveMap>
     final canPoi = widget.onCreatePoiAt != null;
     final canGeofence = widget.onCreateGeofenceAt != null;
     if (!mounted) return;
+    final container = ProviderScope.containerOf(context, listen: false);
 
     await showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
-        return _MapCreationMenuSheet(
-          point: point,
-          canCreatePoi: canPoi,
-          canCreateGeofence: canGeofence,
-          onCreatePoi: canPoi
-              ? () {
-                  Navigator.of(ctx).pop();
-                  widget.onCreatePoiAt!(point);
-                }
-              : null,
-          onCreateGeofence: canGeofence
-              ? () {
-                  Navigator.of(ctx).pop();
-                  widget.onCreateGeofenceAt!(point);
-                }
-              : null,
+        return _ScopedMapOverlay(
+          owner: _overlayOwner,
+          container: container,
+          child: _MapCreationMenuSheet(
+            point: point,
+            canCreatePoi: canPoi,
+            canCreateGeofence: canGeofence,
+            onCreatePoi: canPoi
+                ? () {
+                    Navigator.of(ctx).pop();
+                    widget.onCreatePoiAt!(point);
+                  }
+                : null,
+            onCreateGeofence: canGeofence
+                ? () {
+                    Navigator.of(ctx).pop();
+                    widget.onCreateGeofenceAt!(point);
+                  }
+                : null,
+          ),
         );
       },
     );
@@ -463,14 +597,27 @@ class _LiveMapState extends ConsumerState<_LiveMap>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _overlayOwner.dispose();
     _holdTimer?.cancel();
     _replayTimer?.cancel();
+    _replayRequestToken?.cancel('Map closed');
     _historyCameraAnimationController
       ..removeListener(_handleHistoryCameraAnimationTick)
+      ..removeStatusListener(_handleCameraAnimationStatus)
       ..dispose();
     _vehicleAnimationTicker.dispose();
     _vehicleMotionFrameNotifier.dispose();
+    _mapController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed && mounted) {
+      _pauseReplayPlayback();
+      _cancelHold();
+    }
   }
 
   List<VehicleSummary> _visibleVehicles() {
@@ -480,20 +627,20 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   }
 
   List<VehicleSummary> _visibleVehiclesFor(List<VehicleSummary> vehicles) {
+    // A status change must never hide the vehicle being tracked.
+    if (_isSingleVehicleMap) return vehicles;
     return switch (_selectedFilter) {
       _MapFilter.all => vehicles,
-      _MapFilter.running =>
-        vehicles
-            .where((vehicle) => !_isInactiveVehicle(vehicle))
-            .where(_isRunningVehicle)
-            .toList(growable: false),
-      _MapFilter.stop =>
-        vehicles
-            .where(
-              (vehicle) =>
-                  !_isRunningVehicle(vehicle) && !_isInactiveVehicle(vehicle),
-            )
-            .toList(growable: false),
+      _MapFilter.running => vehicles
+          .where((vehicle) => !_isInactiveVehicle(vehicle))
+          .where(_isRunningVehicle)
+          .toList(growable: false),
+      _MapFilter.stop => vehicles
+          .where(
+            (vehicle) =>
+                !_isRunningVehicle(vehicle) && !_isInactiveVehicle(vehicle),
+          )
+          .toList(growable: false),
       _MapFilter.inactive =>
         vehicles.where(_isInactiveVehicle).toList(growable: false),
     };
@@ -506,7 +653,7 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   List<VehicleSummary> _visibleMapVehiclesFor(List<VehicleSummary> vehicles) {
     return _visibleVehiclesFor(
       vehicles,
-    ).where((vehicle) => vehicle.hasValidLocation).toList(growable: false);
+    ).where(hasRenderableFleetLocation).toList(growable: false);
   }
 
   void _syncAnimatedVehicles(
@@ -524,6 +671,13 @@ class _LiveMapState extends ConsumerState<_LiveMap>
       }
 
       final currentMotion = _animatedVehicleMotions[key];
+      final shouldAnimate =
+          animateChanges && _motionEligibleVehicleKeys.contains(key);
+      if (currentMotion != null && identical(currentMotion.vehicle, vehicle)) {
+        nextMotions[key] =
+            shouldAnimate ? currentMotion : currentMotion.settledAt(now);
+        continue;
+      }
       if (currentMotion == null ||
           !vehicle.hasValidLocation ||
           !currentMotion.vehicle.hasValidLocation) {
@@ -537,34 +691,20 @@ class _LiveMapState extends ConsumerState<_LiveMap>
       if (_isInactiveVehicle(vehicle)) {
         nextMotions[key] = _AnimatedVehicleMotion.immediate(
           vehicle,
-          bearingRadians:
-              _seedVehicleBearingRadians(vehicle) ??
+          bearingRadians: _seedVehicleBearingRadians(vehicle) ??
               currentMotion.bearingRadians,
         );
         continue;
       }
 
       final settledMotion = currentMotion.settledAt(now);
-      final distanceMeters = _coordinateDistanceMeters(
-        fromLatitude: settledMotion.targetLatitude,
-        fromLongitude: settledMotion.targetLongitude,
-        toLatitude: vehicle.latitude,
-        toLongitude: vehicle.longitude,
-      );
-      if (_shouldIgnoreVehicleLocationTransition(
-        fromVehicle: settledMotion.vehicle,
-        toVehicle: vehicle,
-        distanceMeters: distanceMeters,
-      )) {
-        nextMotions[key] = settledMotion.withVehicle(vehicle);
-        continue;
-      }
+      // The controller validates GPS freshness and plausibility. Applying a
+      // second rejection here can strand the marker behind accepted telemetry.
 
-      if (!animateChanges) {
+      if (!shouldAnimate) {
         nextMotions[key] = _AnimatedVehicleMotion.immediate(
           vehicle,
-          bearingRadians:
-              _seedVehicleBearingRadians(vehicle) ??
+          bearingRadians: _seedVehicleBearingRadians(vehicle) ??
               settledMotion.bearingRadians,
         );
         continue;
@@ -592,31 +732,44 @@ class _LiveMapState extends ConsumerState<_LiveMap>
     }
 
     _animatedVehicleMotions = nextMotions;
-    if (_animatedVehicleMotions.values.any(
-      (motion) => motion.isAnimatingAt(now),
-    )) {
+    _refreshActiveVehicleAnimations(now);
+  }
+
+  void _refreshActiveVehicleAnimations(DateTime now) {
+    _activeAnimationKeys = {
+      for (final key in _motionEligibleVehicleKeys)
+        if (_animatedVehicleMotions[key]?.isAnimatingAt(now) == true) key,
+    };
+    if (_activeAnimationKeys.isNotEmpty) {
       _startVehicleAnimationTicker();
     } else {
       _stopVehicleAnimationTicker();
     }
   }
 
-  void _handleVehicleAnimationTick(Duration _) {
+  void _handleVehicleAnimationTick(Duration elapsed) {
     if (!mounted) {
       _stopVehicleAnimationTicker();
       return;
     }
 
+    final previousFrame = _lastVehicleAnimationFrame;
+    if (previousFrame != null &&
+        elapsed - previousFrame < const Duration(milliseconds: 33)) {
+      return;
+    }
+    _lastVehicleAnimationFrame = elapsed;
     final now = DateTime.now();
     // Drive only the vehicle marker layer rebuild via the notifier so static
     // map layers (tiles, geofences, POIs, routes, history, replay) do not
     // rebuild on every animation frame.
     _vehicleMotionFrameNotifier.value = now;
+    _followSingleVehicleAt(now);
 
-    final hasActiveAnimations = _animatedVehicleMotions.values.any(
-      (motion) => motion.isAnimatingAt(now),
+    _activeAnimationKeys.removeWhere(
+      (key) => _animatedVehicleMotions[key]?.isAnimatingAt(now) != true,
     );
-    if (!hasActiveAnimations) {
+    if (_activeAnimationKeys.isEmpty) {
       _stopVehicleAnimationTicker();
     }
   }
@@ -627,6 +780,7 @@ class _LiveMapState extends ConsumerState<_LiveMap>
     }
 
     _vehicleAnimationTicker.start();
+    _lastVehicleAnimationFrame = null;
     _isVehicleAnimationTickerActive = true;
   }
 
@@ -668,7 +822,7 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   }
 
   void _selectFilter(_MapFilter filter) {
-    if (_selectedFilter == filter) {
+    if (_isSingleVehicleMap || _selectedFilter == filter) {
       return;
     }
 
@@ -676,6 +830,9 @@ class _LiveMapState extends ConsumerState<_LiveMap>
       _selectedFilter = filter;
       _didFitBounds = false;
     });
+    ref
+        .read(liveMapControllerProvider.notifier)
+        .setFleetQuery(status: filter.name);
 
     _scheduleFitVehicles();
   }
@@ -702,8 +859,9 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   }
 
   Future<void> _openVehicleDrawer(VehicleSummary vehicle) {
+    if (!mounted) return Future<void>.value();
     final selectedImei = vehicle.imei.trim();
-    final scopedConfig = ref.read(currentLiveMapConfigProvider);
+    final container = ProviderScope.containerOf(context, listen: false);
     return OpenVtsBottomSheet.show<void>(
       context: context,
       initialChildSize: 0.52,
@@ -711,10 +869,9 @@ class _LiveMapState extends ConsumerState<_LiveMap>
       maxChildSize: 0.92,
       snap: true,
       draggableChildBuilder: (context, scrollController) {
-        return ProviderScope(
-          overrides: [
-            currentLiveMapConfigProvider.overrideWithValue(scopedConfig),
-          ],
+        return _ScopedMapOverlay(
+          owner: _overlayOwner,
+          container: container,
           child: _VehicleBottomDrawer(
             selectedImei: selectedImei,
             initialVehicle: vehicle,
@@ -731,6 +888,11 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   Future<_ReplayRequestResult> _handleReplayRequested(
     _ReplayRequest request,
   ) async {
+    if (!mounted) {
+      return const _ReplayRequestResult(
+        errorMessage: 'This tracking view is closed.',
+      );
+    }
     final imei = request.vehicle.imei.trim();
     if (imei.isEmpty) {
       const message = 'Vehicle IMEI is required to get replay.';
@@ -743,6 +905,9 @@ class _LiveMapState extends ConsumerState<_LiveMap>
       return const _ReplayRequestResult(errorMessage: message);
     }
 
+    final cameraGeneration = _cameraGeneration;
+    _replayRequestToken?.cancel('Replay selection changed');
+    final token = _replayRequestToken = CancelToken();
     setState(() {
       _replayLoading = true;
       _replayError = null;
@@ -757,9 +922,12 @@ class _LiveMapState extends ConsumerState<_LiveMap>
             from: request.from,
             to: request.to,
             maxPoints: 5000,
+            cancelToken: token,
           );
 
-      if (!mounted) {
+      if (!mounted ||
+          token.isCancelled ||
+          !identical(token, _replayRequestToken)) {
         return const _ReplayRequestResult(errorMessage: null);
       }
 
@@ -775,6 +943,12 @@ class _LiveMapState extends ConsumerState<_LiveMap>
       }
 
       _replayTimer?.cancel();
+      _saveLiveCamera();
+      if (_isSingleVehicleMap && _mapReady) {
+        _preReplayCamera = _mapController.camera;
+        _preReplayHistory =
+            ref.read(liveMapVehicleHistoryControllerProvider).history;
+      }
       final cumulativeDistanceKm = _buildReplayCumulativeDistanceKm(points);
       final stopMarkers = _deriveReplayStopMarkers(points);
       setState(() {
@@ -793,7 +967,10 @@ class _LiveMapState extends ConsumerState<_LiveMap>
       });
 
       SchedulerBinding.instance.addPostFrameCallback((_) {
-        if (!mounted || !_replayOpen || !identical(_replayPoints, points)) {
+        if (!mounted ||
+            cameraGeneration != _cameraGeneration ||
+            !_replayOpen ||
+            !identical(_replayPoints, points)) {
           return;
         }
 
@@ -802,6 +979,9 @@ class _LiveMapState extends ConsumerState<_LiveMap>
 
       return const _ReplayRequestResult(started: true);
     } catch (error) {
+      if (token.isCancelled || !identical(token, _replayRequestToken)) {
+        return const _ReplayRequestResult();
+      }
       final message = _replayLoadErrorMessage(error);
       if (mounted) {
         setState(() {
@@ -958,6 +1138,12 @@ class _LiveMapState extends ConsumerState<_LiveMap>
 
   void _clearReplay() {
     _replayTimer?.cancel();
+    _historyCameraAnimationController.stop();
+    _cameraGeneration++;
+    final previousCamera = _preReplayCamera;
+    final previousHistory = _preReplayHistory;
+    _preReplayCamera = null;
+    _preReplayHistory = null;
     setState(() {
       _replayOpen = false;
       _replayLoading = false;
@@ -970,12 +1156,39 @@ class _LiveMapState extends ConsumerState<_LiveMap>
       _replayCumulativeDistanceKm = const <double>[];
       _replayStopMarkers = const <SuperadminReplayStopMarker>[];
       _selectedReplayStopMarker = null;
-      _didFitBounds = false;
+      if (!_isSingleVehicleMap) _didFitBounds = false;
     });
-    _scheduleFitVehicles();
+    if (_isSingleVehicleMap) {
+      final history = ref.read(liveMapVehicleHistoryControllerProvider).history;
+      if (history == null) {
+        _restoreLiveCamera();
+        _scheduleFitVehicles();
+      } else if (previousCamera != null &&
+          identical(previousHistory, history)) {
+        _mapController.rotate(previousCamera.rotation);
+        _mapController.move(
+          previousCamera.center,
+          previousCamera.zoom,
+          id: 'restore-history-camera',
+        );
+      } else {
+        _focusHistoryPoints(
+          _historyPathLatLngs(history),
+          singleZoom: 17,
+          maxZoom: 17,
+          padding: const EdgeInsets.all(76),
+        );
+      }
+    } else {
+      _scheduleFitVehicles();
+    }
   }
 
   Future<void> _handleVehicleMarkerTap(VehicleSummary vehicle) async {
+    final controller = ref.read(liveMapControllerProvider.notifier);
+    final current = await controller.selectFleetVehicle(vehicle);
+    if (!mounted || current == null) return;
+    vehicle = current;
     _focusVehicle(vehicle);
     setState(() {
       _selectedLiveVehicleKey = _animatedVehicleKey(vehicle);
@@ -984,9 +1197,11 @@ class _LiveMapState extends ConsumerState<_LiveMap>
       await _openVehicleDrawer(vehicle);
     } finally {
       if (mounted) {
+        unawaited(controller.selectFleetVehicle(null));
         setState(() {
           _selectedLiveVehicleKey = null;
         });
+        _scheduleSingleVehicleFollow();
       }
     }
   }
@@ -996,7 +1211,9 @@ class _LiveMapState extends ConsumerState<_LiveMap>
       return;
     }
 
-    final targetZoom = math.max(_currentZoom, 16.6);
+    final targetZoom = _isSingleVehicleMap
+        ? _mapController.camera.zoom
+        : math.max(_currentZoom, 16.6);
     final targetCenter = LatLng(vehicle.latitude, vehicle.longitude);
     _animateMapCameraTo(
       targetCenter,
@@ -1032,9 +1249,7 @@ class _LiveMapState extends ConsumerState<_LiveMap>
             _selectedMapLayer = layer;
           });
           unawaited(
-            ref
-                .read(localCacheProvider)
-                .setString(
+            ref.read(localCacheProvider).setString(
                   ref.read(currentLiveMapConfigProvider).mapLayerStorageKey,
                   layer.id,
                 ),
@@ -1061,10 +1276,9 @@ class _LiveMapState extends ConsumerState<_LiveMap>
           setState(() {
             _visualSettings = settings;
           });
+          _sendFleetViewport();
           unawaited(
-            ref
-                .read(localCacheProvider)
-                .setString(
+            ref.read(localCacheProvider).setString(
                   ref
                       .read(currentLiveMapConfigProvider)
                       .visualSettingsStorageKey,
@@ -1082,16 +1296,16 @@ class _LiveMapState extends ConsumerState<_LiveMap>
     required Color handleColor,
     required double maxHeightFactor,
   }) {
-    final scopedConfig = ref.read(currentLiveMapConfigProvider);
+    if (!mounted) return Future<void>.value();
+    final container = ProviderScope.containerOf(context, listen: false);
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return ProviderScope(
-          overrides: [
-            currentLiveMapConfigProvider.overrideWithValue(scopedConfig),
-          ],
+        return _ScopedMapOverlay(
+          owner: _overlayOwner,
+          container: container,
           child: _MapActionDrawer(
             backgroundColor: backgroundColor,
             handleColor: handleColor,
@@ -1105,14 +1319,31 @@ class _LiveMapState extends ConsumerState<_LiveMap>
 
   void _scheduleFitVehicles() {
     final visibleVehicles = _visibleMapVehicles();
-    if (_replayOpen || _didFitBounds || visibleVehicles.isEmpty) {
+    final fleetBounds = ref.read(liveMapControllerProvider).fleet?.bounds;
+    if (!_mapReady ||
+        _replayOpen ||
+        ref.read(liveMapVehicleHistoryControllerProvider).isLoading ||
+        ref.read(liveMapVehicleHistoryControllerProvider).history != null ||
+        _didFitBounds ||
+        _fitScheduled ||
+        (visibleVehicles.isEmpty && fleetBounds == null)) {
       return;
     }
 
-    _didFitBounds = true;
+    _fitScheduled = true;
+    final generation = _cameraGeneration;
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fitScheduled = false;
+      if (!mounted ||
+          generation != _cameraGeneration ||
+          _replayOpen ||
+          ref.read(liveMapVehicleHistoryControllerProvider).isLoading ||
+          ref.read(liveMapVehicleHistoryControllerProvider).history != null) {
+        return;
+      }
       final currentVehicles = _visibleMapVehicles();
-      if (!mounted || currentVehicles.isEmpty) {
+      final fleetBounds = ref.read(liveMapControllerProvider).fleet?.bounds;
+      if (currentVehicles.isEmpty && fleetBounds == null) {
         return;
       }
 
@@ -1120,85 +1351,281 @@ class _LiveMapState extends ConsumerState<_LiveMap>
           .map((vehicle) => LatLng(vehicle.latitude, vehicle.longitude))
           .toList(growable: false);
 
-      if (points.length == 1) {
-        _mapController.move(points.first, 13.4);
+      if (points.length == 1 && fleetBounds == null) {
+        _mapController.move(points.first, _isSingleVehicleMap ? 16 : 13.4);
+        _didFitBounds = true;
         return;
       }
 
       final isWide = MediaQuery.sizeOf(context).width >= 1100;
       _mapController.fitCamera(
         CameraFit.bounds(
-          bounds: LatLngBounds.fromPoints(points),
+          bounds: fleetBounds == null
+              ? LatLngBounds.fromPoints(points)
+              : LatLngBounds(LatLng(fleetBounds[1], fleetBounds[0]),
+                  LatLng(fleetBounds[3], fleetBounds[2])),
           padding: isWide ? const EdgeInsets.all(72) : const EdgeInsets.all(40),
           maxZoom: 14.5,
         ),
       );
+      _didFitBounds = true;
     });
   }
 
-  List<_VehicleMarkerGroup> _buildVehicleMarkerGroups(
-    List<VehicleSummary> vehicles,
-  ) {
-    final selectedKey = _selectedLiveVehicleKey;
+  bool get _isSingleVehicleMap =>
+      ref.read(currentLiveMapVehicleTargetProvider) != null;
 
-    if (!_visualSettings.cluster ||
-        vehicles.length < 2 ||
-        _currentZoom >= 16.5) {
-      return vehicles.map(_VehicleMarkerGroup.single).toList(growable: false);
-    }
-
-    const clusterCellSizePx = 72.0;
-    final buckets = <String, List<VehicleSummary>>{};
-    final standalone = <_VehicleMarkerGroup>[];
-    for (final vehicle in vehicles) {
-      if (selectedKey != null && _animatedVehicleKey(vehicle) == selectedKey) {
-        // Pull selected vehicle out of clustering so it stays visible and
-        // smoothly animated while the drawer is open (matches Web behavior).
-        standalone.add(_VehicleMarkerGroup.single(vehicle));
-        continue;
-      }
-      final worldPoint = _projectToWorldPixel(
-        vehicle.latitude,
-        vehicle.longitude,
-        _currentZoom,
-      );
-      final cellX = (worldPoint.dx / clusterCellSizePx).floor();
-      final cellY = (worldPoint.dy / clusterCellSizePx).floor();
-      final bucketKey = '$cellX:$cellY';
-      buckets.putIfAbsent(bucketKey, () => <VehicleSummary>[]).add(vehicle);
-    }
-
-    final clustered = buckets.values
-        .map(_VehicleMarkerGroup.fromVehicles)
-        .toList(growable: false);
-    if (standalone.isEmpty) {
-      return clustered;
-    }
-    return <_VehicleMarkerGroup>[...clustered, ...standalone];
+  void _sendFleetViewport() {
+    if (!_mapReady || !mounted) return;
+    final camera = _mapController.camera;
+    final bounds = camera.visibleBounds;
+    final width = bounds.east - bounds.west;
+    double wrap(double value) => (value + 180) % 360 - 180;
+    ref.read(liveMapControllerProvider.notifier).setViewport(
+      [
+        width >= 360 ? -180 : wrap(bounds.west),
+        bounds.south.clamp(-85.051129, 85.051129),
+        width >= 360 ? 180 : wrap(bounds.east),
+        bounds.north.clamp(-85.051129, 85.051129)
+      ],
+      camera.zoom,
+      cluster: _visualSettings.cluster,
+    );
   }
 
-  void _focusCluster(_VehicleMarkerGroup cluster) {
+  bool get _canFollowSingleVehicle =>
+      _isSingleVehicleMap &&
+      _mapReady &&
+      _didFitBounds &&
+      _followSingleVehicle &&
+      !_replayOpen &&
+      ref.read(liveMapVehicleHistoryControllerProvider).history == null;
+
+  void _scheduleSingleVehicleFollow() {
+    if (!_canFollowSingleVehicle || _followScheduled) return;
+    _followScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _followScheduled = false;
+      if (mounted) _followSingleVehicleAt(DateTime.now());
+    });
+  }
+
+  void _followSingleVehicleAt(DateTime now) {
+    if (!_canFollowSingleVehicle ||
+        _historyCameraAnimationController.isAnimating) {
+      return;
+    }
+    final vehicles = _visibleMapVehicles();
+    if (vehicles.isEmpty) return;
+    final vehicle = vehicles.first;
+    final point =
+        _animatedVehicleMotions[_animatedVehicleKey(vehicle)]?.positionAt(
+              now,
+            ) ??
+            LatLng(vehicle.latitude, vehicle.longitude);
+    final camera = _mapController.camera;
+    _mapController.move(
+      point,
+      camera.zoom,
+      offset:
+          _selectedLiveVehicleKey == null ? Offset.zero : _vehicleFocusOffset(),
+      id: 'single-vehicle-follow',
+    );
+  }
+
+  void _toggleSingleVehicleFollow() {
+    _historyCameraAnimationController.stop();
+    _cameraGeneration++;
+    setState(() => _followSingleVehicle = !_followSingleVehicle);
+    if (_followSingleVehicle) {
+      // Recenter at the user's zoom even when GPS first arrived after a pan.
+      _didFitBounds = true;
+      _followSingleVehicleAt(DateTime.now());
+    }
+  }
+
+  void _saveLiveCamera() {
+    if (!_isSingleVehicleMap ||
+        !_mapReady ||
+        !_didFitBounds ||
+        _savedLiveCamera != null) {
+      return;
+    }
+    _savedLiveCamera = _mapController.camera;
+    _savedLiveFollow = _followSingleVehicle;
+  }
+
+  void _restoreLiveCamera() {
+    final camera = _savedLiveCamera;
+    if (!_isSingleVehicleMap || !_mapReady || camera == null) return;
+    _historyCameraAnimationController.stop();
+    _cameraGeneration++;
+    _savedLiveCamera = null;
+    _followSingleVehicle = _savedLiveFollow;
+    _mapController.rotate(camera.rotation);
+    _mapController.move(camera.center, camera.zoom, id: 'restore-live-camera');
+    _scheduleSingleVehicleFollow();
+  }
+
+  void _focusCluster(FleetMarkerGroup cluster) {
     if (!cluster.isCluster) {
       return;
     }
 
-    final points = cluster.vehicles
-        .map((vehicle) => LatLng(vehicle.latitude, vehicle.longitude))
-        .toList(growable: false);
-    if (points.isEmpty) {
+    // Coincident depot vehicles cannot be separated by zooming. Expose the
+    // full searchable list so each vehicle remains accessible.
+    final coincident =
+        (cluster.bounds.north - cluster.bounds.south).abs() < 0.000001 &&
+            (cluster.bounds.east - cluster.bounds.west).abs() < 0.000001;
+    if (_currentZoom >= 18) {
+      _openDrawer();
       return;
     }
+    _didFitBounds = true;
+    _cameraGeneration++;
+    final camera = _mapController.camera;
+    final maximumZoom = math.min(camera.zoom + 2, 18.0);
+    final fit = CameraFit.bounds(
+      bounds: cluster.bounds,
+      padding: const EdgeInsets.all(82),
+      maxZoom: maximumZoom,
+    ).fit(camera);
+    _animateMapCameraTo(
+        coincident ? cluster.center : fit.center,
+        coincident
+            ? maximumZoom
+            : fit.zoom.clamp(math.min(camera.zoom + .75, 18.0), maximumZoom));
+  }
 
-    if (points.length == 1) {
-      _mapController.move(points.first, (_currentZoom + 1.6).clamp(13.0, 17.2));
-      return;
+  Widget _buildFleetMarkerLayers(
+    MapCamera camera,
+    List<VehicleSummary> vehicles, {
+    required bool replayActive,
+  }) {
+    // Keep the single marker's animation alive even when the newest fix is
+    // outside the viewport. Its interpolated point and follow camera catch up
+    // together; culling by the destination would stop that animation early.
+    final layout = _isSingleVehicleMap
+        ? FleetMarkerLayout(
+            groups: [
+              for (final vehicle in vehicles)
+                FleetMarkerGroup(
+                  key: _animatedVehicleKey(vehicle),
+                  count: 1,
+                  center: LatLng(vehicle.latitude, vehicle.longitude),
+                  bounds: LatLngBounds(
+                    LatLng(vehicle.latitude, vehicle.longitude),
+                    LatLng(vehicle.latitude, vehicle.longitude),
+                  ),
+                  vehicle: vehicle,
+                ),
+            ],
+            visibleVehicleCount: vehicles.length,
+          )
+        : ref.read(liveMapControllerProvider).fleet != null
+            ? buildServerFleetMarkerLayout(
+                vehicles: vehicles,
+                clusters: ref.read(liveMapControllerProvider).fleet!.clusters,
+                camera: camera,
+                selectedVehicleKey: _selectedLiveVehicleKey,
+              )
+            : buildFleetMarkerLayout(
+                vehicles: vehicles,
+                camera: camera,
+                cluster: _visualSettings.cluster,
+                selectedVehicleKey: _selectedLiveVehicleKey,
+              );
+    final individuals = layout.groups.where((group) => !group.isCluster);
+    // Offscreen and clustered vehicles update directly to their latest fix.
+    _motionEligibleVehicleKeys = {
+      if (_selectedLiveVehicleKey != null) _selectedLiveVehicleKey!,
+      ...individuals.map((group) => group.key).take(
+            maxFleetAnimatedMarkers - (_selectedLiveVehicleKey == null ? 0 : 1),
+          ),
+    };
+    _refreshActiveVehicleAnimations(DateTime.now());
+    final staticGroups = <FleetMarkerGroup>[];
+    final animatedGroups = <FleetMarkerGroup>[];
+    for (final group in layout.groups) {
+      if (_activeAnimationKeys.contains(group.key)) {
+        animatedGroups.add(group);
+      } else {
+        staticGroups.add(group);
+      }
     }
+    final showAmbientRipple = individuals.length <= 40;
+    final frameNow = DateTime.now();
+    return Stack(
+      children: [
+        MarkerLayer(
+          key: const ValueKey('fleet-static-markers'),
+          markers: [
+            for (final group in staticGroups)
+              _fleetMarker(
+                group,
+                frameNow,
+                replayActive: replayActive,
+                showAmbientRipple: showAmbientRipple,
+              ),
+          ],
+        ),
+        if (animatedGroups.isNotEmpty)
+          ValueListenableBuilder<DateTime>(
+            valueListenable: _vehicleMotionFrameNotifier,
+            builder: (context, now, _) => MarkerLayer(
+              key: const ValueKey('fleet-animated-markers'),
+              markers: [
+                for (final group in animatedGroups)
+                  _fleetMarker(
+                    group,
+                    now,
+                    replayActive: replayActive,
+                    showAmbientRipple: showAmbientRipple,
+                  ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
 
-    _mapController.fitCamera(
-      CameraFit.bounds(
-        bounds: LatLngBounds.fromPoints(points),
-        padding: const EdgeInsets.all(82),
-        maxZoom: (_currentZoom + 2).clamp(13.5, 17.4),
+  Marker _fleetMarker(
+    FleetMarkerGroup group,
+    DateTime frameNow, {
+    required bool replayActive,
+    required bool showAmbientRipple,
+  }) {
+    final vehicle = group.vehicle;
+    if (vehicle == null) {
+      return Marker(
+        key: ValueKey(group.key),
+        point: group.center,
+        width: 62,
+        height: 62,
+        child: _VehicleClusterMarker(
+          count: group.count,
+          onTap: () => _focusCluster(group),
+        ),
+      );
+    }
+    final motion = _animatedVehicleMotions[group.key];
+    return Marker(
+      key: ValueKey(group.key),
+      point: motion?.positionAt(frameNow) ?? group.center,
+      width: _visualSettings.vehicleLabel ? 124 : 100,
+      height: _visualSettings.vehicleLabel ? 110 : 100,
+      child: RepaintBoundary(
+        child: _VehicleMarker(
+          vehicle: vehicle,
+          showLabel: _visualSettings.vehicleLabel,
+          showRipple: _visualSettings.ripple &&
+              (showAmbientRipple || group.key == _selectedLiveVehicleKey),
+          status: _vehicleMarkerStatus(vehicle),
+          headingRadians: motion?.bearingRadians,
+          motionProgress: motion?.progressAt(frameNow) ?? 1,
+          isInMotion: motion?.isAnimatingAt(frameNow) ?? false,
+          onTap: replayActive ? () {} : () => _handleVehicleMarkerTap(vehicle),
+        ),
       ),
     );
   }
@@ -1208,12 +1635,20 @@ class _LiveMapState extends ConsumerState<_LiveMap>
     SuperadminVehicleHistoryState next,
   ) {
     final history = next.history;
+    if (next.isLoading && previous?.isLoading != true) {
+      _historyRequestCameraGeneration = _cameraGeneration;
+      _saveLiveCamera();
+    }
     if (_replayOpen) {
       _lastAutoFocusedHistory = history;
       return;
     }
 
     if (history == null) {
+      if (!next.isLoading && _isSingleVehicleMap) {
+        _restoreLiveCamera();
+        _scheduleFitVehicles();
+      }
       _lastAutoFocusedHistory = null;
       if (_selectedHistorySegmentId != null && mounted) {
         setState(() {
@@ -1228,14 +1663,17 @@ class _LiveMapState extends ConsumerState<_LiveMap>
     }
 
     _lastAutoFocusedHistory = history;
+    _saveLiveCamera();
     if (_selectedHistorySegmentId != null && mounted) {
       setState(() {
         _selectedHistorySegmentId = null;
       });
     }
 
+    final generation = _historyRequestCameraGeneration ?? _cameraGeneration;
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (!mounted ||
+          generation != _cameraGeneration ||
           !identical(
             ref.read(liveMapVehicleHistoryControllerProvider).history,
             history,
@@ -1263,6 +1701,12 @@ class _LiveMapState extends ConsumerState<_LiveMap>
       _mapController.move(center, zoom, id: 'history-camera-animation');
     } catch (_) {
       _historyCameraAnimationController.stop();
+    }
+  }
+
+  void _handleCameraAnimationStatus(AnimationStatus status) {
+    if (status == AnimationStatus.completed && mounted) {
+      _scheduleSingleVehicleFollow();
     }
   }
 
@@ -1299,10 +1743,8 @@ class _LiveMapState extends ConsumerState<_LiveMap>
         zoom: zoom,
         offset: offset,
       );
-      final curve = CurvedAnimation(
-        parent: _historyCameraAnimationController,
-        curve: Curves.easeOutCubic,
-      );
+      final curve = _historyCameraAnimationController
+          .drive(CurveTween(curve: Curves.easeOutCubic));
       _historyCameraCenterAnimation = LatLngTween(
         begin: camera.center,
         end: targetCenter,
@@ -1372,78 +1814,13 @@ class _LiveMapState extends ConsumerState<_LiveMap>
     _selectHistoryTarget(_historyTimelineEntryId(entry), entry.focusPoints);
   }
 
-  Offset _projectToWorldPixel(double latitude, double longitude, double zoom) {
-    final scale = 256.0 * math.pow(2.0, zoom).toDouble();
-    final x = (longitude + 180.0) / 360.0 * scale;
-    final sine = math.sin(latitude * math.pi / 180.0).clamp(-0.9999, 0.9999);
-    final y = (0.5 - math.log((1 + sine) / (1 - sine)) / (4 * math.pi)) * scale;
-    return Offset(x, y);
-  }
-
-  List<_MapOverlayStatusItem> _overlayStatusItems({
-    required AsyncValue<List<SuperadminMapGeofence>> geofencesAsync,
-    required AsyncValue<List<SuperadminMapPoi>> poisAsync,
-    required AsyncValue<List<SuperadminMapRoute>> routesAsync,
-  }) {
-    final items = <_MapOverlayStatusItem>[];
-
-    void addStatus<T>(String noun, AsyncValue<List<T>> value) {
-      if (value.isLoading && !value.hasValue) {
-        items.add(
-          _MapOverlayStatusItem(
-            message: context.mobileText("Loading {value1}", {
-              'value1': (noun).toString(),
-            }),
-            kind: _MapOverlayStatusKind.loading,
-          ),
-        );
-        return;
-      }
-
-      if (value.hasError) {
-        items.add(
-          _MapOverlayStatusItem(
-            message: context.mobileText("{value1} unavailable", {
-              'value1': (noun).toString(),
-            }),
-            kind: _MapOverlayStatusKind.error,
-          ),
-        );
-        return;
-      }
-
-      final data = value.valueOrNull;
-      if (data != null && data.isEmpty) {
-        items.add(
-          _MapOverlayStatusItem(
-            message: context.mobileText("No {value1} found", {
-              'value1': (noun).toString(),
-            }),
-            kind: _MapOverlayStatusKind.empty,
-          ),
-        );
-      }
-    }
-
-    if (_visualSettings.geofence) {
-      addStatus('geofences', geofencesAsync);
-    }
-    if (_visualSettings.poi) {
-      addStatus('POIs', poisAsync);
-    }
-    if (_visualSettings.route) {
-      addStatus('routes', routesAsync);
-    }
-
-    return items;
-  }
-
   @override
   Widget build(BuildContext context) {
     ref.listen<SuperadminVehicleHistoryState>(
       liveMapVehicleHistoryControllerProvider,
       _handleHistoryStateChanged,
     );
+    final vehicleTarget = ref.watch(currentLiveMapVehicleTargetProvider);
 
     final history = ref.watch(liveMapVehicleHistoryControllerProvider).history;
     final geofencesAsync = _visualSettings.geofence
@@ -1462,15 +1839,12 @@ class _LiveMapState extends ConsumerState<_LiveMap>
         geofencesAsync.valueOrNull ?? const <SuperadminMapGeofence>[];
     final pois = poisAsync.valueOrNull ?? const <SuperadminMapPoi>[];
     final routes = routesAsync.valueOrNull ?? const <SuperadminMapRoute>[];
-    // Cluster + visibility are derived from target (non-animated) positions so
-    // they don't recompute per animation frame; the per-frame marker layer
-    // below uses `_vehicleMotionFrameNotifier` to update only marker points.
+    // The fleet layer derives viewport groups inside FlutterMap, where camera
+    // changes rebuild that layer independently of drawers and static overlays.
     final visibleMapVehicles = _visibleMapVehicles();
-    final vehicleMarkerGroups = _buildVehicleMarkerGroups(visibleMapVehicles);
     final replayActive = _replayOpen && _replayPoints.isNotEmpty;
-    final replayPathPoints = replayActive
-        ? _replayPathLatLngs(_replayPoints)
-        : const <LatLng>[];
+    final replayPathPoints =
+        replayActive ? _replayPathLatLngs(_replayPoints) : const <LatLng>[];
     final replayVisitedPoints = replayActive
         ? _replayVisitedPathLatLngs(_replayPoints, _replayIndex)
         : const <LatLng>[];
@@ -1486,11 +1860,11 @@ class _LiveMapState extends ConsumerState<_LiveMap>
         : null;
     final replayCumulativeTripDistanceKm =
         replayActive && _replayCumulativeDistanceKm.isNotEmpty
-        ? _replayCumulativeDistanceKm[_replayIndex.clamp(
-            0,
-            _replayCumulativeDistanceKm.length - 1,
-          )]
-        : null;
+            ? _replayCumulativeDistanceKm[_replayIndex.clamp(
+                0,
+                _replayCumulativeDistanceKm.length - 1,
+              )]
+            : null;
     final replayTripDistanceKm = replayCurrentPoint == null
         ? null
         : _replayTripDistanceKm(
@@ -1499,8 +1873,8 @@ class _LiveMapState extends ConsumerState<_LiveMap>
           );
     final selectedReplayStopMarker =
         replayActive && _replayStopMarkers.contains(_selectedReplayStopMarker)
-        ? _selectedReplayStopMarker
-        : null;
+            ? _selectedReplayStopMarker
+            : null;
     final routePolylines = routes
         .where((route) => route.hasPath)
         .map(
@@ -1550,9 +1924,8 @@ class _LiveMapState extends ConsumerState<_LiveMap>
           ),
         )
         .toList(growable: false);
-    final historyPathPoints = replayActive
-        ? const <LatLng>[]
-        : _historyPathLatLngs(history);
+    final historyPathPoints =
+        replayActive ? const <LatLng>[] : _historyPathLatLngs(history);
     final historyRoadPolylines = _historyRoadPolylines(historyPathPoints);
     final selectedHistoryRoadPolylines = replayActive
         ? const <Polyline>[]
@@ -1563,11 +1936,21 @@ class _LiveMapState extends ConsumerState<_LiveMap>
         ? const <_HistoryDerivedStopMarker>[]
         : _historyDerivedStopMarkers(history);
     final liveState = ref.watch(liveMapControllerProvider);
-    final overlayStatusItems = _overlayStatusItems(
-      geofencesAsync: geofencesAsync,
-      poisAsync: poisAsync,
-      routesAsync: routesAsync,
-    );
+    final targetUnavailable = vehicleTarget != null &&
+        !liveState.isInitialLoading &&
+        widget.vehicles.isEmpty;
+    final targetHasNoLocation = vehicleTarget != null &&
+        widget.vehicles.isNotEmpty &&
+        !widget.vehicles.any(hasRenderableFleetLocation);
+    final targetVehicle =
+        vehicleTarget == null ? null : widget.vehicles.firstOrNull;
+    final missingLocationMessage = targetVehicle?.licenseBlocked == true
+        ? context.mobileText('Tracking unavailable: license blocked')
+        : targetVehicle?.serviceBlocked == true
+            ? context.mobileText('Tracking unavailable: service blocked')
+            : targetVehicle?.imei.trim().isEmpty == true
+                ? context.mobileText('No tracking device assigned')
+                : context.mobileText('This vehicle has no valid location yet.');
     final center = visibleMapVehicles.isEmpty
         ? const LatLng(28.6139, 77.2090)
         : LatLng(
@@ -1585,32 +1968,57 @@ class _LiveMapState extends ConsumerState<_LiveMap>
               options: MapOptions(
                 initialCenter: center,
                 initialZoom: _currentZoom,
+                onMapReady: () {
+                  _mapReady = true;
+                  _scheduleFitVehicles();
+                  _sendFleetViewport();
+                },
                 onPointerDown: _supportsMapCreate ? _onMapPointerDown : null,
                 onPointerUp: _supportsMapCreate ? _onMapPointerUp : null,
-                onPointerCancel: _supportsMapCreate
-                    ? _onMapPointerCancel
-                    : null,
+                onPointerCancel:
+                    _supportsMapCreate ? _onMapPointerCancel : null,
                 onPositionChanged: (position, hasGesture) {
+                  _sendFleetViewport();
                   // Cancel any in-progress hold when the map is being dragged.
-                  if (hasGesture && _holdTimer != null) {
+                  final pauseFollow =
+                      hasGesture && _isSingleVehicleMap && _followSingleVehicle;
+                  if (hasGesture) {
                     _cancelHold();
+                    _historyCameraAnimationController.stop();
+                    _cameraGeneration++;
+                    // A camera chosen while waiting for GPS belongs to the user.
+                    _didFitBounds = true;
+                    final historyState = ref.read(
+                      liveMapVehicleHistoryControllerProvider,
+                    );
+                    if (_savedLiveCamera != null &&
+                        !_replayOpen &&
+                        historyState.isLoading &&
+                        historyState.history == null) {
+                      // A failed or delayed query must not undo a camera the
+                      // user chose while its result was still pending.
+                      _savedLiveCamera = position;
+                      _savedLiveFollow = false;
+                    }
                   }
 
                   final nextZoom = position.zoom;
                   final nextRotation = position.rotation;
                   final shouldUpdateZoom =
                       (nextZoom - _currentZoom).abs() >= 0.01;
-                  final shouldUpdateRotation =
-                      _normalizedMapRotation(
+                  final shouldUpdateRotation = _normalizedMapRotation(
                         nextRotation - _currentMapRotation,
                       ).abs() >=
                       0.1;
 
-                  if (!shouldUpdateZoom && !shouldUpdateRotation) {
+                  if (!shouldUpdateZoom &&
+                      !shouldUpdateRotation &&
+                      !pauseFollow) {
                     return;
                   }
 
                   setState(() {
+                    if (pauseFollow) _followSingleVehicle = false;
                     if (shouldUpdateZoom) {
                       _currentZoom = nextZoom;
                     }
@@ -1622,11 +2030,11 @@ class _LiveMapState extends ConsumerState<_LiveMap>
               ),
               children: [
                 TileLayer(
-                  key: ValueKey<String>(_selectedMapLayer.id),
-                  urlTemplate: _selectedMapLayer.url,
-                  subdomains: _selectedMapLayer.subdomains,
-                  userAgentPackageName: 'com.openvts.mobile',
-                ),
+                    key: ValueKey<String>(_selectedMapLayer.id),
+                    urlTemplate: _selectedMapLayer.url,
+                    subdomains: _selectedMapLayer.subdomains,
+                    userAgentPackageName: 'com.openvts.mobile',
+                    keepBuffer: 1),
                 if (routePolylines.isNotEmpty)
                   PolylineLayer(polylines: routePolylines),
                 if (geofencePolygons.isNotEmpty)
@@ -1646,91 +2054,13 @@ class _LiveMapState extends ConsumerState<_LiveMap>
                       ),
                     ],
                   ),
-                if (vehicleMarkerGroups.isNotEmpty)
-                  ValueListenableBuilder<DateTime>(
-                    valueListenable: _vehicleMotionFrameNotifier,
-                    builder: (context, frameNow, _) {
-                      return MarkerLayer(
-                        markers: vehicleMarkerGroups
-                            .map(
-                              (group) => Marker(
-                                point: group.isCluster
-                                    ? group.center
-                                    : (_animatedVehicleMotions[_animatedVehicleKey(
-                                                group.vehicle,
-                                              )] ??
-                                              _AnimatedVehicleMotion.immediate(
-                                                group.vehicle,
-                                                bearingRadians:
-                                                    _seedVehicleBearingRadians(
-                                                      group.vehicle,
-                                                    ),
-                                              ))
-                                          .positionAt(frameNow),
-                                width: group.isCluster
-                                    ? 62
-                                    : _visualSettings.vehicleLabel
-                                    ? 124
-                                    : 100,
-                                height: group.isCluster
-                                    ? 62
-                                    : _visualSettings.vehicleLabel
-                                    ? 110
-                                    : 100,
-                                child: group.isCluster
-                                    ? _VehicleClusterMarker(
-                                        count: group.vehicles.length,
-                                        onTap: () => _focusCluster(group),
-                                      )
-                                    : (() {
-                                        final motion =
-                                            _animatedVehicleMotions[_animatedVehicleKey(
-                                              group.vehicle,
-                                            )] ??
-                                            _AnimatedVehicleMotion.immediate(
-                                              group.vehicle,
-                                              bearingRadians:
-                                                  _seedVehicleBearingRadians(
-                                                    group.vehicle,
-                                                  ),
-                                            );
-                                        final status = _vehicleMarkerStatus(
-                                          group.vehicle,
-                                        );
-                                        return RepaintBoundary(
-                                          child: _VehicleMarker(
-                                            key: ValueKey<String>(
-                                              _animatedVehicleKey(
-                                                group.vehicle,
-                                              ),
-                                            ),
-                                            vehicle: group.vehicle,
-                                            showLabel:
-                                                _visualSettings.vehicleLabel,
-                                            showRipple: _visualSettings.ripple,
-                                            status: status,
-                                            headingRadians:
-                                                motion.bearingRadians,
-                                            motionProgress: motion.progressAt(
-                                              frameNow,
-                                            ),
-                                            isInMotion: motion.isAnimatingAt(
-                                              frameNow,
-                                            ),
-                                            onTap: replayActive
-                                                ? () {}
-                                                : () => _handleVehicleMarkerTap(
-                                                    group.vehicle,
-                                                  ),
-                                          ),
-                                        );
-                                      })(),
-                              ),
-                            )
-                            .toList(growable: false),
-                      );
-                    },
+                Builder(
+                  builder: (context) => _buildFleetMarkerLayers(
+                    MapCamera.of(context),
+                    visibleMapVehicles,
+                    replayActive: replayActive,
                   ),
+                ),
                 if (replayRoadPolylines.isNotEmpty)
                   PolylineLayer(polylines: replayRoadPolylines),
                 if (replayVisitedRoadPolylines.isNotEmpty)
@@ -1843,8 +2173,7 @@ class _LiveMapState extends ConsumerState<_LiveMap>
                             height: 50,
                             child: _HistoryMapMarker(
                               kind: _HistoryMapMarkerKind.stop,
-                              isSelected:
-                                  _selectedHistorySegmentId ==
+                              isSelected: _selectedHistorySegmentId ==
                                   _historyStopSegmentId(stop.segment),
                               onTap: () {
                                 final id = _historyStopSegmentId(stop.segment);
@@ -1892,21 +2221,27 @@ class _LiveMapState extends ConsumerState<_LiveMap>
                 alignment: Alignment.topLeft,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 12, left: 12),
-                  child: _MapTelemetryFilters(
-                    selectedFilter: _selectedFilter,
-                    allCount: widget.allCount,
-                    runningCount: widget.runningCount,
-                    stopCount: widget.stopCount,
-                    inactiveCount: widget.inactiveCount,
-                    onSelected: _selectFilter,
-                  ),
+                  child: vehicleTarget != null
+                      ? _SingleVehicleTrackingStatus(
+                          vehicle: widget.vehicles.firstOrNull,
+                          isConnected: liveState.isTelemetryConnected,
+                        )
+                      : _MapTelemetryFilters(
+                          selectedFilter: _selectedFilter,
+                          allCount: widget.allCount,
+                          runningCount: widget.runningCount,
+                          stopCount: widget.stopCount,
+                          inactiveCount: widget.inactiveCount,
+                          onSelected: _selectFilter,
+                        ),
                 ),
               ),
             ),
           ),
         if (!replayActive &&
-            (overlayStatusItems.isNotEmpty ||
-                liveState.isInitialLoading ||
+            (liveState.isInitialLoading ||
+                targetUnavailable ||
+                targetHasNoLocation ||
                 liveState.errorMessage != null ||
                 !liveState.isTelemetryConnected))
           Positioned.fill(
@@ -1925,18 +2260,38 @@ class _LiveMapState extends ConsumerState<_LiveMap>
                           _MapOverlayStatusPanel(
                             items: [
                               _MapOverlayStatusItem(
-                                message: context.mobileText(
-                                  'Loading vehicles…',
-                                ),
+                                message: vehicleTarget == null
+                                    ? context.mobileText('Loading vehicles…')
+                                    : context.mobileText('Loading vehicle…'),
                                 kind: _MapOverlayStatusKind.loading,
                               ),
                             ],
                           )
+                        else if (targetUnavailable)
+                          _VehicleDetailsNotice(
+                            message: liveState.errorMessage ==
+                                    'This vehicle is unavailable or no longer assigned to your account.'
+                                ? context.mobileText(
+                                    'This vehicle is unavailable or no longer assigned to your account.')
+                                : context.mobileText(
+                                    'Unable to load this vehicle. Retry.'),
+                            icon: Icons.location_off_outlined,
+                            onRetry: () => ref
+                                .read(liveMapControllerProvider.notifier)
+                                .refreshTelemetry(),
+                          )
+                        else if (targetHasNoLocation)
+                          _VehicleDetailsNotice(
+                            message: missingLocationMessage,
+                            icon: Icons.location_off_outlined,
+                            onRetry: () => ref
+                                .read(liveMapControllerProvider.notifier)
+                                .refreshTelemetry(),
+                          )
                         else if (liveState.errorMessage != null ||
                             !liveState.isTelemetryConnected)
                           _VehicleDetailsNotice(
-                            message:
-                                liveState.telemetry.vehicles.isEmpty &&
+                            message: liveState.telemetry.vehicles.isEmpty &&
                                     liveState.errorMessage != null
                                 ? context.mobileText(
                                     'Unable to load vehicles. Retry.',
@@ -1948,12 +2303,6 @@ class _LiveMapState extends ConsumerState<_LiveMap>
                             onRetry: () => ref
                                 .read(liveMapControllerProvider.notifier)
                                 .refreshTelemetry(),
-                          ),
-                        if (overlayStatusItems.isNotEmpty)
-                          IgnorePointer(
-                            child: _MapOverlayStatusPanel(
-                              items: overlayStatusItems,
-                            ),
                           ),
                       ],
                     ),
@@ -1988,6 +2337,14 @@ class _LiveMapState extends ConsumerState<_LiveMap>
               child: Padding(
                 padding: const EdgeInsets.only(right: 14),
                 child: _MapSideActionButtons(
+                  followEnabled: vehicleTarget != null &&
+                          history == null &&
+                          !replayActive &&
+                          !targetHasNoLocation &&
+                          !targetUnavailable
+                      ? _followSingleVehicle
+                      : null,
+                  onFollowTap: _toggleSingleVehicleFollow,
                   showNorthReset: !_isMapOrientationDefault,
                   onNorthResetTap: _resetMapOrientation,
                   onLayerTap: _openLayerDrawer,
@@ -2001,11 +2358,17 @@ class _LiveMapState extends ConsumerState<_LiveMap>
           Positioned.fill(
             child: _PersistentMapBottomDrawer(
               isOpen: _isDrawerOpen,
-              vehicles: _visibleVehicles(),
+              vehicles: _isDrawerOpen
+                  ? (liveState.fleet?.directory ?? _visibleVehicles())
+                  : const [],
               alerts: widget.alerts,
               isAlertsLoading: widget.isAlertsLoading,
               onClose: _closeDrawer,
-              onVehicleSelected: _focusVehicle,
+              onVehicleSelected: liveState.fleet == null
+                  ? _focusVehicle
+                  : (vehicle) {
+                      unawaited(_handleVehicleMarkerTap(vehicle));
+                    },
               selectedHistorySegmentId: _selectedHistorySegmentId,
               onHistoryEntrySelected: _handleHistoryEntrySelected,
             ),
@@ -2042,8 +2405,8 @@ class _LiveMapState extends ConsumerState<_LiveMap>
   }
 }
 
-typedef _ReplayRequestHandler =
-    Future<_ReplayRequestResult> Function(_ReplayRequest request);
+typedef _ReplayRequestHandler = Future<_ReplayRequestResult> Function(
+    _ReplayRequest request);
 
 class _ReplayRequest {
   const _ReplayRequest({
@@ -2121,13 +2484,31 @@ class _VehicleBottomDrawerState extends ConsumerState<_VehicleBottomDrawer>
     final liveVehicles = ref.watch(
       liveMapControllerProvider.select((state) => state.telemetry.vehicles),
     );
-    final liveVehicle = effectiveLiveVehicle(
-      _resolveLiveVehicleSummary(
-        selectedImei: widget.selectedImei,
-        selectedVehicle: widget.initialVehicle,
-        liveVehicles: liveVehicles,
-      ),
+    final resolvedVehicle = _resolveLiveVehicleSummary(
+      selectedImei: widget.selectedImei,
+      selectedVehicle: widget.initialVehicle,
+      liveVehicles: liveVehicles,
     );
+    if (resolvedVehicle == null) {
+      return Column(
+        children: [
+          OpenVtsBottomSheet.dragRegion(
+            context: context,
+            child: const SizedBox(height: 28, width: double.infinity),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: _VehicleDetailsNotice(
+              message: context.mobileText(
+                'This vehicle is unavailable or no longer assigned to your account.',
+              ),
+              icon: Icons.location_off_outlined,
+            ),
+          ),
+        ],
+      );
+    }
+    final liveVehicle = effectiveLiveVehicle(resolvedVehicle);
 
     return Column(
       children: [
@@ -2224,9 +2605,8 @@ class _VehicleBottomDrawerState extends ConsumerState<_VehicleBottomDrawer>
             children: [
               _VehicleDetailsTab(
                 vehicle: liveVehicle,
-                scrollController: _selectedTabIndex == 0
-                    ? widget.scrollController
-                    : null,
+                scrollController:
+                    _selectedTabIndex == 0 ? widget.scrollController : null,
               ),
               _VehicleLogsTab(
                 vehicle: liveVehicle,
@@ -2237,9 +2617,8 @@ class _VehicleBottomDrawerState extends ConsumerState<_VehicleBottomDrawer>
                 initialLoading: widget.replayLoading,
                 initialError: widget.replayError,
                 onReplayRequested: widget.onReplayRequested,
-                scrollController: _selectedTabIndex == 2
-                    ? widget.scrollController
-                    : null,
+                scrollController:
+                    _selectedTabIndex == 2 ? widget.scrollController : null,
               ),
               _VehicleEventsTab(
                 vehicle: liveVehicle,
@@ -2262,11 +2641,21 @@ class _VehicleBottomDrawerState extends ConsumerState<_VehicleBottomDrawer>
   }
 }
 
-VehicleSummary _resolveLiveVehicleSummary({
+VehicleSummary? _resolveLiveVehicleSummary({
   required String selectedImei,
   required VehicleSummary selectedVehicle,
   required List<VehicleSummary> liveVehicles,
 }) {
+  final selectedId = selectedVehicle.id.trim();
+  if (selectedId.isNotEmpty) {
+    for (final vehicle in liveVehicles) {
+      if (vehicle.id.trim() == selectedId) {
+        return vehicle;
+      }
+    }
+    return null;
+  }
+
   final selectedImeiText = selectedImei.trim().isNotEmpty
       ? selectedImei.trim()
       : selectedVehicle.imei.trim();
@@ -2278,16 +2667,7 @@ VehicleSummary _resolveLiveVehicleSummary({
     }
   }
 
-  final selectedId = selectedVehicle.id.trim();
-  if (selectedId.isNotEmpty) {
-    for (final vehicle in liveVehicles) {
-      if (vehicle.id.trim() == selectedId) {
-        return vehicle;
-      }
-    }
-  }
-
-  return selectedVehicle;
+  return null;
 }
 
 class _VehicleLogsTab extends ConsumerStatefulWidget {
@@ -2491,9 +2871,8 @@ class _VehicleLogsTabState extends ConsumerState<_VehicleLogsTab> {
     final generation = ++_socketGeneration;
 
     try {
-      final connection = await ref
-          .read(liveMapSocketControllerProvider)
-          .connectTelemetry();
+      final connection =
+          await ref.read(liveMapSocketControllerProvider).connectTelemetry();
       if (!mounted ||
           generation != _socketGeneration ||
           !widget.isActive ||
@@ -2603,9 +2982,8 @@ class _VehicleLogsTabState extends ConsumerState<_VehicleLogsTab> {
       return;
     }
 
-    final accepted = logs
-        .where((log) => log.imei.trim() == imei)
-        .toList(growable: false);
+    final accepted =
+        logs.where((log) => log.imei.trim() == imei).toList(growable: false);
     if (accepted.isEmpty || !mounted) {
       return;
     }
@@ -2636,9 +3014,8 @@ class _VehicleLogsTabState extends ConsumerState<_VehicleLogsTab> {
 
     final logs = _visibleLogs;
     final statusLabel = _socketConnected ? 'Live' : 'Connecting';
-    final statusColor = _socketConnected
-        ? const Color(0xFF20B15A)
-        : scheme.onSurfaceVariant;
+    final statusColor =
+        _socketConnected ? const Color(0xFF20B15A) : scheme.onSurfaceVariant;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2726,25 +3103,26 @@ class _VehicleLogsTabState extends ConsumerState<_VehicleLogsTab> {
                   ),
                 )
               : logs.isEmpty
-              ? _VehicleDrawerPlaceholderTab(
-                  icon: Icons.receipt_long_rounded,
-                  title: context.mobileText('No logs yet'),
-                  message: context.mobileText(
-                    'Database and live telemetry logs will appear here.',
-                  ),
-                )
-              : ListView.separated(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 14),
-                  itemCount: logs.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 6),
-                  itemBuilder: (context, index) {
-                    return _VehicleLogListRow(
-                      log: logs[index],
-                      onTap: () => _showVehicleLogDetails(context, logs[index]),
-                    );
-                  },
-                ),
+                  ? _VehicleDrawerPlaceholderTab(
+                      icon: Icons.receipt_long_rounded,
+                      title: context.mobileText('No logs yet'),
+                      message: context.mobileText(
+                        'Database and live telemetry logs will appear here.',
+                      ),
+                    )
+                  : ListView.separated(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 14),
+                      itemCount: logs.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 6),
+                      itemBuilder: (context, index) {
+                        return _VehicleLogListRow(
+                          log: logs[index],
+                          onTap: () =>
+                              _showVehicleLogDetails(context, logs[index]),
+                        );
+                      },
+                    ),
         ),
       ],
     );
@@ -2852,8 +3230,8 @@ class _VehicleLogPill extends StatelessWidget {
     final color = isPositive == true
         ? const Color(0xFF20B15A)
         : isPositive == false
-        ? const Color(0xFFB42318)
-        : scheme.onSurface;
+            ? const Color(0xFFB42318)
+            : scheme.onSurface;
     return Container(
       constraints: const BoxConstraints(minWidth: 48),
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
@@ -2878,9 +3256,15 @@ class _VehicleLogPill extends StatelessWidget {
 }
 
 void _showVehicleLogDetails(BuildContext context, SuperadminVehicleLog log) {
+  final binding = _mapOverlayBinding(context);
+  if (binding == null) return;
   showDialog<void>(
     context: context,
-    builder: (context) => _VehicleLogDetailsDialog(log: log),
+    builder: (context) => _ScopedMapOverlay(
+      owner: binding.$1,
+      container: binding.$2,
+      child: _VehicleLogDetailsDialog(log: log),
+    ),
   );
 }
 
@@ -2892,9 +3276,8 @@ class _VehicleLogDetailsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final attributesText = log.attributes == null
-        ? null
-        : _formatVehicleLogJson(log.attributes);
+    final attributesText =
+        log.attributes == null ? null : _formatVehicleLogJson(log.attributes);
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
       backgroundColor: scheme.surface,
@@ -3521,9 +3904,8 @@ class _VehicleEventsTabState extends ConsumerState<_VehicleEventsTab> {
 
     final events = _visibleEvents;
     final statusLabel = _socketConnected ? 'Live' : 'Connecting';
-    final statusColor = _socketConnected
-        ? const Color(0xFF20B15A)
-        : scheme.onSurfaceVariant;
+    final statusColor =
+        _socketConnected ? const Color(0xFF20B15A) : scheme.onSurfaceVariant;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -3611,26 +3993,26 @@ class _VehicleEventsTabState extends ConsumerState<_VehicleEventsTab> {
                   ),
                 )
               : events.isEmpty
-              ? _VehicleDrawerPlaceholderTab(
-                  icon: Icons.event_note_rounded,
-                  title: context.mobileText('No events yet'),
-                  message: context.mobileText(
-                    'Vehicle events will appear here.',
-                  ),
-                )
-              : ListView.separated(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 14),
-                  itemCount: events.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 6),
-                  itemBuilder: (context, index) {
-                    return _VehicleEventListRow(
-                      event: events[index],
-                      onTap: () =>
-                          _showVehicleEventDetails(context, events[index]),
-                    );
-                  },
-                ),
+                  ? _VehicleDrawerPlaceholderTab(
+                      icon: Icons.event_note_rounded,
+                      title: context.mobileText('No events yet'),
+                      message: context.mobileText(
+                        'Vehicle events will appear here.',
+                      ),
+                    )
+                  : ListView.separated(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 14),
+                      itemCount: events.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 6),
+                      itemBuilder: (context, index) {
+                        return _VehicleEventListRow(
+                          event: events[index],
+                          onTap: () =>
+                              _showVehicleEventDetails(context, events[index]),
+                        );
+                      },
+                    ),
         ),
       ],
     );
@@ -3773,9 +4155,15 @@ class _VehicleEventSeverityPill extends StatelessWidget {
 }
 
 void _showVehicleEventDetails(BuildContext context, AppNotification event) {
+  final binding = _mapOverlayBinding(context);
+  if (binding == null) return;
   showDialog<void>(
     context: context,
-    builder: (context) => _VehicleEventDetailsDialog(event: event),
+    builder: (context) => _ScopedMapOverlay(
+      owner: binding.$1,
+      container: binding.$2,
+      child: _VehicleEventDetailsDialog(event: event),
+    ),
   );
 }
 
@@ -3787,9 +4175,8 @@ class _VehicleEventDetailsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final metadataText = event.metadata.isEmpty
-        ? null
-        : _formatVehicleLogJson(event.metadata);
+    final metadataText =
+        event.metadata.isEmpty ? null : _formatVehicleLogJson(event.metadata);
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
       backgroundColor: scheme.surface,
@@ -4117,8 +4504,7 @@ class _VehicleSensorsTabState extends ConsumerState<_VehicleSensorsTab> {
     final countLabel = _truncated && _totalCount > _sensors.length
         ? '${_sensors.length}/$_totalCount sensors'
         : '${_sensors.length} sensors';
-    final telemetryTime =
-        _telemetryMeta?.serverTime ??
+    final telemetryTime = _telemetryMeta?.serverTime ??
         _vehicleSensorTelemetryUpdatedAt(widget.vehicle);
 
     final scheme = Theme.of(context).colorScheme;
@@ -4659,8 +5045,7 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
       // Validate any previous selection — the new catalogue may have a
       // different set of stableKeys after a vehicle or device-type change.
       final previousKey = _selectedCommandKey;
-      final previousStillValid =
-          previousKey != null &&
+      final previousStillValid = previousKey != null &&
           activeCommands.any((cmd) => cmd.stableKey == previousKey);
 
       setState(() {
@@ -4947,8 +5332,8 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
         final queueId = response.queueId?.trim() ?? '';
         _sendMessage = response.wasQueued
             ? queueId.isEmpty
-                  ? 'Queued until device reconnects'
-                  : 'Queued until device reconnects ($queueId)'
+                ? 'Queued until device reconnects'
+                : 'Queued until device reconnects ($queueId)'
             : 'Sent to device, waiting for response';
         _localHistory = _upsertVehicleCommandEntry(_localHistory, localRow);
       });
@@ -5075,8 +5460,8 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
     final nextDelay = _pollSentObserved
         ? _pollPostSentInterval
         : elapsed < _pollFastCutoff
-        ? _pollFastInterval
-        : _pollPreSentInterval;
+            ? _pollFastInterval
+            : _pollPreSentInterval;
     _schedulePoll(cmdId, generation, nextDelay);
   }
 
@@ -5087,16 +5472,14 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
       List<SuperadminVehicleCommandEntry> rows,
     ) {
       var changed = false;
-      final updated = rows
-          .map((row) {
-            if (row.cmdId.trim() != normalizedCmdId) {
-              return row;
-            }
+      final updated = rows.map((row) {
+        if (row.cmdId.trim() != normalizedCmdId) {
+          return row;
+        }
 
-            changed = true;
-            return _mergeVehicleCommandEntry(row, status);
-          })
-          .toList(growable: false);
+        changed = true;
+        return _mergeVehicleCommandEntry(row, status);
+      }).toList(growable: false);
 
       if (changed) {
         return updated;
@@ -5144,15 +5527,21 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
   }
 
   void _showDetails(SuperadminVehicleCommandEntry entry) {
+    final binding = _mapOverlayBinding(context);
+    if (binding == null) return;
     final cmdId = entry.cmdId.trim();
     final detailFuture = cmdId.isEmpty
         ? null
         : ref.read(liveMapVehicleControllerProvider).getCommandDetail(cmdId);
     showDialog<void>(
       context: context,
-      builder: (context) => _VehicleCommandDetailsDialog(
-        entry: entry,
-        detailFuture: detailFuture,
+      builder: (context) => _ScopedMapOverlay(
+        owner: binding.$1,
+        container: binding.$2,
+        child: _VehicleCommandDetailsDialog(
+          entry: entry,
+          detailFuture: detailFuture,
+        ),
       ),
     );
   }
@@ -5165,191 +5554,218 @@ class _VehicleCommandsTabState extends ConsumerState<_VehicleCommandsTab> {
     final selectedCommand = _selectedCommandKey == null
         ? null
         : _customCommands.cast<SuperadminCustomCommand?>().firstWhere(
-            (command) => command?.stableKey == _selectedCommandKey,
-            orElse: () => null,
-          );
+              (command) => command?.stableKey == _selectedCommandKey,
+              orElse: () => null,
+            );
     final payloadLength = _commandController.text.trim().length;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
-          child: _VehicleCommandTargetCard(vehicle: widget.vehicle, imei: imei),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
-          child: _VehicleCommandComposerCard(
-            commands: _customCommands,
-            selectedCommandKey: _selectedCommandKey,
-            selectedCommand: selectedCommand,
-            loading: _loadingCatalog,
-            sending: _sending,
-            canSend: _canSend,
-            payloadLength: payloadLength,
-            maxPayloadLength: _maxPayloadLength,
-            controller: _commandController,
-            onCommandChanged: (stableKey) {
-              final command = _customCommands
-                  .cast<SuperadminCustomCommand?>()
-                  .firstWhere(
-                    (item) => item?.stableKey == stableKey,
-                    orElse: () => null,
-                  );
-              if (command != null) _selectCommand(command);
-            },
-            onSend: _sendCommand,
-          ),
-        ),
-        if (_catalogError != null)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
-            child: _VehicleDetailsNotice(
-              message: _catalogError!,
-              icon: _commandsUnavailable
-                  ? Icons.lock_outline_rounded
-                  : Icons.error_outline_rounded,
-              onRetry: _commandsUnavailable
-                  ? null
-                  : () => unawaited(_loadCatalog()),
-            ),
-          ),
-        if (_vehicleIdRequirementMessage != null)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
-            child: _VehicleCommandLatestStatusCard(
-              message: _vehicleIdRequirementMessage!,
-              isError: true,
-            ),
-          ),
-        if (_sendError != null || _sendMessage != null)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
-            child: _VehicleCommandLatestStatusCard(
-              message: _sendError ?? _sendMessage!,
-              isError: _sendError != null,
-            ),
-          ),
-        if (_pollingCmdId != null ||
-            _pollingStatus != null ||
-            _pollFrontendTimedOut)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
-            child: _VehicleCommandPollStrip(
-              status: _pollingStatus,
-              isPolling: _pollingCmdId != null,
-              timedOut: _pollFrontendTimedOut,
-            ),
-          ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
-          child: Row(
+    // The composer must share the history's viewport: short map drawers and
+    // the keyboard can leave less room than the form's natural height.
+    return CustomScrollView(
+      controller: _historyScrollController,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      slivers: [
+        SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                context.mobileText('History'),
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                  color: scheme.onSurface,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
+                child: _VehicleCommandTargetCard(
+                    vehicle: widget.vehicle, imei: imei),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
+                child: _VehicleCommandComposerCard(
+                  commands: _customCommands,
+                  selectedCommandKey: _selectedCommandKey,
+                  selectedCommand: selectedCommand,
+                  loading: _loadingCatalog,
+                  sending: _sending,
+                  canSend: _canSend,
+                  payloadLength: payloadLength,
+                  maxPayloadLength: _maxPayloadLength,
+                  controller: _commandController,
+                  onCommandChanged: (stableKey) {
+                    final command = _customCommands
+                        .cast<SuperadminCustomCommand?>()
+                        .firstWhere(
+                          (item) => item?.stableKey == stableKey,
+                          orElse: () => null,
+                        );
+                    if (command != null) _selectCommand(command);
+                  },
+                  onSend: _sendCommand,
                 ),
               ),
-              const SizedBox(width: 8),
-              Text(
-                context.mobileText("{value1} rows", {
-                  'value1': (history.length).toString(),
-                }),
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  color: scheme.onSurfaceVariant,
-                ),
-              ),
-              const Spacer(),
-              IconButton(
-                tooltip: context.mobileText('Refresh history'),
-                onPressed: _loadingHistory
-                    ? null
-                    : () => unawaited(_loadHistory(refresh: true)),
-                visualDensity: VisualDensity.compact,
-                iconSize: 18,
-                color: scheme.onSurface,
-                icon: _loadingHistory
-                    ? const SizedBox(
-                        width: 14,
-                        height: 14,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.refresh_rounded),
-              ),
-              TextButton.icon(
-                onPressed: _nextCursorId == null || _loadingOlder
-                    ? null
-                    : () => unawaited(_loadOlderHistory()),
-                icon: _loadingOlder
-                    ? const SizedBox(
-                        width: 12,
-                        height: 12,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.keyboard_double_arrow_down_rounded),
-                label: Text(
-                  _loadingOlder
-                      ? context.mobileText('Loading')
-                      : context.mobileText('Older'),
-                ),
-                style: TextButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  foregroundColor: scheme.onSurface,
-                  textStyle: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
+              if (_catalogError != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
+                  child: _VehicleDetailsNotice(
+                    message: _catalogError!,
+                    icon: _commandsUnavailable
+                        ? Icons.lock_outline_rounded
+                        : Icons.error_outline_rounded,
+                    onRetry: _commandsUnavailable
+                        ? null
+                        : () => unawaited(_loadCatalog()),
                   ),
                 ),
+              if (_vehicleIdRequirementMessage != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
+                  child: _VehicleCommandLatestStatusCard(
+                    message: _vehicleIdRequirementMessage!,
+                    isError: true,
+                  ),
+                ),
+              if (_sendError != null || _sendMessage != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
+                  child: _VehicleCommandLatestStatusCard(
+                    message: _sendError ?? _sendMessage!,
+                    isError: _sendError != null,
+                  ),
+                ),
+              if (_pollingCmdId != null ||
+                  _pollingStatus != null ||
+                  _pollFrontendTimedOut)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
+                  child: _VehicleCommandPollStrip(
+                    status: _pollingStatus,
+                    isPolling: _pollingCmdId != null,
+                    timedOut: _pollFrontendTimedOut,
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          context.mobileText('History'),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w900,
+                            color: scheme.onSurface,
+                          ),
+                        ),
+                        Text(
+                          context.mobileText("{value1} rows", {
+                            'value1': (history.length).toString(),
+                          }),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    )),
+                    IconButton(
+                      tooltip: context.mobileText('Refresh history'),
+                      onPressed: _loadingHistory
+                          ? null
+                          : () => unawaited(_loadHistory(refresh: true)),
+                      visualDensity: VisualDensity.compact,
+                      iconSize: 18,
+                      color: scheme.onSurface,
+                      icon: _loadingHistory
+                          ? const SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.refresh_rounded),
+                    ),
+                    TextButton.icon(
+                      onPressed: _nextCursorId == null || _loadingOlder
+                          ? null
+                          : () => unawaited(_loadOlderHistory()),
+                      icon: _loadingOlder
+                          ? const SizedBox(
+                              width: 12,
+                              height: 12,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(
+                              Icons.keyboard_double_arrow_down_rounded),
+                      label: Text(
+                        _loadingOlder
+                            ? context.mobileText('Loading')
+                            : context.mobileText('Older'),
+                      ),
+                      style: TextButton.styleFrom(
+                        visualDensity: VisualDensity.compact,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        foregroundColor: scheme.onSurface,
+                        textStyle: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              if (_historyError != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
+                  child: _VehicleDetailsNotice(
+                    message: _historyError!,
+                    icon: Icons.error_outline_rounded,
+                    onRetry: () => unawaited(_loadHistory(refresh: true)),
+                  ),
+                ),
             ],
           ),
         ),
-        if (_historyError != null)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
-            child: _VehicleDetailsNotice(
-              message: _historyError!,
-              icon: Icons.error_outline_rounded,
-              onRetry: () => unawaited(_loadHistory(refresh: true)),
+        if (_loadingHistory && history.isEmpty)
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Center(
+                child: SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(strokeWidth: 2.4),
+                ),
+              ),
+            ),
+          )
+        else if (history.isEmpty)
+          SliverToBoxAdapter(
+            child: _VehicleDrawerPlaceholderTab(
+              icon: Icons.terminal_rounded,
+              title: context.mobileText('No commands yet'),
+              message: context.mobileText(
+                'Sent commands and device responses appear here.',
+              ),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 14),
+            sliver: SliverList.builder(
+              itemCount: history.length,
+              itemBuilder: (context, index) {
+                final row = history[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: _VehicleCommandHistoryRow(
+                    entry: row,
+                    onTap: () => _showDetails(row),
+                  ),
+                );
+              },
             ),
           ),
-        Expanded(
-          child: _loadingHistory && history.isEmpty
-              ? const Center(
-                  child: SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(strokeWidth: 2.4),
-                  ),
-                )
-              : history.isEmpty
-              ? _VehicleDrawerPlaceholderTab(
-                  icon: Icons.terminal_rounded,
-                  title: context.mobileText('No commands yet'),
-                  message: context.mobileText(
-                    'Sent commands and device responses appear here.',
-                  ),
-                )
-              : ListView.separated(
-                  controller: _historyScrollController,
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 14),
-                  itemCount: history.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 6),
-                  itemBuilder: (context, index) {
-                    final row = history[index];
-                    return _VehicleCommandHistoryRow(
-                      entry: row,
-                      onTap: () => _showDetails(row),
-                    );
-                  },
-                ),
-        ),
       ],
     );
   }
@@ -5523,24 +5939,24 @@ class _VehicleCommandComposerCard extends StatelessWidget {
             DropdownButtonFormField<String>(
               initialValue: selectedCommandKey,
               isExpanded: true,
+              itemHeight: null,
+              menuMaxHeight: 360,
               selectedItemBuilder: (context) {
-                return commands
-                    .map((command) {
-                      return Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          command.displaySelectedLabel,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: scheme.onSurface,
-                          ),
-                        ),
-                      );
-                    })
-                    .toList(growable: false);
+                return commands.map((command) {
+                  return Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      command.displaySelectedLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                  );
+                }).toList(growable: false);
               },
               decoration: InputDecoration(
                 isDense: true,
@@ -5563,68 +5979,66 @@ class _VehicleCommandComposerCard extends StatelessWidget {
                 loading
                     ? context.mobileText('Loading commands…')
                     : commands.isEmpty
-                    ? context.mobileText('No compatible commands')
-                    : context.mobileText('Select command'),
+                        ? context.mobileText('No compatible commands')
+                        : context.mobileText('Select command'),
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                   color: scheme.onSurfaceVariant,
                 ),
               ),
-              items: commands
-                  .map((command) {
-                    final payload = command.command.trim();
-                    final title = command.displayTitle;
-                    return DropdownMenuItem<String>(
-                      value: command.stableKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: scheme.onSurface,
+              items: commands.map((command) {
+                final payload = command.command.trim();
+                final title = command.displayTitle;
+                return DropdownMenuItem<String>(
+                  value: command.stableKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: scheme.onSurface,
+                        ),
+                      ),
+                      if (payload.isNotEmpty && payload != title) ...[
+                        const SizedBox(height: 1),
+                        Text(
+                          payload,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'monospace',
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                      if (command.displaySubtitle.isNotEmpty) ...[
+                        const SizedBox(height: 1),
+                        Text(
+                          command.displaySubtitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 8,
+                            fontWeight: FontWeight.w700,
+                            color: scheme.onSurfaceVariant.withValues(
+                              alpha: 0.70,
                             ),
                           ),
-                          if (payload.isNotEmpty && payload != title) ...[
-                            const SizedBox(height: 1),
-                            Text(
-                              payload,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'monospace',
-                                color: scheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                          if (command.displaySubtitle.isNotEmpty) ...[
-                            const SizedBox(height: 1),
-                            Text(
-                              command.displaySubtitle,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 8,
-                                fontWeight: FontWeight.w700,
-                                color: scheme.onSurfaceVariant.withValues(
-                                  alpha: 0.70,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    );
-                  })
-                  .toList(growable: false),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              }).toList(growable: false),
               onChanged: commands.isEmpty
                   ? null
                   : (value) {
@@ -5792,8 +6206,8 @@ class _VehicleCommandPollStrip extends StatelessWidget {
     final label = timedOut
         ? 'Still waiting for device response. History will update when backend receives it.'
         : status == null
-        ? 'Checking command status...'
-        : _vehicleCommandStatusLabel(status!);
+            ? 'Checking command status...'
+            : _vehicleCommandStatusLabel(status!);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -6116,9 +6530,8 @@ class _VehicleCommandDetailGrid extends ConsumerWidget {
       ),
       (
         label: context.mobileText('Source'),
-        value: entry.source?.trim().isEmpty ?? true
-            ? '--'
-            : entry.source!.trim(),
+        value:
+            entry.source?.trim().isEmpty ?? true ? '--' : entry.source!.trim(),
       ),
       (
         label: context.mobileText('Connected'),
@@ -6547,9 +6960,8 @@ class _VehicleDetailsContent extends ConsumerWidget {
     final ignitionValue = vehicle.ignition ?? vehicle.acc;
     final satellites = vehicle.satellites?.toString() ?? '--';
     final resolvedLatitude = vehicle.hasValidLocation ? vehicle.latitude : null;
-    final resolvedLongitude = vehicle.hasValidLocation
-        ? vehicle.longitude
-        : null;
+    final resolvedLongitude =
+        vehicle.hasValidLocation ? vehicle.longitude : null;
     final hasCoordinates =
         resolvedLatitude != null && resolvedLongitude != null;
     final address = _firstVehicleDetailValue([
@@ -6696,10 +7108,10 @@ class _VehicleDetailsContent extends ConsumerWidget {
           hasCoordinates: hasCoordinates,
           onOpenNavigation: hasCoordinates
               ? () => _openVehicleNavigation(
-                  context,
-                  resolvedLatitude,
-                  resolvedLongitude,
-                )
+                    context,
+                    resolvedLatitude,
+                    resolvedLongitude,
+                  )
               : null,
         ),
       ],
@@ -6839,14 +7251,14 @@ class _VehicleInformationCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           ...rows.asMap().entries.map(
-            (entry) => Column(
-              children: [
-                _VehicleInfoRow(data: entry.value),
-                if (entry.key < rows.length - 1)
-                  Divider(height: 1, color: scheme.outlineVariant),
-              ],
-            ),
-          ),
+                (entry) => Column(
+                  children: [
+                    _VehicleInfoRow(data: entry.value),
+                    if (entry.key < rows.length - 1)
+                      Divider(height: 1, color: scheme.outlineVariant),
+                  ],
+                ),
+              ),
         ],
       ),
     );
@@ -7266,15 +7678,15 @@ class _VehicleInfoRowData {
     required this.icon,
     required this.label,
     required this.value,
-  }) : isStatus = false,
-       statusColor = null;
+  })  : isStatus = false,
+        statusColor = null;
 
   const _VehicleInfoRowData.status({
     required this.label,
     required this.value,
     required this.statusColor,
-  }) : icon = Icons.radio_button_checked_rounded,
-       isStatus = true;
+  })  : icon = Icons.radio_button_checked_rounded,
+        isStatus = true;
 
   final IconData icon;
   final String label;
@@ -7394,7 +7806,7 @@ class _VehicleLocationLine extends StatelessWidget {
   }
 }
 
-class _VehiclesTab extends ConsumerWidget {
+class _VehiclesTab extends StatefulWidget {
   const _VehiclesTab({
     required this.vehicles,
     required this.onVehicleSelected,
@@ -7408,7 +7820,60 @@ class _VehiclesTab extends ConsumerWidget {
   final ScrollController scrollController;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  State<_VehiclesTab> createState() => _VehiclesTabState();
+}
+
+class _VehiclesTabState extends State<_VehiclesTab> {
+  Map<String, VehicleSummary> _vehiclesByKey = {};
+  List<String> _orderedKeys = [];
+  List<String> _filteredKeys = [];
+  String? _query;
+
+  TextEditingController get searchController => widget.searchController;
+  ScrollController get scrollController => widget.scrollController;
+  ValueChanged<VehicleSummary> get onVehicleSelected =>
+      widget.onVehicleSelected;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateDirectory();
+  }
+
+  @override
+  void didUpdateWidget(covariant _VehiclesTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(widget.vehicles, oldWidget.vehicles)) _updateDirectory();
+  }
+
+  void _updateDirectory() {
+    final next = {
+      for (final vehicle in widget.vehicles) fleetVehicleKey(vehicle): vehicle
+    };
+    var metadataChanged = next.length != _vehiclesByKey.length;
+    if (!metadataChanged) {
+      for (final entry in next.entries) {
+        final previous = _vehiclesByKey[entry.key];
+        if (previous == null ||
+            previous.name != entry.value.name ||
+            previous.plateNumber != entry.value.plateNumber ||
+            previous.imei != entry.value.imei) {
+          metadataChanged = true;
+          break;
+        }
+      }
+    }
+    _vehiclesByKey = next;
+    if (metadataChanged) {
+      _orderedKeys = next.keys.toList()
+        ..sort((a, b) => _compareVehicleListOrder(next[a]!, next[b]!));
+      _query = null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final vehicles = widget.vehicles;
     if (vehicles.isEmpty) {
       return _DrawerScrollFill(
         scrollController: scrollController,
@@ -7423,11 +7888,12 @@ class _VehiclesTab extends ConsumerWidget {
     }
 
     final query = searchController.text.trim().toLowerCase();
-    final filteredVehicles =
-        vehicles
-            .where((vehicle) => _matchesSearch(vehicle, query))
-            .toList(growable: false)
-          ..sort(_compareVehicleListOrder);
+    if (_query != query) {
+      _query = query;
+      _filteredKeys = _orderedKeys
+          .where((key) => _matchesSearch(_vehiclesByKey[key]!, query))
+          .toList(growable: false);
+    }
 
     final scheme = Theme.of(context).colorScheme;
 
@@ -7466,7 +7932,7 @@ class _VehiclesTab extends ConsumerWidget {
           ),
         ),
         Expanded(
-          child: filteredVehicles.isEmpty
+          child: _filteredKeys.isEmpty
               ? _DrawerScrollFill(
                   scrollController: scrollController,
                   child: _DrawerEmptyState(
@@ -7483,12 +7949,14 @@ class _VehiclesTab extends ConsumerWidget {
                     parent: ClampingScrollPhysics(),
                   ),
                   padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                  itemCount: filteredVehicles.length,
+                  itemCount: _filteredKeys.length,
                   separatorBuilder: (_, __) =>
                       Divider(height: 1, color: scheme.outlineVariant),
                   itemBuilder: (context, index) {
-                    final vehicle = filteredVehicles[index];
+                    final key = _filteredKeys[index];
+                    final vehicle = _vehiclesByKey[key]!;
                     return _VehicleListTile(
+                      key: ValueKey(key),
                       vehicle: vehicle,
                       onTap: vehicle.hasValidLocation
                           ? () => onVehicleSelected(vehicle)
@@ -7507,12 +7975,13 @@ class _VehiclesTab extends ConsumerWidget {
     }
 
     return _vehicleDisplayName(vehicle).toLowerCase().contains(query) ||
-        vehicle.plateNumber.toLowerCase().contains(query);
+        vehicle.plateNumber.toLowerCase().contains(query) ||
+        vehicle.imei.toLowerCase().contains(query);
   }
 }
 
 class _VehicleListTile extends ConsumerWidget {
-  const _VehicleListTile({required this.vehicle, this.onTap});
+  const _VehicleListTile({super.key, required this.vehicle, this.onTap});
 
   final VehicleSummary vehicle;
   final VoidCallback? onTap;
@@ -7652,25 +8121,27 @@ class _HistoryTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(liveMapVehicleHistoryControllerProvider);
     final selectableVehicles = _historySelectableVehicles(vehicles);
+    final fleetEnabled = ref.watch(liveMapControllerProvider).fleet != null;
 
     return Column(
       children: [
         _HistoryQueryHeader(
           state: state,
-          hasSelectableVehicles: selectableVehicles.isNotEmpty,
-          onGetHistory: state.isLoading || selectableVehicles.isEmpty
-              ? null
-              : () => _openHistoryQuery(
-                  context,
-                  ref,
-                  selectableVehicles,
-                  state.request,
-                ),
+          hasSelectableVehicles: fleetEnabled || selectableVehicles.isNotEmpty,
+          onGetHistory:
+              state.isLoading || (!fleetEnabled && selectableVehicles.isEmpty)
+                  ? null
+                  : () => _openHistoryQuery(
+                        context,
+                        ref,
+                        selectableVehicles,
+                        state.request,
+                      ),
           onClearHistory: state.isLoading || state.history == null
               ? null
               : () => ref
-                    .read(liveMapVehicleHistoryControllerProvider.notifier)
-                    .clearHistory(),
+                  .read(liveMapVehicleHistoryControllerProvider.notifier)
+                  .clearHistory(),
         ),
         Expanded(
           child: _buildHistoryBody(context, ref, state, selectableVehicles),
@@ -7685,7 +8156,8 @@ class _HistoryTab extends ConsumerWidget {
     SuperadminVehicleHistoryState state,
     List<VehicleSummary> selectableVehicles,
   ) {
-    if (selectableVehicles.isEmpty) {
+    if (selectableVehicles.isEmpty &&
+        ref.read(liveMapControllerProvider).fleet == null) {
       return _DrawerScrollFill(
         scrollController: scrollController,
         child: _DrawerEmptyState(
@@ -7761,14 +8233,16 @@ class _HistoryTab extends ConsumerWidget {
     List<VehicleSummary> selectableVehicles,
     SuperadminVehicleHistoryRequest? initialRequest,
   ) async {
-    final scopedConfig = ref.read(currentLiveMapConfigProvider);
+    final container = ProviderScope.containerOf(context, listen: false);
+    final owner =
+        context.findAncestorStateOfType<_LiveMapState>()?._overlayOwner;
+    if (owner == null || !owner.isActive) return;
     final request = await showDialog<SuperadminVehicleHistoryRequest>(
       context: context,
       builder: (context) {
-        return ProviderScope(
-          overrides: [
-            currentLiveMapConfigProvider.overrideWithValue(scopedConfig),
-          ],
+        return _ScopedMapOverlay(
+          owner: owner,
+          container: container,
           child: _HistoryQueryDialog(
             vehicles: selectableVehicles,
             initialRequest: initialRequest,
@@ -7901,8 +8375,8 @@ class _HistoryQueryHeaderText extends ConsumerWidget {
     final subtitle = !hasSelectableVehicles
         ? 'Waiting for live telemetry vehicles with IMEI.'
         : request == null
-        ? 'Choose a vehicle, stop threshold, and date time range.'
-        : _formatHistoryRequestSummary(request, formatter);
+            ? 'Choose a vehicle, stop threshold, and date time range.'
+            : _formatHistoryRequestSummary(request, formatter);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -8182,9 +8656,8 @@ class _HistoryTimelineList extends StatelessWidget {
         return _HistoryTimelineTile(
           number: entryIndex + 1,
           entry: entry,
-          onTap: entry.focusPoints.isEmpty
-              ? null
-              : () => onEntrySelected(entry),
+          onTap:
+              entry.focusPoints.isEmpty ? null : () => onEntrySelected(entry),
           isSelected:
               selectedHistorySegmentId == _historyTimelineEntryId(entry),
           isFirst: entryIndex == 0,
@@ -8385,8 +8858,8 @@ class _HistoryTimelineCard extends StatelessWidget {
               color: isSelected
                   ? scheme.outlineVariant
                   : isDark
-                  ? scheme.outlineVariant
-                  : Colors.black.withValues(alpha: 0.1),
+                      ? scheme.outlineVariant
+                      : Colors.black.withValues(alpha: 0.1),
             ),
             boxShadow: [
               BoxShadow(
@@ -8431,12 +8904,13 @@ class _HistoryTimelineCard extends StatelessWidget {
                 const SizedBox(height: 7),
                 switch (entry.kind) {
                   _HistoryTimelineEntryKind.start ||
-                  _HistoryTimelineEntryKind.end => _HistoryPointTimelineDetails(
-                    entry: entry,
-                  ),
+                  _HistoryTimelineEntryKind.end =>
+                    _HistoryPointTimelineDetails(
+                      entry: entry,
+                    ),
                   _HistoryTimelineEntryKind.stop => _HistoryStopTimelineDetails(
-                    segment: entry.primarySegment,
-                  ),
+                      segment: entry.primarySegment,
+                    ),
                   _HistoryTimelineEntryKind.running =>
                     _HistoryRunningTimelineDetails(entry: entry),
                 },
@@ -8709,7 +9183,7 @@ class _HistoryStopReasonPill extends StatelessWidget {
   }
 }
 
-class _HistoryQueryDialog extends StatefulWidget {
+class _HistoryQueryDialog extends ConsumerStatefulWidget {
   const _HistoryQueryDialog({
     required this.vehicles,
     required this.initialRequest,
@@ -8719,10 +9193,11 @@ class _HistoryQueryDialog extends StatefulWidget {
   final SuperadminVehicleHistoryRequest? initialRequest;
 
   @override
-  State<_HistoryQueryDialog> createState() => _HistoryQueryDialogState();
+  ConsumerState<_HistoryQueryDialog> createState() =>
+      _HistoryQueryDialogState();
 }
 
-class _HistoryQueryDialogState extends State<_HistoryQueryDialog> {
+class _HistoryQueryDialogState extends ConsumerState<_HistoryQueryDialog> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _stopMinutesController;
   late VehicleSummary? _selectedVehicle;
@@ -8824,35 +9299,41 @@ class _HistoryQueryDialogState extends State<_HistoryQueryDialog> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                DropdownButtonFormField<VehicleSummary>(
-                  initialValue: _selectedVehicle,
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                    hintText: context.mobileText('Select vehicle'),
-                  ),
-                  items: widget.vehicles
-                      .map(
-                        (vehicle) => DropdownMenuItem<VehicleSummary>(
-                          value: vehicle,
-                          child: Text(
-                            _historyVehicleOptionLabel(vehicle),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                if (ref.read(liveMapControllerProvider).fleet != null)
+                  _FleetHistoryVehicleField(
+                      initialVehicle: _selectedVehicle,
+                      onChanged: (vehicle) =>
+                          setState(() => _selectedVehicle = vehicle))
+                else
+                  DropdownButtonFormField<VehicleSummary>(
+                    initialValue: _selectedVehicle,
+                    isExpanded: true,
+                    decoration: InputDecoration(
+                      hintText: context.mobileText('Select vehicle'),
+                    ),
+                    items: widget.vehicles
+                        .map(
+                          (vehicle) => DropdownMenuItem<VehicleSummary>(
+                            value: vehicle,
+                            child: Text(
+                              _historyVehicleOptionLabel(vehicle),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                        ),
-                      )
-                      .toList(growable: false),
-                  validator: context.localizedValidator(
-                    (value) => value == null
-                        ? 'Select a vehicle from live telemetry.'
-                        : null,
+                        )
+                        .toList(growable: false),
+                    validator: context.localizedValidator(
+                      (value) => value == null
+                          ? 'Select a vehicle from live telemetry.'
+                          : null,
+                    ),
+                    onChanged: (vehicle) {
+                      setState(() {
+                        _selectedVehicle = vehicle;
+                      });
+                    },
                   ),
-                  onChanged: (vehicle) {
-                    setState(() {
-                      _selectedVehicle = vehicle;
-                    });
-                  },
-                ),
                 const SizedBox(height: 14),
                 OpenVtsTextField(
                   label: context.mobileText('Stop Minutes'),
@@ -9087,7 +9568,7 @@ List<_HistoryTimelineEntry> _historyTimelineEntries(
       case SuperadminVehicleHistorySegmentType.drive:
         runningSegments.add(segment);
       case SuperadminVehicleHistorySegmentType.stop ||
-          SuperadminVehicleHistorySegmentType.idle:
+            SuperadminVehicleHistorySegmentType.idle:
         flushRunningSegments();
         entries.add(
           _HistoryTimelineEntry(
@@ -9097,7 +9578,7 @@ List<_HistoryTimelineEntry> _historyTimelineEntries(
           ),
         );
       case SuperadminVehicleHistorySegmentType.overspeed ||
-          SuperadminVehicleHistorySegmentType.other:
+            SuperadminVehicleHistorySegmentType.other:
         flushRunningSegments();
     }
   }
@@ -9120,18 +9601,17 @@ List<_HistoryTimelineEntry> _historyTimelineEntries(
 List<SuperadminVehicleHistorySegment> _historyCleanTimelineSegments(
   SuperadminVehicleHistory history,
 ) {
-  return history.segments
-      .where((segment) {
-        return switch (segment.type) {
-          SuperadminVehicleHistorySegmentType.drive => true,
-          SuperadminVehicleHistorySegmentType.stop ||
-          SuperadminVehicleHistorySegmentType.idle =>
-            _historySegmentDurationSec(segment) >= 180,
-          SuperadminVehicleHistorySegmentType.overspeed ||
-          SuperadminVehicleHistorySegmentType.other => false,
-        };
-      })
-      .toList(growable: false);
+  return history.segments.where((segment) {
+    return switch (segment.type) {
+      SuperadminVehicleHistorySegmentType.drive => true,
+      SuperadminVehicleHistorySegmentType.stop ||
+      SuperadminVehicleHistorySegmentType.idle =>
+        _historySegmentDurationSec(segment) >= 180,
+      SuperadminVehicleHistorySegmentType.overspeed ||
+      SuperadminVehicleHistorySegmentType.other =>
+        false,
+    };
+  }).toList(growable: false);
 }
 
 _HistoryTimelineVisuals _historyTimelineVisuals(
@@ -9139,22 +9619,22 @@ _HistoryTimelineVisuals _historyTimelineVisuals(
 ) {
   return switch (kind) {
     _HistoryTimelineEntryKind.start => const _HistoryTimelineVisuals(
-      icon: Icons.location_on_outlined,
-      color: Color(0xFF6B7280),
-    ),
+        icon: Icons.location_on_outlined,
+        color: Color(0xFF6B7280),
+      ),
     _HistoryTimelineEntryKind.running => const _HistoryTimelineVisuals(
-      icon: Icons.speed_rounded,
-      color: Color(0xFF6B7280),
-    ),
+        icon: Icons.speed_rounded,
+        color: Color(0xFF6B7280),
+      ),
     _HistoryTimelineEntryKind.stop => const _HistoryTimelineVisuals(
-      icon: Icons.local_parking_rounded,
-      color: Color(0xFF6B7280),
-      textIcon: 'P',
-    ),
+        icon: Icons.local_parking_rounded,
+        color: Color(0xFF6B7280),
+        textIcon: 'P',
+      ),
     _HistoryTimelineEntryKind.end => const _HistoryTimelineVisuals(
-      icon: Icons.flag_outlined,
-      color: Color(0xFF6B7280),
-    ),
+        icon: Icons.flag_outlined,
+        color: Color(0xFF6B7280),
+      ),
   };
 }
 
@@ -9174,8 +9654,8 @@ String _historyTimelineEntryId(_HistoryTimelineEntry entry) {
     _HistoryTimelineEntryKind.running =>
       'running-${_historyEntryStartIndex(entry) ?? 0}-${_historyEntryEndIndex(entry) ?? 0}',
     _HistoryTimelineEntryKind.stop => _historyStopSegmentId(
-      entry.primarySegment,
-    ),
+        entry.primarySegment,
+      ),
   };
 }
 
@@ -9372,7 +9852,7 @@ List<_HistoryDerivedStopMarker> _historyDerivedStopMarkers(
   for (final segment in history.segments) {
     final isStopLike =
         segment.type == SuperadminVehicleHistorySegmentType.stop ||
-        segment.type == SuperadminVehicleHistorySegmentType.idle;
+            segment.type == SuperadminVehicleHistorySegmentType.idle;
     if (!isStopLike || _historySegmentDurationSec(segment) < 180) {
       continue;
     }
@@ -9525,8 +10005,8 @@ List<LatLng> _replayVisitedPathLatLngs(
   final endIndex = replayIndex < 0
       ? 0
       : replayIndex >= points.length
-      ? points.length - 1
-      : replayIndex;
+          ? points.length - 1
+          : replayIndex;
   return points
       .take(endIndex + 1)
       .map(_replayPointLatLng)
@@ -9864,9 +10344,8 @@ String _formatHistoryTimeRange(
   DateTime? end,
   AppDateFormatter formatter,
 ) {
-  final startText = start == null
-      ? '--'
-      : formatter.formatTime(start.toLocal());
+  final startText =
+      start == null ? '--' : formatter.formatTime(start.toLocal());
   final endText = end == null ? '--' : formatter.formatTime(end.toLocal());
   return '$startText → $endText';
 }
@@ -10252,14 +10731,14 @@ class _MapOverlayStatusPanel extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: switch (item.kind) {
                     _MapOverlayStatusKind.loading => Colors.white.withValues(
-                      alpha: 0.94,
-                    ),
+                        alpha: 0.94,
+                      ),
                     _MapOverlayStatusKind.empty => const Color(
-                      0xFF141118,
-                    ).withValues(alpha: 0.78),
+                        0xFF141118,
+                      ).withValues(alpha: 0.78),
                     _MapOverlayStatusKind.error => const Color(
-                      0xFFB42318,
-                    ).withValues(alpha: 0.92),
+                        0xFFB42318,
+                      ).withValues(alpha: 0.92),
                   },
                   borderRadius: BorderRadius.circular(999),
                   boxShadow: [
@@ -10431,53 +10910,10 @@ class _VehicleClusterMarker extends StatelessWidget {
   }
 }
 
-class _VehicleMarkerGroup {
-  _VehicleMarkerGroup._({
-    required List<VehicleSummary> vehicles,
-    required this.center,
-  }) : vehicles = List<VehicleSummary>.unmodifiable(vehicles);
-
-  factory _VehicleMarkerGroup.single(VehicleSummary vehicle) {
-    return _VehicleMarkerGroup._(
-      vehicles: <VehicleSummary>[vehicle],
-      center: LatLng(vehicle.latitude, vehicle.longitude),
-    );
-  }
-
-  factory _VehicleMarkerGroup.fromVehicles(List<VehicleSummary> vehicles) {
-    if (vehicles.length <= 1) {
-      return _VehicleMarkerGroup.single(vehicles.first);
-    }
-
-    var latitudeTotal = 0.0;
-    var longitudeTotal = 0.0;
-    for (final vehicle in vehicles) {
-      latitudeTotal += vehicle.latitude;
-      longitudeTotal += vehicle.longitude;
-    }
-
-    return _VehicleMarkerGroup._(
-      vehicles: vehicles,
-      center: LatLng(
-        latitudeTotal / vehicles.length,
-        longitudeTotal / vehicles.length,
-      ),
-    );
-  }
-
-  final List<VehicleSummary> vehicles;
-  final LatLng center;
-
-  bool get isCluster => vehicles.length > 1;
-
-  VehicleSummary get vehicle => vehicles.first;
-}
-
 enum _VehicleMarkerStatus { running, stopped, inactive }
 
 class _VehicleMarker extends StatelessWidget {
   const _VehicleMarker({
-    super.key,
     required this.vehicle,
     required this.showLabel,
     required this.showRipple,
@@ -10504,9 +10940,8 @@ class _VehicleMarker extends StatelessWidget {
     final showStatusRipple = showRipple && _vehicleMarkerShowsRipple(status);
     final showMotionTrail =
         isInMotion && status == _VehicleMarkerStatus.running;
-    final motionPulse = showMotionTrail
-        ? math.sin(motionProgress * math.pi)
-        : 0.0;
+    final motionPulse =
+        showMotionTrail ? math.sin(motionProgress * math.pi) : 0.0;
     final assetPath = liveVehicleIconAsset(
       vehicle.vehicleTypeSlug,
       switch (status) {
@@ -10848,22 +11283,34 @@ class _MapVisualSettings {
 
   factory _MapVisualSettings.fromJson(Map<String, dynamic> json) {
     return _MapVisualSettings(
-      vehicleLabel: _readBool(json, const [
-        'vehicleLabel',
-        'showVehicleLabel',
-      ], defaults.vehicleLabel),
-      cluster: _readBool(json, const [
-        'cluster',
-        'enableCluster',
-      ], defaults.cluster),
-      ripple: _readBool(json, const [
-        'ripple',
-        'enableRipple',
-      ], defaults.ripple),
-      geofence: _readBool(json, const [
-        'geofence',
-        'showGeofence',
-      ], defaults.geofence),
+      vehicleLabel: _readBool(
+          json,
+          const [
+            'vehicleLabel',
+            'showVehicleLabel',
+          ],
+          defaults.vehicleLabel),
+      cluster: _readBool(
+          json,
+          const [
+            'cluster',
+            'enableCluster',
+          ],
+          defaults.cluster),
+      ripple: _readBool(
+          json,
+          const [
+            'ripple',
+            'enableRipple',
+          ],
+          defaults.ripple),
+      geofence: _readBool(
+          json,
+          const [
+            'geofence',
+            'showGeofence',
+          ],
+          defaults.geofence),
       poi: _readBool(json, const ['poi', 'showPoi'], defaults.poi),
       route: _readBool(json, const ['route', 'showRoute'], defaults.route),
     );
@@ -11107,43 +11554,13 @@ _MapLayerOption? _mapLayerOptionById(String? id) {
 }
 
 int _compareVehicleListOrder(VehicleSummary left, VehicleSummary right) {
-  final leftUpdatedAt =
-      left.updatedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-  final rightUpdatedAt =
-      right.updatedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-  final updatedAtCompare = rightUpdatedAt.compareTo(leftUpdatedAt);
-  if (updatedAtCompare != 0) {
-    return updatedAtCompare;
-  }
-
-  return _vehicleDisplayName(
+  final byName = _vehicleDisplayName(
     left,
   ).toLowerCase().compareTo(_vehicleDisplayName(right).toLowerCase());
+  return byName != 0 ? byName : left.id.compareTo(right.id);
 }
 
-String _animatedVehicleKey(VehicleSummary vehicle) {
-  final imei = vehicle.imei.trim().toLowerCase();
-  if (imei.isNotEmpty) {
-    return 'imei:$imei';
-  }
-
-  final id = vehicle.id.trim().toLowerCase();
-  if (id.isNotEmpty) {
-    return 'id:$id';
-  }
-
-  final plateNumber = vehicle.plateNumber.trim().toLowerCase();
-  if (plateNumber.isNotEmpty) {
-    return 'plate:$plateNumber';
-  }
-
-  final name = vehicle.name.trim().toLowerCase();
-  if (name.isNotEmpty) {
-    return 'name:$name';
-  }
-
-  return 'vehicle:${vehicle.latitude.toStringAsFixed(6)}:${vehicle.longitude.toStringAsFixed(6)}';
-}
+String _animatedVehicleKey(VehicleSummary vehicle) => fleetVehicleKey(vehicle);
 
 double? _seedVehicleBearingRadians(VehicleSummary vehicle) {
   final headingDegrees = vehicle.headingDegrees;
@@ -11167,39 +11584,6 @@ bool _hasMeaningfulLocationChange(
         toLongitude: toLongitude,
       ) >=
       _vehicleMarkerMinMoveMeters;
-}
-
-bool _shouldIgnoreVehicleLocationTransition({
-  required VehicleSummary fromVehicle,
-  required VehicleSummary toVehicle,
-  required double distanceMeters,
-}) {
-  if (distanceMeters < _vehicleMarkerMinMoveMeters) {
-    return true;
-  }
-
-  if (toVehicle.speed < _vehicleMarkerStationaryDriftSpeedKph &&
-      distanceMeters < _vehicleMarkerStationaryDriftMeters) {
-    return true;
-  }
-
-  final fromTime = fromVehicle.updatedAt ?? fromVehicle.lastSeenAt;
-  final toTime = toVehicle.updatedAt ?? toVehicle.lastSeenAt;
-  if (fromTime != null && toTime != null) {
-    if (toTime.isBefore(fromTime)) {
-      return true;
-    }
-
-    final elapsedSeconds = toTime.difference(fromTime).inSeconds;
-    if (elapsedSeconds >= 2) {
-      final impliedSpeedKph = (distanceMeters / elapsedSeconds) * 3.6;
-      if (impliedSpeedKph > _vehicleMarkerMaxImpliedSpeedKph) {
-        return true;
-      }
-    }
-  }
-
-  return false;
 }
 
 Duration _vehicleMotionDuration({
@@ -11228,12 +11612,11 @@ Duration _vehicleMotionDuration({
   if (fromTime != null && toTime != null) {
     final deltaMs = toTime.difference(fromTime).inMilliseconds;
     if (deltaMs > 0) {
-      final scaledMs = (deltaMs * _vehicleMarkerTimestampDurationScale)
-          .round()
-          .clamp(
-            _vehicleMarkerMinMotionDuration.inMilliseconds,
-            _vehicleMarkerMaxMotionDuration.inMilliseconds,
-          );
+      final scaledMs =
+          (deltaMs * _vehicleMarkerTimestampDurationScale).round().clamp(
+                _vehicleMarkerMinMotionDuration.inMilliseconds,
+                _vehicleMarkerMaxMotionDuration.inMilliseconds,
+              );
       return Duration(milliseconds: scaledMs);
     }
   }
@@ -11281,13 +11664,11 @@ double _coordinateDistanceMeters({
   final startLatitudeRadians = _degreesToRadians(fromLatitude);
   final endLatitudeRadians = _degreesToRadians(toLatitude);
 
-  final haversine =
-      math.pow(math.sin(deltaLatitude / 2), 2) +
+  final haversine = math.pow(math.sin(deltaLatitude / 2), 2) +
       math.cos(startLatitudeRadians) *
           math.cos(endLatitudeRadians) *
           math.pow(math.sin(deltaLongitude / 2), 2);
-  final arc =
-      2 *
+  final arc = 2 *
       math.atan2(
         math.sqrt(haversine.toDouble()),
         math.sqrt(1 - haversine.toDouble()),
@@ -11318,8 +11699,7 @@ double? _vehicleBearingRadians({
   final endLatitudeRadians = _degreesToRadians(toLatitude);
   final deltaLongitudeRadians = _degreesToRadians(toLongitude - fromLongitude);
   final y = math.sin(deltaLongitudeRadians) * math.cos(endLatitudeRadians);
-  final x =
-      math.cos(startLatitudeRadians) * math.sin(endLatitudeRadians) -
+  final x = math.cos(startLatitudeRadians) * math.sin(endLatitudeRadians) -
       math.sin(startLatitudeRadians) *
           math.cos(endLatitudeRadians) *
           math.cos(deltaLongitudeRadians);
@@ -11414,11 +11794,11 @@ class _AnimatedVehicleMotion {
   final Duration duration;
 
   bool get hasDirectionalMotion => _hasMeaningfulLocationChange(
-    startLatitude,
-    startLongitude,
-    targetLatitude,
-    targetLongitude,
-  );
+        startLatitude,
+        startLongitude,
+        targetLatitude,
+        targetLongitude,
+      );
 
   bool isAnimatingAt(DateTime now) {
     if (startedAt == null || duration == Duration.zero) {
@@ -11465,26 +11845,13 @@ class _AnimatedVehicleMotion {
   }
 
   _AnimatedVehicleMotion settledAt(DateTime now) {
-    if (isAnimatingAt(now)) {
+    if (startedAt == null || isAnimatingAt(now)) {
       return this;
     }
 
     return _AnimatedVehicleMotion.immediate(
       vehicle,
       bearingRadians: bearingRadians,
-    );
-  }
-
-  _AnimatedVehicleMotion withVehicle(VehicleSummary nextVehicle) {
-    return _AnimatedVehicleMotion._(
-      vehicle: nextVehicle,
-      startLatitude: startLatitude,
-      startLongitude: startLongitude,
-      targetLatitude: targetLatitude,
-      targetLongitude: targetLongitude,
-      bearingRadians: bearingRadians,
-      startedAt: startedAt,
-      duration: duration,
     );
   }
 
@@ -11514,7 +11881,7 @@ String _vehicleDisplayName(VehicleSummary vehicle) {
 
 String _commandImeiFor(VehicleSummary vehicle, String fallbackImei) {
   final primary = vehicle.imei.trim();
-  if (primary.isNotEmpty) {
+  if (primary.isNotEmpty || vehicle.id.trim().isNotEmpty) {
     return primary;
   }
 
@@ -11981,8 +12348,8 @@ String _vehicleCommandLatestStatusMessage(SuperadminVehicleCommandEntry entry) {
   final response = rawResponse.isNotEmpty
       ? rawResponse
       : hexResponse.isNotEmpty
-      ? hexResponse
-      : null;
+          ? hexResponse
+          : null;
   final error = errorMessage.isEmpty ? null : errorMessage;
 
   if (error != null) {

@@ -67,10 +67,10 @@ class DriverRouteMap extends StatelessWidget {
           ),
           children: [
             TileLayer(
-              urlTemplate: 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
-              subdomains: const ['mt0', 'mt1', 'mt2', 'mt3'],
-              userAgentPackageName: 'com.openvts.mobile',
-            ),
+                urlTemplate:
+                    'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+                subdomains: const ['mt0', 'mt1', 'mt2', 'mt3'],
+                userAgentPackageName: 'com.openvts.mobile'),
             // Without routed geometry show stops only, not a misleading straight route.
             if (route.length > 1)
               PolylineLayer(

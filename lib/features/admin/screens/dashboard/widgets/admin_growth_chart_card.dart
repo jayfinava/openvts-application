@@ -45,15 +45,14 @@ class _AdminGrowthChartCardState extends State<AdminGrowthChartCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: _SectionHeading(
-                  title: context.mobileText('Growth Chart'),
-                  icon: Icons.show_chart_rounded,
-                ),
+              _SectionHeading(
+                title: context.mobileText('Growth Chart'),
+                icon: Icons.show_chart_rounded,
               ),
+              const SizedBox(height: OpenVtsSpacing.sm),
               _RangeSelector(
                 selectedRange: _range,
                 onChanged: (range) {
@@ -113,12 +112,7 @@ class _AdminGrowthChartCardState extends State<AdminGrowthChartCard> {
       return true;
     }
 
-    final firstUser = points.first.userCount;
-    final firstVehicle = points.first.vehicleCount;
-    return points.every(
-      (point) =>
-          point.userCount == firstUser && point.vehicleCount == firstVehicle,
-    );
+    return false;
   }
 }
 
@@ -138,8 +132,7 @@ class _RangeSelector extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(3),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+        child: Wrap(
           children: [
             for (final range in AdminGrowthChartRange.values)
               _RangeSegment(
@@ -246,12 +239,10 @@ class _LegendLinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final primaryColor = isDark
-        ? const Color(0xFFFFFFFF)
-        : const Color(0xFF141118);
-    final secondaryColor = isDark
-        ? const Color(0xFF71717A)
-        : const Color(0xFF908A96);
+    final primaryColor =
+        isDark ? const Color(0xFFFFFFFF) : const Color(0xFF121212);
+    final secondaryColor =
+        isDark ? const Color(0xFF727272) : const Color(0xFF8C8C8C);
 
     final paint = Paint()
       ..color = solid ? primaryColor : secondaryColor
@@ -317,21 +308,31 @@ class _GrowthLineChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return CustomPaint(
-      painter: _GrowthLineChartPainter(points: points, isDark: isDark),
+      painter: _GrowthLineChartPainter(
+          points: points,
+          isDark: isDark,
+          textScaler: MediaQuery.textScalerOf(context)),
       child: const SizedBox.expand(),
     );
   }
 }
 
 class _GrowthLineChartPainter extends CustomPainter {
-  const _GrowthLineChartPainter({required this.points, required this.isDark});
+  const _GrowthLineChartPainter(
+      {required this.points, required this.isDark, required this.textScaler});
 
   final List<AdminMonthGraphPoint> points;
   final bool isDark;
+  final TextScaler textScaler;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final chartRect = Rect.fromLTWH(36, 14, size.width - 46, size.height - 58);
+    final left = math.min(size.width / 3, 40 * textScaler.scale(10) / 10);
+    final chartRect = Rect.fromLTWH(
+        left,
+        14,
+        math.max(1, size.width - left - 10),
+        math.max(1, size.height - 32 - textScaler.scale(14)));
     final maxValue = _maxValue();
     _paintGrid(canvas, chartRect, maxValue);
 
@@ -346,12 +347,10 @@ class _GrowthLineChartPainter extends CustomPainter {
       maxValue,
     );
 
-    final primaryColor = isDark
-        ? const Color(0xFFFFFFFF)
-        : const Color(0xFF141118);
-    final secondaryColor = isDark
-        ? const Color(0xFF71717A)
-        : const Color(0xFF908A96);
+    final primaryColor =
+        isDark ? const Color(0xFFFFFFFF) : const Color(0xFF121212);
+    final secondaryColor =
+        isDark ? const Color(0xFF727272) : const Color(0xFF8C8C8C);
 
     _paintArea(canvas, chartRect, userOffsets);
     _paintSeries(canvas, userOffsets, primaryColor, dashed: false);
@@ -371,9 +370,8 @@ class _GrowthLineChartPainter extends CustomPainter {
   }
 
   void _paintGrid(Canvas canvas, Rect chartRect, int maxValue) {
-    final borderColor = isDark
-        ? const Color(0xFF2A2430)
-        : const Color(0xFFE7E3EA);
+    final borderColor =
+        isDark ? const Color(0xFF262626) : const Color(0xFFE4E4E4);
     final gridPaint = Paint()
       ..color = borderColor.withValues(alpha: 0.9)
       ..strokeWidth = 1;
@@ -414,9 +412,8 @@ class _GrowthLineChartPainter extends CustomPainter {
       ..lineTo(offsets.first.dx, chartRect.bottom)
       ..close();
 
-    final primaryColor = isDark
-        ? const Color(0xFFFFFFFF)
-        : const Color(0xFF141118);
+    final primaryColor =
+        isDark ? const Color(0xFFFFFFFF) : const Color(0xFF121212);
     final fillPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
@@ -489,9 +486,8 @@ class _GrowthLineChartPainter extends CustomPainter {
   }
 
   void _paintAxisLabels(Canvas canvas, Rect chartRect, int maxValue) {
-    final tertiaryColor = isDark
-        ? const Color(0xFF71717A)
-        : const Color(0xFF908A96);
+    final tertiaryColor =
+        isDark ? const Color(0xFF727272) : const Color(0xFF8C8C8C);
     final labelStyle = OpenVtsTypography.meta.copyWith(
       color: tertiaryColor,
       fontSize: 10,
@@ -507,10 +503,15 @@ class _GrowthLineChartPainter extends CustomPainter {
       );
     }
 
-    final shouldRotate = points.length > 8;
-    final labelIndexes = shouldRotate
-        ? List<int>.generate(points.length, (index) => index)
-        : <int>{0, points.length ~/ 2, points.length - 1}.toList();
+    // Choose a bounded number of ticks from the available pixel width. Rotating
+    // every monthly label still overlaps when "All" contains several years.
+    final slots = math.max(2, (chartRect.width / textScaler.scale(72)).floor());
+    final count = math.min(points.length, slots);
+    final labelIndexes = <int>{
+      for (var i = 0; i < count; i++)
+        count == 1 ? 0 : (i * (points.length - 1) / (count - 1)).round(),
+    };
+    final labelWidth = chartRect.width / math.max(1, count) - 8;
     for (final index in labelIndexes) {
       final point = points[index];
       final x = points.length == 1
@@ -519,10 +520,12 @@ class _GrowthLineChartPainter extends CustomPainter {
       _paintText(
         canvas,
         point.label,
-        Offset(x - 16, chartRect.bottom + 10),
+        Offset(
+            (x - labelWidth / 2)
+                .clamp(chartRect.left, chartRect.right - labelWidth),
+            chartRect.bottom + 10),
         labelStyle,
-        maxWidth: 44,
-        rotate: shouldRotate,
+        maxWidth: math.max(1, labelWidth),
       );
     }
   }
@@ -533,29 +536,23 @@ class _GrowthLineChartPainter extends CustomPainter {
     Offset offset,
     TextStyle style, {
     required double maxWidth,
-    bool rotate = false,
   }) {
     final painter = TextPainter(
       text: TextSpan(text: text, style: style),
       maxLines: 1,
+      ellipsis: '…',
+      textScaler: textScaler,
       textDirection: ui.TextDirection.ltr,
     )..layout(maxWidth: maxWidth);
 
-    if (!rotate) {
-      painter.paint(canvas, offset);
-      return;
-    }
-
-    canvas.save();
-    canvas.translate(offset.dx + 8, offset.dy + 2);
-    canvas.rotate(-math.pi / 4);
-    painter.paint(canvas, Offset.zero);
-    canvas.restore();
+    painter.paint(canvas, offset);
   }
 
   @override
   bool shouldRepaint(covariant _GrowthLineChartPainter oldDelegate) {
-    return oldDelegate.points != points || oldDelegate.isDark != isDark;
+    return oldDelegate.points != points ||
+        oldDelegate.isDark != isDark ||
+        oldDelegate.textScaler != textScaler;
   }
 }
 

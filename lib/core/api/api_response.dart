@@ -44,7 +44,10 @@ class ApiResponse<T> {
 
       message =
           envelopeData['message']?.toString() ?? json['message']?.toString();
-      if (envelopeData.containsKey('data')) {
+      // A paged payload owns both data and pagination. Unwrapping its rows
+      // alone loses totals when a server sends the direct action envelope.
+      if (envelopeData.containsKey('data') &&
+          !envelopeData.containsKey('pagination')) {
         payload = envelopeData['data'];
       }
     } else {

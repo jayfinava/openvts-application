@@ -1,7 +1,10 @@
+import '../../../shared/paging/server_list_pager.dart';
 import 'admin_inventory_model.dart';
 
 class AdminInventoryState {
   const AdminInventoryState({
+    this.devicesPagination,
+    this.simsPagination,
     required this.selectedTab,
     required this.devices,
     required this.filteredDevices,
@@ -40,7 +43,9 @@ class AdminInventoryState {
   });
 
   const AdminInventoryState.initial()
-      : selectedTab = AdminInventoryTab.devices,
+      : devicesPagination = null,
+        simsPagination = null,
+        selectedTab = AdminInventoryTab.devices,
         devices = const <AdminInventoryDevice>[],
         filteredDevices = const <AdminInventoryDevice>[],
         simCards = const <AdminInventorySimCard>[],
@@ -78,6 +83,8 @@ class AdminInventoryState {
 
   static const _unset = Object();
 
+  final ListPageMeta? devicesPagination;
+  final ListPageMeta? simsPagination;
   final String selectedTab;
   final List<AdminInventoryDevice> devices;
   final List<AdminInventoryDevice> filteredDevices;
@@ -114,8 +121,9 @@ class AdminInventoryState {
   final int devicesRefreshKey;
   final int simCardsRefreshKey;
 
-  int get deviceFilteredCount => filteredDevices.length;
-  int get simFilteredCount => filteredSimCards.length;
+  int get deviceFilteredCount =>
+      devicesPagination?.total ?? filteredDevices.length;
+  int get simFilteredCount => simsPagination?.total ?? filteredSimCards.length;
   int get devicePageCount {
     if (deviceFilteredCount <= 0) return 1;
     return ((deviceFilteredCount - 1) ~/ deviceRecordsPerPage) + 1;
@@ -147,6 +155,7 @@ class AdminInventoryState {
   }
 
   List<AdminInventoryDevice> get visibleDevices {
+    if (devicesPagination != null) return filteredDevices;
     if (filteredDevices.isEmpty) {
       return const <AdminInventoryDevice>[];
     }
@@ -159,6 +168,7 @@ class AdminInventoryState {
   }
 
   List<AdminInventorySimCard> get visibleSimCards {
+    if (simsPagination != null) return filteredSimCards;
     if (filteredSimCards.isEmpty) {
       return const <AdminInventorySimCard>[];
     }
@@ -174,6 +184,8 @@ class AdminInventoryState {
   int get simShowingCount => visibleSimCards.length;
 
   AdminInventoryState copyWith({
+    ListPageMeta? devicesPagination,
+    ListPageMeta? simsPagination,
     String? selectedTab,
     List<AdminInventoryDevice>? devices,
     List<AdminInventoryDevice>? filteredDevices,
@@ -211,6 +223,8 @@ class AdminInventoryState {
     int? simCardsRefreshKey,
   }) {
     return AdminInventoryState(
+      devicesPagination: devicesPagination ?? this.devicesPagination,
+      simsPagination: simsPagination ?? this.simsPagination,
       selectedTab: selectedTab ?? this.selectedTab,
       devices: devices ?? this.devices,
       filteredDevices: filteredDevices ?? this.filteredDevices,

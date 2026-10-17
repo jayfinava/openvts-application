@@ -153,13 +153,13 @@ void main() {
       expect(resolved, 'https://app.openvts.io/api/uploads/profile.jpg');
     });
 
-    test('resolves absolute-path URLs against the origin root', () {
+    test('retains the API proxy prefix for backend upload paths', () {
       final resolved = resolveProfileImageUrl(
         'https://app.openvts.io/api',
         '/uploads/profile.jpg',
       );
 
-      expect(resolved, 'https://app.openvts.io/uploads/profile.jpg');
+      expect(resolved, 'https://app.openvts.io/api/uploads/profile.jpg');
     });
 
     test('preserves fully qualified URLs', () {

@@ -25,6 +25,16 @@ String? localizeValidationMessage(String? message, AppLocalizations l10n) {
       ? message.substring(0, message.length - 1)
       : message;
   final exact = switch (canonical) {
+    'Name must contain at least one letter' => l10n.validationAccountNameLetter,
+    'Name contains invalid characters' => l10n.validationAccountNameCharacters,
+    'Name cannot contain consecutive spaces' =>
+      l10n.validationAccountNameSpaces,
+    'Username must contain at least one letter' =>
+      l10n.validationAccountUsernameLetter,
+    'Username contains invalid characters' =>
+      l10n.validationAccountUsernameCharacters,
+    'Address contains invalid text' => l10n.validationAccountAddressText,
+    'Enter a valid postal code' => l10n.validationAccountPostal,
     'Enter a valid email address' => l10n.validationValidEmail,
     'Enter a valid number' => l10n.validationValidNumber,
     'Credits cannot be negative' => l10n.validationNonnegativeCredits,
@@ -79,22 +89,22 @@ String? localizeValidationMessage(String? message, AppLocalizations l10n) {
 }
 
 String _fieldLabel(String field, AppLocalizations l10n) => switch (field) {
-  'This field' => l10n.validationThisField,
-  'Email' => l10n.legacyUi84add5b295,
-  'Name' => l10n.mobileName,
-  'Username' => l10n.legacyUi84c29015de,
-  'Address' => l10n.mobileAddress,
-  'Pincode' => l10n.legacyUif2c5ca7b8c,
-  'Full name' => l10n.legacyUieeb692087d,
-  'Password' => l10n.legacyUi8be3c943b1,
-  'Company name' => l10n.legacyUi1e5f7dc45c,
-  'Mobile prefix' => l10n.legacyUi2ab961738f,
-  'Mobile number' => l10n.mobileMobileNumber,
-  'Vehicle name' => l10n.legacyUida83429197,
-  'Plate number' => l10n.legacyUif2ce282e2d,
-  'SIM number' => l10n.validationFieldSimNumber,
-  'Title' => l10n.legacyUi768e0c1c69,
-  'Credits' => l10n.legacyUibfac50d642,
-  'Username or email' => l10n.legacyUi2c7ab350b3,
-  _ => field,
-};
+      'This field' => l10n.validationThisField,
+      'Email' => l10n.legacyUi84add5b295,
+      'Name' => l10n.mobileName,
+      'Username' => l10n.legacyUi84c29015de,
+      'Address' => l10n.mobileAddress,
+      'Pincode' => l10n.legacyUif2c5ca7b8c,
+      'Full name' => l10n.legacyUieeb692087d,
+      'Password' => l10n.legacyUi8be3c943b1,
+      'Company name' => l10n.legacyUi1e5f7dc45c,
+      'Mobile prefix' => l10n.legacyUi2ab961738f,
+      'Mobile number' => l10n.mobileMobileNumber,
+      'Vehicle name' => l10n.legacyUida83429197,
+      'Plate number' => l10n.legacyUif2ce282e2d,
+      'SIM number' => l10n.validationFieldSimNumber,
+      'Title' => l10n.legacyUi768e0c1c69,
+      'Credits' => l10n.legacyUibfac50d642,
+      'Username or email' => l10n.legacyUi2c7ab350b3,
+      _ => field,
+    };

@@ -11,6 +11,16 @@ import '../models/superadmin_admin_details_model.dart';
 
 class SuperadminAdminDetailsService {
   SuperadminAdminDetailsService(this._apiClient);
+  static const documentFileSizeLimit = 5 * 1024 * 1024;
+  static const allowedDocumentExtensions = [
+    'pdf',
+    'png',
+    'jpg',
+    'jpeg',
+    'webp',
+    'doc',
+    'docx'
+  ];
 
   final ApiClient _apiClient;
 
@@ -165,6 +175,7 @@ class SuperadminAdminDetailsService {
     final id = _requireAdminId(adminId);
     final response = await _apiClient.get<dynamic>(
       ApiEndpoints.superadmin.documentsByAdmin(id),
+      queryParameters: {'rk': DateTime.now().microsecondsSinceEpoch.toString()},
       options: _readOptions,
       parser: (json) => json,
     );
@@ -181,20 +192,21 @@ class SuperadminAdminDetailsService {
     return all.where((item) => item.isForUser).toList(growable: false);
   }
 
-  Future<void> uploadAdminDocument(
+  Future<SuperadminAdminDocument?> uploadAdminDocument(
     SuperadminAdminDocumentRequest request,
   ) async {
     _validateDocumentRequest(request, requireFile: true);
     final formData = await _buildDocumentFormData(request);
-    await _apiClient.post<dynamic>(
+    final response = await _apiClient.post<dynamic>(
       ApiEndpoints.superadmin.uploadDoc,
       data: formData,
       options: _uploadOptions,
       parser: (json) => json,
     );
+    return _documentFromMutation(response.data);
   }
 
-  Future<void> updateAdminDocument({
+  Future<SuperadminAdminDocument?> updateAdminDocument({
     required String docId,
     required SuperadminAdminDocumentRequest request,
   }) async {
@@ -204,12 +216,24 @@ class SuperadminAdminDetailsService {
     }
     _validateDocumentRequest(request, requireFile: false);
     final formData = await _buildDocumentFormData(request);
-    await _apiClient.patch<dynamic>(
+    final response = await _apiClient.patch<dynamic>(
       ApiEndpoints.superadmin.uploadDocById(id),
       data: formData,
       options: _uploadOptions,
       parser: (json) => json,
     );
+    return _documentFromMutation(response.data);
+  }
+
+  SuperadminAdminDocument? _documentFromMutation(dynamic raw) {
+    var value = raw;
+    for (var depth = 0;
+        depth < 4 && value is Map && value['data'] is Map;
+        depth++) {
+      value = value['data'];
+    }
+    final document = SuperadminAdminDocument.fromJson(value);
+    return document.id.isEmpty ? null : document;
   }
 
   Future<void> deleteAdminDocument(String docId) async {
@@ -283,15 +307,23 @@ class SuperadminAdminDetailsService {
     if (requireFile && request.file == null) {
       throw ArgumentError('File is required.');
     }
+    final file = request.file;
+    if (file != null) {
+      if (file.size > documentFileSizeLimit ||
+          (file.bytes?.length ?? 0) > documentFileSizeLimit) {
+        throw ArgumentError('Document exceeds 5MB.');
+      }
+      if (!allowedDocumentExtensions.contains(_extension(file.name))) {
+        throw ArgumentError('This document file type is not allowed.');
+      }
+    }
   }
 
   Future<FormData> _buildDocumentFormData(
     SuperadminAdminDocumentRequest request,
   ) async {
-    final tags = request.tags
-        .map((t) => t.trim())
-        .where((t) => t.isNotEmpty)
-        .join(',');
+    final tags =
+        request.tags.map((t) => t.trim()).where((t) => t.isNotEmpty).join(',');
 
     final formData = FormData();
     formData.fields.addAll(<MapEntry<String, String>>[
@@ -334,9 +366,11 @@ class SuperadminAdminDetailsService {
     if (path == null || path.isEmpty) {
       throw ArgumentError('File has no readable content.');
     }
-    final bytes = await File(path).readAsBytes();
-    return MultipartFile.fromBytes(
-      bytes,
+    if (await File(path).length() > documentFileSizeLimit) {
+      throw ArgumentError('Document exceeds 5MB.');
+    }
+    return MultipartFile.fromFile(
+      path,
       filename: fileName,
       contentType: contentType,
     );

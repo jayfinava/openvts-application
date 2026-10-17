@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../shared/helpers/toast_helper.dart';
 import '../../../../shared/models/user_role.dart';
 import '../../../../shared/widgets/open_vts_button.dart';
+import '../../../../shared/widgets/open_vts_monochrome_image.dart';
 import '../../../auth/controllers/auth_controller.dart';
 import '../../controllers/user_operations_providers.dart';
 import '../../models/user_operation_attachment.dart';
@@ -39,8 +40,7 @@ class _UserOperationProofScreenState
           IconButton(
             tooltip: context.operationText('Save or share proof'),
             icon: const Icon(Icons.ios_share),
-            onPressed:
-                _sharing ||
+            onPressed: _sharing ||
                     content.isLoading ||
                     content.hasError ||
                     !content.hasValue
@@ -81,7 +81,8 @@ class _UserOperationProofScreenState
                   child: InteractiveViewer(
                     minScale: .5,
                     maxScale: 5,
-                    child: Image.memory(
+                    child: OpenVtsMonochromeImage(
+                        child: Image.memory(
                       bytes,
                       fit: BoxFit.contain,
                       errorBuilder: (_, __, ___) => Padding(
@@ -92,7 +93,7 @@ class _UserOperationProofScreenState
                           ),
                         ),
                       ),
-                    ),
+                    )),
                   ),
                 )
               : PdfPreview(
@@ -150,9 +151,8 @@ class _UserOperationProofScreenState
           ),
         ],
         fileNameOverrides: [widget.proof.safeName],
-        sharePositionOrigin: box == null
-            ? null
-            : box.localToGlobal(Offset.zero) & box.size,
+        sharePositionOrigin:
+            box == null ? null : box.localToGlobal(Offset.zero) & box.size,
       );
     } catch (_) {
       if (mounted) {

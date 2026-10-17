@@ -1,20 +1,69 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../shared/paging/server_list_pager.dart';
 import '../models/admin_vehicle_model.dart';
 import '../models/admin_vehicle_state.dart';
 import '../services/admin_vehicle_service.dart';
 
 class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
   AdminVehiclesController({
+    this.pager,
     required AdminVehicleService service,
     this.onDashboardRefresh,
   })  : _service = service,
-        super(AdminVehiclesState.initial());
+        super(AdminVehiclesState.initial()) {
+    pager?.onChanged = _syncPage;
+  }
 
+  final ServerListPager<AdminVehicleListItem>? pager;
+  bool get isServerPaged => pager != null;
+  void _syncPage() {
+    final p = pager!;
+    if (!mounted) return;
+    state = state.copyWith(
+        vehicles: p.items,
+        filteredVehicles: p.items,
+        pagination: p.meta,
+        currentPage: p.meta?.page ?? state.currentPage,
+        recordsPerPage: p.meta?.limit ?? state.recordsPerPage,
+        isLoading: p.loading && p.meta == null,
+        isRefreshing: p.loading && p.meta != null,
+        errorMessage: p.error);
+  }
+
+  @override
+  void dispose() {
+    pager?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _reloadPage({bool debounce = false}) => pager!.change(
+          page: 1,
+          search: state.searchQuery,
+          debounce: debounce,
+          sortBy: switch (state.sortOption) {
+            AdminVehiclesSortOption.nameAz ||
+            AdminVehiclesSortOption.nameZa =>
+              'name',
+            AdminVehiclesSortOption.activeFirst => 'status',
+            _ => 'createdAt'
+          },
+          sortDir: state.sortOption == AdminVehiclesSortOption.oldest ||
+                  state.sortOption == AdminVehiclesSortOption.nameAz
+              ? 'asc'
+              : 'desc',
+          filters: {
+            if (state.statusFilter != AdminVehicleStatusFilter.all)
+              'status': state.statusFilter == AdminVehicleStatusFilter.active,
+            if (state.typeFilter.isNotEmpty) 'vehicleTypeName': state.typeFilter
+          });
   final AdminVehicleService _service;
   final void Function()? onDashboardRefresh;
 
   Future<void> load() async {
+    if (pager != null) return pager!.load();
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final vehicles = await _service.getVehicles();
@@ -28,6 +77,7 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
   }
 
   Future<void> refresh() async {
+    if (pager != null) return pager!.load();
     state = state.copyWith(isRefreshing: true, errorMessage: null);
     try {
       final vehicles = await _service.getVehicles(
@@ -43,6 +93,11 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
   }
 
   void setSearchQuery(String value) {
+    if (pager != null) {
+      state = state.copyWith(searchQuery: value);
+      unawaited(_reloadPage(debounce: true));
+      return;
+    }
     state = state.copyWith(
       searchQuery: value,
       currentPage: 1,
@@ -52,6 +107,11 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
   }
 
   void setStatusFilter(AdminVehicleStatusFilter value) {
+    if (pager != null) {
+      state = state.copyWith(statusFilter: value);
+      unawaited(_reloadPage(debounce: false));
+      return;
+    }
     state = state.copyWith(
       statusFilter: value,
       currentPage: 1,
@@ -61,6 +121,11 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
   }
 
   void setTypeFilter(String value) {
+    if (pager != null) {
+      state = state.copyWith(typeFilter: value);
+      unawaited(_reloadPage(debounce: false));
+      return;
+    }
     state = state.copyWith(
       typeFilter: value,
       currentPage: 1,
@@ -70,6 +135,11 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
   }
 
   void setSortOption(AdminVehiclesSortOption value) {
+    if (pager != null) {
+      state = state.copyWith(sortOption: value);
+      unawaited(_reloadPage(debounce: false));
+      return;
+    }
     state = state.copyWith(
       sortOption: value,
       currentPage: 1,
@@ -79,6 +149,10 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
   }
 
   void setRecordsPerPage(int value) {
+    if (pager != null) {
+      unawaited(pager!.change(page: 1, limit: value));
+      return;
+    }
     state = state.copyWith(
       recordsPerPage: value,
       currentPage: 1,
@@ -86,10 +160,22 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
   }
 
   void goToPage(int value) {
+    if (pager != null) {
+      unawaited(pager!.goToPage(value));
+      return;
+    }
     state = state.copyWith(currentPage: value);
   }
 
   void clearFilters() {
+    if (pager != null) {
+      state = state.copyWith(
+          searchQuery: '',
+          statusFilter: AdminVehicleStatusFilter.all,
+          typeFilter: '');
+      unawaited(_reloadPage());
+      return;
+    }
     state = state.copyWith(
       searchQuery: '',
       statusFilter: AdminVehicleStatusFilter.all,
@@ -100,6 +186,10 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
   }
 
   Future<void> createVehicle(AdminCreateVehicleRequest request) async {
+    if (!mounted) return;
+    if (state.isCreating) {
+      throw StateError('Vehicle creation is already in progress.');
+    }
     state = state.copyWith(isCreating: true, errorMessage: null);
     try {
       await _service.createVehicle(request);
@@ -107,7 +197,7 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
         return;
       }
       state = state.copyWith(isCreating: false);
-      await refresh();
+      unawaited(refresh());
       onDashboardRefresh?.call();
     } catch (error) {
       if (!mounted) {
@@ -151,6 +241,24 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
 
   Future<bool> updateVehicleStatus(
       {required String id, required bool isActive}) async {
+    if (pager != null) {
+      state = state.copyWith(updatingIds: {...state.updatingIds, id});
+      try {
+        await _service.updateVehicleStatus(id: id, isActive: isActive);
+        if (!mounted) return false;
+        state = state.copyWith(updatingIds: {...state.updatingIds}..remove(id));
+        unawaited(pager!.load());
+        onDashboardRefresh?.call();
+        return true;
+      } catch (error) {
+        if (mounted) {
+          state = state.copyWith(
+              updatingIds: {...state.updatingIds}..remove(id),
+              errorMessage: _errorMessage(error));
+        }
+        return false;
+      }
+    }
     final current = state.vehicles;
     final updating = <String>{...state.updatingIds, id};
     final optimistic = current
@@ -198,6 +306,24 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
   }
 
   Future<bool> deleteVehicle(String id) async {
+    if (pager != null) {
+      state = state.copyWith(deletingIds: {...state.deletingIds, id});
+      try {
+        await _service.deleteVehicle(id);
+        if (!mounted) return false;
+        state = state.copyWith(deletingIds: {...state.deletingIds}..remove(id));
+        unawaited(pager!.load());
+        onDashboardRefresh?.call();
+        return true;
+      } catch (error) {
+        if (mounted) {
+          state = state.copyWith(
+              deletingIds: {...state.deletingIds}..remove(id),
+              errorMessage: _errorMessage(error));
+        }
+        return false;
+      }
+    }
     final deleting = <String>{...state.deletingIds, id};
     state = state.copyWith(deletingIds: deleting, errorMessage: null);
     try {
@@ -233,6 +359,10 @@ class AdminVehiclesController extends StateNotifier<AdminVehiclesState> {
   }
 
   void _applyFilters() {
+    if (pager != null) {
+      state = state.copyWith(filteredVehicles: state.vehicles);
+      return;
+    }
     final query = state.searchQuery.trim().toLowerCase();
     final typeFilter = state.typeFilter.trim().toLowerCase();
     final filtered = state.vehicles.where((vehicle) {

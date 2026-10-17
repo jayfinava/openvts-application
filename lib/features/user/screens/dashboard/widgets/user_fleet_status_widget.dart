@@ -62,7 +62,7 @@ class _UserFleetStatusWidgetState extends ConsumerState<UserFleetStatusWidget> {
   Widget _buildBody(AsyncValue<UserDashboardFleetStatus> state) {
     if (state.hasError) {
       return UserDashboardWidgetError(
-        message: state.error.toString(),
+        error: state.error!,
         onRetry: _reload,
       );
     }
@@ -80,13 +80,13 @@ class _UserFleetStatusWidgetState extends ConsumerState<UserFleetStatusWidget> {
       _FleetSegment(
         'Connected',
         data.buckets.connected,
-        const Color(0xFF17141B),
+        const Color(0xFF151515),
       ),
-      _FleetSegment('Running', data.buckets.running, const Color(0xFF3B3740)),
-      _FleetSegment('Idle', data.buckets.idle, const Color(0xFF635D69)),
-      _FleetSegment('Stopped', data.buckets.stopped, const Color(0xFF8A8490)),
-      _FleetSegment('Inactive', data.buckets.inactive, const Color(0xFFB5AFBC)),
-      _FleetSegment('No data', data.buckets.noData, const Color(0xFFDCD8E0)),
+      _FleetSegment('Running', data.buckets.running, const Color(0xFF393939)),
+      _FleetSegment('Idle', data.buckets.idle, const Color(0xFF5F5F5F)),
+      _FleetSegment('Stopped', data.buckets.stopped, const Color(0xFF868686)),
+      _FleetSegment('Inactive', data.buckets.inactive, const Color(0xFFB1B1B1)),
+      _FleetSegment('No data', data.buckets.noData, const Color(0xFFD9D9D9)),
     ];
 
     return Column(
@@ -155,9 +155,8 @@ class _FleetSegmentedBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeSegments = segments
-        .where((segment) => segment.value > 0)
-        .toList();
+    final activeSegments =
+        segments.where((segment) => segment.value > 0).toList();
 
     if (activeSegments.isEmpty) {
       return Container(

@@ -151,6 +151,7 @@ class AdminSettingsService {
   Future<AdminProfileSettings> uploadProfilePhoto({
     required List<int> bytes,
     required String fileName,
+    AdminProfileSettings? currentProfile,
   }) async {
     final formData = FormData();
     formData.fields.add(const MapEntry('type', 'PROFILE'));
@@ -164,12 +165,21 @@ class AdminSettingsService {
         ),
       ),
     );
-    await _apiClient.post<void>(
+    final response = await _apiClient.post<dynamic>(
       ApiEndpoints.admin.uploadProfile,
       data: formData,
       options: _multipartOptions,
-      parser: (_) {},
+      parser: (json) => json,
     );
+    dynamic payload = response.data;
+    for (var depth = 0; depth < 4 && payload is Map; depth++) {
+      final url = payload['url'] ?? payload['profileUrl'];
+      if (url is String && url.trim().isNotEmpty && currentProfile != null) {
+        return currentProfile.copyWith(
+            profileUrl: url.trim(), updatedAt: DateTime.now());
+      }
+      payload = payload['data'];
+    }
     return getProfile();
   }
 
@@ -226,13 +236,11 @@ class AdminSettingsService {
     final details = error.details;
     final root = details is Map ? details : const <dynamic, dynamic>{};
     final nestedValue = root['data'];
-    final nested = nestedValue is Map
-        ? nestedValue
-        : const <dynamic, dynamic>{};
+    final nested =
+        nestedValue is Map ? nestedValue : const <dynamic, dynamic>{};
     final payloadValue = nested['data'];
-    final payload = payloadValue is Map
-        ? payloadValue
-        : const <dynamic, dynamic>{};
+    final payload =
+        payloadValue is Map ? payloadValue : const <dynamic, dynamic>{};
     final action = nested['action'] ?? root['action'];
     final code = payload['code'] ?? nested['code'] ?? root['code'];
     final message = nested['message'] ?? root['message'] ?? error.message;

@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../core/config/app_config.dart';
-import '../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -96,9 +96,7 @@ class _ImportBodyState extends ConsumerState<_ImportBody> {
     final parse = _parse;
     if (parse == null || parse.validRows.isEmpty) return;
     try {
-      await ref
-          .read(userLandmarkBulkJobControllerProvider.notifier)
-          .start(
+      await ref.read(userLandmarkBulkJobControllerProvider.notifier).start(
             CreateUserLandmarkBulkJobRequest(
               entityType: widget.entityType,
               rows: parse.validRows,
@@ -128,8 +126,7 @@ class _ImportBodyState extends ConsumerState<_ImportBody> {
   Widget build(BuildContext context) {
     final jobState = ref.watch(userLandmarkBulkJobControllerProvider);
     final hasParse = _parse != null;
-    final canUpload =
-        hasParse &&
+    final canUpload = hasParse &&
         _parse!.validRows.isNotEmpty &&
         !jobState.isUploading &&
         !jobState.isLoading;
@@ -154,7 +151,8 @@ class _ImportBodyState extends ConsumerState<_ImportBody> {
           const SizedBox(height: OpenVtsSpacing.xs),
           Text(
             _parseError!,
-            style: OpenVtsTypography.meta.copyWith(color: OpenVtsColors.error),
+            style:
+                OpenVtsTypography.meta.copyWith(color: OpenVtsMapColors.error),
           ),
         ],
         if (hasParse) ...[
@@ -177,7 +175,8 @@ class _ImportBodyState extends ConsumerState<_ImportBody> {
           const SizedBox(height: OpenVtsSpacing.xs),
           Text(
             jobState.errorMessage!,
-            style: OpenVtsTypography.meta.copyWith(color: OpenVtsColors.error),
+            style:
+                OpenVtsTypography.meta.copyWith(color: OpenVtsMapColors.error),
           ),
         ],
       ],
@@ -198,16 +197,16 @@ class _TemplateRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: OpenVtsMapColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsMapColors.border),
       ),
       child: Row(
         children: [
           const Icon(
             Icons.table_chart_outlined,
             size: 18,
-            color: OpenVtsColors.brandInk,
+            color: OpenVtsMapColors.brandInk,
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
           Expanded(
@@ -217,14 +216,14 @@ class _TemplateRow extends StatelessWidget {
                 Text(
                   context.mobileText('CSV template'),
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: OpenVtsMapColors.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 Text(
                   header,
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: OpenVtsMapColors.textSecondary,
                     fontFamily: 'monospace',
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -235,7 +234,7 @@ class _TemplateRow extends StatelessWidget {
           IconButton(
             tooltip: context.mobileText('Copy header'),
             iconSize: 18,
-            color: OpenVtsColors.textSecondary,
+            color: OpenVtsMapColors.textSecondary,
             icon: const Icon(Icons.copy_outlined),
             onPressed: () async {
               await Clipboard.setData(ClipboardData(text: header));
@@ -274,9 +273,9 @@ class _PickerRow extends StatelessWidget {
               vertical: 10,
             ),
             decoration: BoxDecoration(
-              color: OpenVtsColors.background,
+              color: OpenVtsMapColors.background,
               borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-              border: Border.all(color: OpenVtsColors.border),
+              border: Border.all(color: OpenVtsMapColors.border),
             ),
             child: Text(
               fileName ?? 'No file selected',
@@ -284,8 +283,8 @@ class _PickerRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: OpenVtsTypography.body.copyWith(
                 color: fileName == null
-                    ? OpenVtsColors.textTertiary
-                    : OpenVtsColors.textPrimary,
+                    ? OpenVtsMapColors.textTertiary
+                    : OpenVtsMapColors.textPrimary,
               ),
             ),
           ),
@@ -312,9 +311,9 @@ class _ValidationSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: OpenVtsMapColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsMapColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,7 +324,7 @@ class _ValidationSummary extends StatelessWidget {
                 label: context.mobileText("{value1} valid", {
                   'value1': (parse.validRows.length).toString(),
                 }),
-                color: OpenVtsColors.success,
+                color: OpenVtsMapColors.success,
               ),
               const SizedBox(width: 6),
               _Pill(
@@ -333,8 +332,8 @@ class _ValidationSummary extends StatelessWidget {
                   'value1': (parse.invalidRows.length).toString(),
                 }),
                 color: parse.invalidRows.isEmpty
-                    ? OpenVtsColors.textTertiary
-                    : OpenVtsColors.warning,
+                    ? OpenVtsMapColors.textTertiary
+                    : OpenVtsMapColors.warning,
               ),
             ],
           ),
@@ -347,7 +346,7 @@ class _ValidationSummary extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 itemCount: parse.invalidRows.length,
                 separatorBuilder: (_, __) =>
-                    const Divider(height: 8, color: OpenVtsColors.divider),
+                    const Divider(height: 8, color: OpenVtsMapColors.divider),
                 itemBuilder: (_, i) {
                   final row = parse.invalidRows[i];
                   return Text(
@@ -356,7 +355,7 @@ class _ValidationSummary extends StatelessWidget {
                       'value2': (row.error).toString(),
                     }),
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.textSecondary,
+                      color: OpenVtsMapColors.textSecondary,
                     ),
                   );
                 },
@@ -381,9 +380,9 @@ class _JobProgress extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
-        color: OpenVtsColors.surface,
+        color: OpenVtsMapColors.surface,
         borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsMapColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,7 +393,7 @@ class _JobProgress extends ConsumerWidget {
                 child: Text(
                   job.status.label,
                   style: OpenVtsTypography.label.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: OpenVtsMapColors.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -402,7 +401,7 @@ class _JobProgress extends ConsumerWidget {
               Text(
                 '${job.processed}/${job.total}',
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: OpenVtsMapColors.textSecondary,
                 ),
               ),
             ],
@@ -413,9 +412,9 @@ class _JobProgress extends ConsumerWidget {
             child: LinearProgressIndicator(
               value: job.total > 0 ? progress : null,
               minHeight: 6,
-              backgroundColor: OpenVtsColors.divider,
+              backgroundColor: OpenVtsMapColors.divider,
               valueColor: const AlwaysStoppedAnimation<Color>(
-                OpenVtsColors.brandInk,
+                OpenVtsMapColors.brandInk,
               ),
             ),
           ),
@@ -426,7 +425,7 @@ class _JobProgress extends ConsumerWidget {
                 label: context.mobileText("{value1} ok", {
                   'value1': (job.succeeded).toString(),
                 }),
-                color: OpenVtsColors.success,
+                color: OpenVtsMapColors.success,
               ),
               const SizedBox(width: 6),
               _Pill(
@@ -434,8 +433,8 @@ class _JobProgress extends ConsumerWidget {
                   'value1': (job.failed).toString(),
                 }),
                 color: job.failed > 0
-                    ? OpenVtsColors.error
-                    : OpenVtsColors.textTertiary,
+                    ? OpenVtsMapColors.error
+                    : OpenVtsMapColors.textTertiary,
               ),
             ],
           ),
@@ -444,7 +443,7 @@ class _JobProgress extends ConsumerWidget {
             Text(
               context.mobileText('Failed rows'),
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.textTertiary,
+                color: OpenVtsMapColors.textTertiary,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.5,
               ),
@@ -457,7 +456,7 @@ class _JobProgress extends ConsumerWidget {
                 padding: EdgeInsets.zero,
                 itemCount: job.failedRows.length,
                 separatorBuilder: (_, __) =>
-                    const Divider(height: 8, color: OpenVtsColors.divider),
+                    const Divider(height: 8, color: OpenVtsMapColors.divider),
                 itemBuilder: (_, i) {
                   final row = job.failedRows[i];
                   final prefix = row.index != null ? 'Row ${row.index}: ' : '';
@@ -465,7 +464,7 @@ class _JobProgress extends ConsumerWidget {
                     '$prefix${row.name.isEmpty ? "(unnamed)" : row.name}'
                     ' — ${row.errorMessage}',
                     style: OpenVtsTypography.meta.copyWith(
-                      color: OpenVtsColors.textSecondary,
+                      color: OpenVtsMapColors.textSecondary,
                     ),
                   );
                 },

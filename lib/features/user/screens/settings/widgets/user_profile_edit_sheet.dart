@@ -44,6 +44,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
   // Separate controller used ONLY when the state field falls back to free
   // text (i.e. the reference API returned no states for this country).
   late final TextEditingController _stateController;
+  late final TextEditingController _cityController;
 
   // Controlled selection state — always drives the dropdown value.
   late String _selectedCountry;
@@ -82,6 +83,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
     _stateController = TextEditingController(
       text: address?.stateCode?.trim() ?? '',
     );
+    _cityController = TextEditingController(text: _selectedCity);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadDependentOptions();
@@ -103,6 +105,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
     _addressController.dispose();
     _pincodeController.dispose();
     _stateController.dispose();
+    _cityController.dispose();
     super.dispose();
   }
 
@@ -126,6 +129,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
       _submitError = null;
     });
     _stateController.text = '';
+    _cityController.clear();
     await widget.controller.loadStates(normalized);
   }
 
@@ -138,6 +142,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
       _submitError = null;
     });
     _stateController.text = normalized;
+    _cityController.clear();
     await widget.controller.loadCities(_selectedCountry, normalized);
   }
 
@@ -180,7 +185,7 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
       if (!ok) {
         _submitError =
             ref.read(userSettingsControllerProvider).profileErrorMessage ??
-            'Unable to save profile details.';
+                'Unable to save profile details.';
       }
     });
 
@@ -431,7 +436,11 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                       labelText: context.mobileText('State'),
                       hintText: context.mobileText('Enter state or territory'),
                     ),
-                    validator: context.localizedValidator((value) {final s = (value ?? '').trim(); if (s.isEmpty) return 'State is required.'; return null;}),
+                    validator: context.localizedValidator((value) {
+                      final s = (value ?? '').trim();
+                      if (s.isEmpty) return 'State is required.';
+                      return null;
+                    }),
                   ),
                 const SizedBox(height: OpenVtsSpacing.xs),
                 // City field — shows loading indicator or dropdown/text.
@@ -439,7 +448,8 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
                   _LoadingFieldPlaceholder(label: context.mobileText('City'))
                 else if (cityOptions.isEmpty && citiesAreForCurrentSelection)
                   _textField(
-                    controller: TextEditingController(text: _selectedCity),
+                    controller: _cityController,
+                    onChanged: (value) => _selectedCity = value,
                     label: context.mobileText('City'),
                     textInputAction: TextInputAction.next,
                     validator: (value) {
@@ -552,9 +562,11 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
     TextInputAction? textInputAction,
     List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
+    ValueChanged<String>? onChanged,
   }) {
     return TextFormField(
       controller: controller,
+      onChanged: onChanged,
       keyboardType: keyboardType,
       textInputAction: textInputAction,
       inputFormatters: inputFormatters,
@@ -580,7 +592,12 @@ class _UserProfileEditSheetState extends ConsumerState<UserProfileEditSheet> {
       decoration: InputDecoration(labelText: label),
       items: items,
       onChanged: onChanged,
-      validator: context.localizedValidator((v) {if (v == null || (v is String && v.trim().isEmpty)) {return '$label is required.';} return null;}),
+      validator: context.localizedValidator((v) {
+        if (v == null || (v is String && v.trim().isEmpty)) {
+          return '$label is required.';
+        }
+        return null;
+      }),
     );
   }
 
@@ -688,7 +705,12 @@ class _ReferenceRetryField extends StatelessWidget {
     return FormField<String>(
       initialValue: selectedValue,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: context.localizedValidator((value) {if ((value ?? '').trim().isEmpty) {return '$label is required. Tap Retry to reload options.';} return null;}),
+      validator: context.localizedValidator((value) {
+        if ((value ?? '').trim().isEmpty) {
+          return '$label is required. Tap Retry to reload options.';
+        }
+        return null;
+      }),
       builder: (field) => InputDecorator(
         decoration: InputDecoration(
           labelText: label,

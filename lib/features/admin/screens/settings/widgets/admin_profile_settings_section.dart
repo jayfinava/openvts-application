@@ -282,7 +282,7 @@ class _ProfileSettingsSectionState
     } else {
       final msg =
           ref.read(adminSettingsControllerProvider).sectionErrorMessage ??
-          'Unable to upload photo.';
+              'Unable to upload photo.';
       ToastHelper.showError(msg);
     }
   }
@@ -355,7 +355,7 @@ class _ProfileSettingsSectionState
     } else {
       final msg =
           ref.read(adminSettingsControllerProvider).sectionErrorMessage ??
-          'Unable to subscribe.';
+              'Unable to subscribe.';
       ToastHelper.showError(msg);
     }
   }
@@ -609,15 +609,19 @@ class _AvatarWithEdit extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: isDark ? OpenVtsColors.brandInk : OpenVtsColors.white,
-              borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-              border: isDark
+              color: hasUrl
+                  ? null
+                  : (isDark ? OpenVtsColors.brandInk : OpenVtsColors.white),
+              borderRadius:
+                  hasUrl ? null : BorderRadius.circular(OpenVtsRadius.md),
+              border: hasUrl || isDark
                   ? null
                   : Border.all(color: OpenVtsColors.border, width: 1),
               image: hasUrl
                   ? DecorationImage(
+                      colorFilter: OpenVtsColors.monochromeFilter,
                       image: NetworkImage(url!),
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                       onError: (_, __) {},
                     )
                   : null,
@@ -631,9 +635,8 @@ class _AvatarWithEdit extends StatelessWidget {
                       fontFamily: OpenVtsTypography.primaryFontFamily,
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      color: isDark
-                          ? OpenVtsColors.white
-                          : OpenVtsColors.brandInk,
+                      color:
+                          isDark ? OpenVtsColors.white : OpenVtsColors.brandInk,
                     ),
                   ),
           ),
@@ -833,12 +836,10 @@ class _VerificationRow extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     minimumSize: const Size(0, 30),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    foregroundColor: isDark
-                        ? OpenVtsColors.white
-                        : Colors.black,
-                    backgroundColor: isDark
-                        ? OpenVtsColors.brandInk
-                        : Colors.white,
+                    foregroundColor:
+                        isDark ? OpenVtsColors.white : Colors.black,
+                    backgroundColor:
+                        isDark ? OpenVtsColors.brandInk : Colors.white,
                     side: BorderSide(
                       color: isDark ? OpenVtsColors.white : Colors.black,
                       width: 1,
@@ -983,8 +984,7 @@ class _AdminProfileAddressCardState
           );
     final pincode = address?.pincode ?? '';
 
-    final hasAddress =
-        addressLine.trim().isNotEmpty ||
+    final hasAddress = addressLine.trim().isNotEmpty ||
         countryCode.trim().isNotEmpty ||
         stateCode.trim().isNotEmpty ||
         city.trim().isNotEmpty ||
@@ -1301,10 +1301,10 @@ class _EmailSubscriptionCard extends StatelessWidget {
                   isLoading
                       ? context.mobileText('Checking status…')
                       : subscribed == null
-                      ? context.mobileText('Status unknown')
-                      : isSubscribed
-                      ? context.mobileText('Subscribed')
-                      : context.mobileText('Not subscribed'),
+                          ? context.mobileText('Status unknown')
+                          : isSubscribed
+                              ? context.mobileText('Subscribed')
+                              : context.mobileText('Not subscribed'),
                   style: TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 11.5,
@@ -1324,11 +1324,11 @@ class _EmailSubscriptionCard extends StatelessWidget {
             )
           else
             SizedBox(
-              height: 32,
+              height: 48,
               child: OpenVtsButton(
                 label: context.mobileText('Subscribe'),
                 variant: OpenVtsButtonVariant.secondary,
-                height: 32,
+                height: 48,
                 isLoading: isSubscribing,
                 onPressed: () => onSubscribe(),
               ),
@@ -1552,12 +1552,10 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     _mobile = TextEditingController(text: p.mobileNumber ?? '');
     _addressLine = TextEditingController(text: a?.addressLine ?? '');
     _pincode = TextEditingController(text: a?.pincode ?? '');
-    _mobilePrefix = p.mobilePrefix?.trim().isNotEmpty == true
-        ? p.mobilePrefix
-        : null;
-    _countryCode = a?.countryCode?.trim().isNotEmpty == true
-        ? a!.countryCode
-        : null;
+    _mobilePrefix =
+        p.mobilePrefix?.trim().isNotEmpty == true ? p.mobilePrefix : null;
+    _countryCode =
+        a?.countryCode?.trim().isNotEmpty == true ? a!.countryCode : null;
     _stateCode = a?.stateCode?.trim().isNotEmpty == true ? a!.stateCode : null;
 
     _initialCityValue = a?.cityValue;
@@ -1710,9 +1708,8 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         email: _email.text.trim(),
         mobilePrefix: _mobilePrefix,
         mobileNumber: _mobile.text.trim().isEmpty ? null : _mobile.text.trim(),
-        addressLine: _addressLine.text.trim().isEmpty
-            ? null
-            : _addressLine.text.trim(),
+        addressLine:
+            _addressLine.text.trim().isEmpty ? null : _addressLine.text.trim(),
         countryCode: _countryCode,
         stateCode: _stateCode,
         cityName: _cityValue,
@@ -1726,7 +1723,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       setState(() => _submitting = false);
       final msg =
           ref.read(adminSettingsControllerProvider).sectionErrorMessage ??
-          'Unable to update profile.';
+              'Unable to update profile.';
       ToastHelper.showError(msg);
     }
   }
@@ -1862,8 +1859,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                   OpenVtsSearchableDropdown<String>(
                     label: context.mobileText('City'),
                     value: _cityValue,
-                    enabled:
-                        !_loadingCities &&
+                    enabled: !_loadingCities &&
                         (_cities.isNotEmpty || _cityValue != null),
                     isLoading: _loadingCities,
                     options: _cities
@@ -2098,14 +2094,13 @@ class _ChangePasswordSheetState
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
-    final ok = await ref
-        .read(adminSettingsControllerProvider.notifier)
-        .changePassword(
-          AdminChangePasswordRequest(
-            currentPassword: _current.text,
-            newPassword: _next.text,
-          ),
-        );
+    final ok =
+        await ref.read(adminSettingsControllerProvider.notifier).changePassword(
+              AdminChangePasswordRequest(
+                currentPassword: _current.text,
+                newPassword: _next.text,
+              ),
+            );
     if (!mounted) return;
     if (ok) {
       Navigator.of(context).pop(true);
@@ -2113,7 +2108,7 @@ class _ChangePasswordSheetState
       setState(() => _submitting = false);
       final msg =
           ref.read(adminSettingsControllerProvider).sectionErrorMessage ??
-          'Unable to change password.';
+              'Unable to change password.';
       ToastHelper.showError(msg);
     }
   }
@@ -2286,9 +2281,9 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
     if (c.primaryColor != null) {
       final normalized = _normalizeHexColor(c.primaryColor!);
       selectedColor = _colorOptions.cast<Map<String, String>?>().firstWhere(
-        (opt) => opt?['hex']?.toUpperCase() == normalized.toUpperCase(),
-        orElse: () => null,
-      )?['name'];
+            (opt) => opt?['hex']?.toUpperCase() == normalized.toUpperCase(),
+            orElse: () => null,
+          )?['name'];
     }
     _primaryColor = TextEditingController(text: selectedColor ?? '');
 
@@ -2322,28 +2317,27 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
     String? normalizedColor;
     if (colorName.isNotEmpty) {
       normalizedColor = _colorOptions.cast<Map<String, String>?>().firstWhere(
-        (opt) => opt?['name'] == colorName,
-        orElse: () => null,
-      )?['hex'];
+            (opt) => opt?['name'] == colorName,
+            orElse: () => null,
+          )?['hex'];
     }
-    final ok = await ref
-        .read(adminSettingsControllerProvider.notifier)
-        .updateCompany(
-          AdminUpdateCompanyRequest(
-            name: _name.text.trim(),
-            websiteUrl: _website.text.trim(),
-            customDomain: _domain.text.trim(),
-            primaryColor: normalizedColor,
-            socialLinks: AdminSocialLinks(
-              facebook: _facebook.text.trim(),
-              twitter: _twitter.text.trim(),
-              linkedin: _linkedin.text.trim(),
-              instagram: _instagram.text.trim(),
-              youtube: _youtube.text.trim(),
-              github: _github.text.trim(),
-            ),
-          ),
-        );
+    final ok =
+        await ref.read(adminSettingsControllerProvider.notifier).updateCompany(
+              AdminUpdateCompanyRequest(
+                name: _name.text.trim(),
+                websiteUrl: _website.text.trim(),
+                customDomain: _domain.text.trim(),
+                primaryColor: normalizedColor,
+                socialLinks: AdminSocialLinks(
+                  facebook: _facebook.text.trim(),
+                  twitter: _twitter.text.trim(),
+                  linkedin: _linkedin.text.trim(),
+                  instagram: _instagram.text.trim(),
+                  youtube: _youtube.text.trim(),
+                  github: _github.text.trim(),
+                ),
+              ),
+            );
     if (!mounted) return;
     if (ok) {
       Navigator.of(context).pop(true);
@@ -2351,7 +2345,7 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
       setState(() => _submitting = false);
       final msg =
           ref.read(adminSettingsControllerProvider).sectionErrorMessage ??
-          'Unable to update company.';
+              'Unable to update company.';
       ToastHelper.showError(msg);
     }
   }
@@ -2393,8 +2387,8 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
                       if (t.isEmpty) return null;
                       final candidate =
                           t.startsWith('http://') || t.startsWith('https://')
-                          ? t
-                          : 'https://$t';
+                              ? t
+                              : 'https://$t';
                       final uri = Uri.tryParse(candidate);
                       if (uri == null || (uri.host).isEmpty) {
                         return 'Enter a valid URL';
@@ -2411,9 +2405,8 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
                   const SizedBox(height: OpenVtsSpacing.sm),
                   _DropdownField<String>(
                     label: context.mobileText('Primary color'),
-                    value: _primaryColor.text.isEmpty
-                        ? null
-                        : _primaryColor.text,
+                    value:
+                        _primaryColor.text.isEmpty ? null : _primaryColor.text,
                     items: _colorOptions
                         .map(
                           (opt) => DropdownMenuItem(
@@ -2424,13 +2417,13 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
                                   width: 16,
                                   height: 16,
                                   decoration: BoxDecoration(
-                                    color: Color(
+                                    color: OpenVtsColors.monochrome(Color(
                                       int.parse(
                                             opt['hex']!.substring(1),
                                             radix: 16,
                                           ) +
                                           0xFF000000,
-                                    ),
+                                    )),
                                     borderRadius: BorderRadius.circular(3),
                                     border: Border.all(
                                       color: OpenVtsColors.border,
@@ -2578,7 +2571,7 @@ class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
     } else {
       final msg =
           ref.read(adminSettingsControllerProvider).sectionErrorMessage ??
-          'Unable to send OTP.';
+              'Unable to send OTP.';
       ToastHelper.showError(msg);
     }
   }
@@ -2601,7 +2594,7 @@ class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
       setState(() => _submitting = false);
       final msg =
           ref.read(adminSettingsControllerProvider).sectionErrorMessage ??
-          'Invalid or expired code.';
+              'Invalid or expired code.';
       ToastHelper.showError(msg);
     }
   }

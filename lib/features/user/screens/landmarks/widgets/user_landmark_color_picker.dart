@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../shared/helpers/mobile_text.dart';
 
-/// Curated palette used by Landmark Studio. Kept short and on-brand to avoid
-/// the loud rainbow grids common in desktop GIS apps.
+/// Original landmark palette. New and existing map elements retain their
+/// selected colors without monochrome conversion.
 const List<String> kUserLandmarkPalette = <String>[
   '#1F6FEB',
   '#0EA5E9',
@@ -80,7 +80,7 @@ class _UserLandmarkColorPickerState extends State<UserLandmarkColorPicker> {
         Text(
           widget.label,
           style: OpenVtsTypography.meta.copyWith(
-            color: OpenVtsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: OpenVtsSpacing.xs),
@@ -126,7 +126,7 @@ class _UserLandmarkColorPickerState extends State<UserLandmarkColorPicker> {
               ),
               hintText: context.mobileText('#RRGGBB'),
               hintStyle: OpenVtsTypography.body.copyWith(
-                color: OpenVtsColors.textTertiary,
+                color: OpenVtsMapColors.textTertiary,
               ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: OpenVtsSpacing.sm,
@@ -134,27 +134,22 @@ class _UserLandmarkColorPickerState extends State<UserLandmarkColorPicker> {
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(color: OpenVtsColors.border),
+                borderSide: const BorderSide(color: OpenVtsMapColors.border),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(color: OpenVtsColors.border),
+                borderSide: const BorderSide(color: OpenVtsMapColors.border),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(
-                  color: OpenVtsColors.brandInk,
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
                   width: 1.4,
                 ),
               ),
             ),
             onSubmitted: _emit,
-            onChanged: (text) {
-              final normalised = _normalize(text);
-              if (_isValid(normalised)) {
-                widget.onChanged(normalised);
-              }
-            },
+            onChanged: _emit,
           ),
         ),
       ],
@@ -174,9 +169,9 @@ class _UserLandmarkColorPickerState extends State<UserLandmarkColorPicker> {
 
   static Color _parseHex(String value) {
     final cleaned = value.replaceAll('#', '');
-    if (cleaned.length != 6) return OpenVtsColors.border;
+    if (cleaned.length != 6) return OpenVtsMapColors.border;
     final parsed = int.tryParse('FF$cleaned', radix: 16);
-    if (parsed == null) return OpenVtsColors.border;
+    if (parsed == null) return OpenVtsMapColors.border;
     return Color(parsed);
   }
 }
@@ -203,7 +198,9 @@ class _Swatch extends StatelessWidget {
         color: color,
         shape: BoxShape.circle,
         border: Border.all(
-          color: selected ? OpenVtsColors.brandInk : OpenVtsColors.border,
+          color: selected
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.outlineVariant,
           width: selected ? 2 : 1,
         ),
       ),

@@ -5,10 +5,16 @@ class RoutePaths {
   static const login = '/login';
   static const forgotPassword = '/forgot-password';
   static const apiBaseUrlSettings = '/login/api-base-url';
+  static const apiBaseUrlScanner = '/login/scan-server';
 
   static const superadminHome = '/superadmin';
   static const superadminDashboard = '/superadmin/dashboard';
   static const superadminMap = '/superadmin/map';
+  static const superadminVehicleTracking = '/superadmin/map/vehicle/:vehicleId';
+  static String superadminVehicleTrackingPath(
+    String vehicleId, {
+    String? imei,
+  }) => _vehicleTrackingPath('superadmin', vehicleId, imei: imei);
   static const superadminVehicles = '/superadmin/vehicles';
   static const superadminAdministrators = '/superadmin/administrators';
   static const superadminAdministratorCreate = '/superadmin/create-admin';
@@ -32,6 +38,9 @@ class RoutePaths {
   static const adminHome = '/admin';
   static const adminDashboard = '/admin/dashboard';
   static const adminMap = '/admin/map';
+  static const adminVehicleTracking = '/admin/map/vehicle/:vehicleId';
+  static String adminVehicleTrackingPath(String vehicleId, {String? imei}) =>
+      _vehicleTrackingPath('admin', vehicleId, imei: imei);
   static const adminUsers = '/admin/users';
   static const adminUserCreate = '/admin/create-user';
   static const adminUserDetails = '/admin/users/:userId';
@@ -66,6 +75,9 @@ class RoutePaths {
   static const userHome = '/user';
   static const userDashboard = '/user/dashboard';
   static const userMap = '/user/map';
+  static const userVehicleTracking = '/user/map/vehicle/:vehicleId';
+  static String userVehicleTrackingPath(String vehicleId, {String? imei}) =>
+      _vehicleTrackingPath('user', vehicleId, imei: imei);
   static const userVehicles = '/user/vehicles';
   static const userVehicleDetails = '/user/vehicles/:vehicleId';
 
@@ -125,4 +137,15 @@ class RoutePaths {
   static const driverProfile = '/driver/profile';
   static const driverSettings = '/driver/settings';
   static const driverSecurity = '/driver/security';
+
+  static String _vehicleTrackingPath(
+    String role,
+    String vehicleId, {
+    String? imei,
+  }) => Uri(
+    pathSegments: ['', role, 'map', 'vehicle', vehicleId.trim()],
+    queryParameters: imei?.trim().isNotEmpty == true
+        ? {'imei': imei!.trim()}
+        : null,
+  ).toString();
 }

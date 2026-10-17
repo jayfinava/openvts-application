@@ -278,12 +278,12 @@ class _SummaryCard extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 34,
+            height: 48,
             child: AdminActionGate(
               capability: 'users.update',
               child: OpenVtsButton(
                 label: context.mobileText('Upload'),
-                height: 34,
+                height: 48,
                 isLoading: isUploading,
                 onPressed: onUpload,
                 trailingIcon: Icons.upload_file_rounded,

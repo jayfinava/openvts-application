@@ -81,9 +81,25 @@ class _NotificationSettingsDiagnosticsBootstrapperState
   Widget build(BuildContext context) => widget.child;
 }
 
-class _UserNotificationSettingsScreenBody extends ConsumerWidget {
+class _UserNotificationSettingsScreenBody extends ConsumerStatefulWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_UserNotificationSettingsScreenBody> createState() =>
+      _UserNotificationSettingsScreenBodyState();
+}
+
+class _UserNotificationSettingsScreenBodyState
+    extends ConsumerState<_UserNotificationSettingsScreenBody> {
+  final _vehicleSearch = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _vehicleSearch.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(userNotificationSettingsControllerProvider);
     final controller = ref.read(
       userNotificationSettingsControllerProvider.notifier,
@@ -106,8 +122,7 @@ class _UserNotificationSettingsScreenBody extends ConsumerWidget {
       if (!context.mounted) return;
       final latest = ref.read(userNotificationSettingsControllerProvider);
       final error = latest.errorMessage?.trim();
-      final didSave =
-          latest.lastSavedAt != null &&
+      final didSave = latest.lastSavedAt != null &&
           latest.lastSavedAt != previousSavedAt &&
           (error == null || error.isEmpty);
 
@@ -217,9 +232,17 @@ class _UserNotificationSettingsScreenBody extends ConsumerWidget {
     }
 
     final selectedGroup = state.selectedTab;
+    // Filter presentation only. Saving always retains every vehicle's draft.
+    final visiblePreferences = preferences.copyWith(
+        vehicles: preferences.vehicles
+            .where((vehicle) =>
+                _query.isEmpty ||
+                '${vehicle.name} ${vehicle.plateNumber} ${vehicle.id}'
+                    .toLowerCase()
+                    .contains(_query))
+            .toList(growable: false));
     final showSaveBar = state.isDirty || state.isSaving;
-    final isMobilePushBusy =
-        !canUseMobilePush ||
+    final isMobilePushBusy = !canUseMobilePush ||
         mobilePushState.isInitializing ||
         mobilePushState.isTesting;
 
@@ -342,8 +365,7 @@ class _UserNotificationSettingsScreenBody extends ConsumerWidget {
                           UserMobilePushDiagnosticsCard(
                             state: mobilePushState,
                             showActions: canUseMobilePush,
-                            onRetryRegistration:
-                                canUseMobilePush &&
+                            onRetryRegistration: canUseMobilePush &&
                                     mobilePushState.isSupported &&
                                     !isMobilePushBusy
                                 ? () {
@@ -352,95 +374,125 @@ class _UserNotificationSettingsScreenBody extends ConsumerWidget {
                                 : null,
                             onSendTestNotification:
                                 canUseMobilePush && !isMobilePushBusy
-                                ? () {
-                                    unawaited(handleTestNotification());
-                                  }
-                                : null,
+                                    ? () {
+                                        unawaited(handleTestNotification());
+                                      }
+                                    : null,
                           ),
                           const SizedBox(height: OpenVtsSpacing.sm),
-                          switch (selectedGroup) {
-                            UserNotificationGroup.basic =>
-                              UserBasicNotificationTab(
-                                preferences: preferences,
-                                channelFlags: preferences.channels.flagsFor(
-                                  UserNotificationGroup.basic,
-                                ),
-                                onChannelChanged: (channel, value) {
-                                  controller.updateChannel(
+                          TextField(
+                            key: const ValueKey('notification-vehicle-search'),
+                            controller: _vehicleSearch,
+                            onChanged: (value) => setState(
+                                () => _query = value.trim().toLowerCase()),
+                            decoration: InputDecoration(
+                              hintText: context.mobileText('Search vehicles'),
+                              prefixIcon: const Icon(Icons.search),
+                              suffixIcon: _query.isEmpty
+                                  ? null
+                                  : IconButton(
+                                      tooltip:
+                                          context.mobileText('Clear search'),
+                                      onPressed: () {
+                                        _vehicleSearch.clear();
+                                        setState(() => _query = '');
+                                      },
+                                      icon: const Icon(Icons.close)),
+                            ),
+                          ),
+                          const SizedBox(height: OpenVtsSpacing.sm),
+                          if (_query.isNotEmpty &&
+                              visiblePreferences.vehicles.isEmpty)
+                            OpenVtsEmptyState(
+                                title: context.mobileText(
+                                    'No vehicles match your search'),
+                                message: context.mobileText(
+                                    'Try a different search or filter.'))
+                          else
+                            switch (selectedGroup) {
+                              UserNotificationGroup.basic =>
+                                UserBasicNotificationTab(
+                                  preferences: visiblePreferences,
+                                  channelFlags: preferences.channels.flagsFor(
                                     UserNotificationGroup.basic,
-                                    channel,
-                                    value,
-                                  );
-                                },
-                                onVehicleToggle: controller.updateBasicToggle,
-                              ),
-                            UserNotificationGroup.overspeed =>
-                              UserOverspeedNotificationTab(
-                                preferences: preferences,
-                                channelFlags: preferences.channels.flagsFor(
-                                  UserNotificationGroup.overspeed,
+                                  ),
+                                  onChannelChanged: (channel, value) {
+                                    controller.updateChannel(
+                                      UserNotificationGroup.basic,
+                                      channel,
+                                      value,
+                                    );
+                                  },
+                                  onVehicleToggle: controller.updateBasicToggle,
                                 ),
-                                onChannelChanged: (channel, value) {
-                                  controller.updateChannel(
+                              UserNotificationGroup.overspeed =>
+                                UserOverspeedNotificationTab(
+                                  preferences: visiblePreferences,
+                                  channelFlags: preferences.channels.flagsFor(
                                     UserNotificationGroup.overspeed,
-                                    channel,
-                                    value,
-                                  );
-                                },
-                                onOverspeedEnabledChanged:
-                                    controller.updateOverspeedEnabled,
-                                onSpeedLimitChanged:
-                                    controller.updateOverspeedLimit,
-                              ),
-                            UserNotificationGroup.duration =>
-                              UserDurationNotificationTab(
-                                preferences: preferences,
-                                channelFlags: preferences.channels.flagsFor(
-                                  UserNotificationGroup.duration,
+                                  ),
+                                  onChannelChanged: (channel, value) {
+                                    controller.updateChannel(
+                                      UserNotificationGroup.overspeed,
+                                      channel,
+                                      value,
+                                    );
+                                  },
+                                  onOverspeedEnabledChanged:
+                                      controller.updateOverspeedEnabled,
+                                  onSpeedLimitChanged:
+                                      controller.updateOverspeedLimit,
                                 ),
-                                onChannelChanged: (channel, value) {
-                                  controller.updateChannel(
+                              UserNotificationGroup.duration =>
+                                UserDurationNotificationTab(
+                                  preferences: visiblePreferences,
+                                  channelFlags: preferences.channels.flagsFor(
                                     UserNotificationGroup.duration,
-                                    channel,
-                                    value,
-                                  );
-                                },
-                                onEnabledChanged:
-                                    controller.updateDurationEnabled,
-                                onLimitChanged: controller.updateDurationLimit,
-                              ),
-                            UserNotificationGroup.geofence =>
-                              UserGeofenceNotificationTab(
-                                preferences: preferences,
-                                channelFlags: preferences.channels.flagsFor(
-                                  UserNotificationGroup.geofence,
+                                  ),
+                                  onChannelChanged: (channel, value) {
+                                    controller.updateChannel(
+                                      UserNotificationGroup.duration,
+                                      channel,
+                                      value,
+                                    );
+                                  },
+                                  onEnabledChanged:
+                                      controller.updateDurationEnabled,
+                                  onLimitChanged:
+                                      controller.updateDurationLimit,
                                 ),
-                                onChannelChanged: (channel, value) {
-                                  controller.updateChannel(
+                              UserNotificationGroup.geofence =>
+                                UserGeofenceNotificationTab(
+                                  preferences: visiblePreferences,
+                                  channelFlags: preferences.channels.flagsFor(
                                     UserNotificationGroup.geofence,
-                                    channel,
-                                    value,
-                                  );
-                                },
-                                onGeofenceToggle:
-                                    controller.updateGeofenceToggle,
-                              ),
-                            UserNotificationGroup.route =>
-                              UserRouteNotificationTab(
-                                preferences: preferences,
-                                channelFlags: preferences.channels.flagsFor(
-                                  UserNotificationGroup.route,
+                                  ),
+                                  onChannelChanged: (channel, value) {
+                                    controller.updateChannel(
+                                      UserNotificationGroup.geofence,
+                                      channel,
+                                      value,
+                                    );
+                                  },
+                                  onGeofenceToggle:
+                                      controller.updateGeofenceToggle,
                                 ),
-                                onChannelChanged: (channel, value) {
-                                  controller.updateChannel(
+                              UserNotificationGroup.route =>
+                                UserRouteNotificationTab(
+                                  preferences: visiblePreferences,
+                                  channelFlags: preferences.channels.flagsFor(
                                     UserNotificationGroup.route,
-                                    channel,
-                                    value,
-                                  );
-                                },
-                                onRouteToggle: controller.updateRouteToggle,
-                              ),
-                          },
+                                  ),
+                                  onChannelChanged: (channel, value) {
+                                    controller.updateChannel(
+                                      UserNotificationGroup.route,
+                                      channel,
+                                      value,
+                                    );
+                                  },
+                                  onRouteToggle: controller.updateRouteToggle,
+                                ),
+                            },
                           const SizedBox(height: OpenVtsSpacing.sm),
                         ],
                       ),
@@ -735,8 +787,8 @@ class _CompactActionChip extends StatelessWidget {
     final disabled = onTap == null && !isLoading;
     final foregroundColor = isDark
         ? (disabled
-              ? OpenVtsColors.white.withValues(alpha: 0.5)
-              : OpenVtsColors.white.withValues(alpha: 0.7))
+            ? OpenVtsColors.white.withValues(alpha: 0.5)
+            : OpenVtsColors.white.withValues(alpha: 0.7))
         : (disabled ? OpenVtsColors.textTertiary : OpenVtsColors.textSecondary);
     final child = InkWell(
       borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
@@ -748,8 +800,8 @@ class _CompactActionChip extends StatelessWidget {
           color: isDark
               ? Colors.black
               : (disabled
-                    ? OpenVtsColors.surface
-                    : OpenVtsColors.surfaceElevated),
+                  ? OpenVtsColors.surface
+                  : OpenVtsColors.surfaceElevated),
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
           border: Border.all(
             color: isDark
@@ -773,11 +825,11 @@ class _CompactActionChip extends StatelessWidget {
               style: OpenVtsTypography.meta.copyWith(
                 color: isDark
                     ? (disabled
-                          ? OpenVtsColors.white.withValues(alpha: 0.5)
-                          : OpenVtsColors.white)
+                        ? OpenVtsColors.white.withValues(alpha: 0.5)
+                        : OpenVtsColors.white)
                     : (disabled
-                          ? OpenVtsColors.textTertiary
-                          : OpenVtsColors.textPrimary),
+                        ? OpenVtsColors.textTertiary
+                        : OpenVtsColors.textPrimary),
                 fontWeight: FontWeight.w600,
               ),
             ),

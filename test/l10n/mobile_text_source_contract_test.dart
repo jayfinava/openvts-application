@@ -55,6 +55,34 @@ const _reviewed = <String, Map<String, int>>{
     'option.description': 1,
     'option.cta': 1,
   },
+  // Dashboard failures come from ErrorMapper's fixed messages; command
+  // validation AppErrors contain only app-authored text, never API messages.
+  'lib/features/user/screens/dashboard/user_dashboard_screen.dart': {
+    'state.errorMessage!': 2,
+    'state.selectedDashboardError!': 1,
+  },
+  'lib/features/user/screens/dashboard/widgets/user_dashboard_widget_card.dart':
+      {
+    'failure.message': 1,
+  },
+  // Report errors are fixed app messages selected by ErrorMapper. The timezone
+  // failure is also authored by the app; API free text never enters this path.
+  'lib/features/user/screens/reports/widgets/user_report_state_views.dart': {
+    'message': 1,
+  },
+  'lib/features/user/screens/reports/widgets/user_report_result_toolbar.dart': {
+    'message': 1,
+  },
+  'lib/features/user/screens/reports/user_report_workspace_screen.dart': {
+    'state.optionsError!': 1,
+  },
+  'lib/features/user/screens/reports/widgets/filters/user_report_filters.dart':
+      {
+    'sensorLoadError!': 1,
+  },
+  'lib/features/user/screens/reports/user_reports_screen.dart': {
+    'ErrorMapper.from(error).message': 1,
+  },
   // Only predefined categories enter the adapter; custom category text stays raw.
   'lib/features/user/screens/landmarks/pois/user_poi_constants.dart': {
     'option.label': 1,

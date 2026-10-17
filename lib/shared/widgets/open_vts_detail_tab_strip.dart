@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/open_vts_colors.dart';
 import '../../core/theme/open_vts_radius.dart';
 import '../../core/theme/open_vts_spacing.dart';
 import '../../core/theme/open_vts_typography.dart';
@@ -70,17 +69,10 @@ class _TabChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    final background = isSelected
-        ? (isDark ? OpenVtsColors.darkSurface : OpenVtsColors.brandInk)
-        : Colors.transparent;
-    final foreground = isSelected
-        ? (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.white)
-        : (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.textPrimary);
-    final borderColor = isSelected
-        ? (isDark ? OpenVtsColors.darkBorder : OpenVtsColors.brandInk)
-        : (isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border);
+    final scheme = Theme.of(context).colorScheme;
+    final background = isSelected ? scheme.primary : scheme.surface;
+    final foreground = isSelected ? scheme.onPrimary : scheme.onSurface;
+    final borderColor = isSelected ? scheme.primary : scheme.outlineVariant;
 
     return Semantics(
       selected: isSelected,

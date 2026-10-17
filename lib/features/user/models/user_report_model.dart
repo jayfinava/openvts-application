@@ -334,7 +334,15 @@ class UserReportPage {
   final String? source;
 
   factory UserReportPage.fromJson(dynamic json) {
-    final map = reportMap(json);
+    var map = reportMap(json);
+    for (var depth = 0; depth < 3; depth++) {
+      if (map['rows'] is List && map['meta'] is Map) break;
+      if (map['data'] is! Map) break;
+      map = reportMap(map['data']);
+    }
+    if (map['rows'] is! List || map['meta'] is! Map) {
+      throw const FormatException('Invalid report response');
+    }
     final meta = reportMap(map['meta']);
     return UserReportPage(
       rows: reportList(map['rows'])

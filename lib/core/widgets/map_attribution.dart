@@ -39,7 +39,7 @@ class OpenVtsMapAttribution extends StatelessWidget {
                 child: Text(
                   '© OpenStreetMap contributors',
                   style: TextStyle(
-                    color: Color(0xFF1A365D),
+                    color: Color(0xFF333333),
                     fontSize: 12,
                     height: 1.25,
                     decoration: TextDecoration.underline,
@@ -66,7 +66,8 @@ class OpenVtsMapAttribution extends StatelessWidget {
 
     if (context.mounted) {
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        const SnackBar(content: Text('Unable to open map licence information.')),
+        const SnackBar(
+            content: Text('Unable to open map licence information.')),
       );
     }
   }

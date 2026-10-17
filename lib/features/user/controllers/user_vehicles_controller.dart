@@ -1,18 +1,55 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../shared/paging/server_list_pager.dart';
 import '../models/user_vehicle_model.dart';
 import '../models/user_vehicle_state.dart';
 import '../services/user_vehicle_service.dart';
 
 class UserVehiclesController extends StateNotifier<UserVehiclesState> {
-  UserVehiclesController({required UserVehicleService service})
+  UserVehiclesController({this.pager, required UserVehicleService service})
       : _service = service,
-        super(const UserVehiclesState.initial());
+        super(const UserVehiclesState.initial()) {
+    pager?.onChanged = _syncPage;
+  }
 
+  final ServerListPager<UserVehicleListItem>? pager;
+  bool get isServerPaged => pager != null;
+  void _syncPage() {
+    final p = pager!;
+    if (!mounted) return;
+    state = state.copyWith(
+        vehicles: p.items,
+        filteredVehicles: p.items,
+        pagination: p.meta,
+        isLoading: p.loading && p.meta == null,
+        isRefreshing: p.loading && p.meta != null,
+        errorMessage: p.error);
+  }
+
+  @override
+  void dispose() {
+    pager?.dispose();
+    super.dispose();
+  }
+
+  Future<void> goToPage(int page) => pager?.goToPage(page) ?? Future.value();
+  Future<void> _reloadPage({bool debounce = false}) => pager!.change(
+          page: 1,
+          search: state.searchQuery,
+          debounce: debounce,
+          filters: {
+            if (state.statusFilter != UserVehicleStatusFilter.all)
+              'status': state.statusFilter == UserVehicleStatusFilter.active,
+            if (state.typeFilter?.isNotEmpty == true)
+              'vehicleTypeName': state.typeFilter
+          });
   final UserVehicleService _service;
 
   Future<void> load() async {
+    if (pager != null) return pager!.load();
     state = state.copyWith(
       isLoading: state.vehicles.isEmpty,
       isRefreshing: state.vehicles.isNotEmpty,
@@ -40,6 +77,7 @@ class UserVehiclesController extends StateNotifier<UserVehiclesState> {
   }
 
   Future<void> refresh() async {
+    if (pager != null) return pager!.load();
     final refreshKey = DateTime.now().millisecondsSinceEpoch.toString();
     state = state.copyWith(
       refreshKey: refreshKey,
@@ -66,14 +104,29 @@ class UserVehiclesController extends StateNotifier<UserVehiclesState> {
   }
 
   void setSearchQuery(String query) {
+    if (pager != null) {
+      state = state.copyWith(searchQuery: query);
+      unawaited(_reloadPage(debounce: true));
+      return;
+    }
     state = _withFiltered(state.copyWith(searchQuery: query.trim()));
   }
 
   void setStatusFilter(UserVehicleStatusFilter filter) {
+    if (pager != null) {
+      state = state.copyWith(statusFilter: filter);
+      unawaited(_reloadPage(debounce: false));
+      return;
+    }
     state = _withFiltered(state.copyWith(statusFilter: filter));
   }
 
   void setTypeFilter(String? typeFilter) {
+    if (pager != null) {
+      state = state.copyWith(typeFilter: typeFilter);
+      unawaited(_reloadPage(debounce: false));
+      return;
+    }
     final normalized = typeFilter?.trim();
     state = _withFiltered(
       state.copyWith(
@@ -84,6 +137,14 @@ class UserVehiclesController extends StateNotifier<UserVehiclesState> {
   }
 
   void clearFilters() {
+    if (pager != null) {
+      state = state.copyWith(
+          searchQuery: '',
+          statusFilter: UserVehicleStatusFilter.all,
+          typeFilter: null);
+      unawaited(_reloadPage());
+      return;
+    }
     state = _withFiltered(
       state.copyWith(
         searchQuery: '',
@@ -94,6 +155,7 @@ class UserVehiclesController extends StateNotifier<UserVehiclesState> {
   }
 
   UserVehiclesState _withFiltered(UserVehiclesState next) {
+    if (pager != null) return next.copyWith(filteredVehicles: next.vehicles);
     final query = next.searchQuery.trim().toLowerCase();
     final typeFilter = next.typeFilter?.trim().toLowerCase();
     final filtered = next.vehicles.where((vehicle) {

@@ -279,10 +279,10 @@ class _SubUsersHeaderCard extends StatelessWidget {
             runSpacing: OpenVtsSpacing.xs,
             children: [
               SizedBox(
-                height: 34,
+                height: 48,
                 child: OpenVtsButton(
                   label: context.mobileText('Refresh'),
-                  height: 34,
+                  height: 48,
                   variant: OpenVtsButtonVariant.secondary,
                   trailingIcon: Icons.refresh_rounded,
                   onPressed: onRefresh,
@@ -290,10 +290,10 @@ class _SubUsersHeaderCard extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: 34,
+                height: 48,
                 child: OpenVtsButton(
                   label: context.mobileText('Create Sub User'),
-                  height: 34,
+                  height: 48,
                   trailingIcon: Icons.person_add_alt_1_rounded,
                   onPressed: state.isCreating ? null : onCreate,
                 ),

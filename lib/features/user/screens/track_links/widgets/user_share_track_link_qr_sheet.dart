@@ -10,6 +10,7 @@ import '../../../../../shared/helpers/mobile_text.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_bottom_sheet.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
+import '../../../../../shared/widgets/open_vts_monochrome_image.dart';
 
 class UserShareTrackLinkQrSheet extends StatelessWidget {
   const UserShareTrackLinkQrSheet({required this.publicUrl, super.key});
@@ -46,16 +47,11 @@ class UserShareTrackLinkQrSheet extends StatelessWidget {
       ),
       children: [
         Center(
-          child: Container(
+          child: SizedBox(
             width: 256,
             height: 256,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: OpenVtsColors.white,
-              borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-              border: Border.all(color: OpenVtsColors.border),
-            ),
-            child: Image.network(
+            child: OpenVtsMonochromeImage(
+                child: Image.network(
               qrUrl,
               fit: BoxFit.contain,
               filterQuality: FilterQuality.none,
@@ -66,7 +62,7 @@ class UserShareTrackLinkQrSheet extends StatelessWidget {
                   color: OpenVtsColors.textTertiary,
                 ),
               ),
-            ),
+            )),
           ),
         ),
         const SizedBox(height: OpenVtsSpacing.md),

@@ -95,8 +95,8 @@ class _UserOverspeedReportFilterState extends State<UserOverspeedReportFilter> {
               onTap: widget.disabled
                   ? null
                   : () => setState(() {
-                      _useCustom = true;
-                    }),
+                        _useCustom = true;
+                      }),
             ),
           ],
         ),
@@ -360,7 +360,7 @@ class UserSensorReportFilter extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  sensorLoadError!,
+                  context.mobileText(sensorLoadError!),
                   style: OpenVtsTypography.meta.copyWith(
                     color: OpenVtsColors.error,
                   ),
@@ -435,8 +435,8 @@ class _SensorVehiclePicker extends StatelessWidget {
                 color: error != null
                     ? OpenVtsColors.error
                     : (isDark
-                          ? OpenVtsColors.darkBorder
-                          : OpenVtsColors.border),
+                        ? OpenVtsColors.darkBorder
+                        : OpenVtsColors.border),
               ),
             ),
             child: Row(
@@ -449,8 +449,8 @@ class _SensorVehiclePicker extends StatelessWidget {
                     style: OpenVtsTypography.body.copyWith(
                       color: selected == null
                           ? (isDark
-                                ? OpenVtsColors.darkTextSecondary
-                                : OpenVtsColors.textSecondary)
+                              ? OpenVtsColors.darkTextSecondary
+                              : OpenVtsColors.textSecondary)
                           : null,
                     ),
                   ),
@@ -619,8 +619,8 @@ class _VehicleSearchSheetState extends State<_VehicleSearchSheet> {
                           size: 20,
                           color: sel
                               ? (isDark
-                                    ? OpenVtsColors.darkTextPrimary
-                                    : OpenVtsColors.brandInk)
+                                  ? OpenVtsColors.darkTextPrimary
+                                  : OpenVtsColors.brandInk)
                               : Theme.of(context).colorScheme.outline,
                         ),
                         title: Text(
@@ -682,8 +682,8 @@ class _SensorSelect extends StatelessWidget {
                 style: OpenVtsTypography.body.copyWith(
                   color: selected == null
                       ? (isDark
-                            ? OpenVtsColors.darkTextSecondary
-                            : OpenVtsColors.textSecondary)
+                          ? OpenVtsColors.darkTextSecondary
+                          : OpenVtsColors.textSecondary)
                       : null,
                 ),
               ),
@@ -777,8 +777,8 @@ class _SensorPickerSheet extends StatelessWidget {
                     size: 20,
                     color: sel
                         ? (isDark
-                              ? OpenVtsColors.darkTextPrimary
-                              : OpenVtsColors.brandInk)
+                            ? OpenVtsColors.darkTextPrimary
+                            : OpenVtsColors.brandInk)
                         : Theme.of(context).colorScheme.outline,
                   ),
                   title: Text(
@@ -866,9 +866,8 @@ class UserAlertsReportFilter extends StatelessWidget {
       children: [
         _FilterSection(
           label: context.mobileText('Alert Type'),
-          chips: _kAlertTypes
-              .map((t) => (t, _kAlertTypeLabels[t] ?? t))
-              .toList(),
+          chips:
+              _kAlertTypes.map((t) => (t, _kAlertTypeLabels[t] ?? t)).toList(),
           selected: filters.alertTypes,
           onChanged: (types) => onChanged(
             AlertsFilters(
@@ -883,9 +882,8 @@ class UserAlertsReportFilter extends StatelessWidget {
         const SizedBox(height: OpenVtsSpacing.sm),
         _FilterSection(
           label: context.mobileText('Severity'),
-          chips: _kSeverities
-              .map((s) => (s, _kSeverityLabels[s] ?? s))
-              .toList(),
+          chips:
+              _kSeverities.map((s) => (s, _kSeverityLabels[s] ?? s)).toList(),
           selected: filters.severities,
           onChanged: (sevs) => onChanged(
             AlertsFilters(
@@ -921,12 +919,12 @@ class UserAlertsReportFilter extends StatelessWidget {
                 onTap: disabled
                     ? null
                     : () => onChanged(
-                        AlertsFilters(
-                          alertTypes: filters.alertTypes,
-                          severities: filters.severities,
-                          acknowledged: v,
+                          AlertsFilters(
+                            alertTypes: filters.alertTypes,
+                            severities: filters.severities,
+                            acknowledged: v,
+                          ),
                         ),
-                      ),
               ),
           ],
         ),
@@ -1307,8 +1305,8 @@ class _FilterChip extends StatelessWidget {
     final fg = selected
         ? (isDark ? OpenVtsColors.brandInk : OpenVtsColors.white)
         : (isDark
-              ? OpenVtsColors.darkTextSecondary
-              : OpenVtsColors.textSecondary);
+            ? OpenVtsColors.darkTextSecondary
+            : OpenVtsColors.textSecondary);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -1316,15 +1314,15 @@ class _FilterChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
               ? (isDark
-                    ? OpenVtsColors.darkTextPrimary
-                    : OpenVtsColors.brandInk)
+                  ? OpenVtsColors.darkTextPrimary
+                  : OpenVtsColors.brandInk)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
           border: Border.all(
             color: selected
                 ? (isDark
-                      ? OpenVtsColors.darkTextPrimary
-                      : OpenVtsColors.brandInk)
+                    ? OpenVtsColors.darkTextPrimary
+                    : OpenVtsColors.brandInk)
                 : (isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border),
           ),
         ),

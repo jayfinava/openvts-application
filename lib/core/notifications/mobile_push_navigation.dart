@@ -75,6 +75,7 @@ class MobilePushNavigation {
       case UserRole.subuser:
       case UserRole.user:
         _ref.invalidate(userNotificationCenterProvider);
+        _ref.invalidate(userVehicleNotificationCenterProvider);
         _ref.invalidate(userNotificationUnreadBadgeProvider);
       case UserRole.driver:
       case UserRole.unknown:

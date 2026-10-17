@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../../core/theme/open_vts_chart_theme.dart';
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
@@ -61,10 +62,10 @@ class UserDistanceReportResult extends ConsumerWidget {
     for (final r in rows) {
       byVehicle[r.vehicleName] = (byVehicle[r.vehicleName] ?? 0) + r.distanceKm;
     }
-    final chartEntries =
-        (byVehicle.entries.toList()..sort((a, b) => b.value.compareTo(a.value)))
-            .take(8)
-            .toList();
+    final chartEntries = (byVehicle.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value)))
+        .take(8)
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,9 +114,10 @@ class _DistanceBarChart extends StatelessWidget {
         height: 180,
         child: BarChart(
           BarChartData(
+            barTouchData: OpenVtsChartTheme.barTouchData(context),
             maxY:
                 (entries.map((e) => e.value).reduce((a, b) => a > b ? a : b)) *
-                1.15,
+                    1.15,
             barGroups: entries
                 .asMap()
                 .entries
@@ -154,9 +156,8 @@ class _DistanceBarChart extends StatelessWidget {
                       return const SizedBox.shrink();
                     }
                     final name = entries[idx].key;
-                    final short = name.length > 8
-                        ? '${name.substring(0, 7)}…'
-                        : name;
+                    final short =
+                        name.length > 8 ? '${name.substring(0, 7)}…' : name;
                     return Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(

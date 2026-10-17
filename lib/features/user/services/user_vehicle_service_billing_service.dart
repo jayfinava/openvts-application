@@ -19,7 +19,7 @@ class UserVehicleServiceBillingService {
           if (!requests && search != null && search.trim().isNotEmpty)
             'search': search.trim()
         },
-        options: normalReadOptions(),
+        options: heavyReadOptions(),
         parser: operationMap);
     return response.data;
   }

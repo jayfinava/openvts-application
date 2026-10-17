@@ -96,12 +96,13 @@ class UserOperationRouteInputs {
   static Future<UserRouteStop?> _details(
     BuildContext context,
     UserRouteStop? stop,
-  ) => showModalBottomSheet<UserRouteStop>(
-    context: context,
-    isScrollControlled: true,
-    showDragHandle: true,
-    builder: (_) => UserOperationRouteStopForm(existing: stop),
-  );
+  ) =>
+      showModalBottomSheet<UserRouteStop>(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (_) => UserOperationRouteStopForm(existing: stop),
+      );
 }
 
 class UserOperationRouteStopForm extends StatefulWidget {
@@ -137,8 +138,7 @@ class _StopFormState extends State<UserOperationRouteStopForm> {
     if (!_form.currentState!.validate()) return;
     final lat = _number(_lat.text)!, lon = _number(_lon.text)!;
     final previous = widget.existing;
-    final moved =
-        previous != null &&
+    final moved = previous != null &&
         (previous.latitude != lat || previous.longitude != lon);
     Navigator.of(context).pop(
       UserRouteStop(
@@ -190,8 +190,8 @@ class _StopFormState extends State<UserOperationRouteStopForm> {
                 maxLength: 160,
                 validator: (v) =>
                     (v?.trim().isEmpty ?? true) || v!.trim().length > 160
-                    ? l.routeBuilderStopNameError
-                    : null,
+                        ? l.routeBuilderStopNameError
+                        : null,
               ),
               const SizedBox(height: 12),
               OpenVtsTextField(
@@ -354,9 +354,9 @@ class _MapPickerState extends State<UserOperationRouteMapPicker> {
               ),
               children: [
                 TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.openvts.mobile',
-                ),
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.openvts.mobile'),
                 if (_point != null)
                   MarkerLayer(
                     markers: [
@@ -388,9 +388,8 @@ class _MapPickerState extends State<UserOperationRouteMapPicker> {
           padding: const EdgeInsets.all(16),
           child: OpenVtsButton(
             label: l.routeBuilderUseLocation,
-            onPressed: _point == null
-                ? null
-                : () => Navigator.pop(context, _point),
+            onPressed:
+                _point == null ? null : () => Navigator.pop(context, _point),
           ),
         ),
       ),

@@ -88,21 +88,13 @@ class NotificationCenterView extends StatelessWidget {
                     'Vehicle alerts, system events, and operational updates will appear here.',
                   ),
           ),
-        )
-      else
-        ...state.items.map(
-          (item) => Padding(
-            padding: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
-            child: _NotificationListItem(
-              notification: item,
-              formatter: _formatter,
-              onMarkAsRead: item.isRead
-                  ? null
-                  : () {
-                      onMarkAsRead(item.id);
-                    },
-            ),
-          ),
+        ),
+    ];
+    final footer = <Widget>[
+      if (state.hasMore && !state.isLoadingMore)
+        TextButton(
+          onPressed: state.isRefreshing ? null : onLoadMore,
+          child: Text(context.mobileText('Load more')),
         ),
       if (state.isLoadingMore)
         const Padding(
@@ -126,9 +118,26 @@ class NotificationCenterView extends StatelessWidget {
         onRefresh: onRefresh,
         child: Container(
           color: isDark ? Colors.black : theme.colorScheme.surface,
-          child: ListView(
+          child: ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            children: children,
+            itemCount: children.length + state.items.length + footer.length,
+            itemBuilder: (context, index) {
+              if (index < children.length) return children[index];
+              final itemIndex = index - children.length;
+              if (itemIndex >= state.items.length) {
+                return footer[itemIndex - state.items.length];
+              }
+              final item = state.items[itemIndex];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: OpenVtsSpacing.sm),
+                child: _NotificationListItem(
+                  notification: item,
+                  formatter: _formatter,
+                  onMarkAsRead:
+                      item.isRead ? null : () => onMarkAsRead(item.id),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -155,9 +164,8 @@ class _InboxSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final headingColor = isDark
-        ? OpenVtsColors.white
-        : theme.colorScheme.onSurface;
+    final headingColor =
+        isDark ? OpenVtsColors.white : theme.colorScheme.onSurface;
     final secondaryColor = isDark
         ? OpenVtsColors.white.withValues(alpha: 0.7)
         : theme.colorScheme.onSurface.withValues(alpha: 0.62);
@@ -203,7 +211,8 @@ class _InboxSummaryCard extends StatelessWidget {
                 ),
               ),
               const SizedBox.shrink(),
-              _NotificationStatusPill(
+              Flexible(
+                  child: _NotificationStatusPill(
                 label: unreadCount == 0
                     ? context.mobileText('All read')
                     : '$unreadCount unread',
@@ -214,7 +223,7 @@ class _InboxSummaryCard extends StatelessWidget {
                 backgroundColor: unreadCount == 0
                     ? Colors.transparent
                     : accentColor.withValues(alpha: 0.08),
-              ),
+              )),
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
@@ -232,17 +241,17 @@ class _InboxSummaryCard extends StatelessWidget {
                 selected: unreadOnly,
                 onTap: () => onUnreadOnlyChanged(true),
               ),
-              if (unreadCount > 0 || isMarkingAllRead)
-                _NotificationActionPill(
-                  label: isMarkingAllRead
-                      ? context.mobileText('Marking…')
-                      : context.mobileText('Mark all read'),
-                  onTap: isMarkingAllRead
-                      ? null
-                      : () {
-                          onMarkAllAsRead();
-                        },
-                ),
+              _NotificationFilterPill(
+                label: isMarkingAllRead
+                    ? context.mobileText('Marking…')
+                    : context.mobileText('Mark all read'),
+                busy: isMarkingAllRead,
+                onTap: isMarkingAllRead || unreadCount == 0
+                    ? null
+                    : () {
+                        onMarkAllAsRead();
+                      },
+              ),
             ],
           ),
         ],
@@ -254,23 +263,28 @@ class _InboxSummaryCard extends StatelessWidget {
 class _NotificationFilterPill extends StatelessWidget {
   const _NotificationFilterPill({
     required this.label,
-    required this.selected,
+    this.selected = false,
+    this.busy = false,
     required this.onTap,
   });
 
   final String label;
   final bool selected;
-  final VoidCallback onTap;
+  final bool busy;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final backgroundColor = selected
-        ? (isDark ? Colors.black : OpenVtsColors.white)
-        : Colors.transparent;
-    final textColor = isDark ? Colors.white : OpenVtsColors.brandInk;
-    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
+    final backgroundColor =
+        selected ? theme.colorScheme.primary : Colors.transparent;
+    final textColor = selected
+        ? theme.colorScheme.onPrimary
+        : onTap == null
+            ? theme.colorScheme.onSurface.withValues(alpha: .45)
+            : theme.colorScheme.onSurface;
+    final borderColor =
+        selected ? theme.colorScheme.primary : theme.colorScheme.outlineVariant;
 
     return Material(
       color: Colors.transparent,
@@ -278,7 +292,7 @@ class _NotificationFilterPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
         onTap: onTap,
         child: Container(
-          constraints: const BoxConstraints(minHeight: 34),
+          constraints: const BoxConstraints(minHeight: 48),
           padding: const EdgeInsets.symmetric(
             horizontal: OpenVtsSpacing.sm,
             vertical: OpenVtsSpacing.xs,
@@ -288,13 +302,25 @@ class _NotificationFilterPill extends StatelessWidget {
             borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
             border: Border.all(color: borderColor),
           ),
-          child: Text(
-            label,
-            style: OpenVtsTypography.meta.copyWith(
-              height: 1,
-              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-              color: textColor,
-            ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (busy) ...[
+                SizedBox.square(
+                    dimension: 14,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: textColor)),
+                const SizedBox(width: 8),
+              ],
+              Flexible(
+                  child: Text(
+                label,
+                style: OpenVtsTypography.meta.copyWith(
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                  color: textColor,
+                ),
+              )),
+            ],
           ),
         ),
       ),
@@ -317,9 +343,8 @@ class _NotificationListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final headingColor = isDark
-        ? OpenVtsColors.white
-        : theme.colorScheme.onSurface;
+    final headingColor =
+        isDark ? OpenVtsColors.white : theme.colorScheme.onSurface;
     final secondaryColor = isDark
         ? OpenVtsColors.white.withValues(alpha: 0.7)
         : theme.colorScheme.onSurface.withValues(alpha: 0.62);
@@ -417,18 +442,18 @@ class _NotificationListItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.sm),
-              if (onMarkAsRead != null)
-                _NotificationActionPill(
-                  label: context.mobileText('Mark read'),
-                  onTap: onMarkAsRead!,
-                )
-              else
-                _NotificationStatusPill(
-                  label: context.mobileText('Read'),
-                  textColor: secondaryColor,
-                  borderColor: borderColor,
-                  backgroundColor: Colors.transparent,
-                ),
+              Flexible(
+                  child: onMarkAsRead != null
+                      ? _NotificationFilterPill(
+                          label: context.mobileText('Mark read'),
+                          onTap: onMarkAsRead!,
+                        )
+                      : _NotificationStatusPill(
+                          label: context.mobileText('Read'),
+                          textColor: secondaryColor,
+                          borderColor: borderColor,
+                          backgroundColor: Colors.transparent,
+                        )),
             ],
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
@@ -494,56 +519,6 @@ class _NotificationStatusPill extends StatelessWidget {
           color: textColor,
           fontWeight: FontWeight.w600,
           height: 1,
-        ),
-      ),
-    );
-  }
-}
-
-class _NotificationActionPill extends StatelessWidget {
-  const _NotificationActionPill({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: OpenVtsSpacing.sm,
-            vertical: OpenVtsSpacing.xxs,
-          ),
-          decoration: BoxDecoration(
-            color: onTap == null
-                ? Colors.transparent
-                : (isDark
-                      ? Colors.black
-                      : theme.colorScheme.primary.withValues(alpha: 0.06)),
-            borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-            border: Border.all(
-              color: isDark ? OpenVtsColors.white : OpenVtsColors.border,
-            ),
-          ),
-          child: Text(
-            label,
-            style: OpenVtsTypography.meta.copyWith(
-              color: isDark
-                  ? OpenVtsColors.white
-                  : (onTap == null
-                        ? theme.colorScheme.onSurface.withValues(alpha: 0.45)
-                        : theme.colorScheme.onSurface.withValues(alpha: 0.78)),
-              fontWeight: FontWeight.w600,
-              height: 1,
-            ),
-          ),
         ),
       ),
     );

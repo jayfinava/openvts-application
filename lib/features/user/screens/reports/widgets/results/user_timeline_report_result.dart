@@ -6,7 +6,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../../../../core/theme/open_vts_chart_theme.dart';
 import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
@@ -133,12 +135,13 @@ class _RunStopDonut extends StatelessWidget {
                       sections: [
                         PieChartSectionData(
                           value: runDur,
-                          color: OpenVtsColors.success,
+                          color: OpenVtsChartTheme.series(context, 3),
                           title: context.mobileText('Run'),
                           radius: 42,
                           titleStyle: OpenVtsTypography.meta.copyWith(
                             fontSize: 9,
-                            color: OpenVtsColors.white,
+                            color: OpenVtsChartTheme.labelOn(
+                                OpenVtsChartTheme.series(context, 3)),
                           ),
                         ),
                         PieChartSectionData(
@@ -148,7 +151,8 @@ class _RunStopDonut extends StatelessWidget {
                           radius: 42,
                           titleStyle: OpenVtsTypography.meta.copyWith(
                             fontSize: 9,
-                            color: OpenVtsColors.white,
+                            color: OpenVtsChartTheme.labelOn(
+                                OpenVtsColors.textSecondary),
                           ),
                         ),
                       ],
@@ -255,9 +259,8 @@ class _TimelineRowCardState extends ConsumerState<_TimelineRowCard> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final r = widget.row;
-    final stateColor = r.isRunning
-        ? OpenVtsColors.success
-        : OpenVtsColors.textSecondary;
+    final stateColor =
+        r.isRunning ? OpenVtsColors.success : OpenVtsColors.textSecondary;
     final stateLabel = r.isRunning ? 'Running' : 'Stopped';
     return Padding(
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),
@@ -413,8 +416,7 @@ class _TimelineRowCardState extends ConsumerState<_TimelineRowCard> {
     });
     try {
       final ctrl = ref.read(userReportControllerProvider);
-      final from =
-          DateTime.tryParse(r.startedAt) ??
+      final from = DateTime.tryParse(r.startedAt) ??
           DateTime.now().subtract(const Duration(hours: 1));
       final to = r.endedAt != null
           ? (DateTime.tryParse(r.endedAt!) ?? DateTime.now())
@@ -515,7 +517,7 @@ class _MapSectionState extends State<_MapSection> {
         padding: const EdgeInsets.all(12),
         child: Text(
           widget.error!,
-          style: OpenVtsTypography.meta.copyWith(color: OpenVtsColors.error),
+          style: OpenVtsTypography.meta.copyWith(color: OpenVtsMapColors.error),
         ),
       );
     }
@@ -579,18 +581,17 @@ class _MapSectionState extends State<_MapSection> {
               ),
               children: [
                 TileLayer(
-                  key: ValueKey<String>(_selectedLayerId),
-                  urlTemplate: _getSelectedLayer().url,
-                  subdomains: _getSelectedLayer().subdomains,
-                  userAgentPackageName: kTimelineMapTileUserAgent,
-                ),
+                    key: ValueKey<String>(_selectedLayerId),
+                    urlTemplate: _getSelectedLayer().url,
+                    subdomains: _getSelectedLayer().subdomains,
+                    userAgentPackageName: kTimelineMapTileUserAgent),
                 if (polyLatLngs.length > 1)
                   PolylineLayer(
                     polylines: [
                       Polyline(
                         points: polyLatLngs,
                         strokeWidth: 3,
-                        color: OpenVtsColors.info,
+                        color: OpenVtsMapColors.info,
                       ),
                     ],
                   ),
@@ -603,7 +604,7 @@ class _MapSectionState extends State<_MapSection> {
                       child: const Icon(
                         Icons.trip_origin_rounded,
                         size: 20,
-                        color: OpenVtsColors.success,
+                        color: OpenVtsMapColors.success,
                       ),
                     ),
                     if (polyLatLngs.length > 1)
@@ -614,7 +615,7 @@ class _MapSectionState extends State<_MapSection> {
                         child: const Icon(
                           Icons.location_on_rounded,
                           size: 20,
-                          color: OpenVtsColors.error,
+                          color: OpenVtsMapColors.error,
                         ),
                       ),
                   ],

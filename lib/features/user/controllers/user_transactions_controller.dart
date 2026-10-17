@@ -14,6 +14,7 @@ class UserTransactionsController extends StateNotifier<UserTransactionsState> {
 
   final UserTransactionsService _service;
   Timer? _searchDebounce;
+  int _requestGeneration = 0;
 
   Future<void> loadInitial() async {
     state = state.copyWith(
@@ -30,6 +31,7 @@ class UserTransactionsController extends StateNotifier<UserTransactionsState> {
   }
 
   Future<void> loadTransactions() async {
+    state = state.copyWith(refreshKey: _newRefreshKey());
     await _loadTransactions(
       targetPage: 1,
       append: false,
@@ -100,6 +102,9 @@ class UserTransactionsController extends StateNotifier<UserTransactionsState> {
   }
 
   void setSearchQuery(String value) {
+    // Invalidate any in-flight result as soon as the input changes, before
+    // the debounced request starts.
+    _requestGeneration++;
     state = state.copyWith(
       searchQuery: value,
       page: 1,
@@ -193,8 +198,11 @@ class UserTransactionsController extends StateNotifier<UserTransactionsState> {
     required bool isRefresh,
   }) async {
     final page = targetPage < 1 ? 1 : targetPage;
+    final generation = ++_requestGeneration;
 
     state = state.copyWith(
+      transactions: append || isRefresh ? state.transactions : const [],
+      total: append || isRefresh ? state.total : 0,
       isLoading: true,
       isRefreshing: isRefresh,
       errorMessage: null,
@@ -211,6 +219,7 @@ class UserTransactionsController extends StateNotifier<UserTransactionsState> {
         limit: state.limit,
         refreshKey: _currentRefreshKey,
       );
+      if (!mounted || generation != _requestGeneration) return;
 
       final merged = append
           ? _mergeTransactions(state.transactions, response.items)
@@ -227,6 +236,7 @@ class UserTransactionsController extends StateNotifier<UserTransactionsState> {
         errorMessage: null,
       );
     } catch (error) {
+      if (!mounted || generation != _requestGeneration) return;
       state = state.copyWith(
         isLoading: false,
         isRefreshing: false,
@@ -301,6 +311,9 @@ class UserTransactionsController extends StateNotifier<UserTransactionsState> {
           from: _formatIsoStartOfDay(from),
           to: _formatIsoEndOfDay(now),
         );
+      case UserTransactionsRangePreset.allTime:
+        // The API defaults to the current month when both dates are absent.
+        return const _RangeQuery(from: '1970-01-01T00:00:00.000Z', to: null);
       case UserTransactionsRangePreset.custom:
         return _RangeQuery(
           from: state.customFrom == null
@@ -413,6 +426,7 @@ class UserTransactionsController extends StateNotifier<UserTransactionsState> {
   @override
   void dispose() {
     _searchDebounce?.cancel();
+    _requestGeneration++;
     super.dispose();
   }
 }

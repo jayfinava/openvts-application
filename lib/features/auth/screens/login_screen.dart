@@ -11,6 +11,7 @@ import '../../../core/theme/open_vts_spacing.dart';
 import '../../../core/theme/open_vts_typography.dart';
 import '../../../shared/helpers/mobile_text.dart';
 import '../../../shared/helpers/toast_helper.dart';
+import '../../../shared/widgets/open_vts_monochrome_image.dart';
 import '../controllers/auth_controller.dart';
 import '../controllers/auth_state.dart';
 import '../widgets/login_form.dart';
@@ -51,20 +52,20 @@ class LoginScreen extends ConsumerWidget {
     return Scaffold(
       body: DecoratedBox(
         decoration: BoxDecoration(
-          color: isDark
-              ? OpenVtsColors.darkBackground
-              : OpenVtsColors.background,
+          color:
+              isDark ? OpenVtsColors.darkBackground : OpenVtsColors.background,
         ),
         child: Stack(
           children: [
             if (!isDark)
               Positioned.fill(
-                child: Image.asset(
+                child: OpenVtsMonochromeImage(
+                    child: Image.asset(
                   'assets/images/background-full.png',
                   fit: BoxFit.cover,
                   alignment: Alignment.topCenter,
                   opacity: const AlwaysStoppedAnimation<double>(0.75),
-                ),
+                )),
               ),
             if (!isDark)
               Positioned.fill(
@@ -127,9 +128,9 @@ class LoginScreen extends ConsumerWidget {
                         },
                       ),
                       const SizedBox(width: OpenVtsSpacing.xs),
-                      _LoginSettingsButton(
+                      _LoginScannerButton(
                         onPressed: () =>
-                            context.push(RoutePaths.apiBaseUrlSettings),
+                            context.push(RoutePaths.apiBaseUrlScanner),
                       ),
                     ],
                   ),
@@ -175,8 +176,8 @@ class _ThemeToggleButton extends StatelessWidget {
   }
 }
 
-class _LoginSettingsButton extends StatelessWidget {
-  const _LoginSettingsButton({required this.onPressed});
+class _LoginScannerButton extends StatelessWidget {
+  const _LoginScannerButton({required this.onPressed});
 
   final VoidCallback onPressed;
 
@@ -186,8 +187,8 @@ class _LoginSettingsButton extends StatelessWidget {
 
     return IconButton(
       onPressed: onPressed,
-      tooltip: context.mobileText('Base URL settings'),
-      icon: const Icon(Icons.settings_rounded),
+      tooltip: context.mobileText('Scan server QR code'),
+      icon: const Icon(Icons.qr_code_scanner_rounded),
       color: isDark ? OpenVtsColors.white : OpenVtsColors.brandInk,
       style: IconButton.styleFrom(
         backgroundColor: isDark
@@ -247,7 +248,8 @@ class _LoginPanel extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(
+          OpenVtsMonochromeImage(
+              child: Image.asset(
             isDark ? 'assets/brand/dark-logo.png' : 'assets/brand/logo.png',
             height: 52,
             errorBuilder: (_, __, ___) {
@@ -259,7 +261,7 @@ class _LoginPanel extends StatelessWidget {
                 ),
               );
             },
-          ),
+          )),
           const SizedBox(height: OpenVtsSpacing.xl),
           mfaForm ??
               LoginForm(

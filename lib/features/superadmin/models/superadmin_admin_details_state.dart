@@ -1,3 +1,4 @@
+import '../../../shared/paging/server_list_pager.dart';
 import '../../superadmin/models/superadmin_payments_model.dart';
 import 'superadmin_admin_details_model.dart';
 import 'superadmin_administrator_model.dart' show SuperadminAdministrator;
@@ -13,6 +14,8 @@ enum SuperadminAdminDetailsTab {
 
 class SuperadminAdminDetailsState {
   const SuperadminAdminDetailsState({
+    this.creditsPagination,
+    this.vehiclesPagination,
     required this.adminId,
     required this.admin,
     required this.selectedTab,
@@ -70,7 +73,9 @@ class SuperadminAdminDetailsState {
   });
 
   SuperadminAdminDetailsState.initial({required this.adminId})
-      : admin = null,
+      : creditsPagination = null,
+        vehiclesPagination = null,
+        admin = null,
         selectedTab = SuperadminAdminDetailsTab.profile,
         creditLogs = const <SuperadminCreditLog>[],
         transactions = const <SuperadminTransaction>[],
@@ -126,6 +131,8 @@ class SuperadminAdminDetailsState {
 
   static const Object _unset = Object();
 
+  final ListPageMeta? creditsPagination;
+  final ListPageMeta? vehiclesPagination;
   final String adminId;
   final SuperadminAdminDetails? admin;
   final SuperadminAdminDetailsTab selectedTab;
@@ -189,6 +196,8 @@ class SuperadminAdminDetailsState {
       false;
 
   SuperadminAdminDetailsState copyWith({
+    ListPageMeta? creditsPagination,
+    ListPageMeta? vehiclesPagination,
     Object? admin = _unset,
     SuperadminAdminDetailsTab? selectedTab,
     List<SuperadminCreditLog>? creditLogs,
@@ -244,6 +253,8 @@ class SuperadminAdminDetailsState {
     Object? resolvedIsActive = _unset,
   }) {
     return SuperadminAdminDetailsState(
+      creditsPagination: creditsPagination ?? this.creditsPagination,
+      vehiclesPagination: vehiclesPagination ?? this.vehiclesPagination,
       adminId: adminId,
       admin: identical(admin, _unset)
           ? this.admin

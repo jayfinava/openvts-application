@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../live_map/models/live_map_role_config.dart';
+import '../../../live_map/models/live_map_vehicle_target.dart';
 import '../../../live_map/screens/live_map_screen.dart';
 
 /// Superadmin live-map screen.
@@ -12,10 +13,15 @@ import '../../../live_map/screens/live_map_screen.dart';
 /// keys, default home route, and command-send mode are supplied by the
 /// [LiveMapRoleConfig.superadmin] factory.
 class SuperadminMapScreen extends StatelessWidget {
-  const SuperadminMapScreen({super.key});
+  const SuperadminMapScreen({super.key, this.vehicleTarget});
+
+  final LiveMapVehicleTarget? vehicleTarget;
 
   @override
   Widget build(BuildContext context) {
-    return LiveMapScreen(config: LiveMapRoleConfig.superadmin());
+    return LiveMapScreen(
+      config: LiveMapRoleConfig.superadmin(),
+      vehicleTarget: vehicleTarget,
+    );
   }
 }

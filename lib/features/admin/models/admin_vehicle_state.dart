@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math' as math;
 
+import '../../../shared/paging/server_list_pager.dart';
 import 'admin_vehicle_model.dart';
 
 class AdminVehicleEventFilters {
@@ -81,6 +82,7 @@ enum AdminVehicleDetailsTab {
 
 class AdminVehiclesState {
   const AdminVehiclesState({
+    this.pagination,
     required this.vehicles,
     required this.filteredVehicles,
     required this.searchQuery,
@@ -114,6 +116,7 @@ class AdminVehiclesState {
         errorMessage: null,
       );
 
+  final ListPageMeta? pagination;
   final List<AdminVehicleListItem> vehicles;
   final List<AdminVehicleListItem> filteredVehicles;
   final String searchQuery;
@@ -134,7 +137,7 @@ class AdminVehiclesState {
       statusFilter != AdminVehicleStatusFilter.all ||
       typeFilter.trim().isNotEmpty;
 
-  int get filteredCount => filteredVehicles.length;
+  int get filteredCount => pagination?.total ?? filteredVehicles.length;
 
   int get pageCount =>
       math.max<int>(1, (filteredCount / recordsPerPage).ceil());
@@ -142,6 +145,7 @@ class AdminVehiclesState {
   int get safeCurrentPage => currentPage.clamp(1, pageCount);
 
   List<AdminVehicleListItem> get visibleVehicles {
+    if (pagination != null) return filteredVehicles;
     final start = (safeCurrentPage - 1) * recordsPerPage;
     if (start >= filteredCount) {
       return const <AdminVehicleListItem>[];
@@ -155,6 +159,7 @@ class AdminVehiclesState {
   static const Object _unset = Object();
 
   AdminVehiclesState copyWith({
+    ListPageMeta? pagination,
     List<AdminVehicleListItem>? vehicles,
     List<AdminVehicleListItem>? filteredVehicles,
     String? searchQuery,
@@ -171,6 +176,7 @@ class AdminVehiclesState {
     Object? errorMessage = _unset,
   }) {
     return AdminVehiclesState(
+      pagination: pagination ?? this.pagination,
       vehicles: vehicles ?? this.vehicles,
       filteredVehicles: filteredVehicles ?? this.filteredVehicles,
       searchQuery: searchQuery ?? this.searchQuery,

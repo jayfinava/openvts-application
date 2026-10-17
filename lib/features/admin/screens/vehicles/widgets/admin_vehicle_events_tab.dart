@@ -40,8 +40,7 @@ class AdminVehicleEventsTab extends StatefulWidget {
     DateTime? to,
     String? source,
     String? severity,
-  })
-  onApplyFilters;
+  }) onApplyFilters;
   final Future<void> Function() onClearFilters;
 
   @override
@@ -82,8 +81,8 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
               Text(
                 context.mobileText('Date Range'),
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
               const SizedBox(height: OpenVtsSpacing.xs),
               GestureDetector(
@@ -141,105 +140,49 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
                 ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
-              Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      initialValue: _source.isEmpty ? null : _source,
-                      decoration: InputDecoration(
-                        labelText: context.mobileText('Source'),
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: OpenVtsSpacing.sm,
-                          vertical: OpenVtsSpacing.xs,
-                        ),
-                      ),
-                      items: [
-                        DropdownMenuItem(
-                          value: '',
-                          child: Text(context.mobileText('All sources')),
-                        ),
-                        const DropdownMenuItem(
-                          value: 'SYSTEM',
-                          child: Text('SYSTEM'),
-                        ),
-                        const DropdownMenuItem(
-                          value: 'GEOFENCE',
-                          child: Text('GEOFENCE'),
-                        ),
-                        const DropdownMenuItem(
-                          value: 'ROUTE',
-                          child: Text('ROUTE'),
-                        ),
-                        const DropdownMenuItem(
-                          value: 'MOTION',
-                          child: Text('MOTION'),
-                        ),
-                        const DropdownMenuItem(
-                          value: 'OVERSPEED',
-                          child: Text('OVERSPEED'),
-                        ),
-                        const DropdownMenuItem(
-                          value: 'IGNITION',
-                          child: Text('IGNITION'),
-                        ),
-                        const DropdownMenuItem(
-                          value: 'REMINDER',
-                          child: Text('REMINDER'),
-                        ),
-                        const DropdownMenuItem(
-                          value: 'SENSOR',
-                          child: Text('SENSOR'),
-                        ),
-                        const DropdownMenuItem(
-                          value: 'DRIVER',
-                          child: Text('DRIVER'),
-                        ),
-                        const DropdownMenuItem(
-                          value: 'COMMAND',
-                          child: Text('COMMAND'),
-                        ),
-                      ],
-                      onChanged: (value) =>
-                          setState(() => _source = value ?? ''),
-                    ),
-                  ),
+              LayoutBuilder(builder: (context, constraints) {
+                final source = _filterDropdown(
+                  label: context.mobileText('Source'),
+                  value: _source,
+                  values: const [
+                    '',
+                    'SYSTEM',
+                    'GEOFENCE',
+                    'ROUTE',
+                    'MOTION',
+                    'OVERSPEED',
+                    'IGNITION',
+                    'REMINDER',
+                    'SENSOR',
+                    'DRIVER',
+                    'COMMAND'
+                  ],
+                  allLabel: context.mobileText('All sources'),
+                  onChanged: (value) => setState(() => _source = value),
+                );
+                final severity = _filterDropdown(
+                  label: context.mobileText('Severity'),
+                  value: _severity,
+                  values: const ['', 'INFO', 'WARNING', 'CRITICAL'],
+                  allLabel: context.mobileText('All'),
+                  onChanged: (value) => setState(() => _severity = value),
+                );
+                if (constraints.maxWidth < 320 ||
+                    MediaQuery.textScalerOf(context).scale(14) > 18) {
+                  return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        source,
+                        const SizedBox(height: OpenVtsSpacing.sm),
+                        severity
+                      ]);
+                }
+                return Row(children: [
+                  Expanded(child: source),
                   const SizedBox(width: OpenVtsSpacing.sm),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      initialValue: _severity.isEmpty ? null : _severity,
-                      decoration: InputDecoration(
-                        labelText: context.mobileText('Severity'),
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: OpenVtsSpacing.sm,
-                          vertical: OpenVtsSpacing.xs,
-                        ),
-                      ),
-                      items: [
-                        DropdownMenuItem(
-                          value: '',
-                          child: Text(context.mobileText('All')),
-                        ),
-                        const DropdownMenuItem(
-                          value: 'INFO',
-                          child: Text('INFO'),
-                        ),
-                        const DropdownMenuItem(
-                          value: 'WARNING',
-                          child: Text('WARNING'),
-                        ),
-                        const DropdownMenuItem(
-                          value: 'CRITICAL',
-                          child: Text('CRITICAL'),
-                        ),
-                      ],
-                      onChanged: (value) =>
-                          setState(() => _severity = value ?? ''),
-                    ),
-                  ),
-                ],
-              ),
+                  Expanded(child: severity)
+                ]);
+              }),
               const SizedBox(height: OpenVtsSpacing.sm),
               Row(
                 children: [
@@ -376,9 +319,9 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
   }
 
   Widget _line(String label, String value) => Padding(
-    padding: const EdgeInsets.only(bottom: 4),
-    child: Text('$label: ${_safe(value)}'),
-  );
+        padding: const EdgeInsets.only(bottom: 4),
+        child: Text('$label: ${_safe(value)}'),
+      );
 
   String _json(Map<String, dynamic> value) {
     if (value.isEmpty) return '{}';
@@ -423,6 +366,33 @@ class _AdminVehicleEventsTabState extends State<AdminVehicleEventsTab> {
     ];
     return '${date.day.toString().padLeft(2, '0')} ${months[date.month - 1]} ${date.year}';
   }
+
+  Widget _filterDropdown({
+    required String label,
+    required String value,
+    required List<String> values,
+    required String allLabel,
+    required ValueChanged<String> onChanged,
+  }) =>
+      DropdownButtonFormField<String>(
+        key: ValueKey('$label:$value'),
+        initialValue: value,
+        isExpanded: true,
+        menuMaxHeight: 320,
+        decoration: InputDecoration(
+            labelText: label,
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(
+                horizontal: OpenVtsSpacing.sm, vertical: OpenVtsSpacing.xs)),
+        items: [
+          for (final item in values)
+            DropdownMenuItem(
+                value: item,
+                child: Text(item.isEmpty ? allLabel : item,
+                    maxLines: 1, overflow: TextOverflow.ellipsis))
+        ],
+        onChanged: (next) => onChanged(next ?? ''),
+      );
 }
 
 class _DateRangePickerDialog extends StatefulWidget {
@@ -472,9 +442,9 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
               Text(
                 context.mobileText('Select Date Range'),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.onSurface,
-                ),
+                      fontWeight: FontWeight.w700,
+                      color: colorScheme.onSurface,
+                    ),
               ),
               const SizedBox(height: OpenVtsSpacing.md),
               _buildCalendar(),
@@ -546,9 +516,9 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
             Text(
               _monthYear(_displayMonth),
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colorScheme.onSurface,
-              ),
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.onSurface,
+                  ),
             ),
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -755,8 +725,8 @@ class _DateCell extends StatelessWidget {
           color: isStart || isEnd
               ? colorScheme.primary
               : inRange
-              ? colorScheme.primary.withValues(alpha: 0.15)
-              : Colors.transparent,
+                  ? colorScheme.primary.withValues(alpha: 0.15)
+                  : Colors.transparent,
           border: Border.all(
             color: isToday && !isStart && !isEnd
                 ? colorScheme.primary.withValues(alpha: 0.5)
@@ -774,8 +744,8 @@ class _DateCell extends StatelessWidget {
             color: isStart || isEnd
                 ? colorScheme.onPrimary
                 : isToday
-                ? colorScheme.primary
-                : colorScheme.onSurface,
+                    ? colorScheme.primary
+                    : colorScheme.onSurface,
           ),
         ),
       ),
@@ -805,9 +775,9 @@ class _EventCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.2,
-                  ),
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.2,
+                      ),
                 ),
               ),
               if (event.severity != null) ...[

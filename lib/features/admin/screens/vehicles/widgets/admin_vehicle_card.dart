@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../core/router/route_paths.dart';
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
+import '../../../../../core/utils/permission_helper.dart';
 import '../../../../../shared/helpers/mobile_text.dart';
+import '../../../../../shared/widgets/open_vts_vehicle_tracking_button.dart';
+import '../../../../auth/controllers/auth_controller.dart';
 import '../../../models/admin_vehicle_model.dart';
 
-class AdminVehicleCard extends StatelessWidget {
+class AdminVehicleCard extends ConsumerWidget {
   const AdminVehicleCard({
     super.key,
     required this.vehicle,
@@ -21,7 +27,11 @@ class AdminVehicleCard extends StatelessWidget {
   static final DateFormat _createdFormat = DateFormat('yyyy-MM-dd HH:mm');
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canTrack = PermissionHelper.canAccessUserPath(
+      ref.watch(authControllerProvider.select((state) => state.user)),
+      RoutePaths.adminMap,
+    );
     final name = vehicle.name.trim().isEmpty
         ? 'Untitled Vehicle'
         : vehicle.name.trim();
@@ -55,7 +65,22 @@ class AdminVehicleCard extends StatelessWidget {
             primaryUser: vehicle.primaryUserName,
           ),
           const SizedBox(height: OpenVtsSpacing.md),
-          _CreatedFooter(createdValue: createdValue),
+          Row(
+            children: [
+              Expanded(child: _CreatedFooter(createdValue: createdValue)),
+              if (canTrack && vehicle.id.trim().isNotEmpty) ...[
+                const SizedBox(width: OpenVtsSpacing.sm),
+                OpenVtsVehicleTrackingButton(
+                  onPressed: () => context.push(
+                    RoutePaths.adminVehicleTrackingPath(
+                      vehicle.id,
+                      imei: vehicle.imei,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
         ],
       ),
     );

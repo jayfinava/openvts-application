@@ -1,3 +1,4 @@
+import '../../../shared/paging/server_list_pager.dart';
 import 'user_vehicle_model.dart';
 
 enum UserVehicleStatusFilter { all, active, inactive, licenseBlocked }
@@ -6,6 +7,7 @@ enum UserVehicleDetailsTab { details, sensors, documents, config }
 
 class UserVehiclesState {
   const UserVehiclesState({
+    this.pagination,
     this.vehicles = const <UserVehicleListItem>[],
     this.filteredVehicles = const <UserVehicleListItem>[],
     this.searchQuery = '',
@@ -24,6 +26,7 @@ class UserVehiclesState {
 
   static const Object _unset = Object();
 
+  final ListPageMeta? pagination;
   final List<UserVehicleListItem> vehicles;
   final List<UserVehicleListItem> filteredVehicles;
   final String searchQuery;
@@ -41,6 +44,7 @@ class UserVehiclesState {
   }
 
   UserVehiclesState copyWith({
+    ListPageMeta? pagination,
     List<UserVehicleListItem>? vehicles,
     List<UserVehicleListItem>? filteredVehicles,
     String? searchQuery,
@@ -52,6 +56,7 @@ class UserVehiclesState {
     Object? refreshKey = _unset,
   }) {
     return UserVehiclesState(
+      pagination: pagination ?? this.pagination,
       vehicles: vehicles ?? this.vehicles,
       filteredVehicles: filteredVehicles ?? this.filteredVehicles,
       searchQuery: searchQuery ?? this.searchQuery,

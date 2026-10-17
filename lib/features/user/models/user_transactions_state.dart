@@ -4,6 +4,7 @@ enum UserTransactionsRangePreset {
   thisMonth,
   last30Days,
   thisYear,
+  allTime,
   custom,
 }
 

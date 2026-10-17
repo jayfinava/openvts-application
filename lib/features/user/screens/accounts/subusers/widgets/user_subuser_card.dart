@@ -7,8 +7,10 @@ import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../../shared/helpers/mobile_text.dart';
+import '../../../../../../shared/models/user_role.dart';
 import '../../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../models/user_subuser_model.dart';
+import '../../widgets/user_child_login_button.dart';
 
 class UserSubUserCard extends ConsumerWidget {
   const UserSubUserCard({
@@ -109,11 +111,10 @@ class UserSubUserCard extends ConsumerWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
                   border: Border.all(
-                    color:
-                        (isActive
-                                ? Theme.of(context).colorScheme.onSurfaceVariant
-                                : Theme.of(context).colorScheme.outline)
-                            .withValues(alpha: 0.35),
+                    color: (isActive
+                            ? Theme.of(context).colorScheme.onSurfaceVariant
+                            : Theme.of(context).colorScheme.outline)
+                        .withValues(alpha: 0.35),
                   ),
                 ),
                 child: Text(
@@ -124,8 +125,8 @@ class UserSubUserCard extends ConsumerWidget {
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white
                         : (isActive
-                              ? Theme.of(context).colorScheme.onSurfaceVariant
-                              : Theme.of(context).colorScheme.outline),
+                            ? Theme.of(context).colorScheme.onSurfaceVariant
+                            : Theme.of(context).colorScheme.outline),
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -154,25 +155,30 @@ class UserSubUserCard extends ConsumerWidget {
                     value: isActive,
                     activeThumbColor:
                         Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : OpenVtsColors.brandInk,
+                            ? Colors.white
+                            : OpenVtsColors.brandInk,
                     activeTrackColor:
                         Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white.withValues(alpha: 0.4)
-                        : OpenVtsColors.brandInk.withValues(alpha: 0.35),
+                            ? Colors.white.withValues(alpha: 0.4)
+                            : OpenVtsColors.brandInk.withValues(alpha: 0.35),
                     inactiveThumbColor:
                         Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : OpenVtsColors.textTertiary,
+                            ? Colors.white
+                            : OpenVtsColors.textTertiary,
                     inactiveTrackColor:
                         Theme.of(context).brightness == Brightness.dark
-                        ? const Color(0xFF333333)
-                        : null,
+                            ? const Color(0xFF333333)
+                            : null,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     onChanged: onToggleStatus,
                   ),
                 ),
             ],
+          ),
+          UserChildLoginButton(
+            id: subUser.id,
+            role: UserRole.subuser,
+            isActive: subUser.isActive && !isTogglingStatus,
           ),
         ],
       ),

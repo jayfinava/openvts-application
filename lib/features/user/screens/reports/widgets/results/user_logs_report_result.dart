@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../../core/theme/open_vts_chart_theme.dart';
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
@@ -87,11 +88,11 @@ class UserLogsReportResult extends StatelessWidget {
 }
 
 const _kLevelColors = {
-  'critical': Color(0xFF8A3333),
-  'error': Color(0xFFC04A4A),
-  'warning': Color(0xFF8A6522),
-  'info': Color(0xFF2A5270),
-  'debug': Color(0xFF3A5A4A),
+  'critical': Color(0xFF454545),
+  'error': Color(0xFF636363),
+  'warning': Color(0xFF686868),
+  'info': Color(0xFF4C4C4C),
+  'debug': Color(0xFF525252),
   'trace': Color(0xFF4A4A4A),
 };
 Color _levelColor(String level) =>
@@ -114,7 +115,7 @@ class _LevelDonut extends StatelessWidget {
             radius: 42,
             titleStyle: OpenVtsTypography.meta.copyWith(
               fontSize: 9,
-              color: OpenVtsColors.white,
+              color: OpenVtsChartTheme.labelOn(_levelColor(k)),
             ),
           ),
         )
@@ -202,14 +203,12 @@ class _CategoryBarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final sorted =
-        (byCategory.entries.toList()
-              ..sort((a, b) => b.value.compareTo(a.value)))
-            .take(8)
-            .toList();
-    final maxVal = sorted
-        .map((e) => e.value.toDouble())
-        .reduce((a, b) => a > b ? a : b);
+    final sorted = (byCategory.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value)))
+        .take(8)
+        .toList();
+    final maxVal =
+        sorted.map((e) => e.value.toDouble()).reduce((a, b) => a > b ? a : b);
     final barColor = isDark
         ? OpenVtsColors.darkTextPrimary.withValues(alpha: 0.8)
         : OpenVtsColors.brandInk.withValues(alpha: 0.7);
@@ -236,6 +235,7 @@ class _CategoryBarChart extends StatelessWidget {
             height: 140,
             child: BarChart(
               BarChartData(
+                barTouchData: OpenVtsChartTheme.barTouchData(context),
                 maxY: maxVal * 1.2,
                 barGroups: sorted
                     .asMap()
@@ -275,9 +275,8 @@ class _CategoryBarChart extends StatelessWidget {
                           return const SizedBox.shrink();
                         }
                         final name = sorted[i].key;
-                        final short = name.length > 8
-                            ? '${name.substring(0, 7)}…'
-                            : name;
+                        final short =
+                            name.length > 8 ? '${name.substring(0, 7)}…' : name;
                         return Padding(
                           padding: const EdgeInsets.only(top: 3),
                           child: Text(

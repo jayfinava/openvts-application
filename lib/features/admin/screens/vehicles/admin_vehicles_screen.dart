@@ -8,6 +8,7 @@ import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
 import '../../../../shared/helpers/mobile_text.dart';
+import '../../../../shared/paging/server_list_pagination.dart';
 import '../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../shared/widgets/open_vts_loader.dart';
@@ -31,7 +32,8 @@ class AdminVehiclesScreen extends ConsumerWidget {
       for (final vehicle in state.vehicles)
         if (vehicle.vehicleTypeName.trim().isNotEmpty)
           vehicle.vehicleTypeName.trim(),
-    }.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    }.toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
     final visibleVehicles = state.visibleVehicles;
 
@@ -59,83 +61,92 @@ class AdminVehiclesScreen extends ConsumerWidget {
       body: state.isLoading && state.vehicles.isEmpty
           ? const OpenVtsLoader()
           : state.errorMessage != null && state.filteredVehicles.isEmpty
-          ? OpenVtsErrorView(
-              message: state.errorMessage!,
-              onRetry: controller.load,
-            )
-          : Column(
-              children: [
-                _VehiclesHeaderCard(
-                  count: state.filteredCount,
-                  totalCount: state.vehicles.length,
-                  onCreateVehicle: () =>
-                      context.push(RoutePaths.adminVehicleCreate),
-                ),
-                const SizedBox(height: OpenVtsSpacing.sm),
-                _VehiclesToolbar(
-                  searchQuery: state.searchQuery,
-                  recordsPerPage: state.recordsPerPage,
-                  hasActiveFilters: state.hasActiveFilters,
-                  onSearchChanged: controller.setSearchQuery,
-                  onOpenFilters: () =>
-                      _openFiltersSheet(context, ref, typeOptions: typeOptions),
-                  onOpenSort: () => _openSortSheet(context, ref),
-                  onRecordsChanged: controller.setRecordsPerPage,
-                ),
-                const SizedBox(height: OpenVtsSpacing.sm),
-                Expanded(
-                  child: RefreshIndicator(
-                    onRefresh: controller.refresh,
-                    child: state.filteredCount == 0
-                        ? ListView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            children: [
-                              const SizedBox(height: OpenVtsSpacing.section),
-                              OpenVtsEmptyState(
-                                title: context.mobileText('No vehicles'),
-                                message: context.mobileText(
-                                  'No matching vehicles found. Try a different search or filter.',
-                                ),
-                              ),
-                            ],
-                          )
-                        : ListView.separated(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            itemCount: visibleVehicles.length + 1,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: OpenVtsSpacing.sm),
-                            itemBuilder: (context, index) {
-                              if (index == visibleVehicles.length) {
-                                return _PaginationFooter(
-                                  currentPage: state.safeCurrentPage,
-                                  pageCount: state.pageCount,
-                                  showingCount: visibleVehicles.length,
-                                  totalCount: state.filteredCount,
-                                  onPrev: () => controller.goToPage(
-                                    state.safeCurrentPage - 1,
+              ? OpenVtsErrorView(
+                  message: state.errorMessage!,
+                  onRetry: controller.load,
+                )
+              : Column(
+                  children: [
+                    _VehiclesHeaderCard(
+                      count: state.filteredCount,
+                      totalCount: state.vehicles.length,
+                      onCreateVehicle: () =>
+                          context.push(RoutePaths.adminVehicleCreate),
+                    ),
+                    const SizedBox(height: OpenVtsSpacing.sm),
+                    _VehiclesToolbar(
+                      searchQuery: state.searchQuery,
+                      recordsPerPage: state.recordsPerPage,
+                      hasActiveFilters: state.hasActiveFilters,
+                      onSearchChanged: controller.setSearchQuery,
+                      onOpenFilters: () => _openFiltersSheet(context, ref,
+                          typeOptions: typeOptions),
+                      onOpenSort: () => _openSortSheet(context, ref),
+                      onRecordsChanged: controller.setRecordsPerPage,
+                    ),
+                    const SizedBox(height: OpenVtsSpacing.sm),
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: controller.refresh,
+                        child: state.filteredCount == 0
+                            ? ListView(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                children: [
+                                  const SizedBox(
+                                      height: OpenVtsSpacing.section),
+                                  OpenVtsEmptyState(
+                                    title: context.mobileText('No vehicles'),
+                                    message: context.mobileText(
+                                      'No matching vehicles found. Try a different search or filter.',
+                                    ),
                                   ),
-                                  onNext: () => controller.goToPage(
-                                    state.safeCurrentPage + 1,
-                                  ),
-                                );
-                              }
+                                ],
+                              )
+                            : ListView.separated(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                itemCount: visibleVehicles.length + 1,
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(height: OpenVtsSpacing.sm),
+                                itemBuilder: (context, index) {
+                                  if (index == visibleVehicles.length) {
+                                    if (controller.pager != null) {
+                                      return ServerListPagination(
+                                          meta: state.pagination,
+                                          loading: state.isLoading ||
+                                              state.isRefreshing,
+                                          onPageChanged:
+                                              controller.pager!.goToPage);
+                                    }
+                                    return _PaginationFooter(
+                                      currentPage: state.safeCurrentPage,
+                                      pageCount: state.pageCount,
+                                      showingCount: visibleVehicles.length,
+                                      totalCount: state.filteredCount,
+                                      onPrev: () => controller.goToPage(
+                                        state.safeCurrentPage - 1,
+                                      ),
+                                      onNext: () => controller.goToPage(
+                                        state.safeCurrentPage + 1,
+                                      ),
+                                    );
+                                  }
 
-                              final vehicle = visibleVehicles[index];
-                              return AdminVehicleCard(
-                                vehicle: vehicle,
-                                onTap: () => context.push(
-                                  RoutePaths.adminVehicleDetailsPath(
-                                    vehicle.id,
-                                  ),
-                                  extra: vehicle,
-                                ),
-                              );
-                            },
-                          ),
-                  ),
+                                  final vehicle = visibleVehicles[index];
+                                  return AdminVehicleCard(
+                                    vehicle: vehicle,
+                                    onTap: () => context.push(
+                                      RoutePaths.adminVehicleDetailsPath(
+                                        vehicle.id,
+                                      ),
+                                      extra: vehicle,
+                                    ),
+                                  );
+                                },
+                              ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
     );
   }
 
@@ -172,6 +183,9 @@ class AdminVehiclesScreen extends ConsumerWidget {
                     spacing: OpenVtsSpacing.xs,
                     runSpacing: OpenVtsSpacing.xs,
                     children: AdminVehicleStatusFilter.values
+                        .where((value) =>
+                            !controller.isServerPaged ||
+                            value != AdminVehicleStatusFilter.licenseBlocked)
                         .map(
                           (option) => _ChoiceChip(
                             label: _statusFilterLabel(option),
@@ -325,9 +339,9 @@ class _VehiclesHeaderCard extends StatelessWidget {
             child: Text(
               summary,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.2,
-              ),
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.2,
+                  ),
             ),
           ),
           const SizedBox(width: OpenVtsSpacing.sm),
@@ -866,8 +880,8 @@ class _OptionsSheet extends StatelessWidget {
                   child: Text(
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                          fontWeight: FontWeight.w700,
+                        ),
                   ),
                 ),
                 IconButton(
@@ -942,13 +956,11 @@ class _ChoiceChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = selected
-        ? (isDark ? Colors.black : Colors.white)
-        : Colors.transparent;
+    final backgroundColor =
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
     final textColor = isDark ? Colors.white : Colors.black;
-    final borderColor = isDark
-        ? Colors.white
-        : Colors.black.withValues(alpha: 0.2);
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
 
     return Material(
       color: backgroundColor,

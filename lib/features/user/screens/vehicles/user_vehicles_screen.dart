@@ -6,6 +6,7 @@ import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
 import '../../../../shared/helpers/mobile_text.dart';
+import '../../../../shared/paging/server_list_pagination.dart';
 import '../../../../shared/widgets/open_vts_card.dart';
 import '../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../shared/widgets/open_vts_error_view.dart';
@@ -65,7 +66,8 @@ class UserVehiclesScreen extends ConsumerWidget {
       );
     }
 
-    final typeOptions = _typeOptions(state.vehicles);
+    final typeOptions =
+        _typeOptions(state.vehicles, serverPaged: controller.isServerPaged);
 
     return RefreshIndicator(
       onRefresh: controller.refresh,
@@ -87,9 +89,8 @@ class UserVehiclesScreen extends ConsumerWidget {
           const SizedBox(height: OpenVtsSpacing.sm),
           if (state.filteredVehicles.isEmpty)
             OpenVtsEmptyState(
-              title: state.hasActiveFilters
-                  ? 'No vehicles found'
-                  : 'No vehicles',
+              title:
+                  state.hasActiveFilters ? 'No vehicles found' : 'No vehicles',
               message: state.hasActiveFilters
                   ? 'Try changing the search or filters.'
                   : 'No vehicles are assigned yet.',
@@ -100,6 +101,11 @@ class UserVehiclesScreen extends ConsumerWidget {
               if (vehicle != state.filteredVehicles.last)
                 const SizedBox(height: OpenVtsSpacing.sm),
             ],
+          if (controller.pager != null)
+            ServerListPagination(
+                meta: state.pagination,
+                loading: state.isLoading || state.isRefreshing,
+                onPageChanged: controller.goToPage),
           const SizedBox(height: OpenVtsSpacing.lg),
         ],
       ),
@@ -137,7 +143,8 @@ class _ToolbarCard extends StatelessWidget {
                 child: Text(
                   context.mobileText("{value1} of {value2} vehicles", {
                     'value1': (state.filteredVehicles.length).toString(),
-                    'value2': (state.vehicles.length).toString(),
+                    'value2': (state.pagination?.total ?? state.vehicles.length)
+                        .toString(),
                   }),
                   style: OpenVtsTypography.label.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
@@ -167,9 +174,12 @@ class _ToolbarCard extends StatelessWidget {
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
           UserVehicleStatusSegment(
+            serverPaged: state.pagination != null,
             current: state.statusFilter,
             onChanged: onStatusChanged,
-            counts: _calculateStatusCounts(state.vehicles),
+            counts: state.pagination == null
+                ? _calculateStatusCounts(state.vehicles)
+                : null,
           ),
           if (typeOptions.length > 1) ...[
             const SizedBox(height: OpenVtsSpacing.sm),
@@ -200,9 +210,8 @@ class _TypeFilterButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final selected = _selectedOption;
     final isSelected = value != null;
-    final backgroundColor = isSelected
-        ? _primaryInkColor(context)
-        : _softSurfaceColor(context);
+    final backgroundColor =
+        isSelected ? _primaryInkColor(context) : _softSurfaceColor(context);
     final textColor = isSelected
         ? OpenVtsColors.white
         : Theme.of(context).colorScheme.onSurfaceVariant;
@@ -302,22 +311,25 @@ class _TypeFilterOption {
   final String label;
 }
 
-List<_TypeFilterOption> _typeOptions(List<UserVehicleListItem> vehicles) {
+List<_TypeFilterOption> _typeOptions(List<UserVehicleListItem> vehicles,
+    {bool serverPaged = false}) {
   final byValue = <String, _TypeFilterOption>{};
   for (final vehicle in vehicles) {
     final type = vehicle.vehicleType;
     if (type == null) continue;
-    final value = type.id.trim().isNotEmpty
-        ? type.id.trim().toLowerCase()
-        : type.slug.trim().isNotEmpty
-        ? type.slug.trim().toLowerCase()
-        : type.name.trim().toLowerCase();
+    final value = serverPaged
+        ? type.name.trim()
+        : type.id.trim().isNotEmpty
+            ? type.id.trim().toLowerCase()
+            : type.slug.trim().isNotEmpty
+                ? type.slug.trim().toLowerCase()
+                : type.name.trim().toLowerCase();
     if (value.isEmpty) continue;
     final label = type.name.trim().isNotEmpty
         ? type.name.trim()
         : type.slug.trim().isNotEmpty
-        ? type.slug.trim()
-        : type.id.trim();
+            ? type.slug.trim()
+            : type.id.trim();
     byValue[value] = _TypeFilterOption(value: value, label: label);
   }
   final options = byValue.values.toList(growable: false)

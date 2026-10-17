@@ -56,7 +56,7 @@ class ToastHelper {
           ),
           content: Row(
             children: [
-              Icon(icon, color: colorScheme.primary, size: 18),
+              Icon(icon, color: colorScheme.onInverseSurface, size: 18),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(

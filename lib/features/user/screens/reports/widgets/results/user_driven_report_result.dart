@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../../core/theme/open_vts_chart_theme.dart';
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
@@ -161,6 +162,7 @@ class _DailyTotalsChart extends StatelessWidget {
             height: 160,
             child: BarChart(
               BarChartData(
+                barTouchData: OpenVtsChartTheme.barTouchData(context),
                 maxY: maxVal * 1.15,
                 barGroups: displayDates
                     .asMap()
@@ -314,8 +316,8 @@ class _DrivenVehicleCard extends StatelessWidget {
   }
 
   void _showDetails(BuildContext context) {
-    final sortedDayEntries = (dayValues.entries.toList()
-      ..sort((a, b) => a.key.compareTo(b.key)));
+    final sortedDayEntries =
+        (dayValues.entries.toList()..sort((a, b) => a.key.compareTo(b.key)));
     UserReportRowDetailsSheet.show(
       context,
       title: vehicleName,

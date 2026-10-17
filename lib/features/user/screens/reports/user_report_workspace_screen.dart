@@ -28,15 +28,13 @@ import 'widgets/results/user_sensor_report_result.dart';
 import 'widgets/results/user_timeline_report_result.dart';
 import 'widgets/user_report_state_views.dart';
 
-final _workspaceProvider = StateNotifierProvider.family
-    .autoDispose<
-      UserReportWorkspaceNotifier,
-      UserReportWorkspaceState,
-      UserReportKey
-    >((ref, key) {
-      final ctrl = ref.watch(userReportControllerProvider);
-      return UserReportWorkspaceNotifier(initialKey: key, controller: ctrl);
-    });
+final _workspaceProvider = StateNotifierProvider.family.autoDispose<
+    UserReportWorkspaceNotifier,
+    UserReportWorkspaceState,
+    UserReportKey>((ref, key) {
+  final ctrl = ref.watch(userReportControllerProvider);
+  return UserReportWorkspaceNotifier(initialKey: key, controller: ctrl);
+});
 
 class UserReportWorkspaceScreen extends ConsumerWidget {
   const UserReportWorkspaceScreen({required this.reportKey, super.key});
@@ -214,7 +212,7 @@ class _OptionsWrapper extends StatelessWidget {
     // Case 2: options failed to load and we have no cached options.
     if (state.optionsError != null && state.options == null) {
       return _OptionsError(
-        message: state.optionsError!,
+        message: context.mobileText(state.optionsError!),
         onRetry: notifier.refreshOptions,
         isDark: isDark,
       );
@@ -315,9 +313,8 @@ class _OptionsError extends StatelessWidget {
           Icon(
             Icons.warning_amber_rounded,
             size: 16,
-            color: isDark
-                ? OpenVtsColors.darkTextSecondary
-                : OpenVtsColors.error,
+            color:
+                isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.error,
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
@@ -420,57 +417,57 @@ class _ExtraFilters extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (state.reportKey) {
       UserReportKey.overspeed => UserOverspeedReportFilter(
-        filters: state.overspeedFilters,
-        onChanged: notifier.setOverspeedFilters,
-        disabled: disabled,
-      ),
+          filters: state.overspeedFilters,
+          onChanged: notifier.setOverspeedFilters,
+          disabled: disabled,
+        ),
       UserReportKey.geofence => UserGeofenceReportFilter(
-        filters: state.geofenceFilters,
-        onChanged: notifier.setGeofenceFilters,
-        geofences: state.geofences,
-        isLoading: state.isLoadingGeofences,
-        disabled: disabled,
-      ),
+          filters: state.geofenceFilters,
+          onChanged: notifier.setGeofenceFilters,
+          geofences: state.geofences,
+          isLoading: state.isLoadingGeofences,
+          disabled: disabled,
+        ),
       UserReportKey.sensor => UserSensorReportFilter(
-        vehicleId: state.scope.vehicleId,
-        vehicles: state.options?.vehicles ?? const [],
-        sensors: state.sensors,
-        filters: state.sensorFilters,
-        onVehicleChanged: (id) {
-          if (id != null) {
-            notifier.setScope(ReportVehicleScope.single(id));
-          }
-        },
-        onFiltersChanged: notifier.setSensorFilters,
-        isLoadingSensors: state.isLoadingSensors,
-        sensorLoadError: state.sensorLoadError,
-        onRetrySensorLoad: notifier.retrySensorLoad,
-        disabled: disabled,
-        vehicleError: state.validationErrors['sensorVehicle'],
-        sensorError: state.validationErrors['sensorSensor'],
-      ),
+          vehicleId: state.scope.vehicleId,
+          vehicles: state.options?.vehicles ?? const [],
+          sensors: state.sensors,
+          filters: state.sensorFilters,
+          onVehicleChanged: (id) {
+            if (id != null) {
+              notifier.setScope(ReportVehicleScope.single(id));
+            }
+          },
+          onFiltersChanged: notifier.setSensorFilters,
+          isLoadingSensors: state.isLoadingSensors,
+          sensorLoadError: state.sensorLoadError,
+          onRetrySensorLoad: notifier.retrySensorLoad,
+          disabled: disabled,
+          vehicleError: state.validationErrors['sensorVehicle'],
+          sensorError: state.validationErrors['sensorSensor'],
+        ),
       UserReportKey.alerts => UserAlertsReportFilter(
-        filters: state.alertsFilters,
-        onChanged: notifier.setAlertsFilters,
-        disabled: disabled,
-      ),
+          filters: state.alertsFilters,
+          onChanged: notifier.setAlertsFilters,
+          disabled: disabled,
+        ),
       UserReportKey.logs => UserLogsReportFilter(
-        vehicleId: state.scope.vehicleId,
-        vehicles: state.options?.vehicles ?? const [],
-        filters: state.logsFilters,
-        onVehicleChanged: (id) {
-          if (id != null) notifier.setScope(ReportVehicleScope.single(id));
-        },
-        onFiltersChanged: notifier.setLogsFilters,
-        vehicleError: state.validationErrors['logsVehicle'],
-        disabled: disabled,
-      ),
+          vehicleId: state.scope.vehicleId,
+          vehicles: state.options?.vehicles ?? const [],
+          filters: state.logsFilters,
+          onVehicleChanged: (id) {
+            if (id != null) notifier.setScope(ReportVehicleScope.single(id));
+          },
+          onFiltersChanged: notifier.setLogsFilters,
+          vehicleError: state.validationErrors['logsVehicle'],
+          disabled: disabled,
+        ),
       UserReportKey.timeline => UserTimelineReportFilter(
-        filters: state.timelineFilters,
-        onChanged: notifier.setTimelineFilters,
-        disabled: disabled,
-        error: state.validationErrors['timelineState'],
-      ),
+          filters: state.timelineFilters,
+          onChanged: notifier.setTimelineFilters,
+          disabled: disabled,
+          error: state.validationErrors['timelineState'],
+        ),
       _ => const SizedBox.shrink(),
     };
   }
@@ -486,8 +483,7 @@ class _ActionRow extends StatelessWidget {
     final isGenerating = state.genStatus == ReportGenStatus.loading;
     final optionsReady = state.options != null && state.optionsError == null;
     final canGenerate = !isGenerating && optionsReady;
-    final hasResult =
-        state.genStatus == ReportGenStatus.success ||
+    final hasResult = state.genStatus == ReportGenStatus.success ||
         state.genStatus == ReportGenStatus.empty;
     return Row(
       children: [
@@ -496,8 +492,8 @@ class _ActionRow extends StatelessWidget {
             label: isGenerating
                 ? context.mobileText('Generating…')
                 : state.isLoadingOptions
-                ? context.mobileText('Loading vehicles…')
-                : context.mobileText('Generate Report'),
+                    ? context.mobileText('Loading vehicles…')
+                    : context.mobileText('Generate Report'),
             onPressed: canGenerate ? notifier.generate : null,
             isLoading: isGenerating,
           ),
@@ -530,13 +526,13 @@ class _ResultArea extends StatelessWidget {
       ReportGenStatus.loading => const ReportLoadingView(),
       ReportGenStatus.empty => const ReportEmptyView(),
       ReportGenStatus.error => ReportErrorView(
-        message: state.genError ?? 'Unknown error',
-        onRetry: notifier.generate,
-      ),
+          message: state.genError ?? 'Unknown error',
+          onRetry: notifier.generate,
+        ),
       ReportGenStatus.success => _ReportResult(
-        state: state,
-        notifier: notifier,
-      ),
+          state: state,
+          notifier: notifier,
+        ),
     };
   }
 }
@@ -564,50 +560,50 @@ class _ReportResult extends StatelessWidget {
     final key = state.reportKey;
     return switch (key) {
       UserReportKey.distance => UserDistanceReportResult(
-        state: state,
-        onLoadMore: notifier.loadMore,
-        onExport: (f) => _handleExport(context, f),
-      ),
+          state: state,
+          onLoadMore: notifier.loadMore,
+          onExport: (f) => _handleExport(context, f),
+        ),
       UserReportKey.driven => UserDrivenReportResult(
-        state: state,
-        onLoadMore: notifier.loadMore,
-        onExport: (f) => _handleExport(context, f),
-      ),
+          state: state,
+          onLoadMore: notifier.loadMore,
+          onExport: (f) => _handleExport(context, f),
+        ),
       UserReportKey.details => UserDetailsReportResult(
-        state: state,
-        onLoadMore: notifier.loadMore,
-        onExport: (f) => _handleExport(context, f),
-      ),
+          state: state,
+          onLoadMore: notifier.loadMore,
+          onExport: (f) => _handleExport(context, f),
+        ),
       UserReportKey.overspeed => UserOverspeedReportResult(
-        state: state,
-        onLoadMore: notifier.loadMore,
-        onExport: (f) => _handleExport(context, f),
-      ),
+          state: state,
+          onLoadMore: notifier.loadMore,
+          onExport: (f) => _handleExport(context, f),
+        ),
       UserReportKey.geofence => UserGeofenceReportResult(
-        state: state,
-        onLoadMore: notifier.loadMore,
-        onExport: (f) => _handleExport(context, f),
-      ),
+          state: state,
+          onLoadMore: notifier.loadMore,
+          onExport: (f) => _handleExport(context, f),
+        ),
       UserReportKey.alerts => UserAlertsReportResult(
-        state: state,
-        onLoadMore: notifier.loadMore,
-        onExport: (f) => _handleExport(context, f),
-      ),
+          state: state,
+          onLoadMore: notifier.loadMore,
+          onExport: (f) => _handleExport(context, f),
+        ),
       UserReportKey.sensor => UserSensorReportResult(
-        state: state,
-        onLoadMore: notifier.loadMore,
-        onExport: (f) => _handleExport(context, f),
-      ),
+          state: state,
+          onLoadMore: notifier.loadMore,
+          onExport: (f) => _handleExport(context, f),
+        ),
       UserReportKey.logs => UserLogsReportResult(
-        state: state,
-        onLoadMore: notifier.loadMore,
-        onExport: (f) => _handleExport(context, f),
-      ),
+          state: state,
+          onLoadMore: notifier.loadMore,
+          onExport: (f) => _handleExport(context, f),
+        ),
       UserReportKey.timeline => UserTimelineReportResult(
-        state: state,
-        onLoadMore: notifier.loadMore,
-        onExport: (f) => _handleExport(context, f),
-      ),
+          state: state,
+          onLoadMore: notifier.loadMore,
+          onExport: (f) => _handleExport(context, f),
+        ),
     };
   }
 }

@@ -10,6 +10,7 @@ import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../shared/helpers/mobile_text.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
+import '../../../../../shared/widgets/open_vts_monochrome_image.dart';
 import '../../../../../shared/widgets/open_vts_status_chip.dart';
 import '../../../models/user_settings_model.dart';
 
@@ -227,13 +228,15 @@ class _AvatarView extends StatelessWidget {
 
     Widget content;
     if (localAvatarBytes != null && localAvatarBytes!.isNotEmpty) {
-      content = Image.memory(localAvatarBytes!, fit: BoxFit.cover);
+      content = OpenVtsMonochromeImage(
+          child: Image.memory(localAvatarBytes!, fit: BoxFit.contain));
     } else if (hasRemote) {
-      content = Image.network(
+      content = OpenVtsMonochromeImage(
+          child: Image.network(
         profileImageUrl!,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         errorBuilder: (_, __, ___) => _AvatarInitial(name: name),
-      );
+      ));
     } else {
       content = _AvatarInitial(name: name);
     }
@@ -244,15 +247,7 @@ class _AvatarView extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(OpenVtsRadius.md),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border.all(color: OpenVtsColors.border),
-              ),
-              child: SizedBox(width: 56, height: 56, child: content),
-            ),
-          ),
+          SizedBox(width: 56, height: 56, child: content),
           if (isUploading)
             Container(
               width: 56,

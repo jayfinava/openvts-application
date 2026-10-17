@@ -78,8 +78,7 @@ class _UserSupportTicketFormState extends ConsumerState<UserSupportTicketForm> {
     }
 
     if (detail == null) {
-      final error =
-          ref.read(userSupportControllerProvider).errorMessage ??
+      final error = ref.read(userSupportControllerProvider).errorMessage ??
           'Unable to create ticket right now.';
       ToastHelper.showError(error, context: context);
       return;
@@ -295,36 +294,36 @@ class _TicketFields extends StatelessWidget {
             final stackFields = constraints.maxWidth < 460;
             final categoryField =
                 DropdownButtonFormField<UserSupportTicketCategory>(
-                  initialValue: category,
-                  isDense: true,
-                  isExpanded: true,
-                  decoration: _fieldDecoration('Category'),
-                  items: UserSupportTicketCategory.values
-                      .map(
-                        (value) => DropdownMenuItem(
-                          value: value,
-                          child: Text(value.label),
-                        ),
-                      )
-                      .toList(growable: false),
-                  onChanged: isCreating ? null : onCategoryChanged,
-                );
+              initialValue: category,
+              isDense: true,
+              isExpanded: true,
+              decoration: _fieldDecoration('Category'),
+              items: UserSupportTicketCategory.values
+                  .map(
+                    (value) => DropdownMenuItem(
+                      value: value,
+                      child: Text(value.label),
+                    ),
+                  )
+                  .toList(growable: false),
+              onChanged: isCreating ? null : onCategoryChanged,
+            );
             final priorityField =
                 DropdownButtonFormField<UserSupportTicketPriority>(
-                  initialValue: priority,
-                  isDense: true,
-                  isExpanded: true,
-                  decoration: _fieldDecoration('Priority'),
-                  items: UserSupportTicketPriority.values
-                      .map(
-                        (value) => DropdownMenuItem(
-                          value: value,
-                          child: Text(value.label),
-                        ),
-                      )
-                      .toList(growable: false),
-                  onChanged: isCreating ? null : onPriorityChanged,
-                );
+              initialValue: priority,
+              isDense: true,
+              isExpanded: true,
+              decoration: _fieldDecoration('Priority'),
+              items: UserSupportTicketPriority.values
+                  .map(
+                    (value) => DropdownMenuItem(
+                      value: value,
+                      child: Text(value.label),
+                    ),
+                  )
+                  .toList(growable: false),
+              onChanged: isCreating ? null : onPriorityChanged,
+            );
 
             if (stackFields) {
               return Column(
@@ -397,9 +396,8 @@ class _TicketFormActionBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDark
-        ? colorScheme.surface
-        : const Color(0xFFF5F5F5);
+    final backgroundColor =
+        isDark ? colorScheme.surface : const Color(0xFFF5F5F5);
     final borderColor = isDark ? colorScheme.outline : const Color(0xFFE0E0E0);
 
     return SafeArea(

@@ -119,9 +119,8 @@ class _FieldGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final nonEmpty = fields
-        .where((f) => f.$2.isNotEmpty && f.$2 != '—')
-        .toList();
+    final nonEmpty =
+        fields.where((f) => f.$2.isNotEmpty && f.$2 != '—').toList();
     if (nonEmpty.isEmpty) return const SizedBox.shrink();
     return Wrap(
       spacing: OpenVtsSpacing.sm,

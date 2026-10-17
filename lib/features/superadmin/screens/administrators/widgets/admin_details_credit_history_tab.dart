@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,6 +8,7 @@ import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../shared/helpers/mobile_text.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
+import '../../../../../shared/paging/server_list_pagination.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_error_view.dart';
@@ -29,6 +32,15 @@ class _AdminDetailsCreditHistoryTabState
     extends ConsumerState<AdminDetailsCreditHistoryTab> {
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
+
+  @override
+  void didUpdateWidget(covariant AdminDetailsCreditHistoryTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.adminId != widget.adminId) {
+      _searchController.clear();
+      _query = '';
+    }
+  }
 
   @override
   void dispose() {
@@ -72,7 +84,10 @@ class _AdminDetailsCreditHistoryTabState
     }
 
     final enriched = _computeBalances(creditLogs, currentCredits);
-    final filtered = _applyFilter(enriched, _query);
+    final pagination = ref.watch(provider.select((s) => s.creditsPagination));
+    final filtered = controller.creditsPager == null
+        ? _applyFilter(enriched, _query)
+        : enriched;
 
     final addedCount = creditLogs
         .where((l) => l.activity == SuperadminCreditActivity.assign)
@@ -98,9 +113,13 @@ class _AdminDetailsCreditHistoryTabState
           ),
         _SummaryGrid(
           currentCredits: currentCredits,
-          totalLogs: creditLogs.length,
-          addedCount: addedCount,
-          deductedCount: deductedCount,
+          totalLogs: (pagination?.summary['count'] as num?)?.toInt() ??
+              pagination?.total ??
+              creditLogs.length,
+          addedCount:
+              (pagination?.summary['assigned'] as num?)?.toInt() ?? addedCount,
+          deductedCount: (pagination?.summary['deducted'] as num?)?.toInt() ??
+              deductedCount,
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
         _ActionRow(
@@ -122,7 +141,13 @@ class _AdminDetailsCreditHistoryTabState
         const SizedBox(height: OpenVtsSpacing.sm),
         _SearchField(
           controller: _searchController,
-          onChanged: (value) => setState(() => _query = value.trim()),
+          onChanged: (value) {
+            setState(() => _query = value.trim());
+            if (controller.creditsPager != null) {
+              unawaited(controller.creditsPager!
+                  .change(page: 1, search: value, debounce: true));
+            }
+          },
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
         if (errorMessage != null && hasLoaded)
@@ -151,6 +176,11 @@ class _AdminDetailsCreditHistoryTabState
               return _CreditLogCard(entry: filtered[index]);
             },
           ),
+        if (controller.creditsPager != null)
+          ServerListPagination(
+              meta: pagination,
+              loading: isLoading,
+              onPageChanged: controller.creditsPager!.goToPage),
       ],
     );
   }
@@ -198,7 +228,8 @@ List<_CreditEntry> _computeBalances(
   final result = <_CreditEntry>[];
   var running = currentCredits;
   for (final log in logs) {
-    result.add(_CreditEntry(log: log, balanceAfter: running));
+    result
+        .add(_CreditEntry(log: log, balanceAfter: log.balanceAfter ?? running));
     if (log.activity == SuperadminCreditActivity.assign) {
       running = running - log.credits;
     } else if (log.activity == SuperadminCreditActivity.deduct) {
@@ -212,21 +243,19 @@ List<_CreditEntry> _applyFilter(List<_CreditEntry> entries, String query) {
   if (query.isEmpty) return entries;
   const fmt = DateTimeFormatter();
   final q = query.toLowerCase();
-  return entries
-      .where((entry) {
-        final log = entry.log;
-        final date = log.createdAt != null
-            ? fmt.formatDateTime(log.createdAt!).toLowerCase()
-            : '';
-        final activityLabel = _activityDisplay(log.activity).toLowerCase();
-        return date.contains(q) ||
-            activityLabel.contains(q) ||
-            log.credits.toString().contains(q) ||
-            entry.balanceAfter.toString().contains(q) ||
-            log.vehicleId.toLowerCase().contains(q) ||
-            log.id.toLowerCase().contains(q);
-      })
-      .toList(growable: false);
+  return entries.where((entry) {
+    final log = entry.log;
+    final date = log.createdAt != null
+        ? fmt.formatDateTime(log.createdAt!).toLowerCase()
+        : '';
+    final activityLabel = _activityDisplay(log.activity).toLowerCase();
+    return date.contains(q) ||
+        activityLabel.contains(q) ||
+        log.credits.toString().contains(q) ||
+        entry.balanceAfter.toString().contains(q) ||
+        log.vehicleId.toLowerCase().contains(q) ||
+        log.id.toLowerCase().contains(q);
+  }).toList(growable: false);
 }
 
 String _activityDisplay(SuperadminCreditActivity activity) {
@@ -448,14 +477,12 @@ class _CreditLogCard extends StatelessWidget {
     final log = entry.log;
     final isAdd = log.activity == SuperadminCreditActivity.assign;
     final activityLabel = _activityDisplay(log.activity);
-    final icon = isAdd
-        ? Icons.arrow_downward_rounded
-        : Icons.arrow_upward_rounded;
+    final icon =
+        isAdd ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded;
     final sign = isAdd ? '+' : '−';
     const fmt = DateTimeFormatter();
-    final dateLabel = log.createdAt != null
-        ? fmt.formatDateTime(log.createdAt!)
-        : '—';
+    final dateLabel =
+        log.createdAt != null ? fmt.formatDateTime(log.createdAt!) : '—';
     final scheme = Theme.of(context).colorScheme;
 
     return OpenVtsCard(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
@@ -59,9 +59,8 @@ class UserGeofencesScreen extends ConsumerWidget {
               _HeaderRow(
                 isRefreshing: state.isRefreshing,
                 onCreate: () => _openCreate(context),
-                onRefresh: state.isRefreshing
-                    ? null
-                    : () => controller.refresh(),
+                onRefresh:
+                    state.isRefreshing ? null : () => controller.refresh(),
                 onExport: () => UserLandmarkExportSheet.show(
                   context: context,
                   entityType: UserLandmarkEntityType.geofence,
@@ -127,7 +126,7 @@ class UserGeofencesScreen extends ConsumerWidget {
             margin: const EdgeInsets.all(OpenVtsSpacing.sm),
             padding: const EdgeInsets.all(OpenVtsSpacing.md),
             decoration: BoxDecoration(
-              color: OpenVtsColors.surfaceElevated,
+              color: OpenVtsMapColors.surfaceElevated,
               borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
             ),
             child: Column(
@@ -137,7 +136,7 @@ class UserGeofencesScreen extends ConsumerWidget {
                 Text(
                   context.mobileText('Delete geofence?'),
                   style: OpenVtsTypography.titleSmall.copyWith(
-                    color: OpenVtsColors.textPrimary,
+                    color: OpenVtsMapColors.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -148,7 +147,7 @@ class UserGeofencesScreen extends ConsumerWidget {
                     {'value1': (geofence.name).toString()},
                   ),
                   style: OpenVtsTypography.meta.copyWith(
-                    color: OpenVtsColors.textSecondary,
+                    color: OpenVtsMapColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: OpenVtsSpacing.md),
@@ -272,8 +271,8 @@ class _HeaderIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final disabled = onTap == null;
-    const bg = OpenVtsColors.brandInk;
-    const fg = OpenVtsColors.white;
+    const bg = OpenVtsMapColors.brandInk;
+    const fg = OpenVtsMapColors.white;
     return Tooltip(
       message: tooltip,
       child: InkResponse(
@@ -286,7 +285,8 @@ class _HeaderIconButton extends StatelessWidget {
             color: disabled ? bg.withValues(alpha: 0.55) : bg,
             borderRadius: BorderRadius.circular(OpenVtsRadius.button),
             border: Border.all(
-              color: disabled ? fg.withValues(alpha: 0.3) : OpenVtsColors.white,
+              color:
+                  disabled ? fg.withValues(alpha: 0.3) : OpenVtsMapColors.white,
             ),
           ),
           alignment: Alignment.center,

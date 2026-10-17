@@ -21,10 +21,9 @@ import 'user_operation_route_inputs.dart';
 
 final userRouteBuilderMapProvider =
     Provider<Widget Function(List<UserRouteStop>, List<UserGeoPoint>)>(
-      (_) =>
-          (stops, geometry) =>
-              UserOperationBuilderMap(stops: stops, geometry: geometry),
-    );
+  (_) => (stops, geometry) =>
+      UserOperationBuilderMap(stops: stops, geometry: geometry),
+);
 
 /// Mobile counterpart of the web EnterpriseRouteBuilder. Stops, source IDs and
 /// the actual road geometry are persisted independently for Operations.
@@ -250,9 +249,8 @@ class _RouteBuilderState
       stops = routeStopsForSave(_stops, roundTrip: _roundTrip);
     } catch (_) {
       setState(
-        () => _errorKey = _stops.length + (_roundTrip ? 1 : 0) > 100
-            ? 'limit'
-            : 'minimum',
+        () => _errorKey =
+            _stops.length + (_roundTrip ? 1 : 0) > 100 ? 'limit' : 'minimum',
       );
       return false;
     }
@@ -307,9 +305,7 @@ class _RouteBuilderState
       _errorKey = null;
     });
     try {
-      final route = await ref
-          .read(userRouteBuilderControllerProvider)
-          .save(
+      final route = await ref.read(userRouteBuilderControllerProvider).save(
             name: _name.text,
             stops: stops,
             geometry: geometry,
@@ -365,14 +361,14 @@ class _RouteBuilderState
   }
 
   String? get _error => switch (_errorKey) {
-    'road' => l.routeBuilderRoutingError,
-    'save' => l.routeBuilderSaveError,
-    'minimum' => l.routeBuilderMinimumStops,
-    'limit' => l.routeBuilderStopLimit,
-    'access' => l.routeBuilderAccessDenied,
-    'load' => l.routeBuilderEditingLoadError,
-    _ => null,
-  };
+        'road' => l.routeBuilderRoutingError,
+        'save' => l.routeBuilderSaveError,
+        'minimum' => l.routeBuilderMinimumStops,
+        'limit' => l.routeBuilderStopLimit,
+        'access' => l.routeBuilderAccessDenied,
+        'load' => l.routeBuilderEditingLoadError,
+        _ => null,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -418,133 +414,135 @@ class _RouteBuilderState
                 ),
               )
             : _loading
-            ? const Center(child: CircularProgressIndicator())
-            : Form(
-                key: _form,
-                child: ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    OpenVtsTextField(
-                      label: l.routeBuilderName,
-                      controller: _name,
-                      hintText: l.routeBuilderNameHint,
-                      validator: (v) => (v?.trim().length ?? 0) < 2
-                          ? l.routeBuilderNameError
-                          : null,
-                    ),
-                    const SizedBox(height: 16),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
-                      child: SizedBox(
-                        height: 240,
-                        child: ref.watch(userRouteBuilderMapProvider)(
-                          _stops,
-                          geometry,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l.routeBuilderMapAttribution,
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
-                    if (_road != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text(
-                          '${l.routeBuilderReady} · ${(_road!.distanceMeters / 1000).toStringAsFixed(1)} ${l.routeBuilderDistanceUnit} · ${(_road!.durationSeconds / 60).ceil()} ${l.routeBuilderMinutes}',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: color.primary),
-                        ),
-                      ),
-                    if (_road == null && hasGeometry)
-                      Text(l.routeBuilderSavedGeometry),
-                    if (!hasGeometry && _stops.length >= 2)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text(l.routeBuilderChanged),
-                      ),
-                    const SizedBox(height: 20),
-                    Row(
+                ? const Center(child: CircularProgressIndicator())
+                : Form(
+                    key: _form,
+                    child: ListView(
+                      padding: const EdgeInsets.all(16),
                       children: [
-                        Expanded(
-                          child: Text(
-                            l.routeBuilderStops,
-                            style: Theme.of(context).textTheme.titleLarge,
+                        OpenVtsTextField(
+                          label: l.routeBuilderName,
+                          controller: _name,
+                          hintText: l.routeBuilderNameHint,
+                          validator: (v) => (v?.trim().length ?? 0) < 2
+                              ? l.routeBuilderNameError
+                              : null,
+                        ),
+                        const SizedBox(height: 16),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: SizedBox(
+                            height: 240,
+                            child: ref.watch(userRouteBuilderMapProvider)(
+                              _stops,
+                              geometry,
+                            ),
                           ),
                         ),
-                        OpenVtsButton(
-                          label: l.routeBuilderAddStop,
-                          onPressed: _busy || _errorKey == 'load'
-                              ? null
-                              : () => _add(),
-                          variant: OpenVtsButtonVariant.secondary,
-                          trailingIcon: Icons.add,
+                        const SizedBox(height: 8),
+                        Text(
+                          l.routeBuilderMapAttribution,
+                          style: Theme.of(context).textTheme.labelSmall,
                         ),
+                        if (_road != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(
+                              '${l.routeBuilderReady} · ${(_road!.distanceMeters / 1000).toStringAsFixed(1)} ${l.routeBuilderDistanceUnit} · ${(_road!.durationSeconds / 60).ceil()} ${l.routeBuilderMinutes}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(color: color.primary),
+                            ),
+                          ),
+                        if (_road == null && hasGeometry)
+                          Text(l.routeBuilderSavedGeometry),
+                        if (!hasGeometry && _stops.length >= 2)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(l.routeBuilderChanged),
+                          ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                l.routeBuilderStops,
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                            ),
+                            OpenVtsButton(
+                              label: l.routeBuilderAddStop,
+                              onPressed: _busy || _errorKey == 'load'
+                                  ? null
+                                  : () => _add(),
+                              variant: OpenVtsButtonVariant.secondary,
+                              trailingIcon: Icons.add,
+                            ),
+                          ],
+                        ),
+                        if (_stops.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: Text(l.routeBuilderNoStops),
+                          ),
+                        for (var i = 0; i < _stops.length; i++) _stopTile(i),
+                        if (_stops.any((s) => s.isVia))
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(l.routeBuilderShapeHint),
+                          ),
+                        const SizedBox(height: 12),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(l.routeBuilderRoundTrip),
+                          subtitle: Text(l.routeBuilderRoundTripHint),
+                          value: _roundTrip,
+                          onChanged: _busy || _errorKey == 'load'
+                              ? null
+                              : (v) => _change(() => _roundTrip = v),
+                        ),
+                        const SizedBox(height: 8),
+                        OpenVtsButton(
+                          label: l.routeBuilderOptimize,
+                          onPressed:
+                              _busy || _stops.length < 2 || _errorKey == 'load'
+                                  ? null
+                                  : _optimize,
+                          variant: OpenVtsButtonVariant.secondary,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l.routeBuilderOptimizeHint,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        const SizedBox(height: 12),
+                        OpenVtsButton(
+                          label: _routing
+                              ? l.routeBuilderRouting
+                              : l.routeBuilderRoadPath,
+                          onPressed:
+                              _busy || _stops.length < 2 || _errorKey == 'load'
+                                  ? null
+                                  : _calculate,
+                          variant: OpenVtsButtonVariant.secondary,
+                          isLoading: _routing,
+                        ),
+                        if (_error != null)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            child: Semantics(
+                              liveRegion: true,
+                              child: Text(
+                                _error!,
+                                style: TextStyle(color: color.error),
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 24),
                       ],
                     ),
-                    if (_stops.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Text(l.routeBuilderNoStops),
-                      ),
-                    for (var i = 0; i < _stops.length; i++) _stopTile(i),
-                    if (_stops.any((s) => s.isVia))
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text(l.routeBuilderShapeHint),
-                      ),
-                    const SizedBox(height: 12),
-                    SwitchListTile.adaptive(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(l.routeBuilderRoundTrip),
-                      subtitle: Text(l.routeBuilderRoundTripHint),
-                      value: _roundTrip,
-                      onChanged: _busy || _errorKey == 'load'
-                          ? null
-                          : (v) => _change(() => _roundTrip = v),
-                    ),
-                    const SizedBox(height: 8),
-                    OpenVtsButton(
-                      label: l.routeBuilderOptimize,
-                      onPressed:
-                          _busy || _stops.length < 2 || _errorKey == 'load'
-                          ? null
-                          : _optimize,
-                      variant: OpenVtsButtonVariant.secondary,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l.routeBuilderOptimizeHint,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    const SizedBox(height: 12),
-                    OpenVtsButton(
-                      label: _routing
-                          ? l.routeBuilderRouting
-                          : l.routeBuilderRoadPath,
-                      onPressed:
-                          _busy || _stops.length < 2 || _errorKey == 'load'
-                          ? null
-                          : _calculate,
-                      variant: OpenVtsButtonVariant.secondary,
-                      isLoading: _routing,
-                    ),
-                    if (_error != null)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Semantics(
-                          liveRegion: true,
-                          child: Text(
-                            _error!,
-                            style: TextStyle(color: color.error),
-                          ),
-                        ),
-                      ),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
+                  ),
         bottomNavigationBar: allowed
             ? SafeArea(
                 top: false,
@@ -570,10 +568,10 @@ class _RouteBuilderState
     final label = stop.isVia
         ? l.routeBuilderShapePoint
         : stop == regular.first
-        ? l.routeBuilderOrigin
-        : !_roundTrip && stop == regular.last
-        ? l.routeBuilderDestination
-        : l.routeBuilderWaypoint;
+            ? l.routeBuilderOrigin
+            : !_roundTrip && stop == regular.last
+                ? l.routeBuilderDestination
+                : l.routeBuilderWaypoint;
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -650,7 +648,8 @@ class _RouteBuilderState
 
 List<UserRouteStop> _optimizeMessage(
   ({List<UserRouteStop> stops, bool roundTrip}) input,
-) => optimizeUserRouteStops(input.stops, roundTrip: input.roundTrip);
+) =>
+    optimizeUserRouteStops(input.stops, roundTrip: input.roundTrip);
 
 class UserOperationBuilderMap extends StatelessWidget {
   const UserOperationBuilderMap({
@@ -665,9 +664,9 @@ class UserOperationBuilderMap extends StatelessWidget {
     final points = geometry.isNotEmpty
         ? geometry.map((p) => p.toLatLng()).toList()
         : stops
-              .where((s) => s.validCoordinates)
-              .map((s) => LatLng(s.latitude, s.longitude))
-              .toList();
+            .where((s) => s.validCoordinates)
+            .map((s) => LatLng(s.latitude, s.longitude))
+            .toList();
     final color = Theme.of(context).colorScheme.primary;
     // No line is rendered until the routing provider returns actual geometry.
     return FlutterMap(
@@ -675,9 +674,8 @@ class UserOperationBuilderMap extends StatelessWidget {
         Object.hashAll(points.map((p) => '${p.latitude},${p.longitude}')),
       ),
       options: MapOptions(
-        initialCenter: points.isEmpty
-            ? const LatLng(20.59, 78.96)
-            : points.first,
+        initialCenter:
+            points.isEmpty ? const LatLng(20.59, 78.96) : points.first,
         initialZoom: points.isEmpty ? 4 : 12,
         initialCameraFit: points.length >= 2
             ? CameraFit.bounds(
@@ -689,9 +687,8 @@ class UserOperationBuilderMap extends StatelessWidget {
       ),
       children: [
         TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.openvts.mobile',
-        ),
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'com.openvts.mobile'),
         if (geometry.length >= 2)
           PolylineLayer(
             polylines: [

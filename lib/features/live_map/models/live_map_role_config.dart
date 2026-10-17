@@ -348,9 +348,8 @@ class LiveMapRoleConfig {
       supportsPoi: supportsPoi && landmarksAllowed,
       supportsRoute: supportsRoute && landmarksAllowed,
       supportsCommands: supportsCommands && commandsAllowed,
-      commandSendMode: commandsAllowed
-          ? commandSendMode
-          : LiveMapCommandSendMode.disabled,
+      commandSendMode:
+          commandsAllowed ? commandSendMode : LiveMapCommandSendMode.disabled,
     );
   }
 

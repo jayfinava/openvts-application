@@ -44,8 +44,7 @@ class _AdminUserPaymentsTabState extends ConsumerState<AdminUserPaymentsTab> {
     final provider = adminUserDetailsControllerProvider(widget.userId);
     final state = ref.watch(provider);
     final controller = ref.read(provider.notifier);
-    final isInitialLoading =
-        state.isLoadingPayments &&
+    final isInitialLoading = state.isLoadingPayments &&
         state.payments.isEmpty &&
         state.paymentsPage == null;
 
@@ -196,10 +195,10 @@ class _SummaryCard extends StatelessWidget {
             AdminActionGate(
               capability: 'users.update',
               child: SizedBox(
-                height: 34,
+                height: 48,
                 child: OpenVtsButton(
                   label: context.mobileText('Renew Vehicle'),
-                  height: 34,
+                  height: 48,
                   isLoading: isRenewing,
                   onPressed: onRenew,
                   trailingIcon: Icons.autorenew_rounded,
@@ -408,8 +407,7 @@ class _StandardPaymentChips extends StatelessWidget {
       'plate_number',
     ]);
     final matchedVehicle = _matchVehicle(payment.vehicle, linkedVehicles);
-    final rawDevice =
-        _valueForKey(payment.vehicle, 'device') ??
+    final rawDevice = _valueForKey(payment.vehicle, 'device') ??
         _valueForKey(payment.vehicle, 'gpsDevice') ??
         _valueForKey(payment.vehicle, 'tracker');
     final vehicleDevice = rawDevice is Map<String, dynamic>
@@ -647,6 +645,7 @@ class _RenewPaymentSheetState extends ConsumerState<_RenewPaymentSheet> {
   String? _lastPayload;
   String? _idempotencyKey;
   var _paymentMode = 'CASH';
+  String? _submitError;
 
   @override
   void initState() {
@@ -682,15 +681,6 @@ class _RenewPaymentSheetState extends ConsumerState<_RenewPaymentSheet> {
             controller: PrimaryScrollController.maybeOf(context),
             padding: const EdgeInsets.all(OpenVtsSpacing.md),
             children: [
-              if (_amountController.text.trim().isNotEmpty) ...[
-                OpenVtsTextField(
-                  label: context.mobileText(
-                    'Reason for amount override (5–500 characters)',
-                  ),
-                  controller: _overrideReasonController,
-                ),
-                const SizedBox(height: OpenVtsSpacing.sm),
-              ],
               _EstimateCard(
                 selectedCount: _selectedVehicleIds.length,
                 estimateLabel: estimate,
@@ -723,6 +713,15 @@ class _RenewPaymentSheetState extends ConsumerState<_RenewPaymentSheet> {
                 ),
                 textInputAction: TextInputAction.done,
               ),
+              if (_amountController.text.trim().isNotEmpty) ...[
+                OpenVtsTextField(
+                  label: context.mobileText(
+                    'Reason for amount override (5–500 characters)',
+                  ),
+                  controller: _overrideReasonController,
+                ),
+                const SizedBox(height: OpenVtsSpacing.sm),
+              ],
               const SizedBox(height: OpenVtsSpacing.md),
               Text(
                 context.mobileText('Vehicles'),
@@ -751,6 +750,12 @@ class _RenewPaymentSheetState extends ConsumerState<_RenewPaymentSheet> {
             ],
           ),
         ),
+        if (_submitError != null)
+          Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: OpenVtsSpacing.md, vertical: 8),
+              child:
+                  Text(_submitError!, style: TextStyle(color: colors.error))),
         const Divider(height: 1),
         SafeArea(
           top: false,
@@ -796,9 +801,20 @@ class _RenewPaymentSheetState extends ConsumerState<_RenewPaymentSheet> {
     });
   }
 
+  void _showSubmitError(String message, {BuildContext? context}) {
+    setState(() => _submitError = message);
+    ToastHelper.showError(message, context: this.context);
+  }
+
   Future<void> _submit() async {
+    if (ref
+        .read(adminUserDetailsControllerProvider(widget.userId))
+        .isRenewingPayment) {
+      return;
+    }
+    setState(() => _submitError = null);
     if (_selectedVehicleIds.isEmpty) {
-      ToastHelper.showError(
+      _showSubmitError(
         context.mobileText('Select at least one vehicle.'),
         context: context,
       );
@@ -807,7 +823,7 @@ class _RenewPaymentSheetState extends ConsumerState<_RenewPaymentSheet> {
 
     final amount = _amountController.text.trim();
     if (amount.isNotEmpty && !RegExp(r'^\d+(\.\d{1,2})?$').hasMatch(amount)) {
-      ToastHelper.showError(
+      _showSubmitError(
         context.mobileText('Enter a valid amount.'),
         context: context,
       );
@@ -815,7 +831,7 @@ class _RenewPaymentSheetState extends ConsumerState<_RenewPaymentSheet> {
     }
 
     if (_selectedVehicleIds.length > 100) {
-      ToastHelper.showError(
+      _showSubmitError(
         context.mobileText('Renew up to 100 vehicles at a time.'),
         context: context,
       );
@@ -823,7 +839,7 @@ class _RenewPaymentSheetState extends ConsumerState<_RenewPaymentSheet> {
     }
     final reason = _overrideReasonController.text.trim();
     if (amount.isNotEmpty && (reason.length < 5 || reason.length > 500)) {
-      ToastHelper.showError(
+      _showSubmitError(
         context.mobileText('Enter an override reason of 5–500 characters.'),
         context: context,
       );
@@ -837,9 +853,7 @@ class _RenewPaymentSheetState extends ConsumerState<_RenewPaymentSheet> {
       _idempotencyKey = const Uuid().v4();
     }
     final provider = adminUserDetailsControllerProvider(widget.userId);
-    final ok = await ref
-        .read(provider.notifier)
-        .renewVehiclesPayment(
+    final ok = await ref.read(provider.notifier).renewVehiclesPayment(
           AdminRenewVehiclesPaymentRequest(
             userId: widget.userId,
             vehicleIds: _selectedVehicleIds.toList(growable: false),
@@ -861,7 +875,7 @@ class _RenewPaymentSheetState extends ConsumerState<_RenewPaymentSheet> {
       );
       Navigator.of(context).pop();
     } else {
-      ToastHelper.showError(
+      _showSubmitError(
         ref.read(provider).sectionErrorMessage ?? 'Unable to renew vehicles.',
         context: context,
       );
@@ -1350,8 +1364,8 @@ class _StatusPill extends StatelessWidget {
       icon: _isSuccessStatus(status)
           ? Icons.check_rounded
           : _isFailedStatus(status)
-          ? Icons.error_outline_rounded
-          : Icons.pending_outlined,
+              ? Icons.error_outline_rounded
+              : Icons.pending_outlined,
       label: _statusLabel(status),
       color: color,
     );

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:open_vts/features/onboarding/models/onboarding_model.dart';
 
+import '../../../../shared/widgets/open_vts_monochrome_image.dart';
+
 class OnboardingPage extends StatelessWidget {
   final OnboardingModel page;
 
@@ -11,7 +13,7 @@ class OnboardingPage extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.asset(page.image, height: 300),
+        OpenVtsMonochromeImage(child: Image.asset(page.image, height: 300)),
         const SizedBox(height: 40),
         Text(
           page.title,

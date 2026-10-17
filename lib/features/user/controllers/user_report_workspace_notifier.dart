@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/api/api_exception.dart';
+import '../../../core/errors/error_mapper.dart';
 import '../../../core/platform/platform_time_zone.dart';
 import '../models/user_report_model.dart';
 import '../models/user_report_state.dart';
@@ -18,7 +18,9 @@ class UserReportWorkspaceNotifier
   UserReportWorkspaceNotifier({
     required UserReportKey initialKey,
     required UserReportController controller,
+    Future<String> Function() resolveTimeZone = PlatformTimeZone.current,
   })  : _controller = controller,
+        _resolveTimeZone = resolveTimeZone,
         super(UserReportWorkspaceState(
           reportKey: initialKey,
           dateRange: buildDefaultDateRange(initialKey),
@@ -28,7 +30,9 @@ class UserReportWorkspaceNotifier
   }
 
   final UserReportController _controller;
+  final Future<String> Function() _resolveTimeZone;
   int _sensorRequestToken = 0;
+  _GeneratedReportQuery? _generatedQuery;
 
   // ---------------------------------------------------------------------------
   // Options
@@ -58,7 +62,9 @@ class UserReportWorkspaceNotifier
   void changeReportKey(UserReportKey key) {
     if (key == state.reportKey) return;
     _sensorRequestToken++;
+    _generatedQuery = null;
     state = UserReportWorkspaceState(
+      requestToken: state.requestToken + 1,
       reportKey: key,
       options: state.options,
       optionsError: state.optionsError,
@@ -189,6 +195,7 @@ class UserReportWorkspaceNotifier
   // ---------------------------------------------------------------------------
 
   Future<void> generate() async {
+    if (state.genStatus == ReportGenStatus.loading) return;
     final s = state;
     final errors = validateReportQuery(
       reportKey: s.reportKey,
@@ -222,6 +229,7 @@ class UserReportWorkspaceNotifier
     }
 
     final token = s.requestToken + 1;
+    _generatedQuery = null;
     state = state.copyWith(
       genStatus: ReportGenStatus.loading,
       rows: [],
@@ -231,6 +239,7 @@ class UserReportWorkspaceNotifier
       clearSource: true,
       clearGenError: true,
       clearLoadMoreError: true,
+      isLoadingMore: false,
       clearGeneratedAt: true,
       validationErrors: {},
       requestToken: token,
@@ -246,10 +255,10 @@ class UserReportWorkspaceNotifier
             genStatus: ReportGenStatus.error, genError: 'Invalid date range');
         return;
       }
-      final tz = await PlatformTimeZone.current();
+      final tz = await _resolveTimeZone();
       if (!mounted || state.requestToken != token) return;
 
-      final page = await _controller.generate(
+      final query = _GeneratedReportQuery(
         reportKey: s.reportKey,
         vehicleScope: s.scope.toJson(),
         dateRange: s.dateRange!.toJson(),
@@ -258,9 +267,19 @@ class UserReportWorkspaceNotifier
         from: bounds.from,
         to: bounds.to,
       );
+      final page = await _controller.generate(
+        reportKey: query.reportKey,
+        vehicleScope: query.vehicleScope,
+        dateRange: query.dateRange,
+        filters: query.filters,
+        timeZone: query.timeZone,
+        from: query.from,
+        to: query.to,
+      );
 
       if (!mounted || state.requestToken != token) return;
 
+      _generatedQuery = query;
       state = state.copyWith(
         genStatus:
             page.rows.isEmpty ? ReportGenStatus.empty : ReportGenStatus.success,
@@ -295,30 +314,28 @@ class UserReportWorkspaceNotifier
 
   Future<void> loadMore() async {
     final s = state;
-    if (!s.hasMore || s.nextCursor == null || s.isLoadingMore) return;
+    final query = _generatedQuery;
+    if (query == null ||
+        !s.hasMore ||
+        s.nextCursor == null ||
+        s.isLoadingMore ||
+        s.genStatus == ReportGenStatus.loading) {
+      return;
+    }
 
     final token = s.requestToken + 1;
     state = state.copyWith(
         isLoadingMore: true, clearLoadMoreError: true, requestToken: token);
 
     try {
-      final bounds = buildApiDateBounds(s.dateRange!);
-      if (bounds == null) {
-        state = state.copyWith(
-            isLoadingMore: false, loadMoreError: 'Invalid date range');
-        return;
-      }
-      final tz = await PlatformTimeZone.current();
-      if (!mounted || state.requestToken != token) return;
-
       final page = await _controller.generate(
-        reportKey: s.reportKey,
-        vehicleScope: s.scope.toJson(),
-        dateRange: s.dateRange!.toJson(),
-        filters: _buildFilters(s),
-        timeZone: tz,
-        from: bounds.from,
-        to: bounds.to,
+        reportKey: query.reportKey,
+        vehicleScope: query.vehicleScope,
+        dateRange: query.dateRange,
+        filters: query.filters,
+        timeZone: query.timeZone,
+        from: query.from,
+        to: query.to,
         cursor: s.nextCursor,
       );
 
@@ -344,8 +361,10 @@ class UserReportWorkspaceNotifier
 
   void reset() {
     _sensorRequestToken++;
+    _generatedQuery = null;
     final key = state.reportKey;
     state = UserReportWorkspaceState(
+      requestToken: state.requestToken + 1,
       reportKey: key,
       options: state.options,
       optionsError: state.optionsError,
@@ -375,10 +394,35 @@ class UserReportWorkspaceNotifier
     };
   }
 
-  String _extractMessage(Object error) {
-    if (error is ApiException) {
-      return error.message;
-    }
-    return error.toString();
-  }
+  String _extractMessage(Object error) => ErrorMapper.from(error).message;
+}
+
+/// Retains the submitted query for cursor requests, independently of draft
+/// filters and later changes to the device's time zone.
+class _GeneratedReportQuery {
+  _GeneratedReportQuery({
+    required this.reportKey,
+    required Map<String, dynamic> vehicleScope,
+    required Map<String, dynamic> dateRange,
+    required Map<String, dynamic> filters,
+    required this.timeZone,
+    required this.from,
+    required this.to,
+  })  : vehicleScope = _freeze(vehicleScope),
+        dateRange = _freeze(dateRange),
+        filters = _freeze(filters);
+
+  final UserReportKey reportKey;
+  final Map<String, dynamic> vehicleScope;
+  final Map<String, dynamic> dateRange;
+  final Map<String, dynamic> filters;
+  final String timeZone;
+  final DateTime from;
+  final DateTime to;
+
+  static Map<String, dynamic> _freeze(Map<String, dynamic> values) =>
+      Map.unmodifiable(values.map((key, value) => MapEntry(
+            key,
+            value is List ? List<dynamic>.unmodifiable(value) : value,
+          )));
 }

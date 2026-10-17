@@ -9237,4 +9237,193 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get mobilePageLinkError =>
       'No se pudo abrir esta página. Inténtalo de nuevo.';
+
+  @override
+  String get mobileInvalidServerQr =>
+      'Este código QR no contiene una URL de servidor válida.';
+
+  @override
+  String get mobileServerUrlUpdated => 'URL del servidor actualizada';
+
+  @override
+  String get mobileServerUrlSaveFailed =>
+      'No se pudo guardar esta URL del servidor. Inténtalo de nuevo.';
+
+  @override
+  String get mobileCameraConfigureManually =>
+      'Cámara no disponible. Configura la URL del servidor manualmente.';
+
+  @override
+  String get mobileScanServerQr => 'Escanear código QR del servidor';
+
+  @override
+  String get mobileServerQrInstruction =>
+      'Apunta la cámara a un código QR que contenga la URL completa de la API.';
+
+  @override
+  String get mobileCameraPermissionManual =>
+      'Cámara no disponible. Comprueba el permiso de la cámara o configura manualmente.';
+
+  @override
+  String get mobileCameraUnavailableDevice =>
+      'El escaneo con cámara no está disponible en este dispositivo.';
+
+  @override
+  String get mobileConfigureManually => 'Configurar manualmente';
+
+  @override
+  String get mobileScanServerQrAction => 'Escanear código QR del servidor';
+
+  @override
+  String get mobileTrackingVehicleUnavailable =>
+      'Este vehículo no está disponible o ya no está asignado a tu cuenta.';
+
+  @override
+  String get mobileClusterSafetyDescription =>
+      'Agrupar vehículos cercanos. Las vistas densas se agrupan automáticamente para mantener la fluidez del mapa.';
+
+  @override
+  String get mobileWaitingForVehicle => 'Esperando vehículo…';
+
+  @override
+  String get mobileLicenseTrackingBlocked =>
+      'Seguimiento no disponible: licencia bloqueada';
+
+  @override
+  String get mobileServiceTrackingBlocked =>
+      'Seguimiento no disponible: servicio bloqueado';
+
+  @override
+  String get mobileNoTrackingDevice =>
+      'No hay dispositivo de seguimiento asignado';
+
+  @override
+  String get mobileVehicleTracking => 'Seguimiento del vehículo';
+
+  @override
+  String get mobileLastGps => 'Último GPS';
+
+  @override
+  String get mobileCurrentMonthTransactionsEmpty =>
+      'No hay transacciones este mes.';
+
+  @override
+  String get mobileViewAllHistory => 'Ver todo el historial';
+
+  @override
+  String get mobileTrackVehicle => 'Rastrear vehículo';
+
+  @override
+  String get mobileGpsTimeUnavailable => 'Hora del GPS no disponible';
+
+  @override
+  String get mobileWaitingGps => 'Esperando ubicación GPS';
+
+  @override
+  String get mobileLiveConnectionConnected => 'Conexión en vivo conectada';
+
+  @override
+  String get mobilePauseFollowVehicle => 'Pausar seguimiento del vehículo';
+
+  @override
+  String get mobileFollowVehicle => 'Seguir vehículo';
+
+  @override
+  String get mobileVehicleNoLocation =>
+      'Este vehículo aún no tiene una ubicación válida.';
+
+  @override
+  String get mobileLoadingVehicle => 'Cargando vehículo…';
+
+  @override
+  String get mobileVehicleLoadRetry =>
+      'No se pudo cargar este vehículo. Reintentar.';
+
+  @override
+  String get mobileErrorSessionExpired =>
+      'Tu sesión ha caducado. Vuelve a iniciar sesión.';
+
+  @override
+  String get mobileErrorAccessDenied => 'No tienes acceso a esta información.';
+
+  @override
+  String get mobileErrorUnavailable =>
+      'Esta información ya no está disponible.';
+
+  @override
+  String get mobileErrorTimeout =>
+      'La solicitud tardó demasiado. Inténtalo de nuevo.';
+
+  @override
+  String get mobileErrorRateLimit =>
+      'Demasiadas solicitudes. Espera un momento e inténtalo de nuevo.';
+
+  @override
+  String get mobileErrorServiceUnavailable =>
+      'Esta información no está disponible temporalmente. Inténtalo más tarde.';
+
+  @override
+  String get mobileErrorConnection =>
+      'No se pudo conectar. Comprueba tu conexión a internet e inténtalo de nuevo.';
+
+  @override
+  String get mobileErrorSecureConnection =>
+      'No se pudo establecer una conexión segura. Inténtalo más tarde.';
+
+  @override
+  String get mobileErrorCancelled =>
+      'La solicitud se canceló. Inténtalo de nuevo.';
+
+  @override
+  String get mobileErrorRequest =>
+      'No se pudo completar la solicitud. Inténtalo de nuevo.';
+
+  @override
+  String get mobileErrorTimeZone =>
+      'No se pudo detectar tu zona horaria. Reinicia la aplicación e inténtalo de nuevo.';
+
+  @override
+  String get adminLogBilling => 'Facturación';
+
+  @override
+  String get adminAddDevice => 'Añadir dispositivo';
+
+  @override
+  String get mobileBlockedOnPage => 'Bloqueados en esta página';
+
+  @override
+  String get mobileExpiringOnPage => 'Próximos a vencer en esta página';
+
+  @override
+  String get validationAccountNameLetter =>
+      'El nombre debe contener al menos una letra';
+
+  @override
+  String get validationAccountNameCharacters =>
+      'El nombre contiene caracteres no válidos';
+
+  @override
+  String get validationAccountNameSpaces =>
+      'El nombre no puede contener espacios consecutivos';
+
+  @override
+  String get validationAccountUsernameLetter =>
+      'El nombre de usuario debe contener al menos una letra';
+
+  @override
+  String get validationAccountUsernameCharacters =>
+      'El nombre de usuario contiene caracteres no válidos';
+
+  @override
+  String get validationAccountAddressText =>
+      'La dirección contiene texto no válido';
+
+  @override
+  String get validationAccountPostal => 'Introduce un código postal válido';
+
+  @override
+  String get mobileCreateDriverError => 'No se pudo crear el conductor.';
+
+  @override
+  String get mobileCreateSubuserError => 'No se pudo crear el subusuario.';
 }

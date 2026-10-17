@@ -199,9 +199,7 @@ class _SuperadminSupportConversationPaneState
     }
 
     try {
-      await ref
-          .read(superadminSupportControllerProvider.notifier)
-          .sendReply(
+      await ref.read(superadminSupportControllerProvider.notifier).sendReply(
             ticketId: ticket.id,
             message: message,
             attachments: _replyAttachments,
@@ -225,7 +223,7 @@ class _SuperadminSupportConversationPaneState
       }
       final error =
           ref.read(superadminSupportControllerProvider).detailsErrorMessage ??
-          'Unable to send reply right now.';
+              'Unable to send reply right now.';
       ToastHelper.showError(error, context: context);
     }
   }
@@ -260,7 +258,7 @@ class _SuperadminSupportConversationPaneState
       }
       final error =
           ref.read(superadminSupportControllerProvider).detailsErrorMessage ??
-          'Unable to update ticket status right now.';
+              'Unable to update ticket status right now.';
       ToastHelper.showError(error, context: context);
     }
   }
@@ -410,8 +408,7 @@ class _ConversationHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fromName =
-        ticket.fromUser?.displayName ??
+    final fromName = ticket.fromUser?.displayName ??
         (ticket.fromUserId != null ? 'Admin #${ticket.fromUserId}' : 'Admin');
     final fromEmail = ticket.fromUser?.email.trim() ?? '';
     final colorScheme = Theme.of(context).colorScheme;
@@ -509,8 +506,8 @@ class _ConversationHeader extends StatelessWidget {
               _MetaChip(
                 label: context.mobileText("From: {value1}{value2}", {
                   'value1': (fromName).toString(),
-                  'value2': (fromEmail.isNotEmpty ? ' ($fromEmail)' : '')
-                      .toString(),
+                  'value2':
+                      (fromEmail.isNotEmpty ? ' ($fromEmail)' : '').toString(),
                 }),
               ),
               _MetaChip(
@@ -583,8 +580,8 @@ class _SupportStatusActionButton extends StatelessWidget {
             : context.mobileText('Update status'),
         color: isLoading
             ? (isDark
-                  ? OpenVtsColors.darkTextSecondary
-                  : OpenVtsColors.textSecondary)
+                ? OpenVtsColors.darkTextSecondary
+                : OpenVtsColors.textSecondary)
             : (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk),
         trailing: isLoading
             ? const SizedBox.square(
@@ -704,13 +701,13 @@ class SuperadminSupportMessageBubble extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final borderColor = isMine
         ? (isDark
-              ? OpenVtsColors.darkTextPrimary.withValues(alpha: 0.22)
-              : OpenVtsColors.brandInk.withValues(alpha: 0.18))
+            ? OpenVtsColors.darkTextPrimary.withValues(alpha: 0.22)
+            : OpenVtsColors.brandInk.withValues(alpha: 0.18))
         : colorScheme.outline;
     final backgroundColor = isMine
         ? (isDark
-              ? OpenVtsColors.white.withValues(alpha: 0.08)
-              : OpenVtsColors.brandInk.withValues(alpha: 0.045))
+            ? OpenVtsColors.white.withValues(alpha: 0.08)
+            : OpenVtsColors.brandInk.withValues(alpha: 0.045))
         : colorScheme.surface;
 
     final senderLabel = message.sender?.displayName.trim().isNotEmpty == true
@@ -931,14 +928,12 @@ class SuperadminSupportDraftAttachmentWrap extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: isDark
-                      ? OpenVtsColors.darkBorder
-                      : OpenVtsColors.border,
+                  color:
+                      isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border,
                 ),
                 borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                color: isDark
-                    ? OpenVtsColors.darkSurface
-                    : OpenVtsColors.surface,
+                color:
+                    isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surface,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -1246,8 +1241,8 @@ List<PlatformFile> _filterInvalidAttachments(
   final details = preview.isEmpty
       ? ''
       : overflow > 0
-      ? ' ($preview, +$overflow more)'
-      : ' ($preview)';
+          ? ' ($preview, +$overflow more)'
+          : ' ($preview)';
 
   ToastHelper.showError(
     context.mobileText("Some files are over 5MB and were removed{value1}.", {
@@ -1319,11 +1314,11 @@ Color _priorityColor(
   final isDark = Theme.of(context).brightness == Brightness.dark;
   switch (priority) {
     case SuperadminSupportTicketPriority.high:
-      return isDark ? const Color(0xFFD4A852) : OpenVtsColors.warning;
+      return isDark ? const Color(0xFFABABAB) : OpenVtsColors.warning;
     case SuperadminSupportTicketPriority.medium:
-      return isDark ? const Color(0xFF7BAFD4) : OpenVtsColors.brandInk;
+      return isDark ? const Color(0xFFA7A7A7) : OpenVtsColors.brandInk;
     case SuperadminSupportTicketPriority.low:
-      return isDark ? const Color(0xFF5DB588) : OpenVtsColors.success;
+      return isDark ? const Color(0xFF9F9F9F) : OpenVtsColors.success;
   }
 }
 
@@ -1332,9 +1327,9 @@ Color _statusColor(BuildContext context, SuperadminSupportTicketStatus status) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
   switch (status) {
     case SuperadminSupportTicketStatus.open:
-      return isDark ? const Color(0xFF5DB588) : OpenVtsColors.success;
+      return isDark ? const Color(0xFF9F9F9F) : OpenVtsColors.success;
     case SuperadminSupportTicketStatus.inProgress:
-      return isDark ? const Color(0xFFD4A852) : OpenVtsColors.warning;
+      return isDark ? const Color(0xFFABABAB) : OpenVtsColors.warning;
     case SuperadminSupportTicketStatus.closed:
       return cs.onSurfaceVariant;
   }

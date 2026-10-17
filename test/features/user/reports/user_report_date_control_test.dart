@@ -113,8 +113,10 @@ void main() {
       await sendReport(UserReportKey.distance, result!, client);
       expect(client.body['dateRange'], result!.toJson());
       expect(client.body['timeZone'], 'Asia/Kolkata');
-      expect(client.body['from'], '2026-05-10T00:00:00.000Z');
-      expect(client.body['to'], '2026-05-17T00:00:00.000Z');
+      expect(
+          client.body['from'], DateTime(2026, 5, 10).toUtc().toIso8601String());
+      expect(
+          client.body['to'], DateTime(2026, 5, 17).toUtc().toIso8601String());
     },
   );
 
@@ -310,16 +312,16 @@ void main() {
     () {
       final start = DateTime.utc(2026, 5, 1);
       Map<String, String> validate(DateTime end) => validateReportQuery(
-        reportKey: UserReportKey.overspeed,
-        scope: const ReportVehicleScope.all(),
-        dateRange: ReportDateRange.dateTime(
-          from: start.toIso8601String(),
-          to: end.toIso8601String(),
-        ),
-        overspeedFilters: const OverspeedFilters(),
-        sensorFilters: const SensorFilters(),
-        timelineFilters: const TimelineFilters(),
-      );
+            reportKey: UserReportKey.overspeed,
+            scope: const ReportVehicleScope.all(),
+            dateRange: ReportDateRange.dateTime(
+              from: start.toIso8601String(),
+              to: end.toIso8601String(),
+            ),
+            overspeedFilters: const OverspeedFilters(),
+            sensorFilters: const SensorFilters(),
+            timelineFilters: const TimelineFilters(),
+          );
       final end = start.add(const Duration(days: 7));
       expect(validate(end), isEmpty);
       expect(
@@ -362,7 +364,10 @@ class _Client extends ApiClient {
     body = Map<String, dynamic>.from(data as Map);
     return ApiResponse(
       success: true,
-      data: parser({'rows': [], 'hasMore': false}),
+      data: parser({
+        'rows': [],
+        'meta': {'hasMore': false}
+      }),
     );
   }
 }

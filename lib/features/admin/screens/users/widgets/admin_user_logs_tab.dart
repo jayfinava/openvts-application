@@ -61,8 +61,7 @@ class _AdminUserLogsTabState extends ConsumerState<AdminUserLogsTab> {
     final state = ref.watch(provider);
     final controller = ref.read(provider.notifier);
     final hasDateRange = state.logFrom != null || state.logTo != null;
-    final hasFilters =
-        state.logSearch.trim().isNotEmpty ||
+    final hasFilters = state.logSearch.trim().isNotEmpty ||
         state.logActionPrefix.trim().isNotEmpty ||
         hasDateRange;
 
@@ -146,17 +145,21 @@ class _AdminUserLogsTabState extends ConsumerState<AdminUserLogsTab> {
     final controller = ref.read(
       adminUserDetailsControllerProvider(widget.userId).notifier,
     );
-    controller.setLogFilters(q: value);
+    // The backend has one contains-search parameter. Keep the visible chip in
+    // sync when switching between manual search and a category keyword.
+    controller.setLogFilters(q: value, actionPrefix: '');
     _searchDebounce = Timer(const Duration(milliseconds: 350), () {
-      controller.loadLogs();
+      if (mounted) controller.loadLogs();
     });
   }
 
   void _onActionGroupChanged(String prefix) {
+    _searchDebounce?.cancel();
+    _searchController.clear();
     final controller = ref.read(
       adminUserDetailsControllerProvider(widget.userId).notifier,
     );
-    controller.setLogFilters(actionPrefix: prefix);
+    controller.setLogFilters(q: '', actionPrefix: prefix);
     controller.loadLogs();
   }
 
@@ -205,6 +208,14 @@ class _ActionGroup {
 
   final String label;
   final String prefix;
+  String localizedLabel(BuildContext context) => switch (label) {
+        'Security' => context.mobileText('Security'),
+        'Settings' => context.mobileText('Settings'),
+        'Billing' => context.mobileText('Billing'),
+        'Vehicles' => context.mobileText('Vehicles'),
+        'Drivers' => context.mobileText('Drivers'),
+        _ => context.mobileText('All'),
+      };
 }
 
 class _SearchField extends StatelessWidget {
@@ -261,54 +272,39 @@ class _ActionGroupChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 32,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: _actionGroups.length,
-        separatorBuilder: (context, index) =>
-            const SizedBox(width: OpenVtsSpacing.xs),
-        itemBuilder: (context, index) {
-          final group = _actionGroups[index];
+    final scheme = Theme.of(context).colorScheme;
+    return Wrap(
+        spacing: OpenVtsSpacing.xs,
+        runSpacing: OpenVtsSpacing.xs,
+        children: _actionGroups.map((group) {
           final isSelected = group.prefix == selected;
-          final isDark = Theme.of(context).brightness == Brightness.dark;
-          final backgroundColor = isSelected
-              ? OpenVtsColors.brandInk
-              : Theme.of(context).colorScheme.surfaceContainerHigh;
-          final foregroundColor = isSelected
-              ? (isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.white)
-              : Theme.of(context).colorScheme.onSurface;
-          final borderColor = isSelected
-              ? OpenVtsColors.brandInk
-              : Theme.of(context).colorScheme.outline;
-          return Material(
-            color: backgroundColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-              side: BorderSide(color: borderColor, width: 1),
-            ),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-              onTap: () => onChanged(group.prefix),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Center(
-                  child: Text(
-                    group.label,
-                    style: OpenVtsTypography.meta.copyWith(
-                      color: foregroundColor,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      height: 1,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
+          return Semantics(
+              selected: isSelected,
+              button: true,
+              child: Material(
+                  color:
+                      isSelected ? scheme.primary : scheme.surfaceContainerHigh,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+                      side: BorderSide(
+                          color: isSelected
+                              ? scheme.primary
+                              : scheme.outlineVariant)),
+                  child: InkWell(
+                      borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+                      onTap: () => onChanged(group.prefix),
+                      child: ConstrainedBox(
+                          constraints: const BoxConstraints(minHeight: 48),
+                          child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 12),
+                              child: Text(group.localizedLabel(context),
+                                  style: OpenVtsTypography.meta.copyWith(
+                                      color: isSelected
+                                          ? scheme.onPrimary
+                                          : scheme.onSurface,
+                                      fontWeight: FontWeight.w700)))))));
+        }).toList(growable: false));
   }
 }
 

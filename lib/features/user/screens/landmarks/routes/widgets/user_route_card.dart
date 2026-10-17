@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
@@ -48,7 +48,7 @@ class UserRouteCard extends ConsumerWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
               border: isSelected
-                  ? Border.all(color: OpenVtsColors.brandInk, width: 1.4)
+                  ? Border.all(color: OpenVtsMapColors.brandInk, width: 1.4)
                   : null,
             ),
             child: OpenVtsCard(
@@ -150,7 +150,8 @@ class UserRouteCard extends ConsumerWidget {
             child: IgnorePointer(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: OpenVtsColors.surfaceElevated.withValues(alpha: 0.6),
+                  color:
+                      OpenVtsMapColors.surfaceElevated.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
                 ),
                 child: const Center(
@@ -191,8 +192,7 @@ class UserRouteCard extends ConsumerWidget {
       final lat2 = b.lat * math.pi / 180;
       final dLat = (b.lat - a.lat) * math.pi / 180;
       final dLon = (b.lon - a.lon) * math.pi / 180;
-      final h =
-          math.sin(dLat / 2) * math.sin(dLat / 2) +
+      final h = math.sin(dLat / 2) * math.sin(dLat / 2) +
           math.cos(lat1) *
               math.cos(lat2) *
               math.sin(dLon / 2) *
@@ -211,9 +211,9 @@ class UserRouteCard extends ConsumerWidget {
 
   static Color _parseHex(String value) {
     final cleaned = value.replaceAll('#', '').trim();
-    if (cleaned.length != 6) return OpenVtsColors.brandInk;
+    if (cleaned.length != 6) return OpenVtsMapColors.brandInk;
     final parsed = int.tryParse('FF$cleaned', radix: 16);
-    if (parsed == null) return OpenVtsColors.brandInk;
+    if (parsed == null) return OpenVtsMapColors.brandInk;
     return Color(parsed);
   }
 }
@@ -232,7 +232,7 @@ class _ColorDot extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsMapColors.border),
       ),
     );
   }
@@ -255,7 +255,7 @@ class _RowAction extends StatelessWidget {
   Widget build(BuildContext context) {
     final disabled = onTap == null;
     final color = destructive
-        ? OpenVtsColors.error
+        ? OpenVtsMapColors.error
         : Theme.of(context).colorScheme.onSurfaceVariant;
     return Tooltip(
       message: tooltip,

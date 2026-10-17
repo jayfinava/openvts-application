@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_exception.dart';
+import '../../../core/errors/error_mapper.dart';
+import '../../../shared/paging/server_list_pager.dart';
 import '../models/superadmin_activity_filter.dart';
 import '../models/superadmin_admin_details_model.dart';
 import '../models/superadmin_admin_details_state.dart';
@@ -15,19 +17,59 @@ import '../services/superadmin_payments_service.dart';
 class SuperadminAdminDetailsController
     extends StateNotifier<SuperadminAdminDetailsState> {
   SuperadminAdminDetailsController({
+    this.creditsPager,
+    this.vehiclesPager,
     required String adminId,
     required SuperadminAdminDetailsService detailsService,
     required SuperadminPaymentsService paymentsService,
     required this.onAdminStatusChanged,
-  }) : _adminId = adminId,
-       _detailsService = detailsService,
-       _paymentsService = paymentsService,
-       super(SuperadminAdminDetailsState.initial(adminId: adminId));
+  })  : _adminId = adminId,
+        _detailsService = detailsService,
+        _paymentsService = paymentsService,
+        super(SuperadminAdminDetailsState.initial(adminId: adminId)) {
+    creditsPager?.onChanged = _syncCreditsPage;
+    vehiclesPager?.onChanged = _syncVehiclesPage;
+  }
+
+  final ServerListPager<SuperadminCreditLog>? creditsPager;
+  final ServerListPager<SuperadminAdminVehicle>? vehiclesPager;
+  void _syncCreditsPage() {
+    final p = creditsPager!;
+    if (!mounted) return;
+    state = state.copyWith(
+        creditLogs: p.items,
+        creditsPagination: p.meta,
+        isLoadingCredits: p.loading,
+        hasLoadedCreditLogs: p.meta != null,
+        creditsErrorMessage: p.error);
+  }
+
+  void _syncVehiclesPage() {
+    final p = vehiclesPager!;
+    if (!mounted) return;
+    state = state.copyWith(
+        vehicles: p.items,
+        vehiclesPagination: p.meta,
+        vehicleCount: p.search.isEmpty
+            ? p.meta?.total ?? state.vehicleCount
+            : state.vehicleCount,
+        isLoadingVehicles: p.loading,
+        hasLoadedVehicles: p.meta != null,
+        vehiclesErrorMessage: p.error);
+  }
+
+  @override
+  void dispose() {
+    creditsPager?.dispose();
+    vehiclesPager?.dispose();
+    super.dispose();
+  }
 
   final String _adminId;
   final SuperadminAdminDetailsService _detailsService;
   final SuperadminPaymentsService _paymentsService;
   int _activityRequestGeneration = 0;
+  int _documentsGeneration = 0;
 
   /// Callback to sync status changes with the administrators list.
   final void Function(String adminId, bool isActive)? onAdminStatusChanged;
@@ -96,8 +138,7 @@ class SuperadminAdminDetailsController
 
       // Preserve vehicle count if missing
       if (fresh.totalVehicles < 0) {
-        final knownCount =
-            preservedVehicleCount ??
+        final knownCount = preservedVehicleCount ??
             (preservedAdminCount != null && preservedAdminCount >= 0
                 ? preservedAdminCount
                 : null);
@@ -118,8 +159,7 @@ class SuperadminAdminDetailsController
       }
 
       // Preserve active status: prioritize override, then resolved, then initial, then current
-      final knownActive =
-          state.statusOverride ??
+      final knownActive = state.statusOverride ??
           state.resolvedIsActive ??
           state.initialAdmin?.isActive ??
           state.admin?.isActive;
@@ -354,6 +394,10 @@ class SuperadminAdminDetailsController
   // -------------------------------------------------------------------------
 
   Future<void> loadCreditLogs({bool force = false}) async {
+    if (creditsPager != null) {
+      if (force || !state.hasLoadedCreditLogs) await creditsPager!.load();
+      return;
+    }
     if (!force && state.hasLoadedCreditLogs) return;
     if (state.isLoadingCredits) return;
     state = state.copyWith(isLoadingCredits: true, creditsErrorMessage: null);
@@ -553,13 +597,15 @@ class SuperadminAdminDetailsController
 
   Future<void> loadDocuments({bool force = false}) async {
     if (!force && state.hasLoadedDocuments) return;
-    if (state.isLoadingDocuments) return;
+    if (state.isLoadingDocuments && !force) return;
+    final generation = ++_documentsGeneration;
     state = state.copyWith(
       isLoadingDocuments: true,
       documentsErrorMessage: null,
     );
     try {
       final docs = await _detailsService.getAdminDocuments(_adminId);
+      if (!mounted || generation != _documentsGeneration) return;
       state = state.copyWith(
         documents: docs,
         isLoadingDocuments: false,
@@ -567,9 +613,10 @@ class SuperadminAdminDetailsController
         documentsErrorMessage: null,
       );
     } catch (error) {
+      if (!mounted || generation != _documentsGeneration) return;
       state = state.copyWith(
         isLoadingDocuments: false,
-        documentsErrorMessage: _errorMessage(error),
+        documentsErrorMessage: ErrorMapper.from(error).message,
       );
     }
   }
@@ -583,6 +630,7 @@ class SuperadminAdminDetailsController
     );
     try {
       final types = await _detailsService.getDocumentTypes();
+      if (!mounted) return;
       state = state.copyWith(
         documentTypes: types,
         isLoadingDocumentTypes: false,
@@ -590,30 +638,32 @@ class SuperadminAdminDetailsController
         documentTypesErrorMessage: null,
       );
     } catch (error) {
+      if (!mounted) return;
       state = state.copyWith(
         isLoadingDocumentTypes: false,
-        documentTypesErrorMessage: _errorMessage(error),
+        documentTypesErrorMessage: ErrorMapper.from(error).message,
       );
     }
   }
 
   Future<bool> uploadDocument(SuperadminAdminDocumentRequest request) async {
+    if (state.isUploadingDocument || state.isDeletingDocument) return false;
     state = state.copyWith(
       isUploadingDocument: true,
       documentMutationErrorMessage: null,
     );
     try {
-      await _detailsService.uploadAdminDocument(request);
-      state = state.copyWith(
-        isUploadingDocument: false,
-        documentMutationErrorMessage: null,
-      );
+      final document = await _detailsService.uploadAdminDocument(request);
+      if (!mounted) return false;
       await loadDocuments(force: true);
+      if (!mounted) return false;
+      _publishSavedDocument(document);
       return true;
     } catch (error) {
+      if (!mounted) return false;
       state = state.copyWith(
         isUploadingDocument: false,
-        documentMutationErrorMessage: _errorMessage(error),
+        documentMutationErrorMessage: ErrorMapper.from(error).message,
       );
       return false;
     }
@@ -623,44 +673,66 @@ class SuperadminAdminDetailsController
     required String docId,
     required SuperadminAdminDocumentRequest request,
   }) async {
+    if (state.isUploadingDocument || state.isDeletingDocument) return false;
     state = state.copyWith(
       isUploadingDocument: true,
       documentMutationErrorMessage: null,
     );
     try {
-      await _detailsService.updateAdminDocument(docId: docId, request: request);
-      state = state.copyWith(
-        isUploadingDocument: false,
-        documentMutationErrorMessage: null,
-      );
+      final document = await _detailsService.updateAdminDocument(
+          docId: docId, request: request);
+      if (!mounted) return false;
       await loadDocuments(force: true);
+      if (!mounted) return false;
+      _publishSavedDocument(document);
       return true;
     } catch (error) {
+      if (!mounted) return false;
       state = state.copyWith(
         isUploadingDocument: false,
-        documentMutationErrorMessage: _errorMessage(error),
+        documentMutationErrorMessage: ErrorMapper.from(error).message,
       );
       return false;
     }
   }
 
+  void _publishSavedDocument(SuperadminAdminDocument? document) {
+    state = state.copyWith(
+      documents: document == null
+          ? state.documents
+          : [
+              document,
+              ...state.documents.where((item) => item.id != document.id)
+            ],
+      hasLoadedDocuments: state.hasLoadedDocuments || document != null,
+      isUploadingDocument: false,
+      documentMutationErrorMessage: null,
+    );
+  }
+
   Future<bool> deleteDocument(String docId) async {
+    if (state.isUploadingDocument || state.isDeletingDocument) return false;
     state = state.copyWith(
       isDeletingDocument: true,
       documentMutationErrorMessage: null,
     );
     try {
       await _detailsService.deleteAdminDocument(docId);
+      if (!mounted) return false;
       state = state.copyWith(
-        isDeletingDocument: false,
         documentMutationErrorMessage: null,
       );
       await loadDocuments(force: true);
+      if (!mounted) return false;
+      state = state.copyWith(
+          isDeletingDocument: false,
+          documents: state.documents.where((d) => d.id != docId).toList());
       return true;
     } catch (error) {
+      if (!mounted) return false;
       state = state.copyWith(
         isDeletingDocument: false,
-        documentMutationErrorMessage: _errorMessage(error),
+        documentMutationErrorMessage: ErrorMapper.from(error).message,
       );
       return false;
     }
@@ -671,6 +743,10 @@ class SuperadminAdminDetailsController
   // -------------------------------------------------------------------------
 
   Future<void> loadVehicles({bool force = false}) async {
+    if (vehiclesPager != null) {
+      if (force || !state.hasLoadedVehicles) await vehiclesPager!.load();
+      return;
+    }
     if (!force && state.hasLoadedVehicles) return;
     if (state.isLoadingVehicles) return;
     state = state.copyWith(isLoadingVehicles: true, vehiclesErrorMessage: null);
@@ -822,9 +898,8 @@ class SuperadminAdminDetailsController
       );
       cursor = page.nextCursorId;
       hasMore = page.hasMore && cursor != null;
-    } while (category.requiresClientAggregation &&
-        items.length < 20 &&
-        hasMore);
+    } while (
+        category.requiresClientAggregation && items.length < 20 && hasMore);
 
     return SuperadminAdminActivityLogPage(
       items: items,

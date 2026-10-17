@@ -8,8 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../../core/api/api_exception.dart';
+import '../../../../core/errors/error_mapper.dart';
 import '../../../../core/platform/platform_time_zone.dart';
+import '../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../shared/helpers/mobile_text.dart';
 import '../../../../shared/widgets/open_vts_date_time_range_selector.dart';
 import '../../../../shared/widgets/open_vts_page_scaffold.dart';
@@ -146,37 +147,37 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
       body: _isLoadingOptions
           ? const Center(child: CircularProgressIndicator())
           : _options == null
-          ? _buildOptionsError()
-          : ListView(
-              children: [
-                _buildQueryCard(),
-                const SizedBox(height: 12),
-                if (_errorMessage != null) _buildErrorCard(_errorMessage!),
-                if (_warning != null) _buildWarningCard(_warning!),
-                if (_rows.isNotEmpty) ...[
-                  _MetricBars(reportKey: _reportKey, rows: _rows),
-                  const SizedBox(height: 12),
-                  _buildResultsTable(),
-                ] else if (!_isGenerating && _lastRequest != null)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Center(
-                        child: Text(
-                          context.mobileText(
-                            'No rows matched the selected report filters.',
+              ? _buildOptionsError()
+              : ListView(
+                  children: [
+                    _buildQueryCard(),
+                    const SizedBox(height: 12),
+                    if (_errorMessage != null) _buildErrorCard(_errorMessage!),
+                    if (_warning != null) _buildWarningCard(_warning!),
+                    if (_rows.isNotEmpty) ...[
+                      _MetricBars(reportKey: _reportKey, rows: _rows),
+                      const SizedBox(height: 12),
+                      _buildResultsTable(),
+                    ] else if (!_isGenerating && _lastRequest != null)
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Center(
+                            child: Text(
+                              context.mobileText(
+                                'No rows matched the selected report filters.',
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                if (_isGenerating)
-                  const Padding(
-                    padding: EdgeInsets.all(32),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-              ],
-            ),
+                    if (_isGenerating)
+                      const Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                  ],
+                ),
     );
   }
 
@@ -271,9 +272,9 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
                       onChanged: _isGenerating
                           ? null
                           : (value) => setState(() {
-                              _scopeMode = value ?? 'all';
-                              _clearResult();
-                            }),
+                                _scopeMode = value ?? 'all';
+                                _clearResult();
+                              }),
                     ),
                   ),
                 if (_scopeMode == 'single' || _reportKey.requiresSingleVehicle)
@@ -318,9 +319,9 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
                       onChanged: _isGenerating
                           ? null
                           : (value) => setState(() {
-                              _groupId = value;
-                              _clearResult();
-                            }),
+                                _groupId = value;
+                                _clearResult();
+                              }),
                     ),
                   ),
                 OutlinedButton.icon(
@@ -381,8 +382,8 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
               helperText: _singleVehicleId == null
                   ? context.mobileText('Select a vehicle first')
                   : _isLoadingSensors
-                  ? context.mobileText('Loading sensors…')
-                  : null,
+                      ? context.mobileText('Loading sensors…')
+                      : null,
             ),
             items: [
               for (final sensor in _sensors.where((item) => item.isActive))
@@ -398,9 +399,8 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
         );
       case UserReportKey.geofence:
         return OutlinedButton.icon(
-          onPressed: _isGenerating || _isLoadingGeofences
-              ? null
-              : _pickGeofences,
+          onPressed:
+              _isGenerating || _isLoadingGeofences ? null : _pickGeofences,
           icon: _isLoadingGeofences
               ? const SizedBox.square(
                   dimension: 18,
@@ -480,7 +480,7 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
                     onChanged: _isGenerating
                         ? null
                         : (value) =>
-                              setState(() => _acknowledged = value ?? 'all'),
+                            setState(() => _acknowledged = value ?? 'all'),
                   ),
                 ),
               ],
@@ -561,12 +561,12 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
                 onSelected: _isGenerating
                     ? null
                     : (selected) => setState(() {
-                        if (selected) {
-                          _timelineStates.add(stateName);
-                        } else {
-                          _timelineStates.remove(stateName);
-                        }
-                      }),
+                          if (selected) {
+                            _timelineStates.add(stateName);
+                          } else {
+                            _timelineStates.remove(stateName);
+                          }
+                        }),
               ),
           ],
         );
@@ -672,9 +672,8 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
       final options = await ref.read(userReportControllerProvider).getOptions();
       if (!mounted) return;
       setState(() {
-        final validVehicleIds = options.vehicles
-            .map((vehicle) => vehicle.id)
-            .toSet();
+        final validVehicleIds =
+            options.vehicles.map((vehicle) => vehicle.id).toSet();
         final validGroupIds = options.groups.map((group) => group.id).toSet();
         _options = options;
         if (!validVehicleIds.contains(_singleVehicleId)) {
@@ -759,9 +758,8 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
     }
     setState(() {
       _rangeStart = start;
-      _rangeEndExclusive = dateTimeEnabled
-          ? end
-          : end.add(const Duration(days: 1));
+      _rangeEndExclusive =
+          dateTimeEnabled ? end : end.add(const Duration(days: 1));
       _clearResult();
     });
   }
@@ -775,9 +773,8 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
     }
     final now = DateTime.now();
     _rangeStart = today;
-    _rangeEndExclusive = now.isAfter(today)
-        ? now
-        : today.add(const Duration(minutes: 1));
+    _rangeEndExclusive =
+        now.isAfter(today) ? now : today.add(const Duration(minutes: 1));
   }
 
   Future<void> _pickVehicles({required bool multiple}) async {
@@ -827,14 +824,14 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
           final filtered = normalized.isEmpty
               ? vehicles
               : vehicles
-                    .where(
-                      (vehicle) =>
-                          vehicle.displayName.toLowerCase().contains(
-                            normalized,
-                          ) ||
-                          vehicle.imei.toLowerCase().contains(normalized),
-                    )
-                    .toList(growable: false);
+                  .where(
+                    (vehicle) =>
+                        vehicle.displayName.toLowerCase().contains(
+                              normalized,
+                            ) ||
+                        vehicle.imei.toLowerCase().contains(normalized),
+                  )
+                  .toList(growable: false);
           return AlertDialog(
             title: Text(
               multiple
@@ -925,9 +922,8 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
       _errorMessage = null;
     });
     try {
-      final page = await ref
-          .read(userReportControllerProvider)
-          .getSensors(vehicleId);
+      final page =
+          await ref.read(userReportControllerProvider).getSensors(vehicleId);
       if (!mounted || _singleVehicleId != vehicleId) return;
       setState(() {
         _sensors = page.items;
@@ -947,9 +943,8 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
       _errorMessage = null;
     });
     try {
-      final geofences = await ref
-          .read(userReportControllerProvider)
-          .getActiveGeofences();
+      final geofences =
+          await ref.read(userReportControllerProvider).getActiveGeofences();
       if (!mounted) return;
       setState(() => _geofences = geofences);
     } catch (error) {
@@ -1027,9 +1022,13 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
   }
 
   Future<void> _generate() async {
-    final request = await _buildRequest();
-    if (request == null || !mounted) return;
-    await _requestPage(request, append: false);
+    try {
+      final request = await _buildRequest();
+      if (request == null || !mounted) return;
+      await _requestPage(request, append: false);
+    } catch (error) {
+      if (mounted) _setError(_messageFor(error));
+    }
   }
 
   Future<void> _loadMore() async {
@@ -1050,9 +1049,8 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
     }
 
     Map<String, dynamic> scope;
-    final effectiveScope = _reportKey.requiresSingleVehicle
-        ? 'single'
-        : _scopeMode;
+    final effectiveScope =
+        _reportKey.requiresSingleVehicle ? 'single' : _scopeMode;
     switch (effectiveScope) {
       case 'single':
         if (_singleVehicleId == null) {
@@ -1182,9 +1180,7 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
       _warning = null;
     });
     try {
-      final page = await ref
-          .read(userReportControllerProvider)
-          .generate(
+      final page = await ref.read(userReportControllerProvider).generate(
             reportKey: request.reportKey,
             vehicleScope: request.vehicleScope,
             dateRange: request.dateRange,
@@ -1339,11 +1335,7 @@ class _UserReportsScreenState extends ConsumerState<UserReportsScreen> {
   }
 
   String _messageFor(Object error) {
-    if (error is ApiException) return error.message;
-    return error
-        .toString()
-        .replaceFirst(RegExp(r'^Exception:\s*'), '')
-        .replaceFirst(RegExp(r'^ApiException\(\d+\):\s*'), '');
+    return context.mobileText(ErrorMapper.from(error).message);
   }
 }
 
@@ -1408,9 +1400,8 @@ class _ReportTableSource extends DataTableSource {
           DataCell(
             IconButton(
               tooltip: routeTrailTooltip,
-              onPressed: loadingMapKey == null
-                  ? () => onTimelineMap(row)
-                  : null,
+              onPressed:
+                  loadingMapKey == null ? () => onTimelineMap(row) : null,
               icon: loadingMapKey == mapKey
                   ? const SizedBox.square(
                       dimension: 18,
@@ -1640,10 +1631,9 @@ class _TimelineMapDialogState extends State<_TimelineMapDialog> {
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.openvts.app',
-                  ),
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.openvts.app'),
                   PolylineLayer(
                     polylines: [
                       Polyline(
@@ -1661,7 +1651,7 @@ class _TimelineMapDialogState extends State<_TimelineMapDialog> {
                         height: 42,
                         child: const Icon(
                           Icons.trip_origin_rounded,
-                          color: Colors.green,
+                          color: OpenVtsMapColors.brandInk,
                           size: 34,
                         ),
                       ),
@@ -1671,7 +1661,7 @@ class _TimelineMapDialogState extends State<_TimelineMapDialog> {
                         height: 42,
                         child: const Icon(
                           Icons.location_on_rounded,
-                          color: Colors.red,
+                          color: OpenVtsMapColors.textSecondary,
                           size: 38,
                         ),
                       ),
@@ -1722,9 +1712,8 @@ String _columnLabel(String key) {
 String _formatReportValue(String key, dynamic value) {
   if (value == null) return '—';
   if (key == 'durationSeconds' || key == 'engineHoursSeconds') {
-    final seconds = value is num
-        ? value.toInt()
-        : int.tryParse(value.toString()) ?? 0;
+    final seconds =
+        value is num ? value.toInt() : int.tryParse(value.toString()) ?? 0;
     final duration = Duration(seconds: math.max(0, seconds));
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
@@ -1732,8 +1721,8 @@ String _formatReportValue(String key, dynamic value) {
     return hours > 0
         ? '${hours}h ${minutes}m'
         : minutes > 0
-        ? '${minutes}m ${remainingSeconds}s'
-        : '${remainingSeconds}s';
+            ? '${minutes}m ${remainingSeconds}s'
+            : '${remainingSeconds}s';
   }
   if (value is bool) return value ? 'Yes' : 'No';
   if (value is num) {

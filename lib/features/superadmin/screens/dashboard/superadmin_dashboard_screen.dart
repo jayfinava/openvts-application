@@ -69,16 +69,16 @@ class _SuperadminDashboardScreenState
     final people = dashboard.recentUsers.isNotEmpty
         ? dashboard.recentUsers
         : dashboard.activityActors
-              .take(5)
-              .map(
-                (actor) => SuperadminRecentUser(
-                  id: actor.id.toString(),
-                  name: actor.name,
-                  email: '—',
-                  createdAt: null,
-                ),
-              )
-              .toList(growable: false);
+            .take(5)
+            .map(
+              (actor) => SuperadminRecentUser(
+                id: actor.id.toString(),
+                name: actor.name,
+                email: '—',
+                createdAt: null,
+              ),
+            )
+            .toList(growable: false);
 
     return RefreshIndicator(
       color: Theme.of(context).colorScheme.primary,
@@ -254,7 +254,14 @@ class _SuperadminDashboardScreenState
                     ),
                     const SizedBox(height: OpenVtsSpacing.md),
                     DropdownButtonFormField<int?>(
-                      initialValue: selectedActorId,
+                      initialValue:
+                          actors.any((actor) => actor.id == selectedActorId)
+                              ? selectedActorId
+                              : null,
+                      menuMaxHeight: 320,
+                      dropdownColor: Theme.of(context).colorScheme.surface,
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface),
                       isExpanded: true,
                       decoration: InputDecoration(
                         labelText: context.mobileText('Actor'),
@@ -663,53 +670,51 @@ class _RangeSelector extends StatelessWidget {
         padding: const EdgeInsets.all(3),
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: _DashboardChartRange.values
-              .map((range) {
-                final isSelected = selectedRange == range;
+          children: _DashboardChartRange.values.map((range) {
+            final isSelected = selectedRange == range;
 
-                return Material(
-                  color: Colors.transparent,
-                  child: InkWell(
+            return Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
+                onTap: () => onRangeChanged(range),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  curve: Curves.easeOutCubic,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: OpenVtsSpacing.xs,
+                    vertical: OpenVtsSpacing.xxs + 1,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? theme.colorScheme.primaryContainer
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                    onTap: () => onRangeChanged(range),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
-                      curve: Curves.easeOutCubic,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: OpenVtsSpacing.xs,
-                        vertical: OpenVtsSpacing.xxs + 1,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? theme.colorScheme.primaryContainer
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: theme.colorScheme.primary.withValues(
-                                    alpha: 0.08,
-                                  ),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: Text(
-                        range.label,
-                        style: OpenVtsTypography.meta.copyWith(
-                          color: isSelected
-                              ? theme.colorScheme.onPrimaryContainer
-                              : theme.colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: theme.colorScheme.primary.withValues(
+                                alpha: 0.08,
+                              ),
+                              blurRadius: 10,
+                              offset: const Offset(0, 3),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Text(
+                    range.label,
+                    style: OpenVtsTypography.meta.copyWith(
+                      color: isSelected
+                          ? theme.colorScheme.onPrimaryContainer
+                          : theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                );
-              })
-              .toList(growable: false),
+                ),
+              ),
+            );
+          }).toList(growable: false),
         ),
       ),
     );
@@ -1086,12 +1091,12 @@ class _AdoptionChart extends StatelessWidget {
     final niceNormalized = normalized <= 1
         ? 1
         : normalized <= 2
-        ? 2
-        : normalized <= 2.5
-        ? 2.5
-        : normalized <= 5
-        ? 5
-        : 10;
+            ? 2
+            : normalized <= 2.5
+                ? 2.5
+                : normalized <= 5
+                    ? 5
+                    : 10;
 
     return (niceNormalized * magnitude).round();
   }
@@ -1394,8 +1399,8 @@ class _XAxisLabels extends StatelessWidget {
         final interval = constraints.maxWidth < 380
             ? 3
             : constraints.maxWidth < 560
-            ? 2
-            : 1;
+                ? 2
+                : 1;
 
         return SizedBox(
           height: useRotation ? 34 : 18,
@@ -1417,28 +1422,27 @@ class _XAxisLabels extends StatelessWidget {
 
               return Expanded(
                 child: Align(
-                  alignment: useRotation
-                      ? Alignment.topLeft
-                      : Alignment.topCenter,
+                  alignment:
+                      useRotation ? Alignment.topLeft : Alignment.topCenter,
                   child: !showLabel
                       ? const SizedBox.shrink()
                       : useRotation
-                      ? Transform.rotate(
-                          angle: -math.pi / 5.2,
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            point.label,
-                            maxLines: 1,
-                            overflow: TextOverflow.visible,
-                            style: style,
-                          ),
-                        )
-                      : Text(
-                          point.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: style,
-                        ),
+                          ? Transform.rotate(
+                              angle: -math.pi / 5.2,
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                point.label,
+                                maxLines: 1,
+                                overflow: TextOverflow.visible,
+                                style: style,
+                              ),
+                            )
+                          : Text(
+                              point.label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: style,
+                            ),
                 ),
               );
             }),
@@ -1632,9 +1636,8 @@ class _VehicleStatusTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final percentage = totalDevices <= 0
-        ? 0.0
-        : (data.count / totalDevices).clamp(0.0, 1.0);
+    final percentage =
+        totalDevices <= 0 ? 0.0 : (data.count / totalDevices).clamp(0.0, 1.0);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -2496,10 +2499,10 @@ class _DashboardActivityFilterResult {
   }) : clearFilters = false;
 
   const _DashboardActivityFilterResult.clear()
-    : actorId = null,
-      fromDate = null,
-      toDate = null,
-      clearFilters = true;
+      : actorId = null,
+        fromDate = null,
+        toDate = null,
+        clearFilters = true;
 
   final int? actorId;
   final DateTime? fromDate;

@@ -124,26 +124,25 @@ class _AdminCreateVehicleScreenState
       padding: EdgeInsets.zero,
       body: SafeArea(
         top: false,
-        child:
-            _isCatalogLoading &&
+        child: _isCatalogLoading &&
                 _users.isEmpty &&
                 _devices.isEmpty &&
                 _vehicleTypes.isEmpty &&
                 _plans.isEmpty
             ? const Center(child: OpenVtsLoader())
             : _catalogError != null &&
-                  _users.isEmpty &&
-                  _devices.isEmpty &&
-                  _vehicleTypes.isEmpty &&
-                  _plans.isEmpty
-            ? OpenVtsErrorView(
-                message: _catalogError!,
-                onRetry: () {
-                  _catalogPrepared = false;
-                  _prepareCatalog();
-                },
-              )
-            : _buildForm(context, isSubmitting),
+                    _users.isEmpty &&
+                    _devices.isEmpty &&
+                    _vehicleTypes.isEmpty &&
+                    _plans.isEmpty
+                ? OpenVtsErrorView(
+                    message: _catalogError!,
+                    onRetry: () {
+                      _catalogPrepared = false;
+                      _prepareCatalog();
+                    },
+                  )
+                : _buildForm(context, isSubmitting),
       ),
     );
   }
@@ -336,10 +335,10 @@ class _AdminCreateVehicleScreenState
           hintText: _isCatalogLoading
               ? context.mobileText('Loading users...')
               : _catalogError != null
-              ? context.mobileText('Failed to load users')
-              : _users.isEmpty
-              ? context.mobileText('Create or select primary user')
-              : context.mobileText('Select primary user'),
+                  ? context.mobileText('Failed to load users')
+                  : _users.isEmpty
+                      ? context.mobileText('Create or select primary user')
+                      : context.mobileText('Select primary user'),
           searchHintText: 'Search user name, email, or mobile',
           sheetTitle: 'Select primary user',
           leadingIcon: Icons.person_outline_rounded,
@@ -348,8 +347,8 @@ class _AdminCreateVehicleScreenState
           value: _userId,
           validator: (value) =>
               value == null || value.trim().isEmpty || value == _createUserValue
-              ? 'Primary user is required'
-              : null,
+                  ? 'Primary user is required'
+                  : null,
           onChanged: (value) async {
             if (value == _createUserValue) {
               await _handleCreateUser();
@@ -437,9 +436,7 @@ class _AdminCreateVehicleScreenState
     }
 
     try {
-      await ref
-          .read(adminVehiclesControllerProvider.notifier)
-          .createVehicle(
+      await ref.read(adminVehiclesControllerProvider.notifier).createVehicle(
             AdminCreateVehicleRequest(
               name: _nameController.text.trim(),
               vin: _vinController.text.trim(),
@@ -479,20 +476,30 @@ class _AdminCreateVehicleScreenState
   Future<void> _handleCreateDevice() async {
     final createdDevice = await OpenVtsBottomSheet.show<AdminInventoryDevice?>(
       context: context,
-      title: context.mobileText('Add Device or SIM'),
+      title: context.mobileText('Add Device'),
       initialChildSize: 0.80,
       minChildSize: 0.60,
       maxChildSize: 0.80,
       snap: false,
-      child: const AdminInventoryAddSheet(),
+      child: const AdminInventoryAddSheet(deviceOnly: true),
     );
 
     if (!mounted) return;
 
     if (createdDevice != null) {
-      await _refreshDevices();
-      if (!mounted) return;
-      setState(() => _deviceId = createdDevice.id);
+      // The create response is authoritative. Select it immediately even when
+      // the optional catalog refresh is slow or temporarily stale.
+      setState(() {
+        _devices = [
+          AdminQuickDeviceOption(
+              id: createdDevice.id,
+              imei: createdDevice.imei,
+              simNumber: createdDevice.assignedSimNumber,
+              name: createdDevice.imei),
+          ..._devices.where((device) => device.id != createdDevice.id),
+        ];
+        _deviceId = createdDevice.id;
+      });
       ToastHelper.showSuccess(
         context.mobileText('Device created and selected'),
         context: context,
@@ -521,18 +528,6 @@ class _AdminCreateVehicleScreenState
         context.mobileText('Plan created and selected'),
         context: context,
       );
-    }
-  }
-
-  Future<void> _refreshDevices() async {
-    try {
-      final devices = await ref
-          .read(adminVehiclesControllerProvider.notifier)
-          .getQuickDevices();
-      if (!mounted) return;
-      setState(() => _devices = devices);
-    } catch (error) {
-      // Silent fail - user can retry manually
     }
   }
 
@@ -574,9 +569,8 @@ class _AdminCreateVehicleScreenState
 
   Future<void> _refreshUsers() async {
     try {
-      final users = await ref
-          .read(adminVehiclesControllerProvider.notifier)
-          .getUsers();
+      final users =
+          await ref.read(adminVehiclesControllerProvider.notifier).getUsers();
       if (!mounted) return;
       setState(() => _users = users);
     } catch (error) {
@@ -589,8 +583,7 @@ class _AdminCreateVehicleScreenState
   }
 
   void _handleClose(BuildContext context) {
-    final hasUnsavedInput =
-        _nameController.text.trim().isNotEmpty ||
+    final hasUnsavedInput = _nameController.text.trim().isNotEmpty ||
         _vinController.text.trim().isNotEmpty ||
         _plateController.text.trim().isNotEmpty ||
         _userId != null ||
@@ -761,17 +754,15 @@ class _SectionHeader extends StatelessWidget {
           width: 36,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: isDark
-                ? OpenVtsColors.darkBackground
-                : OpenVtsColors.surface,
+            color:
+                isDark ? OpenVtsColors.darkBackground : OpenVtsColors.surface,
             shape: BoxShape.circle,
           ),
           child: Icon(
             icon,
             size: 18,
-            color: isDark
-                ? OpenVtsColors.darkTextPrimary
-                : OpenVtsColors.brandInk,
+            color:
+                isDark ? OpenVtsColors.darkTextPrimary : OpenVtsColors.brandInk,
           ),
         ),
         const SizedBox(width: OpenVtsSpacing.sm),
@@ -782,9 +773,9 @@ class _SectionHeader extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.2,
-                ),
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
+                    ),
               ),
               const SizedBox(height: 2),
               Text(

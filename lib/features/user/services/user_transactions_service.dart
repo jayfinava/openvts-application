@@ -10,7 +10,8 @@ class UserTransactionsService {
 
   static const int _maxLimit = 100;
 
-  static final Options _readOptions = normalReadOptions();
+  // Transaction history can require aggregation across a large date range.
+  static final Options _readOptions = heavyReadOptions();
 
   final ApiClient _apiClient;
 

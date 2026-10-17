@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 import '../../notifications/models/app_notification.dart';
 import '../../superadmin/models/superadmin_vehicle_model.dart';
 import '../services/live_map_vehicle_service.dart';
@@ -12,12 +14,14 @@ class LiveMapVehicleController {
     required DateTime from,
     required DateTime to,
     int maxPoints = 5000,
+    CancelToken? cancelToken,
   }) {
     return _service.getVehicleReplayByImei(
       imei: imei,
       from: from,
       to: to,
       maxPoints: maxPoints,
+      cancelToken: cancelToken,
     );
   }
 

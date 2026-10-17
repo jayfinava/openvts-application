@@ -209,7 +209,7 @@ class _ErrorBanner extends StatelessWidget {
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
             child: Text(
-              message,
+              context.mobileText(message),
               style: OpenVtsTypography.meta.copyWith(
                 color: OpenVtsColors.error,
               ),

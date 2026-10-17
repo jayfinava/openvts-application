@@ -376,10 +376,12 @@ class _UserOperationsScreenState extends ConsumerState<UserOperationsScreen> {
       ),
       calendarStyle: CalendarStyle(
         todayDecoration: BoxDecoration(
-          color: colors.secondaryContainer,
+          color: colors.primary,
           shape: BoxShape.circle,
         ),
-        todayTextStyle: TextStyle(color: colors.onSecondaryContainer),
+        todayTextStyle: TextStyle(color: colors.onPrimary, fontWeight: FontWeight.w700),
+        selectedDecoration: BoxDecoration(color: colors.primary, shape: BoxShape.circle),
+        selectedTextStyle: TextStyle(color: colors.onPrimary, fontWeight: FontWeight.w700),
         outsideDaysVisible: false,
       ),
       onPageChanged: (day) {

@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/access/workspace_scope_provider.dart';
+import '../../../../core/router/route_paths.dart';
 import '../../../../core/theme/open_vts_colors.dart';
 import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
 import '../../../../core/utils/date_time_formatter.dart';
+import '../../../../core/utils/permission_helper.dart';
 import '../../../../shared/helpers/mobile_text.dart';
 import '../../../../shared/widgets/open_vts_button.dart';
 import '../../../../shared/widgets/open_vts_card.dart';
@@ -13,6 +19,8 @@ import '../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../shared/widgets/open_vts_page_scaffold.dart';
+import '../../../../shared/widgets/open_vts_vehicle_tracking_button.dart';
+import '../../../auth/controllers/auth_controller.dart';
 import '../../controllers/superadmin_providers.dart';
 import '../../models/superadmin_vehicle_model.dart';
 
@@ -22,8 +30,7 @@ const List<int> _recordsPerPageOptions = <int>[10, 25, 50, 100];
 enum _VehicleStatusFilter {
   all,
   active,
-  inactive,
-  licenseBlocked;
+  inactive;
 
   String get label {
     switch (this) {
@@ -33,8 +40,6 @@ enum _VehicleStatusFilter {
         return 'Active';
       case _VehicleStatusFilter.inactive:
         return 'Inactive';
-      case _VehicleStatusFilter.licenseBlocked:
-        return 'License blocked';
     }
   }
 }
@@ -43,8 +48,7 @@ enum _VehicleSortOption {
   newest,
   oldest,
   nameAscending,
-  nameDescending,
-  activeFirst;
+  nameDescending;
 
   String get label {
     switch (this) {
@@ -56,8 +60,6 @@ enum _VehicleSortOption {
         return 'Name A-Z';
       case _VehicleSortOption.nameDescending:
         return 'Name Z-A';
-      case _VehicleSortOption.activeFirst:
-        return 'Active first';
     }
   }
 }
@@ -73,15 +75,66 @@ class SuperadminVehiclesScreen extends ConsumerStatefulWidget {
 class _SuperadminVehiclesScreenState
     extends ConsumerState<SuperadminVehiclesScreen> {
   String _searchQuery = '';
+  String _requestSearchQuery = '';
+  Timer? _searchTimer;
+  SuperadminVehiclePage? _lastPage;
+  SuperadminVehicleQuery? _displayedQuery;
+  final _listController = ScrollController();
+  Object? _pageScope;
   _VehicleStatusFilter _statusFilter = _VehicleStatusFilter.all;
   _VehicleSortOption _sortOption = _VehicleSortOption.newest;
   bool _isRefreshing = false;
   int _recordsPerPage = 10;
   int _currentPage = 1;
 
+  SuperadminVehicleQuery get _query => SuperadminVehicleQuery(
+        page: _currentPage,
+        limit: _recordsPerPage,
+        search: _requestSearchQuery,
+        status: _statusFilter.name,
+        sortBy: switch (_sortOption) {
+          _VehicleSortOption.nameAscending ||
+          _VehicleSortOption.nameDescending =>
+            'name',
+          _ => 'createdAt',
+        },
+        sortDir: switch (_sortOption) {
+          _VehicleSortOption.oldest ||
+          _VehicleSortOption.nameAscending =>
+            'asc',
+          _ => 'desc',
+        },
+      );
+
+  @override
+  void dispose() {
+    _searchTimer?.cancel();
+    _listController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(superadminVehiclePageProvider);
+    final scope = ref.watch(workspaceDataScopeProvider);
+    if (scope != _pageScope) {
+      _pageScope = scope;
+      _lastPage = null;
+      _displayedQuery = null;
+      _currentPage = 1;
+      _searchTimer?.cancel();
+      _searchQuery = _requestSearchQuery = '';
+    }
+    final state = ref.watch(superadminVehiclePageProvider(_query));
+    if (state.asData case final data?) {
+      _lastPage = data.value;
+      if (_displayedQuery != _query) {
+        _displayedQuery = _query;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _listController.hasClients) _listController.jumpTo(0);
+        });
+      }
+    }
+    final page = _lastPage;
 
     return OpenVtsPageScaffold(
       title: context.mobileText('Vehicles'),
@@ -107,33 +160,31 @@ class _SuperadminVehiclesScreenState
         OpenVtsSpacing.sm,
         OpenVtsSpacing.sm,
       ),
-      body: state.when(
-        skipLoadingOnRefresh: true,
-        loading: () => const OpenVtsLoader(),
-        error: (error, stackTrace) => OpenVtsErrorView(
-          message: context.mobileText('Vehicles could not be loaded.'),
-          onRetry: _refreshVehicles,
-        ),
-        data: _buildLoadedState,
-      ),
+      body: page != null
+          ? _buildLoadedState(page,
+              loading: state.isLoading,
+              failed: state.hasError && !state.isLoading)
+          : state.when(
+              skipLoadingOnRefresh: true,
+              loading: () => const OpenVtsLoader(),
+              error: (error, stackTrace) => OpenVtsErrorView(
+                message: context.mobileText('Vehicles could not be loaded.'),
+                onRetry: _refreshVehicles,
+              ),
+              data: (page) => _buildLoadedState(page),
+            ),
     );
   }
 
-  Widget _buildLoadedState(SuperadminVehiclePage page) {
-    final filteredVehicles = _applyFilters(page.items);
-    final pageCount = filteredVehicles.isEmpty
-        ? 1
-        : (filteredVehicles.length / _recordsPerPage).ceil();
+  Widget _buildLoadedState(SuperadminVehiclePage page,
+      {bool loading = false, bool failed = false}) {
+    final filteredVehicles = page.items;
+    final pageCount =
+        page.totalCount == 0 ? 1 : (page.totalCount / _recordsPerPage).ceil();
     final safeCurrentPage = _currentPage < 1
         ? 1
         : (_currentPage > pageCount ? pageCount : _currentPage);
-    final start = (safeCurrentPage - 1) * _recordsPerPage;
-    final visibleVehicles = start >= filteredVehicles.length
-        ? const <SuperadminVehicleRecord>[]
-        : filteredVehicles
-              .skip(start)
-              .take(_recordsPerPage)
-              .toList(growable: false);
+    final visibleVehicles = filteredVehicles;
     final hasActiveFilters = _statusFilter != _VehicleStatusFilter.all;
 
     return Column(
@@ -143,9 +194,14 @@ class _SuperadminVehiclesScreenState
           recordsPerPage: _recordsPerPage,
           hasActiveFilters: hasActiveFilters,
           onSearchChanged: (value) {
-            setState(() {
-              _searchQuery = value.trim();
-              _currentPage = 1;
+            setState(() => _searchQuery = value);
+            _searchTimer?.cancel();
+            _searchTimer = Timer(const Duration(milliseconds: 350), () {
+              if (!mounted) return;
+              setState(() {
+                _requestSearchQuery = value.trim();
+                _currentPage = 1;
+              });
             });
           },
           onOpenFilters: () => _openFiltersSheet(context),
@@ -158,6 +214,12 @@ class _SuperadminVehiclesScreenState
           },
         ),
         const SizedBox(height: OpenVtsSpacing.sm),
+        if (loading) const LinearProgressIndicator(minHeight: 2),
+        if (failed)
+          OpenVtsErrorView(
+              message: context.mobileText('Vehicles could not be loaded.'),
+              onRetry: () =>
+                  ref.invalidate(superadminVehiclePageProvider(_query))),
         Expanded(
           child: RefreshIndicator(
             onRefresh: _refreshVehicles,
@@ -175,6 +237,7 @@ class _SuperadminVehiclesScreenState
                     ],
                   )
                 : ListView.separated(
+                    controller: _listController,
                     physics: const AlwaysScrollableScrollPhysics(),
                     itemCount: visibleVehicles.length + 1,
                     separatorBuilder: (_, __) =>
@@ -185,7 +248,8 @@ class _SuperadminVehiclesScreenState
                           currentPage: safeCurrentPage,
                           pageCount: pageCount,
                           showingCount: visibleVehicles.length,
-                          totalCount: filteredVehicles.length,
+                          totalCount: page.totalCount,
+                          enabled: !loading && !failed,
                           onPrev: () {
                             setState(() {
                               _currentPage = safeCurrentPage - 1;
@@ -199,7 +263,9 @@ class _SuperadminVehiclesScreenState
                         );
                       }
 
-                      return _VehicleCard(vehicle: visibleVehicles[index]);
+                      return AbsorbPointer(
+                          absorbing: loading || failed,
+                          child: _VehicleCard(vehicle: visibleVehicles[index]));
                     },
                   ),
           ),
@@ -317,78 +383,21 @@ class _SuperadminVehiclesScreenState
 
     setState(() {
       _isRefreshing = true;
+      _currentPage = 1;
     });
 
     try {
-      ref.invalidate(superadminVehiclePageProvider);
-      await ref.read(superadminVehiclePageProvider.future);
+      final provider = superadminVehiclePageProvider(_query);
+      ref.invalidate(provider);
+      await ref.read(provider.future);
+    } catch (_) {
+      // The provider exposes the recoverable failure in the current list.
     } finally {
       if (mounted) {
         setState(() {
           _isRefreshing = false;
         });
       }
-    }
-  }
-
-  List<SuperadminVehicleRecord> _applyFilters(
-    List<SuperadminVehicleRecord> vehicles,
-  ) {
-    final normalizedQuery = _searchQuery.toLowerCase();
-    final filtered = vehicles.where((vehicle) {
-      final matchesSearch =
-          normalizedQuery.isEmpty ||
-          vehicle.searchContent.contains(normalizedQuery);
-      final normalizedStatus = vehicle.status.trim().toLowerCase();
-      final matchesStatus = switch (_statusFilter) {
-        _VehicleStatusFilter.all => true,
-        _VehicleStatusFilter.active => normalizedStatus == 'active',
-        _VehicleStatusFilter.inactive => normalizedStatus == 'inactive',
-        _VehicleStatusFilter.licenseBlocked => vehicle.isLicenseBlocked,
-      };
-
-      return matchesSearch && matchesStatus;
-    }).toList();
-
-    filtered.sort((left, right) {
-      switch (_sortOption) {
-        case _VehicleSortOption.newest:
-          return _vehicleDate(right).compareTo(_vehicleDate(left));
-        case _VehicleSortOption.oldest:
-          return _vehicleDate(left).compareTo(_vehicleDate(right));
-        case _VehicleSortOption.nameAscending:
-          return left.name.toLowerCase().compareTo(right.name.toLowerCase());
-        case _VehicleSortOption.nameDescending:
-          return right.name.toLowerCase().compareTo(left.name.toLowerCase());
-        case _VehicleSortOption.activeFirst:
-          final statusComparison = _statusRank(
-            left,
-          ).compareTo(_statusRank(right));
-          if (statusComparison != 0) {
-            return statusComparison;
-          }
-          return _vehicleDate(right).compareTo(_vehicleDate(left));
-      }
-    });
-    return filtered;
-  }
-
-  DateTime _vehicleDate(SuperadminVehicleRecord vehicle) {
-    return vehicle.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-  }
-
-  int _statusRank(SuperadminVehicleRecord vehicle) {
-    switch (vehicle.status.trim().toLowerCase()) {
-      case 'active':
-        return 0;
-      case 'idle':
-        return 1;
-      case 'inactive':
-        return 2;
-      case 'offline':
-        return 3;
-      default:
-        return 4;
     }
   }
 }
@@ -743,6 +752,7 @@ class _PaginationFooter extends StatelessWidget {
     required this.totalCount,
     required this.onPrev,
     required this.onNext,
+    this.enabled = true,
   });
 
   final int currentPage;
@@ -751,11 +761,12 @@ class _PaginationFooter extends StatelessWidget {
   final int totalCount;
   final VoidCallback onPrev;
   final VoidCallback onNext;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
-    final canPrev = currentPage > 1;
-    final canNext = currentPage < pageCount;
+    final canPrev = enabled && currentPage > 1;
+    final canNext = enabled && currentPage < pageCount;
 
     return Padding(
       padding: const EdgeInsets.only(top: OpenVtsSpacing.xs),
@@ -839,8 +850,8 @@ class _PageButton extends StatelessWidget {
             color: enabled
                 ? _primaryInkColor(context)
                 : (Theme.of(context).brightness == Brightness.dark
-                      ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.5)
-                      : OpenVtsColors.textTertiary),
+                    ? OpenVtsColors.darkTextSecondary.withValues(alpha: 0.5)
+                    : OpenVtsColors.textTertiary),
           ),
         ),
       ),
@@ -900,9 +911,9 @@ class _OptionsSheet extends StatelessWidget {
                   child: Text(
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                   ),
                 ),
                 IconButton(
@@ -981,13 +992,11 @@ class _ChoiceChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = selected
-        ? (isDark ? Colors.black : Colors.white)
-        : Colors.transparent;
+    final backgroundColor =
+        selected ? (isDark ? Colors.black : Colors.white) : Colors.transparent;
     final textColor = isDark ? Colors.white : Colors.black;
-    final borderColor = isDark
-        ? Colors.white
-        : Colors.black.withValues(alpha: 0.2);
+    final borderColor =
+        isDark ? Colors.white : Colors.black.withValues(alpha: 0.2);
 
     return Material(
       color: backgroundColor,
@@ -1113,14 +1122,18 @@ Color _primaryInkColor(BuildContext context) {
       : OpenVtsColors.brandInk;
 }
 
-class _VehicleCard extends StatelessWidget {
+class _VehicleCard extends ConsumerWidget {
   const _VehicleCard({required this.vehicle});
 
   final SuperadminVehicleRecord vehicle;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final scheme = Theme.of(context).colorScheme;
+    final canTrack = PermissionHelper.canAccessUserPath(
+      ref.watch(authControllerProvider.select((state) => state.user)),
+      RoutePaths.superadminMap,
+    );
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
       child: Column(
@@ -1183,6 +1196,20 @@ class _VehicleCard extends StatelessWidget {
                       'Tracking is blocked by the software license limit.',
                     ),
               style: OpenVtsTypography.meta.copyWith(color: scheme.error),
+            ),
+          ],
+          if (canTrack && vehicle.id.trim().isNotEmpty) ...[
+            const SizedBox(height: OpenVtsSpacing.xs),
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: OpenVtsVehicleTrackingButton(
+                onPressed: () => context.push(
+                  RoutePaths.superadminVehicleTrackingPath(
+                    vehicle.id,
+                    imei: vehicle.imei,
+                  ),
+                ),
+              ),
             ),
           ],
         ],

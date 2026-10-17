@@ -7,7 +7,9 @@ import '../../core/theme/open_vts_colors.dart';
 import '../../core/theme/open_vts_spacing.dart';
 import '../../core/theme/open_vts_typography.dart';
 import '../../l10n/app_localizations.dart';
+import '../../shared/widgets/open_vts_monochrome_image.dart';
 import '../helpers/mobile_text.dart';
+import '../utils/api_file_url.dart';
 import 'open_vts_language_picker.dart';
 
 class OpenVtsRoleHomeItem {
@@ -22,48 +24,8 @@ class OpenVtsRoleHomeItem {
   final String route;
 }
 
-String? resolveProfileImageUrl(String baseUrl, String? profileUrl) {
-  final normalizedProfileUrl = profileUrl?.trim();
-  if (normalizedProfileUrl == null || normalizedProfileUrl.isEmpty) {
-    return null;
-  }
-
-  if (normalizedProfileUrl.startsWith('http://') ||
-      normalizedProfileUrl.startsWith('https://')) {
-    return normalizedProfileUrl;
-  }
-
-  final rootUri = Uri.tryParse(baseUrl);
-  if (rootUri == null) {
-    return null;
-  }
-
-  final originRoot = rootUri.replace(
-    path: '/',
-    queryParameters: null,
-    fragment: null,
-  );
-
-  if (normalizedProfileUrl.startsWith('/')) {
-    return originRoot.resolve(normalizedProfileUrl).toString();
-  }
-
-  var basePath = rootUri.path;
-  if (basePath.isEmpty) {
-    basePath = '/';
-  }
-  if (!basePath.endsWith('/')) {
-    basePath = '$basePath/';
-  }
-
-  final apiRoot = rootUri.replace(
-    path: basePath,
-    queryParameters: null,
-    fragment: null,
-  );
-
-  return apiRoot.resolve(normalizedProfileUrl).toString();
-}
+String? resolveProfileImageUrl(String baseUrl, String? profileUrl) =>
+    resolveApiFileUrl(baseUrl, profileUrl ?? '');
 
 class OpenVtsRoleHome extends StatelessWidget {
   const OpenVtsRoleHome({
@@ -104,20 +66,19 @@ class OpenVtsRoleHome extends StatelessWidget {
     final headerGap = _headerGap(screenWidth);
     final footerPadding = _footerPadding(screenWidth);
     final logoHeight = _logoHeight(screenWidth);
-    final contentHorizontalPadding = screenWidth < 520
-        ? 0.0
-        : OpenVtsSpacing.sm;
+    final contentHorizontalPadding =
+        screenWidth < 520 ? 0.0 : OpenVtsSpacing.sm;
     final gridMainSpacing = _gridMainSpacing(screenWidth);
     final gridCrossSpacing = _gridCrossSpacing(screenWidth);
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final gridColumns = textScale > 2
         ? math.max(1, _gridColumnCount(screenWidth) - 2)
         : textScale > 1.3
-        ? math.max(2, _gridColumnCount(screenWidth) - 1)
-        : _gridColumnCount(screenWidth);
+            ? math.max(2, _gridColumnCount(screenWidth) - 1)
+            : _gridColumnCount(screenWidth);
     final contentWidth =
         math.min(980.0, screenWidth - pageHorizontalPadding * 2) -
-        contentHorizontalPadding * 2;
+            contentHorizontalPadding * 2;
     final cellWidth =
         (contentWidth - gridCrossSpacing * (gridColumns - 1)) / gridColumns;
     final metrics = _tileMetrics(screenWidth);
@@ -127,18 +88,15 @@ class OpenVtsRoleHome extends StatelessWidget {
       cellWidth / _gridChildAspectRatio(screenWidth),
       metrics.iconBoxSize + metrics.labelGap + labelHeight + 16,
     );
-    final topBarColor = isDark
-        ? OpenVtsColors.darkSurface
-        : OpenVtsColors.surfaceElevated;
+    final topBarColor =
+        isDark ? OpenVtsColors.darkSurface : OpenVtsColors.surfaceElevated;
     final cardColor = isDark
         ? OpenVtsColors.darkSurface.withValues(alpha: 0.94)
         : OpenVtsColors.surfaceElevated.withValues(alpha: 0.96);
-    final borderColor = isDark
-        ? OpenVtsColors.darkBorder
-        : OpenVtsColors.border;
-    final secondaryTextColor = isDark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
+    final borderColor =
+        isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border;
+    final secondaryTextColor =
+        isDark ? OpenVtsColors.darkTextSecondary : OpenVtsColors.textSecondary;
     final tertiaryTextColor = theme.colorScheme.onSurface.withValues(
       alpha: 0.58,
     );
@@ -156,9 +114,9 @@ class OpenVtsRoleHome extends StatelessWidget {
                     OpenVtsColors.darkBackground,
                   ]
                 : const [
-                    Color(0xFFF4F1EC),
+                    Color(0xFFF1F1F1),
                     OpenVtsColors.background,
-                    Color(0xFFF7F6F3),
+                    Color(0xFFF6F6F6),
                   ],
           ),
         ),
@@ -206,8 +164,7 @@ class OpenVtsRoleHome extends StatelessWidget {
                             tooltip: l10n.language,
                             icon: Icons.language_rounded,
                             borderColor: borderColor,
-                            onPressed:
-                                onLanguagePressed ??
+                            onPressed: onLanguagePressed ??
                                 () => showOpenVtsLanguagePicker(context),
                           ),
                           const SizedBox(width: OpenVtsSpacing.xxs),
@@ -243,29 +200,32 @@ class OpenVtsRoleHome extends StatelessWidget {
                                   child: Container(
                                     width: 40,
                                     height: 40,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(color: borderColor),
-                                      color: isDark
-                                          ? OpenVtsColors.brandInkSoft
-                                          : OpenVtsColors.surface,
-                                    ),
+                                    decoration: profileImageUrl != null
+                                        ? null
+                                        : BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border:
+                                                Border.all(color: borderColor),
+                                            color: isDark
+                                                ? OpenVtsColors.brandInkSoft
+                                                : OpenVtsColors.surface,
+                                          ),
                                     child: ClipOval(
+                                      clipBehavior: Clip.antiAlias,
                                       child: profileImageUrl == null
                                           ? Center(
                                               child: Text(
                                                 _initialsFromName(displayName),
                                                 style: OpenVtsTypography.meta
                                                     .copyWith(
-                                                      color: theme
-                                                          .colorScheme
-                                                          .onSurface,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                    ),
+                                                  color: theme
+                                                      .colorScheme.onSurface,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
                                               ),
                                             )
-                                          : Image.network(
+                                          : OpenVtsMonochromeImage(
+                                              child: Image.network(
                                               profileImageUrl!,
                                               fit: BoxFit.cover,
                                               errorBuilder: (_, __, ___) {
@@ -273,11 +233,10 @@ class OpenVtsRoleHome extends StatelessWidget {
                                                   Icons.person_outline_rounded,
                                                   size: 18,
                                                   color: theme
-                                                      .colorScheme
-                                                      .onSurface,
+                                                      .colorScheme.onSurface,
                                                 );
                                               },
-                                            ),
+                                            )),
                                     ),
                                   ),
                                 ),
@@ -316,7 +275,8 @@ class OpenVtsRoleHome extends StatelessWidget {
                                 ),
                                 child: Column(
                                   children: [
-                                    Image.asset(
+                                    OpenVtsMonochromeImage(
+                                        child: Image.asset(
                                       isDark
                                           ? 'assets/brand/dark-logo.png'
                                           : 'assets/brand/logo.png',
@@ -327,15 +287,13 @@ class OpenVtsRoleHome extends StatelessWidget {
                                           context.mobileText('Open VTS'),
                                           style: OpenVtsTypography.brandTitle
                                               .copyWith(
-                                                color:
-                                                    theme.colorScheme.onSurface,
-                                                fontSize: screenWidth < 520
-                                                    ? 24
-                                                    : 30,
-                                              ),
+                                            color: theme.colorScheme.onSurface,
+                                            fontSize:
+                                                screenWidth < 520 ? 24 : 30,
+                                          ),
                                         );
                                       },
-                                    ),
+                                    )),
                                     const SizedBox(height: OpenVtsSpacing.xxs),
                                     Text(
                                       l10n.homeWorkspace(roleLabel),
@@ -355,8 +313,7 @@ class OpenVtsRoleHome extends StatelessWidget {
                                           ),
                                           decoration: BoxDecoration(
                                             color: theme
-                                                .colorScheme
-                                                .errorContainer,
+                                                .colorScheme.errorContainer,
                                             borderRadius: BorderRadius.circular(
                                               14,
                                             ),
@@ -366,10 +323,9 @@ class OpenVtsRoleHome extends StatelessWidget {
                                             textAlign: TextAlign.center,
                                             style: theme.textTheme.bodyMedium
                                                 ?.copyWith(
-                                                  color: theme
-                                                      .colorScheme
-                                                      .onErrorContainer,
-                                                ),
+                                              color: theme
+                                                  .colorScheme.onErrorContainer,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -382,11 +338,11 @@ class OpenVtsRoleHome extends StatelessWidget {
                                       itemCount: items.length,
                                       gridDelegate:
                                           SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: gridColumns,
-                                            mainAxisSpacing: gridMainSpacing,
-                                            crossAxisSpacing: gridCrossSpacing,
-                                            mainAxisExtent: gridExtent,
-                                          ),
+                                        crossAxisCount: gridColumns,
+                                        mainAxisSpacing: gridMainSpacing,
+                                        crossAxisSpacing: gridCrossSpacing,
+                                        mainAxisExtent: gridExtent,
+                                      ),
                                       itemBuilder: (context, index) {
                                         final item = items[index];
                                         final isActive =
@@ -618,8 +574,8 @@ class _DesktopLauncherTile extends StatelessWidget {
     final labelHorizontalPadding = screenWidth < 360
         ? 1.0
         : screenWidth < 520
-        ? 2.0
-        : OpenVtsSpacing.xxs;
+            ? 2.0
+            : OpenVtsSpacing.xxs;
     final shadowBlur = screenWidth < 520 ? 9.0 : 14.0;
     final shadowOffset = screenWidth < 520 ? 3.0 : 5.0;
     final shadowAlpha = screenWidth < 520 ? 0.04 : 0.05;

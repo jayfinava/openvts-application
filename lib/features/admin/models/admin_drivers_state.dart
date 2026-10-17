@@ -1,3 +1,4 @@
+import '../../../shared/paging/server_list_pager.dart';
 import 'admin_drivers_model.dart';
 
 enum AdminDriverStatusFilter { all, active, inactive }
@@ -8,6 +9,7 @@ enum AdminDriversSortOption { newest, nameAsc, activeFirst }
 
 class AdminDriversState {
   const AdminDriversState({
+    this.pagination,
     required this.drivers,
     required this.filteredDrivers,
     required this.searchQuery,
@@ -26,7 +28,8 @@ class AdminDriversState {
   });
 
   const AdminDriversState.initial()
-      : drivers = const <AdminDriverListItem>[],
+      : pagination = null,
+        drivers = const <AdminDriverListItem>[],
         filteredDrivers = const <AdminDriverListItem>[],
         searchQuery = '',
         statusFilter = AdminDriverStatusFilter.all,
@@ -44,6 +47,7 @@ class AdminDriversState {
 
   static const _unset = Object();
 
+  final ListPageMeta? pagination;
   final List<AdminDriverListItem> drivers;
   final List<AdminDriverListItem> filteredDrivers;
   final String searchQuery;
@@ -66,7 +70,7 @@ class AdminDriversState {
       statusFilter != AdminDriverStatusFilter.all ||
       verifiedFilter != AdminDriverVerifiedFilter.all ||
       (countryFilter?.trim().isNotEmpty ?? false);
-  int get filteredCount => filteredDrivers.length;
+  int get filteredCount => pagination?.total ?? filteredDrivers.length;
   int get pageCount {
     final total = filteredCount;
     final pageSize = recordsPerPage <= 0 ? 10 : recordsPerPage;
@@ -82,6 +86,7 @@ class AdminDriversState {
   }
 
   List<AdminDriverListItem> get visibleDrivers {
+    if (pagination != null) return filteredDrivers;
     if (filteredDrivers.isEmpty) return const <AdminDriverListItem>[];
     final page = safeCurrentPage;
     final size = recordsPerPage <= 0 ? 10 : recordsPerPage;
@@ -94,6 +99,7 @@ class AdminDriversState {
   int get showingCount => visibleDrivers.length;
 
   AdminDriversState copyWith({
+    ListPageMeta? pagination,
     List<AdminDriverListItem>? drivers,
     List<AdminDriverListItem>? filteredDrivers,
     String? searchQuery,
@@ -111,6 +117,7 @@ class AdminDriversState {
     Set<String>? updatingDriverIds,
   }) {
     return AdminDriversState(
+      pagination: pagination ?? this.pagination,
       drivers: drivers ?? this.drivers,
       filteredDrivers: filteredDrivers ?? this.filteredDrivers,
       searchQuery: searchQuery ?? this.searchQuery,

@@ -17,6 +17,7 @@ import '../../../shared/widgets/open_vts_button.dart';
 import '../../../shared/widgets/open_vts_card.dart';
 import '../../../shared/widgets/open_vts_error_view.dart';
 import '../../../shared/widgets/open_vts_loader.dart';
+import '../../../shared/widgets/open_vts_monochrome_image.dart';
 import '../../../shared/widgets/open_vts_role_home.dart';
 import '../controllers/auth_controller.dart';
 import '../controllers/profile_controller.dart';
@@ -62,9 +63,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark
-          ? OpenVtsColors.darkBackground
-          : OpenVtsColors.background,
+      backgroundColor:
+          isDark ? OpenVtsColors.darkBackground : OpenVtsColors.background,
       body: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -77,9 +77,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     OpenVtsColors.darkBackground,
                   ]
                 : const [
-                    Color(0xFFF4F1EC),
+                    Color(0xFFF1F1F1),
                     OpenVtsColors.background,
-                    Color(0xFFF7F6F3),
+                    Color(0xFFF6F6F6),
                   ],
           ),
         ),
@@ -128,8 +128,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     user.profileUrl,
                                   ),
                                   isUploading: profileState.isUploadingPhoto,
-                                  onEditPhoto:
-                                      user.role == UserRole.team ||
+                                  onEditPhoto: user.role == UserRole.team ||
                                           user.role == UserRole.driver
                                       ? null
                                       : _pickProfilePhoto,
@@ -201,8 +200,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 _ProfileInfoRow(
                                   icon: Icons.shield_outlined,
                                   title: context.mobileText('Account Status'),
-                                  value:
-                                      _humanizeText(user.accountStatus) ??
+                                  value: _humanizeText(user.accountStatus) ??
                                       'Active',
                                 ),
                               ],
@@ -283,12 +281,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
 
     try {
-      final updatedUser = await ref
-          .read(profileControllerProvider.notifier)
-          .uploadPhoto(
-            bytes: bytes,
-            fileName: image.name.isNotEmpty ? image.name : 'profile.jpg',
-          );
+      final updatedUser =
+          await ref.read(profileControllerProvider.notifier).uploadPhoto(
+                bytes: bytes,
+                fileName: image.name.isNotEmpty ? image.name : 'profile.jpg',
+              );
       if (!mounted) {
         return;
       }
@@ -342,10 +339,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         .split(RegExp(r'[_\s-]+'))
         .where((segment) => segment.isNotEmpty)
         .map((segment) {
-          final lower = segment.toLowerCase();
-          return '${lower[0].toUpperCase()}${lower.substring(1)}';
-        })
-        .join(' ');
+      final lower = segment.toLowerCase();
+      return '${lower[0].toUpperCase()}${lower.substring(1)}';
+    }).join(' ');
   }
 
   static String _verificationLabel(CurrentUser user) {
@@ -412,9 +408,8 @@ class _ProfileHeader extends StatelessWidget {
         IconButton(
           onPressed: onBack,
           style: IconButton.styleFrom(
-            backgroundColor: isDark
-                ? OpenVtsColors.darkSurface
-                : OpenVtsColors.white,
+            backgroundColor:
+                isDark ? OpenVtsColors.darkSurface : OpenVtsColors.white,
             foregroundColor: theme.colorScheme.onSurface,
             minimumSize: const Size.square(42),
             shape: RoundedRectangleBorder(
@@ -468,44 +463,53 @@ class _ProfileAvatar extends StatelessWidget {
           Container(
             width: 124,
             height: 124,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: isDark
-                    ? OpenVtsColors.darkBorder
-                    : OpenVtsColors.border.withValues(alpha: 0.9),
-              ),
-              color: isDark ? OpenVtsColors.darkSurface : OpenVtsColors.white,
-            ),
+            decoration: localPhotoBytes != null || profileImageUrl != null
+                ? null
+                : BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isDark
+                          ? OpenVtsColors.darkBorder
+                          : OpenVtsColors.border.withValues(alpha: 0.9),
+                    ),
+                    color: isDark
+                        ? OpenVtsColors.darkSurface
+                        : OpenVtsColors.white,
+                  ),
             child: ClipOval(
+              clipBehavior: localPhotoBytes != null || profileImageUrl != null
+                  ? Clip.none
+                  : Clip.antiAlias,
               child: localPhotoBytes != null
-                  ? Image.memory(
+                  ? OpenVtsMonochromeImage(
+                      child: Image.memory(
                       Uint8List.fromList(localPhotoBytes!),
                       key: ValueKey(localPhotoBytes.hashCode),
-                      fit: BoxFit.cover,
-                    )
+                      fit: BoxFit.contain,
+                    ))
                   : profileImageUrl == null
-                  ? Center(
-                      child: Text(
-                        _initials(displayName),
-                        style: OpenVtsTypography.titleMedium.copyWith(
-                          color: theme.colorScheme.onSurface,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    )
-                  : Image.network(
-                      key: ValueKey(profileImageUrl),
-                      profileImageUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) {
-                        return Icon(
-                          Icons.person_outline_rounded,
-                          size: 40,
-                          color: theme.colorScheme.onSurface,
-                        );
-                      },
-                    ),
+                      ? Center(
+                          child: Text(
+                            _initials(displayName),
+                            style: OpenVtsTypography.titleMedium.copyWith(
+                              color: theme.colorScheme.onSurface,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        )
+                      : OpenVtsMonochromeImage(
+                          child: Image.network(
+                          key: ValueKey(profileImageUrl),
+                          profileImageUrl!,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) {
+                            return Icon(
+                              Icons.person_outline_rounded,
+                              size: 40,
+                              color: theme.colorScheme.onSurface,
+                            );
+                          },
+                        )),
             ),
           ),
           if (onEditPhoto != null)
@@ -581,14 +585,13 @@ class _VerificationPill extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final backgroundColor = isDark
-        ? color.withValues(alpha: 0.15)
-        : color.withValues(alpha: 0.08);
+    final backgroundColor =
+        isDark ? color.withValues(alpha: 0.15) : color.withValues(alpha: 0.08);
 
     final textColor = isDark
         ? (color == OpenVtsColors.brandInk
-              ? theme.colorScheme.onSurface
-              : color)
+            ? theme.colorScheme.onSurface
+            : color)
         : color;
 
     return DecoratedBox(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
@@ -98,7 +98,7 @@ class _UserRouteFormBodyState extends ConsumerState<_UserRouteFormBody> {
   Color get _routeColor {
     final cleaned = _color.replaceAll('#', '').trim();
     final parsed = int.tryParse('FF$cleaned', radix: 16);
-    return parsed == null ? OpenVtsColors.brandInk : Color(parsed);
+    return parsed == null ? OpenVtsMapColors.brandInk : Color(parsed);
   }
 
   Future<void> _openEditor() async {
@@ -223,7 +223,11 @@ class _UserRouteFormBodyState extends ConsumerState<_UserRouteFormBody> {
             controller: _name,
             style: OpenVtsTypography.body,
             decoration: _denseDecoration(hint: 'e.g. Mumbai → Pune corridor'),
-            validator: context.localizedValidator((value) {final v = value?.trim() ?? ''; if (v.length < 2) return 'Enter at least 2 characters.'; return null;}),
+            validator: context.localizedValidator((value) {
+              final v = value?.trim() ?? '';
+              if (v.length < 2) return 'Enter at least 2 characters.';
+              return null;
+            }),
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
           const _FieldLabel('Description (optional)'),
@@ -269,7 +273,7 @@ class _UserRouteFormBodyState extends ConsumerState<_UserRouteFormBody> {
             Text(
               _submitError!,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.error,
+                color: OpenVtsMapColors.error,
               ),
             ),
           ],
@@ -311,15 +315,16 @@ class _UserRouteFormBodyState extends ConsumerState<_UserRouteFormBody> {
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-        borderSide: const BorderSide(color: OpenVtsColors.border),
+        borderSide: const BorderSide(color: OpenVtsMapColors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-        borderSide: const BorderSide(color: OpenVtsColors.border),
+        borderSide: const BorderSide(color: OpenVtsMapColors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-        borderSide: const BorderSide(color: OpenVtsColors.brandInk, width: 1.4),
+        borderSide:
+            const BorderSide(color: OpenVtsMapColors.brandInk, width: 1.4),
       ),
     );
   }
@@ -377,9 +382,12 @@ class _GeometryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
     final hasGeometry = points.length >= 2;
 
     return Container(
@@ -446,17 +454,20 @@ class _ActiveToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
-    final toggleBgOn = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final toggleBgOff = isDark ? const Color(0xFF555555) : OpenVtsColors.border;
-    final toggleThumbColor = isDark
-        ? OpenVtsColors.brandInk
-        : OpenVtsColors.white;
-    final toggleThumbBorder = isDark
-        ? OpenVtsColors.white
-        : OpenVtsColors.textPrimary;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
+    final toggleBgOn =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final toggleBgOff =
+        isDark ? const Color(0xFF555555) : OpenVtsMapColors.border;
+    final toggleThumbColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.white;
+    final toggleThumbBorder =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
 
     return Container(
       decoration: BoxDecoration(
@@ -515,7 +526,7 @@ class _ActiveToggle extends StatelessWidget {
                     child: Icon(
                       Icons.check,
                       size: 14,
-                      color: isDark ? OpenVtsColors.white : bgColor,
+                      color: isDark ? OpenVtsMapColors.white : bgColor,
                     ),
                   ),
                   if (value) Expanded(child: Container()),
@@ -549,30 +560,31 @@ class _RouteAlertSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
-    final toggleBgOn = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final toggleBgOff = isDark ? const Color(0xFF555555) : OpenVtsColors.border;
-    final toggleThumbColor = isDark
-        ? OpenVtsColors.brandInk
-        : OpenVtsColors.white;
-    final toggleThumbBorder = isDark
-        ? OpenVtsColors.white
-        : OpenVtsColors.textPrimary;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
+    final toggleBgOn =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final toggleBgOff =
+        isDark ? const Color(0xFF555555) : OpenVtsMapColors.border;
+    final toggleThumbColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.white;
+    final toggleThumbBorder =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
     final chipBgUnselected = isDark
-        ? OpenVtsColors.white.withValues(alpha: 0.1)
-        : OpenVtsColors.border;
-    final chipBgSelected = isDark
-        ? OpenVtsColors.white
-        : OpenVtsColors.textPrimary;
-    final chipTextSelected = isDark
-        ? OpenVtsColors.brandInk
-        : OpenVtsColors.white;
+        ? OpenVtsMapColors.white.withValues(alpha: 0.1)
+        : OpenVtsMapColors.border;
+    final chipBgSelected =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final chipTextSelected =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.white;
     final chipBorderUnselected = isDark
-        ? OpenVtsColors.white.withValues(alpha: 0.5)
-        : OpenVtsColors.border;
-    final chipBorderSelected = isDark ? OpenVtsColors.white : borderColor;
+        ? OpenVtsMapColors.white.withValues(alpha: 0.5)
+        : OpenVtsMapColors.border;
+    final chipBorderSelected = isDark ? OpenVtsMapColors.white : borderColor;
 
     return Container(
       decoration: BoxDecoration(
@@ -635,7 +647,7 @@ class _RouteAlertSection extends StatelessWidget {
                         child: Icon(
                           Icons.check,
                           size: 14,
-                          color: isDark ? OpenVtsColors.white : bgColor,
+                          color: isDark ? OpenVtsMapColors.white : bgColor,
                         ),
                       ),
                       if (enabled) Expanded(child: Container()),
@@ -676,9 +688,8 @@ class _RouteAlertSection extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                   side: BorderSide(
-                    color: isSelected
-                        ? chipBorderSelected
-                        : chipBorderUnselected,
+                    color:
+                        isSelected ? chipBorderSelected : chipBorderUnselected,
                   ),
                 );
               }).toList(),
@@ -711,9 +722,8 @@ class _RouteAlertSection extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                   side: BorderSide(
-                    color: isSelected
-                        ? chipBorderSelected
-                        : chipBorderUnselected,
+                    color:
+                        isSelected ? chipBorderSelected : chipBorderUnselected,
                   ),
                 );
               }).toList(),

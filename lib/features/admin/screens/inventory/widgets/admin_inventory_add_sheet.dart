@@ -16,7 +16,8 @@ import '../../../models/admin_inventory_model.dart';
 enum AdminInventoryAddMode { device, sim, both }
 
 class AdminInventoryAddSheet extends ConsumerStatefulWidget {
-  const AdminInventoryAddSheet({super.key});
+  const AdminInventoryAddSheet({this.deviceOnly = false, super.key});
+  final bool deviceOnly;
 
   @override
   ConsumerState<AdminInventoryAddSheet> createState() =>
@@ -73,7 +74,7 @@ class _AdminInventoryAddSheetState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _modeChips(),
+                    if (!widget.deviceOnly) _modeChips(),
                     if (_loadingRefs) ...[
                       const SizedBox(height: OpenVtsSpacing.sm),
                       const _ReferenceLoadingIndicator(),
@@ -111,16 +112,15 @@ class _AdminInventoryAddSheetState
                               ),
                             )
                             .toList(growable: false),
-                        enabled:
-                            !isSubmitting &&
+                        enabled: !isSubmitting &&
                             !_loadingRefs &&
                             _referenceError == null &&
                             _deviceTypes.isNotEmpty,
                         validator: _mode == AdminInventoryAddMode.sim
                             ? null
                             : (value) => (value == null || value.isEmpty)
-                                  ? 'Device type is required'
-                                  : null,
+                                ? 'Device type is required'
+                                : null,
                         onChanged: (v) => setState(() => _deviceTypeId = v),
                       ),
                       const SizedBox(height: OpenVtsSpacing.sm),
@@ -172,8 +172,7 @@ class _AdminInventoryAddSheetState
                             ),
                           ),
                         ],
-                        enabled:
-                            !isSubmitting &&
+                        enabled: !isSubmitting &&
                             !_loadingRefs &&
                             _referenceError == null,
                         onChanged: (v) => setState(() => _providerId = v),
@@ -333,9 +332,8 @@ class _AdminInventoryAddSheetState
       return;
     }
 
-    final message = ref
-        .read(adminInventoryControllerProvider)
-        .createErrorMessage;
+    final message =
+        ref.read(adminInventoryControllerProvider).createErrorMessage;
     ToastHelper.showError(
       message ?? 'Unable to create inventory item.',
       context: context,
@@ -402,12 +400,10 @@ class _ModeChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bgColor = isSelected ? OpenVtsColors.brandInk : OpenVtsColors.white;
-    final fgColor = isSelected
-        ? OpenVtsColors.white
-        : OpenVtsColors.textPrimary;
-    final borderColor = isSelected
-        ? OpenVtsColors.brandInk
-        : OpenVtsColors.border;
+    final fgColor =
+        isSelected ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final borderColor =
+        isSelected ? OpenVtsColors.brandInk : OpenVtsColors.border;
 
     return Material(
       color: bgColor,

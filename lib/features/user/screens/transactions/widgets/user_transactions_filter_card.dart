@@ -95,7 +95,8 @@ class _UserTransactionsFilterCardState
                 TextButton.icon(
                   onPressed: _handleClear,
                   style: TextButton.styleFrom(
-                    foregroundColor: OpenVtsColors.textSecondary,
+                    foregroundColor:
+                        Theme.of(context).colorScheme.onSurfaceVariant,
                     visualDensity: VisualDensity.compact,
                     padding: const EdgeInsets.symmetric(
                       horizontal: OpenVtsSpacing.xs,
@@ -137,8 +138,7 @@ class _UserTransactionsFilterCardState
               ),
               _CompactChoiceChip(
                 label: context.mobileText('Last 30 Days'),
-                selected:
-                    widget.rangePreset ==
+                selected: widget.rangePreset ==
                     UserTransactionsRangePreset.last30Days,
                 onTap: () => widget.onRangePresetChanged(
                   UserTransactionsRangePreset.last30Days,
@@ -150,6 +150,14 @@ class _UserTransactionsFilterCardState
                     widget.rangePreset == UserTransactionsRangePreset.thisYear,
                 onTap: () => widget.onRangePresetChanged(
                   UserTransactionsRangePreset.thisYear,
+                ),
+              ),
+              _CompactChoiceChip(
+                label: context.mobileText('All Time'),
+                selected:
+                    widget.rangePreset == UserTransactionsRangePreset.allTime,
+                onTap: () => widget.onRangePresetChanged(
+                  UserTransactionsRangePreset.allTime,
                 ),
               ),
               _CompactChoiceChip(
@@ -217,7 +225,7 @@ class _UserTransactionsFilterCardState
               });
             },
             style: TextButton.styleFrom(
-              foregroundColor: OpenVtsColors.textSecondary,
+              foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
               minimumSize: const Size(44, 44),
               padding: const EdgeInsets.symmetric(
                 horizontal: OpenVtsSpacing.xs,
@@ -264,8 +272,7 @@ class _UserTransactionsFilterCardState
                 ),
                 _CompactChoiceChip(
                   label: context.mobileText('Bank Transfer'),
-                  selected:
-                      widget.selectedPaymentMode ==
+                  selected: widget.selectedPaymentMode ==
                       UserPaymentMode.bankTransfer,
                   onTap: () =>
                       widget.onPaymentModeChanged(UserPaymentMode.bankTransfer),
@@ -319,8 +326,7 @@ class _UserTransactionsFilterCardState
                 ),
                 _CompactChoiceChip(
                   label: context.mobileText('Credit'),
-                  selected:
-                      widget.selectedDirection ==
+                  selected: widget.selectedDirection ==
                       UserTransactionDirection.credit,
                   onTap: () => widget.onDirectionChanged(
                     UserTransactionDirection.credit,
@@ -328,8 +334,7 @@ class _UserTransactionsFilterCardState
                 ),
                 _CompactChoiceChip(
                   label: context.mobileText('Debit'),
-                  selected:
-                      widget.selectedDirection ==
+                  selected: widget.selectedDirection ==
                       UserTransactionDirection.debit,
                   onTap: () =>
                       widget.onDirectionChanged(UserTransactionDirection.debit),
@@ -384,14 +389,10 @@ class _CompactChoiceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = selected
-        ? (isDark ? Colors.black : Colors.white)
-        : Colors.transparent;
-    final textColor = isDark ? Colors.white : Colors.black;
-    final borderColor = isDark
-        ? Colors.white
-        : Colors.black.withValues(alpha: 0.2);
+    final colors = Theme.of(context).colorScheme;
+    final backgroundColor = selected ? colors.primary : colors.surface;
+    final textColor = selected ? colors.onPrimary : colors.onSurface;
+    final borderColor = selected ? colors.primary : colors.outlineVariant;
 
     return Material(
       color: backgroundColor,
@@ -405,12 +406,10 @@ class _CompactChoiceChip extends StatelessWidget {
             horizontal: OpenVtsSpacing.sm,
             vertical: OpenVtsSpacing.xs,
           ),
-          decoration: selected
-              ? BoxDecoration(
-                  borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                  border: Border.all(color: borderColor, width: 1),
-                )
-              : null,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
+            border: Border.all(color: borderColor),
+          ),
           child: Text(
             label,
             style: OpenVtsTypography.meta.copyWith(

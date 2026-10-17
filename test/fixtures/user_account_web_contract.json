@@ -1,0 +1,605 @@
+{
+  "benchmark": "E:/Development/OpenVTS/complete-software/Frontend/src/schemas/fields.ts",
+  "sha256": "c34d8bbe85b3b678b30450a75ea6cb8be8f107281974b3df066678a6b4ca8c87",
+  "cases": [
+    {
+      "field": "name",
+      "input": "",
+      "accepted": false
+    },
+    {
+      "field": "name",
+      "input": " ",
+      "accepted": false
+    },
+    {
+      "field": "name",
+      "input": "A",
+      "accepted": true,
+      "normalized": "A"
+    },
+    {
+      "field": "name",
+      "input": "José",
+      "accepted": true,
+      "normalized": "José"
+    },
+    {
+      "field": "name",
+      "input": "O’Neil",
+      "accepted": true,
+      "normalized": "O’Neil"
+    },
+    {
+      "field": "name",
+      "input": "Anne-Marie",
+      "accepted": true,
+      "normalized": "Anne-Marie"
+    },
+    {
+      "field": "name",
+      "input": "李",
+      "accepted": true,
+      "normalized": "李"
+    },
+    {
+      "field": "name",
+      "input": "محمد",
+      "accepted": true,
+      "normalized": "محمد"
+    },
+    {
+      "field": "name",
+      "input": "किरण",
+      "accepted": true,
+      "normalized": "किरण"
+    },
+    {
+      "field": "name",
+      "input": "é",
+      "accepted": true,
+      "normalized": "é"
+    },
+    {
+      "field": "name",
+      "input": "A‍B",
+      "accepted": true,
+      "normalized": "A‍B"
+    },
+    {
+      "field": "name",
+      "input": "A B",
+      "accepted": true,
+      "normalized": "A B"
+    },
+    {
+      "field": "name",
+      "input": "A  B",
+      "accepted": false
+    },
+    {
+      "field": "name",
+      "input": "123",
+      "accepted": false
+    },
+    {
+      "field": "name",
+      "input": "A1",
+      "accepted": false
+    },
+    {
+      "field": "name",
+      "input": "A😀",
+      "accepted": false
+    },
+    {
+      "field": "name",
+      "input": "A\tB",
+      "accepted": false
+    },
+    {
+      "field": "name",
+      "input": "A\nB",
+      "accepted": false
+    },
+    {
+      "field": "name",
+      "input": "A‮B",
+      "accepted": false
+    },
+    {
+      "field": "name",
+      "input": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "accepted": true,
+      "normalized": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    },
+    {
+      "field": "name",
+      "input": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "accepted": false
+    },
+    {
+      "field": "name",
+      "input": "ééééééééééééééééééééééééééééééééééé",
+      "accepted": true,
+      "normalized": "ééééééééééééééééééééééééééééééééééé"
+    },
+    {
+      "field": "name",
+      "input": "𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀",
+      "accepted": true,
+      "normalized": "𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀"
+    },
+    {
+      "field": "name",
+      "input": "𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀𠀀",
+      "accepted": false
+    },
+    {
+      "field": "username",
+      "input": "",
+      "accepted": false
+    },
+    {
+      "field": "username",
+      "input": "ab",
+      "accepted": false
+    },
+    {
+      "field": "username",
+      "input": "abc",
+      "accepted": true,
+      "normalized": "abc"
+    },
+    {
+      "field": "username",
+      "input": "  AbC_12  ",
+      "accepted": true,
+      "normalized": "AbC_12"
+    },
+    {
+      "field": "username",
+      "input": "123",
+      "accepted": false
+    },
+    {
+      "field": "username",
+      "input": "...",
+      "accepted": false
+    },
+    {
+      "field": "username",
+      "input": "a.b-c_7",
+      "accepted": true,
+      "normalized": "a.b-c_7"
+    },
+    {
+      "field": "username",
+      "input": "a b",
+      "accepted": false
+    },
+    {
+      "field": "username",
+      "input": "a@b",
+      "accepted": false
+    },
+    {
+      "field": "username",
+      "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "accepted": true,
+      "normalized": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "field": "username",
+      "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "accepted": false
+    },
+    {
+      "field": "username",
+      "input": "用户",
+      "accepted": false
+    },
+    {
+      "field": "optionalUsername",
+      "input": "",
+      "accepted": true,
+      "normalized": ""
+    },
+    {
+      "field": "optionalUsername",
+      "input": "  ",
+      "accepted": true,
+      "normalized": ""
+    },
+    {
+      "field": "optionalUsername",
+      "input": "abc",
+      "accepted": true,
+      "normalized": "abc"
+    },
+    {
+      "field": "optionalUsername",
+      "input": "123",
+      "accepted": false
+    },
+    {
+      "field": "optionalUsername",
+      "input": "a b",
+      "accepted": false
+    },
+    {
+      "field": "optionalUsername",
+      "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "accepted": false
+    },
+    {
+      "field": "email",
+      "input": "",
+      "accepted": true,
+      "normalized": ""
+    },
+    {
+      "field": "email",
+      "input": " ",
+      "accepted": true,
+      "normalized": ""
+    },
+    {
+      "field": "email",
+      "input": " User@Example.COM ",
+      "accepted": true,
+      "normalized": "user@example.com"
+    },
+    {
+      "field": "email",
+      "input": "a@b.c",
+      "accepted": true,
+      "normalized": "a@b.c"
+    },
+    {
+      "field": "email",
+      "input": "invalid",
+      "accepted": false
+    },
+    {
+      "field": "email",
+      "input": "é@example.com",
+      "accepted": false
+    },
+    {
+      "field": "email",
+      "input": "\tname@example.com",
+      "accepted": false
+    },
+    {
+      "field": "email",
+      "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@a.com",
+      "accepted": true,
+      "normalized": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@a.com"
+    },
+    {
+      "field": "email",
+      "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@a.com",
+      "accepted": false
+    },
+    {
+      "field": "password",
+      "input": "",
+      "accepted": false
+    },
+    {
+      "field": "password",
+      "input": "short",
+      "accepted": false
+    },
+    {
+      "field": "password",
+      "input": "123456",
+      "accepted": true,
+      "normalized": "123456"
+    },
+    {
+      "field": "password",
+      "input": "      ",
+      "accepted": true,
+      "normalized": "      "
+    },
+    {
+      "field": "password",
+      "input": " pass ",
+      "accepted": true,
+      "normalized": " pass "
+    },
+    {
+      "field": "password",
+      "input": " x1234 ",
+      "accepted": true,
+      "normalized": " x1234 "
+    },
+    {
+      "field": "password",
+      "input": "ppppppppppppppppppppppppppppppppppp",
+      "accepted": true,
+      "normalized": "ppppppppppppppppppppppppppppppppppp"
+    },
+    {
+      "field": "password",
+      "input": "pppppppppppppppppppppppppppppppppppp",
+      "accepted": false
+    },
+    {
+      "field": "password",
+      "input": "passé1",
+      "accepted": false
+    },
+    {
+      "field": "password",
+      "input": "pass\n1",
+      "accepted": false
+    },
+    {
+      "field": "mobile",
+      "input": "",
+      "accepted": false
+    },
+    {
+      "field": "mobile",
+      "input": "123456",
+      "accepted": false
+    },
+    {
+      "field": "mobile",
+      "input": "1234567",
+      "accepted": true,
+      "normalized": "1234567"
+    },
+    {
+      "field": "mobile",
+      "input": "(987) 654-3210",
+      "accepted": true,
+      "normalized": "9876543210"
+    },
+    {
+      "field": "mobile",
+      "input": "123456789012345",
+      "accepted": true,
+      "normalized": "123456789012345"
+    },
+    {
+      "field": "mobile",
+      "input": "1234567890123456789",
+      "accepted": true,
+      "normalized": "123456789012345"
+    },
+    {
+      "field": "mobile",
+      "input": "１２３４５６７",
+      "accepted": false
+    },
+    {
+      "field": "mobile",
+      "input": "+91 9123456789",
+      "accepted": true,
+      "normalized": "919123456789"
+    },
+    {
+      "field": "optionalMobile",
+      "input": "",
+      "accepted": true,
+      "normalized": ""
+    },
+    {
+      "field": "optionalMobile",
+      "input": "---",
+      "accepted": true,
+      "normalized": ""
+    },
+    {
+      "field": "optionalMobile",
+      "input": "123456",
+      "accepted": false
+    },
+    {
+      "field": "optionalMobile",
+      "input": "1234567",
+      "accepted": true,
+      "normalized": "1234567"
+    },
+    {
+      "field": "optionalMobile",
+      "input": "1234567890123456789",
+      "accepted": true,
+      "normalized": "123456789012345"
+    },
+    {
+      "field": "address",
+      "input": "",
+      "accepted": true,
+      "normalized": ""
+    },
+    {
+      "field": "address",
+      "input": "  1 Main St  ",
+      "accepted": true,
+      "normalized": "1 Main St"
+    },
+    {
+      "field": "address",
+      "input": "école",
+      "accepted": true,
+      "normalized": "école"
+    },
+    {
+      "field": "address",
+      "input": "é",
+      "accepted": true,
+      "normalized": "é"
+    },
+    {
+      "field": "address",
+      "input": "مرحبا",
+      "accepted": true,
+      "normalized": "مرحبا"
+    },
+    {
+      "field": "address",
+      "input": "A\nB",
+      "accepted": true,
+      "normalized": "A\nB"
+    },
+    {
+      "field": "address",
+      "input": "A\rB",
+      "accepted": true,
+      "normalized": "A\rB"
+    },
+    {
+      "field": "address",
+      "input": "A\tB",
+      "accepted": true,
+      "normalized": "A\tB"
+    },
+    {
+      "field": "address",
+      "input": "A\u0000B",
+      "accepted": false
+    },
+    {
+      "field": "address",
+      "input": "A‮B",
+      "accepted": false
+    },
+    {
+      "field": "address",
+      "input": "A\ud800B",
+      "accepted": false
+    },
+    {
+      "field": "address",
+      "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "accepted": true,
+      "normalized": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "field": "address",
+      "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "accepted": false
+    },
+    {
+      "field": "postal",
+      "input": "",
+      "accepted": true,
+      "normalized": ""
+    },
+    {
+      "field": "postal",
+      "input": " K1A 0B1 ",
+      "accepted": true,
+      "normalized": "K1A 0B1"
+    },
+    {
+      "field": "postal",
+      "input": "SW1A 1AA",
+      "accepted": true,
+      "normalized": "SW1A 1AA"
+    },
+    {
+      "field": "postal",
+      "input": "12345-6789",
+      "accepted": true,
+      "normalized": "12345-6789"
+    },
+    {
+      "field": "postal",
+      "input": "123",
+      "accepted": true,
+      "normalized": "123"
+    },
+    {
+      "field": "postal",
+      "input": "東京",
+      "accepted": true,
+      "normalized": "東京"
+    },
+    {
+      "field": "postal",
+      "input": "A–B",
+      "accepted": true,
+      "normalized": "A–B"
+    },
+    {
+      "field": "postal",
+      "input": "1.2",
+      "accepted": false
+    },
+    {
+      "field": "postal",
+      "input": "A_B",
+      "accepted": false
+    },
+    {
+      "field": "postal",
+      "input": "A\nB",
+      "accepted": false
+    },
+    {
+      "field": "postal",
+      "input": "A‮B",
+      "accepted": false
+    },
+    {
+      "field": "postal",
+      "input": "xxxxxxxxxxxxxxxxxxxx",
+      "accepted": true,
+      "normalized": "xxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "field": "postal",
+      "input": "xxxxxxxxxxxxxxxxxxxxx",
+      "accepted": false
+    }
+  ],
+  "pairCases": [
+    {
+      "mobilePrefix": "",
+      "mobileNumber": "",
+      "accepted": true,
+      "normalized": {
+        "mobilePrefix": "",
+        "mobileNumber": ""
+      }
+    },
+    {
+      "mobilePrefix": "",
+      "mobileNumber": "1234567",
+      "accepted": false
+    },
+    {
+      "mobilePrefix": "+44",
+      "mobileNumber": "",
+      "accepted": true,
+      "normalized": {
+        "mobilePrefix": "+44",
+        "mobileNumber": ""
+      }
+    },
+    {
+      "mobilePrefix": "+44",
+      "mobileNumber": "1234567",
+      "accepted": true,
+      "normalized": {
+        "mobilePrefix": "+44",
+        "mobileNumber": "1234567"
+      }
+    },
+    {
+      "mobilePrefix": "  +44  ",
+      "mobileNumber": "(123) 4567",
+      "accepted": true,
+      "normalized": {
+        "mobilePrefix": "+44",
+        "mobileNumber": "1234567"
+      }
+    }
+  ]
+}

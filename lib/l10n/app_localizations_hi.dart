@@ -9092,4 +9092,188 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get mobilePageLinkError => 'यह पेज नहीं खुल सका। फिर से कोशिश करें।';
+
+  @override
+  String get mobileInvalidServerQr => 'इस QR कोड में मान्य सर्वर URL नहीं है।';
+
+  @override
+  String get mobileServerUrlUpdated => 'सर्वर URL अपडेट हो गया';
+
+  @override
+  String get mobileServerUrlSaveFailed =>
+      'यह सर्वर URL सहेजा नहीं जा सका। फिर कोशिश करें।';
+
+  @override
+  String get mobileCameraConfigureManually =>
+      'कैमरा उपलब्ध नहीं है। सर्वर URL मैन्युअल रूप से सेट करें।';
+
+  @override
+  String get mobileScanServerQr => 'सर्वर QR कोड स्कैन करें';
+
+  @override
+  String get mobileServerQrInstruction =>
+      'कैमरे को पूरे API URL वाले QR कोड की ओर करें।';
+
+  @override
+  String get mobileCameraPermissionManual =>
+      'कैमरा उपलब्ध नहीं है। कैमरे की अनुमति जाँचें या मैन्युअल रूप से सेट करें।';
+
+  @override
+  String get mobileCameraUnavailableDevice =>
+      'इस डिवाइस पर कैमरे से स्कैन करना उपलब्ध नहीं है।';
+
+  @override
+  String get mobileConfigureManually => 'मैन्युअल रूप से सेट करें';
+
+  @override
+  String get mobileScanServerQrAction => 'सर्वर QR कोड स्कैन करें';
+
+  @override
+  String get mobileTrackingVehicleUnavailable =>
+      'यह वाहन उपलब्ध नहीं है या अब आपके खाते से जुड़ा नहीं है।';
+
+  @override
+  String get mobileClusterSafetyDescription =>
+      'पास के वाहनों को समूह में दिखाएँ। नक्शे को सुचारु रखने के लिए घने दृश्यों में समूह अपने आप बनते हैं।';
+
+  @override
+  String get mobileWaitingForVehicle => 'वाहन की प्रतीक्षा है…';
+
+  @override
+  String get mobileLicenseTrackingBlocked =>
+      'ट्रैकिंग उपलब्ध नहीं: लाइसेंस अवरुद्ध है';
+
+  @override
+  String get mobileServiceTrackingBlocked =>
+      'ट्रैकिंग उपलब्ध नहीं: सेवा अवरुद्ध है';
+
+  @override
+  String get mobileNoTrackingDevice => 'कोई ट्रैकिंग डिवाइस नहीं जोड़ा गया';
+
+  @override
+  String get mobileVehicleTracking => 'वाहन ट्रैकिंग';
+
+  @override
+  String get mobileLastGps => 'अंतिम GPS';
+
+  @override
+  String get mobileCurrentMonthTransactionsEmpty =>
+      'इस महीने कोई लेनदेन नहीं है।';
+
+  @override
+  String get mobileViewAllHistory => 'पूरा इतिहास देखें';
+
+  @override
+  String get mobileTrackVehicle => 'वाहन ट्रैक करें';
+
+  @override
+  String get mobileGpsTimeUnavailable => 'GPS समय उपलब्ध नहीं है';
+
+  @override
+  String get mobileWaitingGps => 'GPS स्थान की प्रतीक्षा है';
+
+  @override
+  String get mobileLiveConnectionConnected => 'लाइव कनेक्शन जुड़ा है';
+
+  @override
+  String get mobilePauseFollowVehicle => 'वाहन का अनुसरण रोकें';
+
+  @override
+  String get mobileFollowVehicle => 'वाहन का अनुसरण करें';
+
+  @override
+  String get mobileVehicleNoLocation =>
+      'इस वाहन का मान्य स्थान अभी उपलब्ध नहीं है।';
+
+  @override
+  String get mobileLoadingVehicle => 'वाहन लोड हो रहा है…';
+
+  @override
+  String get mobileVehicleLoadRetry =>
+      'यह वाहन लोड नहीं हो सका। फिर कोशिश करें।';
+
+  @override
+  String get mobileErrorSessionExpired =>
+      'आपका सत्र समाप्त हो गया है। कृपया फिर से साइन इन करें।';
+
+  @override
+  String get mobileErrorAccessDenied =>
+      'आपको यह जानकारी देखने की अनुमति नहीं है।';
+
+  @override
+  String get mobileErrorUnavailable => 'यह जानकारी अब उपलब्ध नहीं है।';
+
+  @override
+  String get mobileErrorTimeout =>
+      'अनुरोध का समय समाप्त हो गया। कृपया फिर कोशिश करें।';
+
+  @override
+  String get mobileErrorRateLimit =>
+      'बहुत अधिक अनुरोध हैं। थोड़ी देर रुककर फिर कोशिश करें।';
+
+  @override
+  String get mobileErrorServiceUnavailable =>
+      'यह जानकारी अस्थायी रूप से उपलब्ध नहीं है। कृपया बाद में फिर कोशिश करें।';
+
+  @override
+  String get mobileErrorConnection =>
+      'कनेक्ट नहीं हो सका। अपना इंटरनेट कनेक्शन जाँचें और फिर कोशिश करें।';
+
+  @override
+  String get mobileErrorSecureConnection =>
+      'सुरक्षित कनेक्शन स्थापित नहीं हो सका। कृपया बाद में फिर कोशिश करें।';
+
+  @override
+  String get mobileErrorCancelled =>
+      'अनुरोध रद्द कर दिया गया। कृपया फिर कोशिश करें।';
+
+  @override
+  String get mobileErrorRequest =>
+      'अनुरोध पूरा नहीं हो सका। कृपया फिर कोशिश करें।';
+
+  @override
+  String get mobileErrorTimeZone =>
+      'आपका समय क्षेत्र पता नहीं चल सका। ऐप फिर से शुरू करें और दोबारा कोशिश करें।';
+
+  @override
+  String get adminLogBilling => 'बिलिंग';
+
+  @override
+  String get adminAddDevice => 'डिवाइस जोड़ें';
+
+  @override
+  String get mobileBlockedOnPage => 'इस पृष्ठ पर अवरुद्ध';
+
+  @override
+  String get mobileExpiringOnPage => 'इस पृष्ठ पर समाप्त होने वाले';
+
+  @override
+  String get validationAccountNameLetter =>
+      'नाम में कम से कम एक अक्षर होना चाहिए';
+
+  @override
+  String get validationAccountNameCharacters => 'नाम में अमान्य वर्ण हैं';
+
+  @override
+  String get validationAccountNameSpaces => 'नाम में लगातार स्पेस नहीं हो सकते';
+
+  @override
+  String get validationAccountUsernameLetter =>
+      'उपयोगकर्ता नाम में कम से कम एक अक्षर होना चाहिए';
+
+  @override
+  String get validationAccountUsernameCharacters =>
+      'उपयोगकर्ता नाम में अमान्य वर्ण हैं';
+
+  @override
+  String get validationAccountAddressText => 'पते में अमान्य टेक्स्ट है';
+
+  @override
+  String get validationAccountPostal => 'मान्य डाक कोड दर्ज करें';
+
+  @override
+  String get mobileCreateDriverError => 'ड्राइवर नहीं बनाया जा सका।';
+
+  @override
+  String get mobileCreateSubuserError => 'उप उपयोगकर्ता नहीं बनाया जा सका।';
 }

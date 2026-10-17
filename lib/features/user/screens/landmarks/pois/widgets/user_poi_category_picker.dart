@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
@@ -122,16 +122,16 @@ class _UserPoiCategoryPickerState extends State<UserPoiCategoryPicker> {
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(color: OpenVtsColors.border),
+                borderSide: const BorderSide(color: OpenVtsMapColors.border),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-                borderSide: const BorderSide(color: OpenVtsColors.border),
+                borderSide: const BorderSide(color: OpenVtsMapColors.border),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OpenVtsRadius.button),
                 borderSide: const BorderSide(
-                  color: OpenVtsColors.brandInk,
+                  color: OpenVtsMapColors.brandInk,
                   width: 1.4,
                 ),
               ),
@@ -166,21 +166,22 @@ class _CategoryChip extends StatelessWidget {
         duration: const Duration(milliseconds: 120),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: OpenVtsColors.brandInk,
+          color: OpenVtsMapColors.brandInk,
           borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
           border: Border.all(
-            color: selected ? OpenVtsColors.white : OpenVtsColors.brandInk,
+            color:
+                selected ? OpenVtsMapColors.white : OpenVtsMapColors.brandInk,
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 13, color: OpenVtsColors.white),
+            Icon(icon, size: 13, color: OpenVtsMapColors.white),
             const SizedBox(width: 4),
             Text(
               label,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.white,
+                color: OpenVtsMapColors.white,
                 fontWeight: FontWeight.w600,
               ),
             ),

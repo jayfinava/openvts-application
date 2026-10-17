@@ -387,12 +387,12 @@ class UserReportExportService {
 <meta charset="UTF-8">
 <title>OpenVTS — ${_esc(reportKey.label)}</title>
 <style>
-body{font-family:system-ui,sans-serif;font-size:13px;color:#141118;padding:24px}
+body{font-family:system-ui,sans-serif;font-size:13px;color:#141414;padding:24px}
 h1{font-size:18px;margin-bottom:4px}
-.meta{color:#6b6570;font-size:11px;margin-bottom:16px}
+.meta{color:#666666;font-size:11px;margin-bottom:16px}
 table{border-collapse:collapse;width:100%}
-th{background:#f4f3f6;text-align:left;padding:6px 8px;font-size:11px;font-weight:700;border:1px solid #e7e3ea}
-td{padding:5px 8px;font-size:11px;border:1px solid #e7e3ea}
+th{background:#f4f4f4;text-align:left;padding:6px 8px;font-size:11px;font-weight:700;border:1px solid #e5e5e5}
+td{padding:5px 8px;font-size:11px;border:1px solid #e5e5e5}
 tr:nth-child(even)td{background:#fafafa}
 </style>
 </head>
@@ -483,13 +483,11 @@ List<Map<String, dynamic>> normalizeUserReportRowsForExport(
 ) {
   if (reportKey != UserReportKey.overspeed) return rows;
 
-  return rows
-      .map((raw) {
-        final row = OverspeedRow.fromMap(raw);
-        return <String, dynamic>{
-          ...raw,
-          'address': resolveOverspeedLocation(row.address, row.lat, row.lon),
-        };
-      })
-      .toList(growable: false);
+  return rows.map((raw) {
+    final row = OverspeedRow.fromMap(raw);
+    return <String, dynamic>{
+      ...raw,
+      'address': resolveOverspeedLocation(row.address, row.lat, row.lon),
+    };
+  }).toList(growable: false);
 }

@@ -13,7 +13,7 @@ import '../../../shared/widgets/open_vts_button.dart';
 import '../../../shared/widgets/open_vts_card.dart';
 import '../../../shared/widgets/open_vts_page_scaffold.dart';
 import '../../../shared/widgets/open_vts_text_field.dart';
-import '../controllers/auth_controller.dart';
+import '../services/server_url_configuration.dart';
 
 class ApiBaseUrlSettingsScreen extends ConsumerStatefulWidget {
   const ApiBaseUrlSettingsScreen({super.key});
@@ -54,30 +54,14 @@ class _ApiBaseUrlSettingsScreenState
   Future<void> _changeServer(String value, {required bool reset}) async {
     setState(() => _saving = true);
     try {
-      final controller = ref.read(apiBaseUrlProvider.notifier);
-      final next = reset
-          ? controller.defaultUrl
-          : ApiBaseUrlController.normalizeUrl(value);
-      if (next != ref.read(apiBaseUrlProvider)) {
-        // Credentials are scoped to the server that issued them. Cancel pending
-        // authentication and clear every local role before changing the origin.
-        await ref
-            .read(authControllerProvider.notifier)
-            .logoutAllRoles(deregisterPush: false, showLoading: false);
-      }
-      if (!mounted) return;
-      if (reset) {
-        await controller.resetToDefault();
-      } else {
-        await controller.saveCustomUrl(value);
-      }
+      final next = await configureApiBaseUrl(ref, value, reset: reset);
       if (!mounted) return;
       _urlController.text = next;
       ToastHelper.show(
         context,
         reset ? 'Server URL reset to default' : 'Server URL updated',
       );
-      if (!reset) Navigator.of(context).pop();
+      if (!reset) Navigator.of(context).pop(true);
     } catch (_) {
       if (mounted) {
         ToastHelper.showError(

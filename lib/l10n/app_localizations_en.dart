@@ -9097,4 +9097,190 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mobilePageLinkError =>
       'Unable to open this page. Please try again.';
+
+  @override
+  String get mobileInvalidServerQr =>
+      'This QR code does not contain a valid server URL.';
+
+  @override
+  String get mobileServerUrlUpdated => 'Server URL updated';
+
+  @override
+  String get mobileServerUrlSaveFailed =>
+      'Unable to save this server URL. Try again.';
+
+  @override
+  String get mobileCameraConfigureManually =>
+      'Camera unavailable. Configure the server URL manually.';
+
+  @override
+  String get mobileScanServerQr => 'Scan Server QR Code';
+
+  @override
+  String get mobileServerQrInstruction =>
+      'Point your camera at a QR code containing the full API URL.';
+
+  @override
+  String get mobileCameraPermissionManual =>
+      'Camera unavailable. Check camera permission or configure manually.';
+
+  @override
+  String get mobileCameraUnavailableDevice =>
+      'Camera scanning is unavailable on this device.';
+
+  @override
+  String get mobileConfigureManually => 'Configure manually';
+
+  @override
+  String get mobileScanServerQrAction => 'Scan server QR code';
+
+  @override
+  String get mobileTrackingVehicleUnavailable =>
+      'This vehicle is unavailable or no longer assigned to your account.';
+
+  @override
+  String get mobileClusterSafetyDescription =>
+      'Group nearby vehicles. Dense views are grouped automatically to keep the map responsive.';
+
+  @override
+  String get mobileWaitingForVehicle => 'Waiting for vehicle…';
+
+  @override
+  String get mobileLicenseTrackingBlocked =>
+      'Tracking unavailable: license blocked';
+
+  @override
+  String get mobileServiceTrackingBlocked =>
+      'Tracking unavailable: service blocked';
+
+  @override
+  String get mobileNoTrackingDevice => 'No tracking device assigned';
+
+  @override
+  String get mobileVehicleTracking => 'Vehicle tracking';
+
+  @override
+  String get mobileLastGps => 'Last GPS';
+
+  @override
+  String get mobileCurrentMonthTransactionsEmpty =>
+      'No transactions this month.';
+
+  @override
+  String get mobileViewAllHistory => 'View all history';
+
+  @override
+  String get mobileTrackVehicle => 'Track vehicle';
+
+  @override
+  String get mobileGpsTimeUnavailable => 'GPS timestamp unavailable';
+
+  @override
+  String get mobileWaitingGps => 'Waiting for GPS location';
+
+  @override
+  String get mobileLiveConnectionConnected => 'Live connection connected';
+
+  @override
+  String get mobilePauseFollowVehicle => 'Pause following vehicle';
+
+  @override
+  String get mobileFollowVehicle => 'Follow vehicle';
+
+  @override
+  String get mobileVehicleNoLocation =>
+      'This vehicle has no valid location yet.';
+
+  @override
+  String get mobileLoadingVehicle => 'Loading vehicle…';
+
+  @override
+  String get mobileVehicleLoadRetry => 'Unable to load this vehicle. Retry.';
+
+  @override
+  String get mobileErrorSessionExpired =>
+      'Your session has expired. Please sign in again.';
+
+  @override
+  String get mobileErrorAccessDenied =>
+      'You do not have access to this information.';
+
+  @override
+  String get mobileErrorUnavailable =>
+      'This information is no longer available.';
+
+  @override
+  String get mobileErrorTimeout => 'The request timed out. Please try again.';
+
+  @override
+  String get mobileErrorRateLimit =>
+      'Too many requests. Please wait a moment and try again.';
+
+  @override
+  String get mobileErrorServiceUnavailable =>
+      'This information is temporarily unavailable. Please try again later.';
+
+  @override
+  String get mobileErrorConnection =>
+      'Unable to connect. Check your internet connection and try again.';
+
+  @override
+  String get mobileErrorSecureConnection =>
+      'A secure connection could not be established. Please try again later.';
+
+  @override
+  String get mobileErrorCancelled =>
+      'The request was cancelled. Please try again.';
+
+  @override
+  String get mobileErrorRequest =>
+      'Unable to complete the request. Please try again.';
+
+  @override
+  String get mobileErrorTimeZone =>
+      'Unable to detect your time zone. Restart the app and try again.';
+
+  @override
+  String get adminLogBilling => 'Billing';
+
+  @override
+  String get adminAddDevice => 'Add Device';
+
+  @override
+  String get mobileBlockedOnPage => 'Blocked on page';
+
+  @override
+  String get mobileExpiringOnPage => 'Expiring on page';
+
+  @override
+  String get validationAccountNameLetter =>
+      'Name must contain at least one letter';
+
+  @override
+  String get validationAccountNameCharacters =>
+      'Name contains invalid characters';
+
+  @override
+  String get validationAccountNameSpaces =>
+      'Name cannot contain consecutive spaces';
+
+  @override
+  String get validationAccountUsernameLetter =>
+      'Username must contain at least one letter';
+
+  @override
+  String get validationAccountUsernameCharacters =>
+      'Username contains invalid characters';
+
+  @override
+  String get validationAccountAddressText => 'Address contains invalid text';
+
+  @override
+  String get validationAccountPostal => 'Enter a valid postal code';
+
+  @override
+  String get mobileCreateDriverError => 'Unable to create driver.';
+
+  @override
+  String get mobileCreateSubuserError => 'Unable to create sub user.';
 }

@@ -329,9 +329,8 @@ class _GeneralSettingsSectionState
           const SizedBox(height: OpenVtsSpacing.md),
           _AdvancedCleanupCard(
             state: state,
-            onPreview: state.isPreviewingDataRetention
-                ? null
-                : _previewRetention,
+            onPreview:
+                state.isPreviewingDataRetention ? null : _previewRetention,
             onDryRun: state.isRunningDataRetention ? null : _dryRunRetention,
             onRun: state.isRunningDataRetention ? null : _openCleanupSheet,
           ),
@@ -775,16 +774,16 @@ class _AdvancedCleanupCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF7E6),
+              color: const Color(0xFFF7F7F7),
               borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-              border: Border.all(color: const Color(0xFFFFE0A6)),
+              border: Border.all(color: const Color(0xFFE2E2E2)),
             ),
             child: Row(
               children: [
                 const Icon(
                   Icons.warning_amber_rounded,
                   size: 14,
-                  color: Color(0xFFB76E00),
+                  color: Color(0xFF767676),
                 ),
                 const SizedBox(width: 6),
                 Expanded(
@@ -796,7 +795,7 @@ class _AdvancedCleanupCard extends StatelessWidget {
                       fontFamily: OpenVtsTypography.primaryFontFamily,
                       fontSize: 11,
                       height: 1.3,
-                      color: Color(0xFF8A5200),
+                      color: Color(0xFF585858),
                     ),
                   ),
                 ),
@@ -821,8 +820,7 @@ class _AdvancedCleanupCard extends StatelessWidget {
                   label: context.mobileText('Dry-run'),
                   variant: OpenVtsButtonVariant.secondary,
                   height: 40,
-                  isLoading:
-                      state.isRunningDataRetention &&
+                  isLoading: state.isRunningDataRetention &&
                       (preview?.dryRun ?? false),
                   onPressed: onDryRun,
                 ),
@@ -981,7 +979,7 @@ class _SummaryRow extends StatelessWidget {
               fontSize: 11.5,
               fontWeight: FontWeight.w600,
               color: warn
-                  ? const Color(0xFFB76E00)
+                  ? const Color(0xFF767676)
                   : Theme.of(context).colorScheme.onSurface,
             ),
           ),
@@ -1025,9 +1023,9 @@ class _TableRow extends StatelessWidget {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFEBE6),
+                    color: const Color(0xFFEFEFEF),
                     borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-                    border: Border.all(color: const Color(0xFFFFC4B0)),
+                    border: Border.all(color: const Color(0xFFCFCFCF)),
                   ),
                   child: Text(
                     context.mobileText('Failed'),
@@ -1036,7 +1034,7 @@ class _TableRow extends StatelessWidget {
                       fontSize: 9.5,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.5,
-                      color: Color(0xFFB42318),
+                      color: Color(0xFF414141),
                     ),
                   ),
                 ),
@@ -1065,7 +1063,7 @@ class _TableRow extends StatelessWidget {
               style: const TextStyle(
                 fontFamily: OpenVtsTypography.primaryFontFamily,
                 fontSize: 10.5,
-                color: Color(0xFFB42318),
+                color: Color(0xFF414141),
               ),
             ),
           ],
@@ -1175,14 +1173,14 @@ class _CleanupConfirmSheetState extends State<_CleanupConfirmSheet> {
                     width: 28,
                     height: 28,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFEBE6),
+                      color: const Color(0xFFEFEFEF),
                       borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-                      border: Border.all(color: const Color(0xFFFFC4B0)),
+                      border: Border.all(color: const Color(0xFFCFCFCF)),
                     ),
                     child: const Icon(
                       Icons.warning_amber_rounded,
                       size: 16,
-                      color: Color(0xFFB42318),
+                      color: Color(0xFF414141),
                     ),
                   ),
                   const SizedBox(width: 8),

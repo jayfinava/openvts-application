@@ -114,9 +114,8 @@ class UserSettingsSocialLinks {
   Map<String, dynamic> toJsonNonEmpty() {
     final map = <String, dynamic>{};
     void put(String key, String? value, {bool normalizeAsUrl = false}) {
-      final normalized = normalizeAsUrl
-          ? _normalizeOptionalUrl(value)
-          : value?.trim();
+      final normalized =
+          normalizeAsUrl ? _normalizeOptionalUrl(value) : value?.trim();
       if (normalized != null && normalized.isNotEmpty) {
         map[key] = normalized;
       }
@@ -258,16 +257,16 @@ class UserSettingsCompany {
 
   @override
   int get hashCode => Object.hash(
-    id,
-    name,
-    websiteUrl,
-    customDomain,
-    socialLinks,
-    logoLightUrl,
-    logoDarkUrl,
-    faviconUrl,
-    primaryColor,
-  );
+        id,
+        name,
+        websiteUrl,
+        customDomain,
+        socialLinks,
+        logoLightUrl,
+        logoDarkUrl,
+        faviconUrl,
+        primaryColor,
+      );
 }
 
 class UserSettingsAddress {
@@ -361,15 +360,15 @@ class UserSettingsAddress {
 
   @override
   int get hashCode => Object.hash(
-    id,
-    addressLine,
-    countryCode,
-    stateCode,
-    cityName,
-    cityId,
-    pincode,
-    fullAddress,
-  );
+        id,
+        addressLine,
+        countryCode,
+        stateCode,
+        cityName,
+        cityId,
+        pincode,
+        fullAddress,
+      );
 }
 
 class UserSettingsProfile {
@@ -458,16 +457,14 @@ class UserSettingsProfile {
       credits: _readDouble(source, const ['credits', 'balance']),
       createdAt: _readDateTime(source, const ['createdAt', 'created']),
       updatedAt: _readDateTime(source, const ['updatedAt', 'modified']),
-      isEmailVerified:
-          _readBool(source, const [
+      isEmailVerified: _readBool(source, const [
             'isEmailVerified',
             'emailVerified',
             'is_email_verified',
           ]) ??
           false,
       emailVerifiedAt: _readDateTime(source, const ['emailVerifiedAt']),
-      isMobileVerified:
-          _readBool(source, const [
+      isMobileVerified: _readBool(source, const [
             'isMobileVerified',
             'mobileVerified',
             'is_mobile_verified',
@@ -544,23 +541,23 @@ class UserSettingsProfile {
 
   @override
   int get hashCode => Object.hash(
-    uid,
-    name,
-    username,
-    email,
-    mobilePrefix,
-    mobileNumber,
-    profileUrl,
-    credits,
-    createdAt,
-    updatedAt,
-    isEmailVerified,
-    emailVerifiedAt,
-    isMobileVerified,
-    mobileVerifiedAt,
-    company,
-    address,
-  );
+        uid,
+        name,
+        username,
+        email,
+        mobilePrefix,
+        mobileNumber,
+        profileUrl,
+        credits,
+        createdAt,
+        updatedAt,
+        isEmailVerified,
+        emailVerifiedAt,
+        isMobileVerified,
+        mobileVerifiedAt,
+        company,
+        address,
+      );
 }
 
 class UserEmailSubscriptionStatus {
@@ -587,16 +584,14 @@ class UserEmailSubscriptionStatus {
     final nested = _asMap(source['data']);
     final isSubscribed =
         _readBool(source, const ['isSubscribed', 'subscribed', 'value']) ??
-        _readBool(nested, const ['isSubscribed', 'subscribed', 'value']) ??
-        false;
+            _readBool(nested, const ['isSubscribed', 'subscribed', 'value']) ??
+            false;
 
     return UserEmailSubscriptionStatus(
       isSubscribed: isSubscribed,
-      brandOwnerId:
-          _readInt(source, const ['brandOwnerId']) ??
+      brandOwnerId: _readInt(source, const ['brandOwnerId']) ??
           _readInt(nested, const ['brandOwnerId']),
-      scope:
-          _readNullableString(source, const ['scope']) ??
+      scope: _readNullableString(source, const ['scope']) ??
           _readNullableString(nested, const ['scope']),
     );
   }
@@ -730,9 +725,9 @@ class UserChangePasswordRequest {
   final String newPassword;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-    'currentPassword': currentPassword,
-    'newPassword': newPassword,
-  };
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+      };
 }
 
 class UserOtpConfirmRequest {
@@ -778,17 +773,15 @@ class UserLocalizationSettings {
 
     final language =
         _readNullableString(source, const ['language', 'languageCode']) ??
-        defaults.language;
+            defaults.language;
 
     final rawDirection = source['layoutDirection'] ?? source['direction'];
     final layoutDirection = UserLayoutDirection.fromValue(rawDirection);
 
-    final dateFormat =
-        _readNullableString(source, const ['dateFormat']) ??
+    final dateFormat = _readNullableString(source, const ['dateFormat']) ??
         defaults.dateFormat;
 
-    final use24Hour =
-        _readBool(source, const ['use24Hour']) ??
+    final use24Hour = _readBool(source, const ['use24Hour']) ??
         UserTimeFormat.fromValue(source['timeFormat']).use24Hour;
 
     final rawTheme = source['theme'];
@@ -802,13 +795,12 @@ class UserLocalizationSettings {
     final rawUnits = source['units'] ?? source['distanceUnit'];
     final units = UserDistanceUnit.fromValue(rawUnits);
 
-    final defaultLat =
-        _readDouble(source, const ['defaultLat', 'mapLat']) ??
+    final defaultLat = _readDouble(source, const ['defaultLat', 'mapLat']) ??
         defaults.defaultLat;
 
     final defaultLon =
         _readDouble(source, const ['defaultLon', 'defaultLng', 'mapLng']) ??
-        defaults.defaultLon;
+            defaults.defaultLon;
 
     final mapZoom =
         _readInt(source, const ['mapZoom', 'zoom']) ?? defaults.mapZoom;
@@ -854,17 +846,17 @@ class UserLocalizationSettings {
   }
 
   Map<String, dynamic> toPatchJson() => <String, dynamic>{
-    'language': language,
-    'layoutDirection': layoutDirection.apiValue,
-    'dateFormat': dateFormat,
-    'use24Hour': use24Hour,
-    'theme': theme.apiValue,
-    'timezoneOffset': timezoneOffset,
-    'units': units.apiValue,
-    'defaultLat': defaultLat,
-    'defaultLon': defaultLon,
-    'mapZoom': mapZoom,
-  };
+        'language': language,
+        'layoutDirection': layoutDirection.apiValue,
+        'dateFormat': dateFormat,
+        'use24Hour': use24Hour,
+        'theme': theme.apiValue,
+        'timezoneOffset': timezoneOffset,
+        'units': units.apiValue,
+        'defaultLat': defaultLat,
+        'defaultLon': defaultLon,
+        'mapZoom': mapZoom,
+      };
 
   @override
   bool operator ==(Object other) {
@@ -883,17 +875,17 @@ class UserLocalizationSettings {
 
   @override
   int get hashCode => Object.hash(
-    language,
-    layoutDirection,
-    dateFormat,
-    use24Hour,
-    theme,
-    timezoneOffset,
-    units,
-    defaultLat,
-    defaultLon,
-    mapZoom,
-  );
+        language,
+        layoutDirection,
+        dateFormat,
+        use24Hour,
+        theme,
+        timezoneOffset,
+        units,
+        defaultLat,
+        defaultLon,
+        mapZoom,
+      );
 }
 
 class UserLanguageOption {
@@ -1009,18 +1001,17 @@ class UserCountryOption {
             return const UserCountryOption(value: '', label: '');
           }
 
-          final value =
-              (_readNullableString(source, const [
-                        'countryCode',
-                        'country_code',
-                        'code',
-                        'iso2',
-                        'country',
-                      ]) ??
-                      '')
-                  .toUpperCase();
-          final label =
-              _readNullableString(source, const [
+          final value = (_readNullableString(source, const [
+                    'countryCode',
+                    'isoCode',
+                    'country_code',
+                    'code',
+                    'iso2',
+                    'country',
+                  ]) ??
+                  '')
+              .toUpperCase();
+          final label = _readNullableString(source, const [
                 'name',
                 'countryName',
                 'country_name',
@@ -1068,19 +1059,18 @@ class UserStateOption {
             return const UserStateOption(value: '', label: '');
           }
 
-          final value =
-              (_readNullableString(source, const [
-                        'stateCode',
-                        'state_code',
-                        'code',
-                        'iso2',
-                        'state',
-                        'value',
-                      ]) ??
-                      '')
-                  .toUpperCase();
-          final label =
-              _readNullableString(source, const [
+          final value = (_readNullableString(source, const [
+                    'stateCode',
+                    'isoCode',
+                    'state_code',
+                    'code',
+                    'iso2',
+                    'state',
+                    'value',
+                  ]) ??
+                  '')
+              .toUpperCase();
+          final label = _readNullableString(source, const [
                 'name',
                 'stateName',
                 'state_name',
@@ -1125,8 +1115,7 @@ class UserCityOption {
             return const UserCityOption(value: '', label: '');
           }
 
-          final value =
-              _readNullableString(source, const [
+          final value = _readNullableString(source, const [
                 'name',
                 'cityName',
                 'city_name',
@@ -1137,8 +1126,7 @@ class UserCityOption {
                 'id',
               ]) ??
               '';
-          final label =
-              _readNullableString(source, const [
+          final label = _readNullableString(source, const [
                 'name',
                 'cityName',
                 'city_name',
@@ -1198,15 +1186,14 @@ class UserMobilePrefixOption {
             );
           }
 
-          final countryCode =
-              (_readNullableString(source, const [
-                        'countryCode',
-                        'country_code',
-                        'country',
-                        'iso2',
-                      ]) ??
-                      '')
-                  .toUpperCase();
+          final countryCode = (_readNullableString(source, const [
+                    'countryCode',
+                    'country_code',
+                    'country',
+                    'iso2',
+                  ]) ??
+                  '')
+              .toUpperCase();
           final value = _normalizeDialCode(
             _readNullableString(source, const [
                   'mobilePrefix',

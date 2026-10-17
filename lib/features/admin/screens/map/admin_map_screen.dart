@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../live_map/models/live_map_role_config.dart';
+import '../../../live_map/models/live_map_vehicle_target.dart';
 import '../../../live_map/screens/live_map_screen.dart';
 
 /// Admin live-map screen.
@@ -11,10 +12,15 @@ import '../../../live_map/screens/live_map_screen.dart';
 /// keys, default home route, and command-send mode change, all supplied by
 /// [LiveMapRoleConfig.admin].
 class AdminMapScreen extends StatelessWidget {
-  const AdminMapScreen({super.key});
+  const AdminMapScreen({super.key, this.vehicleTarget});
+
+  final LiveMapVehicleTarget? vehicleTarget;
 
   @override
   Widget build(BuildContext context) {
-    return LiveMapScreen(config: LiveMapRoleConfig.admin());
+    return LiveMapScreen(
+      config: LiveMapRoleConfig.admin(),
+      vehicleTarget: vehicleTarget,
+    );
   }
 }

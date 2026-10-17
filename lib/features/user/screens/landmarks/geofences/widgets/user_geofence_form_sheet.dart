@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
@@ -117,8 +117,7 @@ class _UserGeofenceFormBodyState extends ConsumerState<_UserGeofenceFormBody> {
     _type = _formTypeFromGeodata(existing?.geodata);
     _color = existing?.color ?? kUserLandmarkPalette.first;
     _active = existing?.isActive ?? true;
-    _toleranceM =
-        existing?.toleranceMeters ??
+    _toleranceM = existing?.toleranceMeters ??
         (existing?.geodata is UserLineGeoData
             ? (existing!.geodata as UserLineGeoData).toleranceM
             : null);
@@ -207,9 +206,8 @@ class _UserGeofenceFormBodyState extends ConsumerState<_UserGeofenceFormBody> {
                 : _description.text.trim(),
             color: _color,
             isActive: _active,
-            toleranceMeters: _type == UserGeofenceFormType.line
-                ? _toleranceM
-                : null,
+            toleranceMeters:
+                _type == UserGeofenceFormType.line ? _toleranceM : null,
             geodata: _geodata!,
           ),
         );
@@ -221,9 +219,8 @@ class _UserGeofenceFormBodyState extends ConsumerState<_UserGeofenceFormBody> {
             description: _description.text.trim(),
             color: _color,
             isActive: _active,
-            toleranceMeters: _type == UserGeofenceFormType.line
-                ? _toleranceM
-                : null,
+            toleranceMeters:
+                _type == UserGeofenceFormType.line ? _toleranceM : null,
             geodata: _geodata,
           ),
         );
@@ -260,7 +257,11 @@ class _UserGeofenceFormBodyState extends ConsumerState<_UserGeofenceFormBody> {
             controller: _name,
             style: OpenVtsTypography.body,
             decoration: _denseDecoration(hint: 'e.g. Warehouse perimeter'),
-            validator: context.localizedValidator((value) {final v = value?.trim() ?? ''; if (v.length < 2) return 'Enter at least 2 characters.'; return null;}),
+            validator: context.localizedValidator((value) {
+              final v = value?.trim() ?? '';
+              if (v.length < 2) return 'Enter at least 2 characters.';
+              return null;
+            }),
           ),
           const SizedBox(height: OpenVtsSpacing.sm),
           const _FieldLabel('Description (optional)'),
@@ -298,7 +299,7 @@ class _UserGeofenceFormBodyState extends ConsumerState<_UserGeofenceFormBody> {
             Text(
               _submitError!,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.error,
+                color: OpenVtsMapColors.error,
               ),
             ),
           ],
@@ -328,15 +329,16 @@ class _UserGeofenceFormBodyState extends ConsumerState<_UserGeofenceFormBody> {
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-        borderSide: const BorderSide(color: OpenVtsColors.border),
+        borderSide: const BorderSide(color: OpenVtsMapColors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-        borderSide: const BorderSide(color: OpenVtsColors.border),
+        borderSide: const BorderSide(color: OpenVtsMapColors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-        borderSide: const BorderSide(color: OpenVtsColors.brandInk, width: 1.4),
+        borderSide:
+            const BorderSide(color: OpenVtsMapColors.brandInk, width: 1.4),
       ),
     );
   }
@@ -416,10 +418,12 @@ class _TypePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
     final borderColor = selected
-        ? (isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary)
+        ? (isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary)
         : bgColor;
 
     return InkWell(
@@ -463,9 +467,12 @@ class _GeometrySummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
     final summary = _summary(geodata, type, toleranceM);
 
     return Container(
@@ -595,14 +602,16 @@ class _ActiveToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
     final subtitleColor = isDark
-        ? OpenVtsColors.darkTextSecondary
-        : OpenVtsColors.textSecondary;
+        ? OpenVtsMapColors.darkTextSecondary
+        : OpenVtsMapColors.textSecondary;
     final borderColor = value
-        ? OpenVtsColors.success
-        : (isDark ? OpenVtsColors.darkBorder : OpenVtsColors.border);
+        ? OpenVtsMapColors.success
+        : (isDark ? OpenVtsMapColors.darkBorder : OpenVtsMapColors.border);
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -641,14 +650,14 @@ class _ActiveToggle extends StatelessWidget {
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeTrackColor: OpenVtsColors.success,
-            activeThumbColor: OpenVtsColors.white,
+            activeTrackColor: OpenVtsMapColors.success,
+            activeThumbColor: OpenVtsMapColors.white,
             inactiveThumbColor: isDark
-                ? OpenVtsColors.darkTextTertiary
-                : OpenVtsColors.textTertiary,
+                ? OpenVtsMapColors.darkTextTertiary
+                : OpenVtsMapColors.textTertiary,
             inactiveTrackColor: isDark
-                ? OpenVtsColors.darkSurfaceElevated
-                : OpenVtsColors.divider,
+                ? OpenVtsMapColors.darkSurfaceElevated
+                : OpenVtsMapColors.divider,
           ),
         ],
       ),

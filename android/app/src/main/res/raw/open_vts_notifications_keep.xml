@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Flutter passes these resource names at runtime, outside AAPT's static references. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@raw/open_vts_notification,@drawable/ic_stat_open_vts,@mipmap/ic_launcher" />

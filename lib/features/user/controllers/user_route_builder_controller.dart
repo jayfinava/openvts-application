@@ -19,11 +19,11 @@ final userRoadRouteServiceProvider = Provider.autoDispose<UserRoadRouteService>(
 
 final userRouteBuilderControllerProvider =
     Provider.autoDispose<UserRouteBuilderController>((ref) {
-      return UserRouteBuilderController(
-        ref.watch(userLandmarkServiceProvider),
-        ref.watch(userRoadRouteServiceProvider),
-      );
-    });
+  return UserRouteBuilderController(
+    ref.watch(userLandmarkServiceProvider),
+    ref.watch(userRoadRouteServiceProvider),
+  );
+});
 
 /// Orchestrates persisted route data independently from ephemeral UI drafts.
 class UserRouteBuilderController {
@@ -34,7 +34,8 @@ class UserRouteBuilderController {
   Future<UserRoadRoute> road(
     List<UserRouteStop> stops, {
     RoadRoutingRequest? request,
-  }) => _roads.route(stops, request: request);
+  }) =>
+      _roads.route(stops, request: request);
   Future<UserRouteLandmark> save({
     required String name,
     required List<UserRouteStop> stops,
@@ -69,26 +70,29 @@ class UserRouteBuilderController {
 
 final userRouteLandmarkStopsProvider = FutureProvider.autoDispose
     .family<List<UserRouteStop>, bool>((ref, geofences) async {
-      final service = ref.watch(userLandmarkServiceProvider);
-      if (geofences) {
-        return (await service.fetchGeofences(
-          isActive: true,
-        )).map(geofenceRouteStop).whereType<UserRouteStop>().toList();
-      }
-      return (await service.fetchPois(isActive: true))
-          .where((p) => p.coordinates != null)
-          .map(
-            (p) => UserRouteStop(
-              name: p.name,
-              latitude: p.coordinates!.lat,
-              longitude: p.coordinates!.lon,
-              sourceType: 'POI',
-              sourceId: p.id,
-            ),
-          )
-          .where((s) => s.validCoordinates)
-          .toList();
-    });
+  final service = ref.watch(userLandmarkServiceProvider);
+  if (geofences) {
+    return (await service.fetchGeofences(
+      isActive: true,
+    ))
+        .map(geofenceRouteStop)
+        .whereType<UserRouteStop>()
+        .toList();
+  }
+  return (await service.fetchPois(isActive: true))
+      .where((p) => p.coordinates != null)
+      .map(
+        (p) => UserRouteStop(
+          name: p.name,
+          latitude: p.coordinates!.lat,
+          longitude: p.coordinates!.lon,
+          sourceType: 'POI',
+          sourceId: p.id,
+        ),
+      )
+      .where((s) => s.validCoordinates)
+      .toList();
+});
 
 /// Same circle centre, polygon vertex-average and line midpoint as the web.
 /// Invalid geometry is excluded, never silently replaced with coordinate zero.
@@ -99,11 +103,9 @@ UserRouteStop? geofenceRouteStop(UserGeofence fence) {
     point = geo.center;
   } else if (geo is UserPolygonGeoData && geo.coordinates.isNotEmpty) {
     point = UserGeoPoint(
-      lat:
-          geo.coordinates.fold(0.0, (sum, p) => sum + p.lat) /
+      lat: geo.coordinates.fold(0.0, (sum, p) => sum + p.lat) /
           geo.coordinates.length,
-      lon:
-          geo.coordinates.fold(0.0, (sum, p) => sum + p.lon) /
+      lon: geo.coordinates.fold(0.0, (sum, p) => sum + p.lon) /
           geo.coordinates.length,
     );
   } else if (geo is UserLineGeoData && geo.coordinates.isNotEmpty) {

@@ -12,7 +12,9 @@ const liveVehicleRunningSpeedThreshold = 3.0;
 DateTime? liveVehicleReceiveTime(VehicleSummary vehicle) => vehicle.serverTime;
 
 LiveVehicleStatus classifyLiveVehicle(VehicleSummary vehicle, {DateTime? now}) {
-  if (vehicle.licenseBlocked) return LiveVehicleStatus.inactive;
+  if (vehicle.licenseBlocked || vehicle.serviceBlocked) {
+    return LiveVehicleStatus.inactive;
+  }
   final timestamp = liveVehicleReceiveTime(vehicle);
   if (timestamp == null) return LiveVehicleStatus.inactive;
   final instant = now ?? DateTime.now();
@@ -36,7 +38,7 @@ LiveVehicleStatus classifyLiveVehicle(VehicleSummary vehicle, {DateTime? now}) {
 }
 
 bool isLiveVehicleStale(VehicleSummary vehicle, {DateTime? now}) {
-  if (vehicle.licenseBlocked) return true;
+  if (vehicle.licenseBlocked || vehicle.serviceBlocked) return true;
   final timestamp = liveVehicleReceiveTime(vehicle);
   return timestamp == null ||
       (now ?? DateTime.now()).difference(timestamp) >=

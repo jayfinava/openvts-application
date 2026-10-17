@@ -7,8 +7,8 @@ import '../../core/theme/open_vts_spacing.dart';
 import '../../core/theme/open_vts_typography.dart';
 import '../helpers/widget_localizations.dart';
 
-typedef OpenVtsBottomSheetBuilder =
-    Widget Function(BuildContext context, ScrollController scrollController);
+typedef OpenVtsBottomSheetBuilder = Widget Function(
+    BuildContext context, ScrollController scrollController);
 
 class OpenVtsBottomSheet {
   static const List<double> _defaultSnapSizes = <double>[
@@ -35,9 +35,8 @@ class OpenVtsBottomSheet {
     );
 
     final resolvedMinChildSize = minChildSize.clamp(0.0, 1.0).toDouble();
-    final resolvedMaxChildSize = maxChildSize
-        .clamp(resolvedMinChildSize, 1.0)
-        .toDouble();
+    final resolvedMaxChildSize =
+        maxChildSize.clamp(resolvedMinChildSize, 1.0).toDouble();
     final resolvedInitialChildSize = initialChildSize
         .clamp(resolvedMinChildSize, resolvedMaxChildSize)
         .toDouble();
@@ -60,106 +59,114 @@ class OpenVtsBottomSheet {
           top: false,
           child: Padding(
             padding: EdgeInsets.only(bottom: mediaQuery.viewInsets.bottom),
-            child: DraggableScrollableSheet(
-              controller: draggableController,
-              expand: false,
-              initialChildSize: resolvedInitialChildSize,
-              minChildSize: resolvedMinChildSize,
-              maxChildSize: resolvedMaxChildSize,
-              snap: snap,
-              snapSizes: snap ? resolvedSnapSizes : null,
-              builder: (context, scrollController) {
-                final sheetChild = draggableChildBuilder != null
-                    ? draggableChildBuilder(context, scrollController)
-                    : PrimaryScrollController(
-                        controller: scrollController,
-                        child: child!,
-                      );
-
-                final scheme = Theme.of(context).colorScheme;
-                return _OpenVtsBottomSheetDragScope(
+            // This container already consumes the keyboard inset. Descendant
+            // forms must not reserve it again in their footer/scroll padding.
+            child: MediaQuery.removeViewInsets(
+                context: context,
+                removeBottom: true,
+                child: DraggableScrollableSheet(
                   controller: draggableController,
+                  expand: false,
+                  initialChildSize: resolvedInitialChildSize,
                   minChildSize: resolvedMinChildSize,
                   maxChildSize: resolvedMaxChildSize,
                   snap: snap,
-                  snapSizes: resolvedSnapSizes,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: scheme.surface,
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(OpenVtsRadius.lg),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _OpenVtsSheetDragHandleRegion(
-                          controller: draggableController,
-                          minChildSize: resolvedMinChildSize,
-                          maxChildSize: resolvedMaxChildSize,
-                          snap: snap,
-                          snapSizes: resolvedSnapSizes,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              const SizedBox(height: OpenVtsSpacing.sm),
-                              Align(
-                                child: Container(
-                                  width: 40,
-                                  height: 4,
-                                  decoration: BoxDecoration(
-                                    color: scheme.outlineVariant,
-                                    borderRadius: BorderRadius.circular(
-                                      OpenVtsRadius.sm,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              if (title != null) ...[
-                                const SizedBox(height: OpenVtsSpacing.md),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: OpenVtsSpacing.md,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          title,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: OpenVtsTypography.titleSmall
-                                              .copyWith(
-                                                color: scheme.onSurface,
-                                              ),
-                                        ),
-                                      ),
-                                      IconButton(
-                                        tooltip: context.widgetL10n.close,
-                                        onPressed: () =>
-                                            Navigator.of(context).maybePop(),
-                                        icon: const Icon(Icons.close_rounded),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: OpenVtsSpacing.sm),
-                                Divider(
-                                  height: 1,
-                                  color: scheme.outlineVariant,
-                                ),
-                              ],
-                            ],
+                  snapSizes: snap ? resolvedSnapSizes : null,
+                  builder: (context, scrollController) {
+                    final sheetChild = draggableChildBuilder != null
+                        ? draggableChildBuilder(context, scrollController)
+                        : PrimaryScrollController(
+                            controller: scrollController,
+                            child: child!,
+                          );
+
+                    final scheme = Theme.of(context).colorScheme;
+                    return _OpenVtsBottomSheetDragScope(
+                      controller: draggableController,
+                      minChildSize: resolvedMinChildSize,
+                      maxChildSize: resolvedMaxChildSize,
+                      snap: snap,
+                      snapSizes: resolvedSnapSizes,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: scheme.surface,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(OpenVtsRadius.lg),
                           ),
                         ),
-                        Expanded(child: sheetChild),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _OpenVtsSheetDragHandleRegion(
+                              controller: draggableController,
+                              minChildSize: resolvedMinChildSize,
+                              maxChildSize: resolvedMaxChildSize,
+                              snap: snap,
+                              snapSizes: resolvedSnapSizes,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const SizedBox(height: OpenVtsSpacing.sm),
+                                  Align(
+                                    child: Container(
+                                      width: 40,
+                                      height: 4,
+                                      decoration: BoxDecoration(
+                                        color: scheme.outlineVariant,
+                                        borderRadius: BorderRadius.circular(
+                                          OpenVtsRadius.sm,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  if (title != null) ...[
+                                    const SizedBox(height: OpenVtsSpacing.md),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: OpenVtsSpacing.md,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              title,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: OpenVtsTypography
+                                                  .titleSmall
+                                                  .copyWith(
+                                                color: scheme.onSurface,
+                                              ),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            tooltip: context.widgetL10n.close,
+                                            onPressed: () =>
+                                                Navigator.of(context)
+                                                    .maybePop(),
+                                            icon:
+                                                const Icon(Icons.close_rounded),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: OpenVtsSpacing.sm),
+                                    Divider(
+                                      height: 1,
+                                      color: scheme.outlineVariant,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            Expanded(child: sheetChild),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                )),
           ),
         );
       },
@@ -195,7 +202,8 @@ class OpenVtsBottomSheet {
     final resolved = <double>{
       for (final size in snapSizes)
         size.clamp(minChildSize, maxChildSize).toDouble(),
-    }.toList()..sort();
+    }.toList()
+      ..sort();
 
     if (resolved.isEmpty) {
       return <double>[minChildSize, maxChildSize];

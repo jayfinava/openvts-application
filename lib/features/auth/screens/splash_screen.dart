@@ -5,6 +5,7 @@ import '../../../core/theme/open_vts_spacing.dart';
 import '../../../core/theme/open_vts_typography.dart';
 import '../../../shared/helpers/mobile_text.dart';
 import '../../../shared/widgets/open_vts_loader.dart';
+import '../../../shared/widgets/open_vts_monochrome_image.dart';
 import '../controllers/auth_controller.dart';
 import '../controllers/auth_state.dart';
 
@@ -44,13 +45,14 @@ class SplashLoadingView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(
+          OpenVtsMonochromeImage(
+              child: Image.asset(
             isDark ? 'assets/brand/dark-icon.png' : 'assets/brand/icon.png',
             height: 56,
             errorBuilder: (_, __, ___) {
               return const Icon(Icons.navigation_outlined, size: 56);
             },
-          ),
+          )),
           const SizedBox(height: OpenVtsSpacing.md),
           Text(
             context.mobileText('OpenVTS'),

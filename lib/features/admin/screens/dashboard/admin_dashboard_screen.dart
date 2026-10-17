@@ -242,31 +242,31 @@ class _VehicleLiveStatusSection extends StatelessWidget {
         label: context.mobileText('Connected'),
         value: status.connected,
         icon: Icons.wifi_rounded,
-        color: isDark ? const Color(0xFFE5E7EB) : const Color(0xFF111827),
+        color: isDark ? const Color(0xFFE7E7E7) : const Color(0xFF181818),
       ),
       _StatusSegment(
         label: context.mobileText('Running'),
         value: status.running,
         icon: Icons.speed_outlined,
-        color: isDark ? const Color(0xFFA1A1AA) : const Color(0xFF3F3F46),
+        color: isDark ? const Color(0xFFA2A2A2) : const Color(0xFF404040),
       ),
       _StatusSegment(
         label: context.mobileText('Stop'),
         value: status.stop,
         icon: Icons.pause_circle_outline_rounded,
-        color: isDark ? const Color(0xFF71717A) : const Color(0xFF6B7280),
+        color: isDark ? const Color(0xFF727272) : const Color(0xFF727272),
       ),
       _StatusSegment(
         label: context.mobileText('Inactive'),
         value: status.inactive,
         icon: Icons.warning_amber_rounded,
-        color: isDark ? const Color(0xFF52525B) : const Color(0xFF9EA7B0),
+        color: isDark ? const Color(0xFF535353) : const Color(0xFFA6A6A6),
       ),
       _StatusSegment(
         label: context.mobileText('No Data'),
         value: status.noData,
         icon: Icons.storage_outlined,
-        color: isDark ? const Color(0xFF3F3F46) : const Color(0xFFD6DEE5),
+        color: isDark ? const Color(0xFF404040) : const Color(0xFFDDDDDD),
       ),
     ];
     final barTotal = math.max(status.installedDevices, 1);
@@ -770,8 +770,8 @@ class _RevenueProgressBar extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: FractionallySizedBox(
-                        widthFactor: (collectedPct.clamp(0, 100) / 100)
-                            .toDouble(),
+                        widthFactor:
+                            (collectedPct.clamp(0, 100) / 100).toDouble(),
                         child: ColoredBox(
                           color: Theme.of(context).colorScheme.primary,
                         ),

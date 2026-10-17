@@ -380,12 +380,12 @@ class _SummaryCard extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 34,
+            height: 48,
             child: AdminActionGate(
               capability: 'users.update',
               child: OpenVtsButton(
                 label: context.mobileText('Assign Driver'),
-                height: 34,
+                height: 48,
                 isLoading: isAssigning,
                 onPressed: onAssign,
                 trailingIcon: Icons.add_rounded,

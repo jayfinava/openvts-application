@@ -200,6 +200,9 @@ class MobileAccess {
       return true;
     }
     if (!loaded) return false;
+    if (RegExp(r'^map/vehicle/[^/]+$').hasMatch(relative)) {
+      return canAccessPath(role, '$prefix/map');
+    }
     if (role == UserRole.driver) {
       return const {
         'dashboard',

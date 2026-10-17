@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../core/config/app_config.dart';
+import '../../../../../core/providers/core_providers.dart';
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
@@ -10,6 +10,7 @@ import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../shared/helpers/mobile_text.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
+import '../../../../../shared/utils/api_file_url.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../../shared/widgets/open_vts_error_view.dart';
@@ -27,11 +28,8 @@ class AdminDriverDocumentsTab extends ConsumerWidget {
     super.key,
   });
 
-  final AutoDisposeStateNotifierProvider<
-    AdminDriverDetailsController,
-    AdminDriverDetailsState
-  >
-  provider;
+  final AutoDisposeStateNotifierProvider<AdminDriverDetailsController,
+      AdminDriverDetailsState> provider;
   final AdminDriverDetailsState state;
 
   @override
@@ -63,11 +61,11 @@ class AdminDriverDocumentsTab extends ConsumerWidget {
             onPressed: state.isUploadingDocument
                 ? null
                 : () => showDriverDocumentSheet(
-                    context: context,
-                    provider: provider,
-                    driverId: state.driverId,
-                    documentTypes: state.documentTypes,
-                  ),
+                      context: context,
+                      provider: provider,
+                      driverId: state.driverId,
+                      documentTypes: state.documentTypes,
+                    ),
             icon: const Icon(Icons.upload_file_rounded, size: 16),
             label: Text(context.mobileText('Upload Document')),
           ),
@@ -84,7 +82,8 @@ class AdminDriverDocumentsTab extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),
               child: _DocCard(
                 doc: doc,
-                onView: () => _openFile(context, doc),
+                onView: () =>
+                    _openFile(context, doc, ref.read(apiBaseUrlProvider)),
                 onEdit: () => showDriverDocumentSheet(
                   context: context,
                   provider: provider,
@@ -140,11 +139,13 @@ class AdminDriverDocumentsTab extends ConsumerWidget {
     );
   }
 
-  Future<void> _openFile(BuildContext context, AdminDriverDocument doc) async {
+  Future<void> _openFile(
+      BuildContext context, AdminDriverDocument doc, String apiBaseUrl) async {
     final path = doc.fileUrl.trim().isNotEmpty
         ? doc.fileUrl.trim()
         : doc.filePath.trim();
-    if (path.isEmpty) {
+    final url = resolveApiFileUrl(apiBaseUrl, path);
+    if (url == null) {
       ToastHelper.showError(
         context.mobileText('No file available.'),
         context: context,
@@ -152,9 +153,39 @@ class AdminDriverDocumentsTab extends ConsumerWidget {
       return;
     }
 
-    final url = path.startsWith('http://') || path.startsWith('https://')
-        ? path
-        : '${AppConfig.apiBaseUrl.replaceAll(RegExp(r'/+$'), '')}${path.startsWith('/') ? path : '/$path'}';
+    final extension = Uri.tryParse(url)?.path.split('.').last.toLowerCase();
+    if (doc.fileType.startsWith('image/') ||
+        const ['png', 'jpg', 'jpeg', 'webp', 'gif'].contains(extension)) {
+      await showDialog<void>(
+          context: context,
+          builder: (dialogContext) => Dialog(
+                child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(children: [
+                          Expanded(
+                              child: Text(doc.title,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis)),
+                          IconButton(
+                              tooltip: context.mobileText('Close'),
+                              icon: const Icon(Icons.close),
+                              onPressed: () => Navigator.pop(dialogContext))
+                        ]),
+                        Flexible(
+                            child: InteractiveViewer(
+                                child: Image.network(url,
+                                    cacheWidth: 1600,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (_, __, ___) => Text(context
+                                        .mobileText('Unable to open file.'))))),
+                      ],
+                    )),
+              ));
+      return;
+    }
     try {
       final ok = await launchUrl(
         Uri.parse(url),

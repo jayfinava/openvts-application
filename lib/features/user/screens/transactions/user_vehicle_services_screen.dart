@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -361,6 +362,17 @@ String _reason(String code) =>
       'SERVICE_EXPIRED': 'Customer service has expired',
     }[code] ??
     'Live tracking unavailable';
-String _message(Object error) => error is ApiException
-    ? error.message
-    : 'Unable to complete this request. Please try again.';
+String _message(Object error) {
+  if (error is ApiException) return error.message;
+  if (error is DioException) {
+    if (error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.sendTimeout ||
+        error.type == DioExceptionType.receiveTimeout) {
+      return 'The request timed out. Please try again.';
+    }
+    if (error.type == DioExceptionType.connectionError) {
+      return 'Unable to reach the server. Check your connection and retry.';
+    }
+  }
+  return 'Unable to complete this request. Please try again.';
+}

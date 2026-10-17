@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
+
 import '../../features/auth/models/current_user.dart';
 import '../../shared/models/user_role.dart';
-
 import '../demo/demo_api_policy.dart';
 import '../performance/open_vts_perf.dart';
 import 'api_exception.dart';
@@ -40,9 +40,11 @@ class ApiClient {
     String endpoint, {
     Map<String, dynamic>? queryParameters,
     Options? options,
+    CancelToken? cancelToken,
     required T Function(dynamic json) parser,
   }) {
     return OpenVtsPerf.traceAsync(_apiPerfLabel('GET', endpoint), () async {
+      if (cancelToken?.isCancelled == true) throw cancelToken!.cancelError!;
       final resolution = _demoPolicy?.resolveGet(endpoint, queryParameters) ??
           DemoGetResolution.remote(
             endpoint: endpoint,
@@ -59,7 +61,9 @@ class ApiClient {
         _endpointForRequest(resolution.endpoint),
         queryParameters: resolution.queryParameters,
         options: options,
+        cancelToken: cancelToken,
       );
+      if (cancelToken?.isCancelled == true) throw cancelToken!.cancelError!;
       return _parseResponse(
         response,
         (json) => parser(resolution.adapt(json)),

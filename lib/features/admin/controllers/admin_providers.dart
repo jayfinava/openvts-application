@@ -3,13 +3,18 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/access/workspace_scope_provider.dart';
+import '../../../core/api/api_endpoints.dart';
 import '../../../core/providers/core_providers.dart';
+import '../../../shared/models/user_role.dart';
+import '../../../shared/paging/server_list_pager.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../notifications/controllers/notification_center_controller.dart';
 import '../../notifications/models/notification_center_state.dart';
 import '../models/admin_dashboard_state.dart';
 import '../models/admin_driver_details_state.dart';
+import '../models/admin_drivers_model.dart';
 import '../models/admin_drivers_state.dart';
+import '../models/admin_inventory_model.dart';
 import '../models/admin_inventory_state.dart';
 import '../models/admin_logs_state.dart';
 import '../models/admin_payments_state.dart';
@@ -17,8 +22,10 @@ import '../models/admin_plans_state.dart';
 import '../models/admin_settings_state.dart';
 import '../models/admin_support_state.dart';
 import '../models/admin_team_state.dart';
+import '../models/admin_user_details_model.dart';
 import '../models/admin_user_details_state.dart';
 import '../models/admin_users_state.dart';
+import '../models/admin_vehicle_model.dart';
 import '../models/admin_vehicle_state.dart';
 import '../services/admin_calendar_service.dart';
 import '../services/admin_dashboard_service.dart';
@@ -123,181 +130,212 @@ final adminNotificationServiceProvider = Provider<AdminNotificationService>((
   return AdminNotificationService(ref.watch(apiClientProvider));
 });
 
-final adminDashboardControllerProvider =
-    StateNotifierProvider.autoDispose<
-      AdminDashboardController,
-      AdminDashboardState
-    >((ref) {
-      final controller = AdminDashboardController(
-        service: ref.watch(adminDashboardServiceProvider),
-        localCache: ref.watch(localCacheProvider),
-      );
-      controller.load();
-      return controller;
-    });
+final adminDashboardControllerProvider = StateNotifierProvider.autoDispose<
+    AdminDashboardController, AdminDashboardState>((ref) {
+  final controller = AdminDashboardController(
+    service: ref.watch(adminDashboardServiceProvider),
+    localCache: ref.watch(localCacheProvider),
+  );
+  controller.load();
+  return controller;
+});
 
-final adminVehiclesControllerProvider =
-    StateNotifierProvider.autoDispose<
-      AdminVehiclesController,
-      AdminVehiclesState
-    >((ref) {
-      final controller = AdminVehiclesController(
-        service: ref.watch(adminVehicleServiceProvider),
-        onDashboardRefresh: () {
-          try {
-            ref.read(adminDashboardControllerProvider.notifier).refresh();
-            // ignore: empty_catches
-          } catch (_) {}
-        },
-      );
-      controller.load();
-      return controller;
-    });
+final adminVehiclesControllerProvider = StateNotifierProvider.autoDispose<
+    AdminVehiclesController, AdminVehiclesState>((ref) {
+  final controller = AdminVehiclesController(
+    pager: ref.watch(authControllerProvider.select((state) => state.role)) ==
+            UserRole.team
+        ? null
+        : ServerListPager<AdminVehicleListItem>(
+            api: ref.watch(apiClientProvider),
+            endpoint: ApiEndpoints.admin.vehicles,
+            rowsKey: 'vehicles',
+            parseRows: AdminVehicleListItem.listFromJson,
+            sortBy: 'createdAt',
+            sortDir: 'desc'),
+    service: ref.watch(adminVehicleServiceProvider),
+    onDashboardRefresh: () {
+      try {
+        ref.read(adminDashboardControllerProvider.notifier).refresh();
+        // ignore: empty_catches
+      } catch (_) {}
+    },
+  );
+  controller.load();
+  return controller;
+});
 
 final adminUsersControllerProvider =
     StateNotifierProvider.autoDispose<AdminUsersController, AdminUsersState>((
-      ref,
-    ) {
-      final controller = AdminUsersController(
-        service: ref.watch(adminUsersServiceProvider),
-        authController: ref.read(authControllerProvider.notifier),
-        onDashboardRefresh: () {
-          try {
-            ref.read(adminDashboardControllerProvider.notifier).refresh();
-            // ignore: empty_catches
-          } catch (_) {}
-        },
-      );
-      controller.load();
-      return controller;
-    });
+  ref,
+) {
+  final controller = AdminUsersController(
+    service: ref.watch(adminUsersServiceProvider),
+    authController: ref.read(authControllerProvider.notifier),
+    onDashboardRefresh: () {
+      try {
+        ref.read(adminDashboardControllerProvider.notifier).refresh();
+        // ignore: empty_catches
+      } catch (_) {}
+    },
+  );
+  controller.load();
+  return controller;
+});
 
-final adminDriversControllerProvider =
-    StateNotifierProvider.autoDispose<
-      AdminDriversController,
-      AdminDriversState
-    >((ref) {
-      final controller = AdminDriversController(
-        service: ref.watch(adminDriversServiceProvider),
-      );
-      controller.load();
-      return controller;
-    });
+final adminDriversControllerProvider = StateNotifierProvider.autoDispose<
+    AdminDriversController, AdminDriversState>((ref) {
+  final controller = AdminDriversController(
+    pager: ref.watch(authControllerProvider.select((state) => state.role)) ==
+            UserRole.team
+        ? null
+        : ServerListPager<AdminDriverListItem>(
+            api: ref.watch(apiClientProvider),
+            endpoint: ApiEndpoints.admin.drivers,
+            parseRows: AdminDriverListItem.listFromJson,
+            sortBy: 'createdAt',
+            sortDir: 'desc'),
+    service: ref.watch(adminDriversServiceProvider),
+  );
+  controller.load();
+  return controller;
+});
 
 final adminTeamControllerProvider =
     StateNotifierProvider.autoDispose<AdminTeamController, AdminTeamState>((
-      ref,
-    ) {
-      final controller = AdminTeamController(
-        service: ref.watch(adminTeamServiceProvider),
-      );
-      controller.load();
-      return controller;
-    });
+  ref,
+) {
+  final controller = AdminTeamController(
+    service: ref.watch(adminTeamServiceProvider),
+  );
+  controller.load();
+  return controller;
+});
 
-final adminInventoryControllerProvider =
-    StateNotifierProvider.autoDispose<
-      AdminInventoryController,
-      AdminInventoryState
-    >((ref) {
-      final controller = AdminInventoryController(
-        service: ref.watch(adminInventoryServiceProvider),
-      );
-      controller.loadInitial();
-      return controller;
-    });
+final adminInventoryControllerProvider = StateNotifierProvider.autoDispose<
+    AdminInventoryController, AdminInventoryState>((ref) {
+  final controller = AdminInventoryController(
+    devicesPager:
+        ref.watch(authControllerProvider.select((state) => state.role)) ==
+                UserRole.team
+            ? null
+            : ServerListPager<AdminInventoryDevice>(
+                api: ref.watch(apiClientProvider),
+                endpoint: ApiEndpoints.admin.devices,
+                parseRows: AdminInventoryDevice.listFromJson,
+                sortBy: 'createdAt',
+                sortDir: 'desc'),
+    simsPager:
+        ref.watch(authControllerProvider.select((state) => state.role)) ==
+                UserRole.team
+            ? null
+            : ServerListPager<AdminInventorySimCard>(
+                api: ref.watch(apiClientProvider),
+                endpoint: ApiEndpoints.admin.simcards,
+                parseRows: AdminInventorySimCard.listFromJson,
+                sortBy: 'id',
+                sortDir: 'desc'),
+    service: ref.watch(adminInventoryServiceProvider),
+  );
+  controller.loadInitial();
+  return controller;
+});
 
 final adminLogsControllerProvider =
     StateNotifierProvider.autoDispose<AdminLogsController, AdminLogsState>((
-      ref,
-    ) {
-      return AdminLogsController(service: ref.watch(adminLogsServiceProvider));
-    });
+  ref,
+) {
+  return AdminLogsController(service: ref.watch(adminLogsServiceProvider));
+});
 
-final adminPaymentsControllerProvider =
-    StateNotifierProvider.autoDispose<
-      AdminPaymentsController,
-      AdminPaymentsState
-    >((ref) {
-      final controller = AdminPaymentsController(
-        service: ref.watch(adminPaymentsServiceProvider),
-      );
-      controller.load();
-      return controller;
-    });
+final adminPaymentsControllerProvider = StateNotifierProvider.autoDispose<
+    AdminPaymentsController, AdminPaymentsState>((ref) {
+  final controller = AdminPaymentsController(
+    service: ref.watch(adminPaymentsServiceProvider),
+  );
+  controller.load();
+  return controller;
+});
 
 final adminPlansControllerProvider =
     StateNotifierProvider.autoDispose<AdminPlansController, AdminPlansState>((
-      ref,
-    ) {
-      final controller = AdminPlansController(
-        service: ref.watch(adminPlansServiceProvider),
-      );
-      controller.load();
-      return controller;
-    });
+  ref,
+) {
+  final controller = AdminPlansController(
+    service: ref.watch(adminPlansServiceProvider),
+  );
+  controller.load();
+  return controller;
+});
 
-final adminSettingsControllerProvider =
-    StateNotifierProvider.autoDispose<
-      AdminSettingsController,
-      AdminSettingsState
-    >((ref) {
-      return AdminSettingsController(ref.watch(adminSettingsServiceProvider));
-    });
+final adminSettingsControllerProvider = StateNotifierProvider.autoDispose<
+    AdminSettingsController, AdminSettingsState>((ref) {
+  return AdminSettingsController(ref.watch(adminSettingsServiceProvider));
+});
 
-final adminSupportControllerProvider =
-    StateNotifierProvider.autoDispose<
-      AdminSupportController,
-      AdminSupportState
-    >((ref) {
-      return AdminSupportController(ref.watch(adminSupportServiceProvider));
-    });
+final adminSupportControllerProvider = StateNotifierProvider.autoDispose<
+    AdminSupportController, AdminSupportState>((ref) {
+  return AdminSupportController(ref.watch(adminSupportServiceProvider));
+});
 
 final adminDriverDetailsControllerProvider = StateNotifierProvider.autoDispose
     .family<AdminDriverDetailsController, AdminDriverDetailsState, String>((
-      ref,
-      driverId,
-    ) {
-      return AdminDriverDetailsController(
-        driverId: driverId,
-        service: ref.watch(adminDriversServiceProvider),
-      )..loadInitial();
-    });
+  ref,
+  driverId,
+) {
+  return AdminDriverDetailsController(
+    driverId: driverId,
+    service: ref.watch(adminDriversServiceProvider),
+  )..loadInitial();
+});
 
 final adminUserDetailsControllerProvider = StateNotifierProvider.autoDispose
     .family<AdminUserDetailsController, AdminUserDetailsState, String>((
-      ref,
-      userId,
-    ) {
-      ref.watch(workspaceDataScopeProvider);
-      return AdminUserDetailsController(
-        userId: userId,
-        service: ref.watch(adminUserDetailsServiceProvider),
-      )..loadInitial();
-    });
+  ref,
+  userId,
+) {
+  ref.watch(workspaceDataScopeProvider);
+  return AdminUserDetailsController(
+    vehiclesPager:
+        ref.watch(authControllerProvider.select((state) => state.role)) ==
+                UserRole.team
+            ? null
+            : ServerListPager<AdminUserVehicle>(
+                api: ref.watch(apiClientProvider),
+                endpoint: ApiEndpoints.admin.linkedVehiclesByUserId(userId),
+                parseRows: AdminUserVehicle.listFromJson),
+    availableVehiclesPager:
+        ref.watch(authControllerProvider.select((state) => state.role)) ==
+                UserRole.team
+            ? null
+            : ServerListPager<AdminUserVehicle>(
+                api: ref.watch(apiClientProvider),
+                endpoint: ApiEndpoints.admin.unlinkedVehiclesByUserId(userId),
+                parseRows: AdminUserVehicle.listFromJson),
+    userId: userId,
+    service: ref.watch(adminUserDetailsServiceProvider),
+  )..loadInitial();
+});
 
 final adminVehicleDetailsControllerProvider = StateNotifierProvider.autoDispose
     .family<AdminVehicleDetailsController, AdminVehicleDetailsState, String>((
-      ref,
-      vehicleId,
-    ) {
-      return AdminVehicleDetailsController(
-        vehicleId: vehicleId,
-        service: ref.watch(adminVehicleServiceProvider),
-      )..loadInitial();
-    });
+  ref,
+  vehicleId,
+) {
+  return AdminVehicleDetailsController(
+    vehicleId: vehicleId,
+    service: ref.watch(adminVehicleServiceProvider),
+  )..loadInitial();
+});
 
-final adminNotificationCenterProvider =
-    StateNotifierProvider.autoDispose<
-      NotificationCenterController,
-      NotificationCenterState
-    >((ref) {
-      final controller = NotificationCenterController(
-        ref.watch(adminNotificationServiceProvider),
-      );
-      controller.load();
-      return controller;
-    });
+final adminNotificationCenterProvider = StateNotifierProvider.autoDispose<
+    NotificationCenterController, NotificationCenterState>((ref) {
+  final controller = NotificationCenterController(
+    ref.watch(adminNotificationServiceProvider),
+  );
+  controller.load();
+  return controller;
+});
 
 final adminNotificationUnreadBadgeProvider = FutureProvider.autoDispose<int>((
   ref,

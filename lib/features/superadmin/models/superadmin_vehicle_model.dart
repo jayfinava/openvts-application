@@ -1,5 +1,21 @@
+import 'package:equatable/equatable.dart';
+
 import '../../../core/utils/telemetry_timestamp.dart';
 import '../../notifications/models/app_notification.dart';
+
+class SuperadminVehicleQuery extends Equatable {
+  const SuperadminVehicleQuery(
+      {this.page = 1,
+      this.limit = 10,
+      this.search = '',
+      this.status = 'all',
+      this.sortBy = 'createdAt',
+      this.sortDir = 'desc'});
+  final int page, limit;
+  final String search, status, sortBy, sortDir;
+  @override
+  List<Object> get props => [page, limit, search, status, sortBy, sortDir];
+}
 
 class SuperadminVehiclePage {
   const SuperadminVehiclePage({required this.items, required this.totalCount});
@@ -17,9 +33,16 @@ class SuperadminVehiclePage {
       return SuperadminVehiclePage(items: items, totalCount: items.length);
     }
 
-    final source = _asMap(json);
-    final rawItems =
-        _firstList(source, const [
+    var source = _asMap(json);
+    for (var depth = 0;
+        depth < 4 &&
+            source['data'] is Map &&
+            !source.containsKey('vehicles') &&
+            !source.containsKey('items');
+        depth++) {
+      source = _asMap(source['data']);
+    }
+    final rawItems = _firstList(source, const [
           'items',
           'rows',
           'records',
@@ -37,7 +60,9 @@ class SuperadminVehiclePage {
         .where((item) => item.hasIdentity)
         .toList();
 
-    final totalCount = _firstInt(source, const [
+    final pagination = _asMap(source['pagination']);
+    final totalCount =
+        _firstInt(pagination.isEmpty ? source : pagination, const [
       'count',
       'total',
       'totalCount',
@@ -142,8 +167,7 @@ class SuperadminVehicleRecord {
       'admin',
     ]);
 
-    final plateNumber =
-        _firstString(json, const [
+    final plateNumber = _firstString(json, const [
           'plateNumber',
           'plate_number',
           'plateNo',
@@ -156,9 +180,8 @@ class SuperadminVehicleRecord {
         '—';
     final resolvedName =
         _firstString(json, const ['name', 'vehicleName', 'label', 'title']) ??
-        (plateNumber == '—' ? 'Vehicle' : plateNumber);
-    final typeSource =
-        (vehicleType == null
+            (plateNumber == '—' ? 'Vehicle' : plateNumber);
+    final typeSource = (vehicleType == null
             ? null
             : _firstString(vehicleType, const [
                 'name',
@@ -192,9 +215,8 @@ class SuperadminVehicleRecord {
     ]);
     final isLicenseBlocked =
         _firstBool(json, const ['isLicenseBlocked', 'is_license_blocked']) ??
-        false;
-    final statusSource =
-        _firstString(json, const [
+            false;
+    final statusSource = _firstString(json, const [
           'status',
           'state',
           'vehicleStatus',
@@ -209,13 +231,12 @@ class SuperadminVehicleRecord {
         (statusFlag == null
             ? null
             : statusFlag
-            ? 'active'
-            : 'inactive') ??
+                ? 'active'
+                : 'inactive') ??
         'Unknown';
 
     return SuperadminVehicleRecord(
-      id:
-          _firstString(json, const ['id', '_id', 'vehicleId', 'uid', 'imei']) ??
+      id: _firstString(json, const ['id', '_id', 'vehicleId', 'uid', 'imei']) ??
           '',
       name: resolvedName,
       plateNumber: plateNumber,
@@ -228,8 +249,7 @@ class SuperadminVehicleRecord {
         'licenseBlockReason',
         'license_block_reason',
       ]),
-      imei:
-          _firstString(device ?? json, const [
+      imei: _firstString(device ?? json, const [
             'imei',
             'deviceImei',
             'deviceIMEI',
@@ -237,8 +257,7 @@ class SuperadminVehicleRecord {
             'unitImei',
           ]) ??
           '—',
-      sim:
-          _firstString(device ?? json, const [
+      sim: _firstString(device ?? json, const [
             'sim',
             'simNo',
             'simNumber',
@@ -249,26 +268,25 @@ class SuperadminVehicleRecord {
           '—',
       primaryUser:
           _firstString(primaryUser ?? const <String, dynamic>{}, const [
-            'name',
-            'fullName',
-            'displayName',
-            'username',
-            'userName',
-            'mobile',
-          ]) ??
-          _firstString(json, const [
-            'primaryUserName',
-            'primary_user_name',
-            'assignedToName',
-            'assigned_to_name',
-            'primaryUser',
-            'primary_user',
-            'assignedTo',
-            'assigned_to',
-          ]) ??
-          '—',
-      addedBy:
-          _firstString(addedBy ?? const <String, dynamic>{}, const [
+                'name',
+                'fullName',
+                'displayName',
+                'username',
+                'userName',
+                'mobile',
+              ]) ??
+              _firstString(json, const [
+                'primaryUserName',
+                'primary_user_name',
+                'assignedToName',
+                'assigned_to_name',
+                'primaryUser',
+                'primary_user',
+                'assignedTo',
+                'assigned_to',
+              ]) ??
+              '—',
+      addedBy: _firstString(addedBy ?? const <String, dynamic>{}, const [
             'name',
             'fullName',
             'displayName',
@@ -300,8 +318,7 @@ class SuperadminVehicleRecord {
         'secondaryExpiresAt',
         'secondary_expires_at',
       ]),
-      createdAt:
-          _firstDate(json, const [
+      createdAt: _firstDate(json, const [
             'createdAt',
             'updatedAt',
             'addedAt',
@@ -718,8 +735,7 @@ class SuperadminVehicleLog {
       _asMap(data['attributes']),
     ].where((candidate) => candidate.isNotEmpty).toList(growable: false);
     final coordinates = _extractReplayCoordinates(data);
-    final packetType =
-        _firstStringInMaps(candidateMaps, const [
+    final packetType = _firstStringInMaps(candidateMaps, const [
           'packetType',
           'packet_type',
           'type',
@@ -747,8 +763,7 @@ class SuperadminVehicleLog {
       'datetime',
       'date',
     ]);
-    final rawPacket =
-        _firstStringInMaps(candidateMaps, const [
+    final rawPacket = _firstStringInMaps(candidateMaps, const [
           'raw',
           'rawPacket',
           'raw_packet',
@@ -759,8 +774,7 @@ class SuperadminVehicleLog {
           'hex',
         ]) ??
         '';
-    final imei =
-        _firstStringInMaps(candidateMaps, const [
+    final imei = _firstStringInMaps(candidateMaps, const [
           'imei',
           'deviceImei',
           'device_imei',
@@ -774,8 +788,7 @@ class SuperadminVehicleLog {
     }
 
     return SuperadminVehicleLog(
-      id:
-          _firstStringInMaps(candidateMaps, const [
+      id: _firstStringInMaps(candidateMaps, const [
             'id',
             '_id',
             'logId',
@@ -793,8 +806,7 @@ class SuperadminVehicleLog {
       serverTime: serverTime,
       deviceTime: deviceTime,
       packetType: packetType,
-      protocol:
-          _firstStringInMaps(candidateMaps, const [
+      protocol: _firstStringInMaps(candidateMaps, const [
             'protocol',
             'deviceProtocol',
             'device_protocol',
@@ -984,12 +996,10 @@ class SuperadminVehicleEventPage {
       'has_more',
       'more',
     ]);
-    final hasMore =
-        explicitHasMore ??
+    final hasMore = explicitHasMore ??
         (requestedLimit > 0 && items.length >= requestedLimit);
-    final fallbackCursor = hasMore && items.isNotEmpty
-        ? _vehicleEventCursor(items.last)
-        : null;
+    final fallbackCursor =
+        hasMore && items.isNotEmpty ? _vehicleEventCursor(items.last) : null;
 
     return SuperadminVehicleEventPage(
       items: items,
@@ -1063,8 +1073,8 @@ class SuperadminCustomCommand {
     String? protocol,
     String? deviceProtocol,
     String? stableKey,
-  }) : protocol = protocol ?? deviceProtocol,
-       stableKey = stableKey ?? id;
+  })  : protocol = protocol ?? deviceProtocol,
+        stableKey = stableKey ?? id;
 
   final String id;
   final String command;
@@ -1107,9 +1117,8 @@ class SuperadminCustomCommand {
     if (type.isEmpty) return payload.isEmpty ? 'Command' : payload;
     if (payload.isEmpty || type == payload) return type;
     // Truncate long payloads for the closed field.
-    final short = payload.length > 40
-        ? '${payload.substring(0, 38)}…'
-        : payload;
+    final short =
+        payload.length > 40 ? '${payload.substring(0, 38)}…' : payload;
     return '$type — $short';
   }
 
@@ -1145,8 +1154,7 @@ class SuperadminCustomCommand {
       return null;
     }
 
-    final command =
-        _firstString(source, const [
+    final command = _firstString(source, const [
           'command',
           'payload',
           'text',
@@ -1163,8 +1171,7 @@ class SuperadminCustomCommand {
     final deviceType = _asMap(source['deviceType']);
 
     return SuperadminCustomCommand(
-      id:
-          _firstString(source, const [
+      id: _firstString(source, const [
             'id',
             '_id',
             'commandId',
@@ -1172,8 +1179,7 @@ class SuperadminCustomCommand {
           ]) ??
           command,
       command: command,
-      isActive:
-          _firstBool(source, const [
+      isActive: _firstBool(source, const [
             'isActive',
             'is_active',
             'active',
@@ -1182,32 +1188,30 @@ class SuperadminCustomCommand {
           true,
       deviceTypeId:
           _firstOptionalInt(source, const ['deviceTypeId', 'device_type_id']) ??
-          _firstOptionalInt(deviceType, const ['id']),
-      commandTypeId:
-          _firstOptionalInt(source, const [
+              _firstOptionalInt(deviceType, const ['id']),
+      commandTypeId: _firstOptionalInt(source, const [
             'commandTypeId',
             'command_type_id',
           ]) ??
           _firstOptionalInt(commandType, const ['id']),
       commandTypeName:
           _firstString(commandType, const ['name', 'title', 'label']) ??
-          _firstString(source, const [
-            'commandTypeName',
-            'command_type_name',
-            'typeName',
-            'type_name',
-          ]),
+              _firstString(source, const [
+                'commandTypeName',
+                'command_type_name',
+                'typeName',
+                'type_name',
+              ]),
       commandTypeDescription:
           _firstString(commandType, const ['description', 'details']) ??
-          _firstString(source, const [
-            'commandTypeDescription',
-            'command_type_description',
-          ]),
-      deviceTypeName:
-          _firstString(deviceType, const ['name', 'title', 'label']) ??
+              _firstString(source, const [
+                'commandTypeDescription',
+                'command_type_description',
+              ]),
+      deviceTypeName: _firstString(
+              deviceType, const ['name', 'title', 'label']) ??
           _firstString(source, const ['deviceTypeName', 'device_type_name']),
-      protocol:
-          _firstString(deviceType, const [
+      protocol: _firstString(deviceType, const [
             'protocol',
             'protocolName',
             'protocol_name',
@@ -1253,8 +1257,7 @@ class SuperadminSystemVariable {
       'code',
       'slug',
     ]);
-    final name =
-        _firstString(source, const [
+    final name = _firstString(source, const [
           'name',
           'label',
           'title',
@@ -1272,8 +1275,7 @@ class SuperadminSystemVariable {
       id: _firstString(source, const ['id', '_id', 'uid']) ?? key ?? name,
       key: key ?? name,
       name: name,
-      value:
-          _firstString(source, const [
+      value: _firstString(source, const [
             'value',
             'initialValue',
             'initial_value',
@@ -1289,8 +1291,7 @@ class SuperadminSystemVariable {
         'helpText',
         'help_text',
       ]),
-      isActive:
-          _firstBool(source, const [
+      isActive: _firstBool(source, const [
             'isActive',
             'is_active',
             'active',
@@ -1403,7 +1404,7 @@ class SuperadminCommandHistoryPage {
       nextCursorId: nextCursor,
       hasMore:
           _firstBoolInMaps(pageMaps, const ['hasMore', 'has_more', 'more']) ??
-          (nextCursor != null && nextCursor.isNotEmpty),
+              (nextCursor != null && nextCursor.isNotEmpty),
     );
   }
 }
@@ -1518,9 +1519,8 @@ class SuperadminCommandHistoryItem {
       queuedAt: identical(queuedAt, _commandUnset)
           ? this.queuedAt
           : queuedAt as DateTime?,
-      sentAt: identical(sentAt, _commandUnset)
-          ? this.sentAt
-          : sentAt as DateTime?,
+      sentAt:
+          identical(sentAt, _commandUnset) ? this.sentAt : sentAt as DateTime?,
       respondedAt: identical(respondedAt, _commandUnset)
           ? this.respondedAt
           : respondedAt as DateTime?,
@@ -1551,8 +1551,7 @@ class SuperadminCommandHistoryItem {
     }
 
     final maps = _commandCandidateMaps(raw);
-    final command =
-        _firstStringInMaps(maps, const [
+    final command = _firstStringInMaps(maps, const [
           'command',
           'payload',
           'commandText',
@@ -1560,8 +1559,7 @@ class SuperadminCommandHistoryItem {
           'text',
         ]) ??
         '';
-    final cmdId =
-        _firstStringInMaps(maps, const [
+    final cmdId = _firstStringInMaps(maps, const [
           'cmdId',
           'cmd_id',
           'commandId',
@@ -1583,8 +1581,7 @@ class SuperadminCommandHistoryItem {
     return SuperadminCommandHistoryItem(
       id: id,
       cmdId: cmdId,
-      imei:
-          _firstStringInMaps(maps, const [
+      imei: _firstStringInMaps(maps, const [
             'imei',
             'deviceImei',
             'device_imei',
@@ -1777,8 +1774,7 @@ class SuperadminVehicleSensorPage {
   factory SuperadminVehicleSensorPage.fromJson(dynamic json) {
     final items = _parseVehicleSensors(json);
     final pageMaps = _vehicleSensorPageMaps(json);
-    final totalCount =
-        _firstOptionalIntInMaps(pageMaps, const [
+    final totalCount = _firstOptionalIntInMaps(pageMaps, const [
           'totalCount',
           'total_count',
           'count',
@@ -1791,8 +1787,7 @@ class SuperadminVehicleSensorPage {
     return SuperadminVehicleSensorPage(
       items: items,
       totalCount: totalCount,
-      truncated:
-          _firstBoolInMaps(pageMaps, const [
+      truncated: _firstBoolInMaps(pageMaps, const [
             'truncated',
             'isTruncated',
             'is_truncated',
@@ -1923,8 +1918,7 @@ class SuperadminVehicleSensor {
       metadata,
       meta,
     ].where((candidate) => candidate.isNotEmpty).toList(growable: false);
-    final name =
-        _firstStringInMaps(candidateMaps, const [
+    final name = _firstStringInMaps(candidateMaps, const [
           'name',
           'label',
           'title',
@@ -1977,8 +1971,7 @@ class SuperadminVehicleSensor {
       'state',
       'health',
     ]);
-    final isOk =
-        _firstBoolInMaps(candidateMaps, const [
+    final isOk = _firstBoolInMaps(candidateMaps, const [
           'ok',
           'isOk',
           'is_ok',
@@ -1994,8 +1987,7 @@ class SuperadminVehicleSensor {
     ]);
 
     return SuperadminVehicleSensor(
-      id:
-          _firstStringInMaps(candidateMaps, const [
+      id: _firstStringInMaps(candidateMaps, const [
             'id',
             '_id',
             'sensorId',
@@ -2004,8 +1996,7 @@ class SuperadminVehicleSensor {
           ]) ??
           '',
       name: name,
-      type:
-          _firstStringInMaps(candidateMaps, const [
+      type: _firstStringInMaps(candidateMaps, const [
             'type',
             'dataType',
             'data_type',
@@ -2014,13 +2005,12 @@ class SuperadminVehicleSensor {
           ]) ??
           '',
       latestValue: latestValue,
-      status:
-          explicitStatus ??
+      status: explicitStatus ??
           (isOk
               ? 'OK'
               : (error?.trim().isNotEmpty ?? false)
-              ? 'Error'
-              : 'Unavailable'),
+                  ? 'Error'
+                  : 'Unavailable'),
       isOk: isOk,
       unit: _firstStringInMaps(candidateMaps, const [
         'unit',
@@ -2460,12 +2450,9 @@ double? _parseEngineHoursDuration(String value) {
   }
 
   if (value.contains(':')) {
-    final parts = value
-        .split(':')
-        .map((part) {
-          return double.tryParse(part.trim());
-        })
-        .toList(growable: false);
+    final parts = value.split(':').map((part) {
+      return double.tryParse(part.trim());
+    }).toList(growable: false);
     if (parts.length >= 2 && parts[0] != null && parts[1] != null) {
       final hours = parts[0]!;
       final minutes = parts[1]!;
@@ -3353,8 +3340,7 @@ SuperadminVehicleSensorTelemetryMeta? _parseVehicleSensorTelemetryMeta(
     return null;
   }
 
-  final hasTelemetry =
-      _firstBoolInMaps(maps, const [
+  final hasTelemetry = _firstBoolInMaps(maps, const [
         'hasTelemetry',
         'has_telemetry',
         'available',
@@ -3426,10 +3412,8 @@ List<String> _sensorTelemetryAliases(SuperadminVehicleSensor sensor) {
     }
     final bracketMatches = RegExp(r'\[([^\]]+)\]').allMatches(trimmed);
     for (final match in bracketMatches) {
-      final bracketAlias = (match.group(1) ?? '')
-          .replaceAll('"', '')
-          .replaceAll("'", '')
-          .trim();
+      final bracketAlias =
+          (match.group(1) ?? '').replaceAll('"', '').replaceAll("'", '').trim();
       addAlias(bracketAlias);
     }
   }

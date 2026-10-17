@@ -4,19 +4,81 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_exception.dart';
+import '../../../shared/paging/server_list_pager.dart';
 import '../models/admin_drivers_model.dart';
 import '../models/admin_drivers_state.dart';
 import '../services/admin_driver_timestamp_storage.dart';
 import '../services/admin_drivers_service.dart';
 
 class AdminDriversController extends StateNotifier<AdminDriversState> {
-  AdminDriversController({required AdminDriversService service})
+  AdminDriversController({this.pager, required AdminDriversService service})
       : _service = service,
-        super(const AdminDriversState.initial());
+        super(const AdminDriversState.initial()) {
+    pager?.onChanged = _syncPage;
+  }
 
+  final ServerListPager<AdminDriverListItem>? pager;
+  bool get isServerPaged => pager != null;
+  void _syncPage() {
+    final p = pager!;
+    if (!mounted) return;
+    state = state.copyWith(
+        drivers: p.items,
+        filteredDrivers: p.items,
+        pagination: p.meta,
+        currentPage: p.meta?.page ?? state.currentPage,
+        recordsPerPage: p.meta?.limit ?? state.recordsPerPage,
+        isLoading: p.loading && p.meta == null,
+        isRefreshing: p.loading && p.meta != null,
+        errorMessage: p.error);
+    if (!p.loading && p.meta != null) unawaited(_enrichPage(p.items));
+  }
+
+  Future<void> _enrichPage(List<AdminDriverListItem> rows) async {
+    try {
+      final timestamps = await AdminDriverTimestampStorage.readUpdatedAtMap(
+          rows.map((row) => row.id));
+      if (!mounted || !identical(pager!.items, rows) || pager!.loading) return;
+      final drivers = rows
+          .map((row) => row.copyWith(
+                updatedAt: resolveDriverEffectiveUpdatedAt(
+                    serverUpdatedAt: row.updatedAt,
+                    persistedUpdatedAt: timestamps[row.id],
+                    createdAt: row.createdAt),
+              ))
+          .toList(growable: false);
+      state = state.copyWith(drivers: drivers, filteredDrivers: drivers);
+    } catch (_) {
+      // Optional local edit timestamps must never block the server page.
+    }
+  }
+
+  @override
+  void dispose() {
+    pager?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _reloadPage({bool debounce = false}) => pager!.change(
+          page: 1,
+          search: state.searchQuery,
+          debounce: debounce,
+          sortBy: switch (state.sortOption) {
+            AdminDriversSortOption.nameAsc => 'name',
+            AdminDriversSortOption.activeFirst => 'status',
+            _ => 'createdAt'
+          },
+          sortDir: state.sortOption == AdminDriversSortOption.nameAsc
+              ? 'asc'
+              : 'desc',
+          filters: {
+            if (state.statusFilter != AdminDriverStatusFilter.all)
+              'status': state.statusFilter == AdminDriverStatusFilter.active
+          });
   final AdminDriversService _service;
 
   Future<void> load() async {
+    if (pager != null) return pager!.load();
     await _fetchDrivers(
       refreshKey: state.refreshKey == 0 ? null : state.refreshKey.toString(),
       refreshing: state.hasDrivers,
@@ -24,6 +86,7 @@ class AdminDriversController extends StateNotifier<AdminDriversState> {
   }
 
   Future<void> refresh() async {
+    if (pager != null) return pager!.load();
     final nextRefreshKey = state.refreshKey + 1;
     state = state.copyWith(refreshKey: nextRefreshKey);
     await _fetchDrivers(
@@ -33,12 +96,22 @@ class AdminDriversController extends StateNotifier<AdminDriversState> {
   }
 
   void setSearchQuery(String value) {
+    if (pager != null) {
+      state = state.copyWith(searchQuery: value);
+      unawaited(_reloadPage(debounce: true));
+      return;
+    }
     state = _withFilteredDrivers(
       state.copyWith(searchQuery: value, currentPage: 1, errorMessage: null),
     );
   }
 
   void setStatusFilter(AdminDriverStatusFilter value) {
+    if (pager != null) {
+      state = state.copyWith(statusFilter: value);
+      unawaited(_reloadPage(debounce: false));
+      return;
+    }
     state = _withFilteredDrivers(
       state.copyWith(statusFilter: value, currentPage: 1, errorMessage: null),
     );
@@ -63,16 +136,29 @@ class AdminDriversController extends StateNotifier<AdminDriversState> {
   }
 
   void setSortOption(AdminDriversSortOption value) {
+    if (pager != null) {
+      state = state.copyWith(sortOption: value);
+      unawaited(_reloadPage(debounce: false));
+      return;
+    }
     state = _withFilteredDrivers(
       state.copyWith(sortOption: value, currentPage: 1, errorMessage: null),
     );
   }
 
   void setRecordsPerPage(int value) {
+    if (pager != null) {
+      unawaited(pager!.change(page: 1, limit: value));
+      return;
+    }
     state = state.copyWith(recordsPerPage: value, currentPage: 1);
   }
 
   void goToPage(int value) {
+    if (pager != null) {
+      unawaited(pager!.goToPage(value));
+      return;
+    }
     state = state.copyWith(currentPage: value);
   }
 
@@ -98,6 +184,21 @@ class AdminDriversController extends StateNotifier<AdminDriversState> {
   }
 
   Future<void> updateDriverStatus(String driverId, bool isActive) async {
+    if (pager != null) {
+      state = state
+          .copyWith(updatingDriverIds: {...state.updatingDriverIds, driverId});
+      try {
+        await _service.updateDriverStatus(id: driverId, isActive: isActive);
+        if (mounted) unawaited(pager!.load());
+      } finally {
+        if (mounted) {
+          state = state.copyWith(
+              updatingDriverIds: {...state.updatingDriverIds}
+                ..remove(driverId));
+        }
+      }
+      return;
+    }
     final driverIndex = state.drivers.indexWhere((d) => d.id == driverId);
     if (driverIndex == -1) return;
 
@@ -132,6 +233,10 @@ class AdminDriversController extends StateNotifier<AdminDriversState> {
     await _service.deleteDriver(driverId);
     unawaited(AdminDriverTimestampStorage.clearUpdatedAt(driverId));
     if (!mounted) return;
+    if (pager != null) {
+      await pager!.load();
+      return;
+    }
     final updated =
         state.drivers.where((d) => d.id != driverId).toList(growable: false);
     state = _withFilteredDrivers(
@@ -140,6 +245,16 @@ class AdminDriversController extends StateNotifier<AdminDriversState> {
   }
 
   void clearFilters() {
+    if (pager != null) {
+      state = state.copyWith(
+          searchQuery: '',
+          statusFilter: AdminDriverStatusFilter.all,
+          verifiedFilter: AdminDriverVerifiedFilter.all,
+          countryFilter: null,
+          sortOption: AdminDriversSortOption.newest);
+      unawaited(_reloadPage());
+      return;
+    }
     state = _withFilteredDrivers(
       state.copyWith(
         searchQuery: '',
@@ -157,6 +272,7 @@ class AdminDriversController extends StateNotifier<AdminDriversState> {
     String? refreshKey,
     required bool refreshing,
   }) async {
+    if (pager != null) return pager!.load();
     final hasExistingDrivers = state.hasDrivers;
     state = state.copyWith(
       isLoading: !hasExistingDrivers && !refreshing,
@@ -211,6 +327,9 @@ class AdminDriversController extends StateNotifier<AdminDriversState> {
   }
 
   AdminDriversState _withFilteredDrivers(AdminDriversState nextState) {
+    if (pager != null) {
+      return nextState.copyWith(filteredDrivers: nextState.drivers);
+    }
     return nextState.copyWith(filteredDrivers: _filterDrivers(nextState));
   }
 

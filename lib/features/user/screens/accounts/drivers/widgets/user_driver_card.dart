@@ -9,9 +9,11 @@ import '../../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../../core/utils/date_time_formatter.dart';
 import '../../../../../../shared/helpers/mobile_text.dart';
 import '../../../../../../shared/helpers/phone_helper.dart';
+import '../../../../../../shared/models/user_role.dart';
 import '../../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../../shared/widgets/open_vts_status_chip.dart';
 import '../../../../models/user_driver_model.dart';
+import '../../widgets/user_child_login_button.dart';
 
 class UserDriverCard extends ConsumerWidget {
   const UserDriverCard({required this.driver, super.key});
@@ -135,6 +137,11 @@ class UserDriverCard extends ConsumerWidget {
                 label: _createdLabel(driver, dateFormatter),
               ),
             ],
+          ),
+          UserChildLoginButton(
+            id: driver.id,
+            role: UserRole.driver,
+            isActive: driver.isActive,
           ),
         ],
       ),

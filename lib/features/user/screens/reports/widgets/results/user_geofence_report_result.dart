@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../../core/theme/open_vts_chart_theme.dart';
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
@@ -36,9 +37,8 @@ class UserGeofenceReportResult extends StatelessWidget {
               r.event.toLowerCase().contains('entry'),
         )
         .length;
-    final exits = rows
-        .where((r) => r.event.toLowerCase().contains('exit'))
-        .length;
+    final exits =
+        rows.where((r) => r.event.toLowerCase().contains('exit')).length;
     final geofences = rows.map((r) => r.geofenceName).toSet().length;
     final vehicles = rows.map((r) => r.vehicleName).toSet().length;
 
@@ -66,11 +66,10 @@ class UserGeofenceReportResult extends StatelessWidget {
     for (final r in rows) {
       byGeofence[r.geofenceName] = (byGeofence[r.geofenceName] ?? 0) + 1;
     }
-    final topGeofences =
-        (byGeofence.entries.toList()
-              ..sort((a, b) => b.value.compareTo(a.value)))
-            .take(8)
-            .toList();
+    final topGeofences = (byGeofence.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value)))
+        .take(8)
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,11 +104,11 @@ class UserGeofenceReportResult extends StatelessWidget {
 }
 
 const _kEntryColors = [
-  Color(0xFF2F6B4F),
-  Color(0xFF8A3333),
-  Color(0xFF435A6B),
-  Color(0xFF8A6522),
-  Color(0xFF4A2D6B),
+  Color(0xFF5C5C5C),
+  Color(0xFF454545),
+  Color(0xFF565656),
+  Color(0xFF686868),
+  Color(0xFF383838),
 ];
 
 class _EventTypeDonut extends StatelessWidget {
@@ -129,7 +128,7 @@ class _EventTypeDonut extends StatelessWidget {
         radius: 44,
         titleStyle: OpenVtsTypography.meta.copyWith(
           fontSize: 9,
-          color: OpenVtsColors.white,
+          color: OpenVtsChartTheme.labelOn(color),
         ),
       );
     }).toList();
@@ -183,9 +182,8 @@ class _EventTypeDonut extends StatelessWidget {
                                   width: 10,
                                   height: 10,
                                   decoration: BoxDecoration(
-                                    color:
-                                        _kEntryColors[e.key %
-                                            _kEntryColors.length],
+                                    color: _kEntryColors[
+                                        e.key % _kEntryColors.length],
                                     borderRadius: BorderRadius.circular(2),
                                   ),
                                 ),
@@ -251,6 +249,7 @@ class _GeofenceBarChart extends StatelessWidget {
             height: 160,
             child: BarChart(
               BarChartData(
+                barTouchData: OpenVtsChartTheme.barTouchData(context),
                 maxY: maxVal * 1.2,
                 barGroups: topGeofences
                     .asMap()
@@ -290,9 +289,8 @@ class _GeofenceBarChart extends StatelessWidget {
                           return const SizedBox.shrink();
                         }
                         final name = topGeofences[i].key;
-                        final short = name.length > 8
-                            ? '${name.substring(0, 7)}…'
-                            : name;
+                        final short =
+                            name.length > 8 ? '${name.substring(0, 7)}…' : name;
                         return Padding(
                           padding: const EdgeInsets.only(top: 3),
                           child: Text(
@@ -337,8 +335,7 @@ class _GeofenceRowCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isEntry =
-        row.event.toLowerCase().contains('enter') ||
+    final isEntry = row.event.toLowerCase().contains('enter') ||
         row.event.toLowerCase().contains('entry');
     final eventColor = isEntry ? OpenVtsColors.success : OpenVtsColors.error;
     return Padding(

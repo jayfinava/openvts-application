@@ -21,6 +21,7 @@ abstract class NotificationService {
   /// Only Admin's endpoint accepts category. The shared Superadmin/User DTO
   /// rejects extra query fields with forbidNonWhitelisted enabled.
   bool get supportsCategoryFilter => false;
+  bool get cursorIsContinuation => false;
 
   Future<NotificationPage> getNotifications({
     int limit = AppConstants.defaultPageSize,
@@ -51,47 +52,15 @@ abstract class NotificationService {
             category.trim().isNotEmpty)
           'category': category.trim(),
       },
-      parser: (json) =>
-          NotificationPage.fromDynamic(json, requestedLimit: normalizedLimit),
+      parser: (json) => NotificationPage.fromDynamic(json,
+          requestedLimit: normalizedLimit,
+          cursorIsContinuation: cursorIsContinuation),
     );
 
     return response.data;
   }
 
-  Future<int> getUnreadCount() {
-    return OpenVtsPerf.traceAsync('notifications.getUnreadCount', () async {
-      if (AppConfig.useMockData) {
-        return _buildMockNotifications().where((item) => !item.isRead).length;
-      }
-
-      const batchLimit = 100;
-      final firstPage = await getNotifications(
-        limit: batchLimit,
-        unreadOnly: true,
-      );
-
-      if (firstPage.unreadCount != null) {
-        return firstPage.unreadCount!;
-      }
-
-      var total = firstPage.items.length;
-      var hasMore = firstPage.hasMore;
-      var nextBeforeId = firstPage.nextBeforeId;
-
-      while (hasMore && nextBeforeId != null) {
-        final page = await getNotifications(
-          limit: batchLimit,
-          beforeId: nextBeforeId,
-          unreadOnly: true,
-        );
-        total += page.items.length;
-        hasMore = page.hasMore;
-        nextBeforeId = page.nextBeforeId;
-      }
-
-      return total;
-    });
-  }
+  Future<int> getUnreadCount() => getUnreadBadgeCountLightweight();
 
   /// Lightweight unread badge count fetch.
   ///
@@ -191,9 +160,8 @@ abstract class NotificationService {
     }
 
     if (unreadOnly) {
-      notifications = notifications
-          .where((item) => !item.isRead)
-          .toList(growable: false);
+      notifications =
+          notifications.where((item) => !item.isRead).toList(growable: false);
     }
 
     if (beforeId != null) {
@@ -202,9 +170,8 @@ abstract class NotificationService {
           .toList(growable: false);
     }
 
-    final unreadCount = _buildMockNotifications()
-        .where((item) => !item.isRead)
-        .length;
+    final unreadCount =
+        _buildMockNotifications().where((item) => !item.isRead).length;
     final hasMore = notifications.length > limit;
     final pageItems = notifications.take(limit).toList(growable: false);
 
@@ -284,15 +251,13 @@ abstract class NotificationService {
       ),
     ];
 
-    return notifications
-        .map((item) {
-          if (!_mockReadIds.contains(item.id)) {
-            return item;
-          }
+    return notifications.map((item) {
+      if (!_mockReadIds.contains(item.id)) {
+        return item;
+      }
 
-          return item.copyWith(isRead: true, readAt: item.readAt ?? now);
-        })
-        .toList(growable: false)
+      return item.copyWith(isRead: true, readAt: item.readAt ?? now);
+    }).toList(growable: false)
       ..sort((left, right) => right.id.compareTo(left.id));
   }
 

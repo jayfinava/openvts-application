@@ -20,8 +20,14 @@ class LiveMapVehicleHistoryController
       : super(const SuperadminVehicleHistoryState.initial());
 
   final LiveMapVehicleService _service;
+  int _requestGeneration = 0;
+  CancelToken? _requestToken;
 
   Future<void> loadHistory(SuperadminVehicleHistoryRequest request) async {
+    if (!mounted) return;
+    final generation = ++_requestGeneration;
+    _requestToken?.cancel('History selection changed');
+    final token = _requestToken = CancelToken();
     state = state.copyWith(
       request: request,
       isLoading: true,
@@ -30,7 +36,9 @@ class LiveMapVehicleHistoryController
     );
 
     try {
-      final history = await _service.getVehicleHistory(request);
+      final history =
+          await _service.getVehicleHistory(request, cancelToken: token);
+      if (!mounted || generation != _requestGeneration) return;
       state = state.copyWith(
         request: request,
         history: history,
@@ -38,6 +46,7 @@ class LiveMapVehicleHistoryController
         clearErrorMessage: true,
       );
     } catch (error) {
+      if (!mounted || generation != _requestGeneration) return;
       state = state.copyWith(
         request: request,
         isLoading: false,
@@ -47,6 +56,7 @@ class LiveMapVehicleHistoryController
   }
 
   Future<void> retry() async {
+    if (!mounted) return;
     final request = state.request;
     if (request == null || state.isLoading) {
       return;
@@ -56,15 +66,26 @@ class LiveMapVehicleHistoryController
   }
 
   void clearHistory() {
-    if (state.isLoading) {
+    if (!mounted) {
       return;
     }
+
+    _requestGeneration++;
+    _requestToken?.cancel('History cleared');
+    _requestToken = null;
 
     state = state.copyWith(
       isLoading: false,
       clearHistory: true,
       clearErrorMessage: true,
     );
+  }
+
+  @override
+  void dispose() {
+    _requestGeneration++;
+    _requestToken?.cancel('Map closed');
+    super.dispose();
   }
 
   String _toErrorMessage(Object error) {

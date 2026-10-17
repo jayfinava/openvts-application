@@ -30,6 +30,7 @@ import '../../features/admin/screens/vehicles/admin_vehicle_details_screen.dart'
 import '../../features/admin/screens/vehicles/admin_vehicles_screen.dart';
 import '../../features/auth/controllers/auth_controller.dart';
 import '../../features/auth/controllers/auth_state.dart';
+import '../../features/auth/screens/api_base_url_scanner_screen.dart';
 import '../../features/auth/screens/api_base_url_settings_screen.dart';
 import '../../features/auth/screens/driver_settings_screen.dart';
 import '../../features/auth/screens/forgot_password_screen.dart';
@@ -44,6 +45,7 @@ import '../../features/driver/screens/driver_home_screen.dart';
 import '../../features/driver/screens/driver_messages_screen.dart';
 import '../../features/driver/screens/driver_notifications_screen.dart';
 import '../../features/driver/screens/driver_trips_screen.dart';
+import '../../features/live_map/models/live_map_vehicle_target.dart';
 import '../../features/superadmin/models/superadmin_administrator_model.dart';
 import '../../features/superadmin/screens/administrators/superadmin_admin_details_screen.dart';
 import '../../features/superadmin/screens/administrators/superadmin_administrators_screen.dart';
@@ -96,6 +98,12 @@ import 'route_paths.dart';
 
 final appRootNavigatorKey = GlobalKey<NavigatorState>();
 
+LiveMapVehicleTarget _vehicleTrackingTarget(GoRouterState state) =>
+    LiveMapVehicleTarget(
+      vehicleId: state.pathParameters['vehicleId'] ?? '',
+      imei: state.uri.queryParameters['imei'] ?? '',
+    );
+
 final _appRouterRefreshProvider = Provider<ValueNotifier<int>>((ref) {
   final refreshNotifier = ValueNotifier<int>(0);
 
@@ -121,7 +129,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isAuthRoute =
           path == RoutePaths.login ||
           path == RoutePaths.forgotPassword ||
-          path == RoutePaths.apiBaseUrlSettings;
+          path == RoutePaths.apiBaseUrlSettings ||
+          path == RoutePaths.apiBaseUrlScanner;
       final isSplash = path == RoutePaths.splash;
       final emailedResetToken = state.uri.queryParameters['reset-password']
           ?.trim();
@@ -253,6 +262,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.apiBaseUrlSettings,
         builder: (context, state) => const ApiBaseUrlSettingsScreen(),
       ),
+      GoRoute(
+        path: RoutePaths.apiBaseUrlScanner,
+        builder: (context, state) => const ApiBaseUrlScannerScreen(),
+      ),
       ShellRoute(
         builder: (context, state, child) => SuperadminShell(child: child),
         routes: [
@@ -267,6 +280,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: RoutePaths.superadminMap,
             builder: (context, state) => const SuperadminMapScreen(),
+          ),
+          GoRoute(
+            path: RoutePaths.superadminVehicleTracking,
+            builder: (context, state) => SuperadminMapScreen(
+              vehicleTarget: _vehicleTrackingTarget(state),
+            ),
           ),
           GoRoute(
             path: RoutePaths.superadminVehicles,
@@ -342,6 +361,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: RoutePaths.adminMap,
             builder: (context, state) => const AdminMapScreen(),
+          ),
+          GoRoute(
+            path: RoutePaths.adminVehicleTracking,
+            builder: (context, state) =>
+                AdminMapScreen(vehicleTarget: _vehicleTrackingTarget(state)),
           ),
           GoRoute(
             path: RoutePaths.adminUsers,
@@ -471,6 +495,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: RoutePaths.userMap,
             builder: (context, state) => const UserMapScreen(),
+          ),
+          GoRoute(
+            path: RoutePaths.userVehicleTracking,
+            builder: (context, state) =>
+                UserMapScreen(vehicleTarget: _vehicleTrackingTarget(state)),
           ),
           GoRoute(
             path: RoutePaths.userVehicles,

@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/errors/error_mapper.dart';
 import '../models/superadmin_dashboard_model.dart';
 import '../models/superadmin_dashboard_state.dart';
 import '../services/superadmin_dashboard_service.dart';
@@ -8,13 +8,16 @@ import '../services/superadmin_dashboard_service.dart';
 class SuperadminDashboardController
     extends StateNotifier<SuperadminDashboardState> {
   SuperadminDashboardController(this._service)
-    : super(const SuperadminDashboardState.initial()) {
+      : super(const SuperadminDashboardState.initial()) {
     load();
   }
 
   final SuperadminDashboardService _service;
+  int _generation = 0;
 
   Future<void> load({bool refresh = false}) async {
+    if (!mounted) return;
+    final generation = ++_generation;
     final hasData = state.hasData;
 
     state = state.copyWith(
@@ -26,6 +29,7 @@ class SuperadminDashboardController
 
     try {
       final dashboard = await _service.getDashboard();
+      if (!mounted || generation != _generation) return;
       state = state.copyWith(
         dashboard: dashboard,
         isInitialLoading: false,
@@ -34,6 +38,7 @@ class SuperadminDashboardController
         errorMessage: null,
       );
     } catch (error) {
+      if (!mounted || generation != _generation) return;
       state = state.copyWith(
         isInitialLoading: false,
         isRefreshing: false,
@@ -44,6 +49,7 @@ class SuperadminDashboardController
   }
 
   Future<void> refresh() async {
+    if (!mounted) return;
     final actorId = state.selectedActorId;
     final fromDate = state.fromDate;
     final toDate = state.toDate;
@@ -60,14 +66,17 @@ class SuperadminDashboardController
     DateTime? from,
     DateTime? to,
   }) async {
+    if (!mounted) return;
     final current = state.dashboard;
     if (current == null) {
       await load();
       return;
     }
 
+    final generation = ++_generation;
     state = state.copyWith(
       selectedActorId: actorId,
+      isLoadingMore: false,
       fromDate: from,
       toDate: to,
       isRefreshing: true,
@@ -83,6 +92,7 @@ class SuperadminDashboardController
         refreshKey: DateTime.now().millisecondsSinceEpoch.toString(),
       );
       final activityPage = SuperadminActivityLogPage.fromJson(response);
+      if (!mounted || generation != _generation) return;
 
       state = state.copyWith(
         dashboard: current.copyWith(activityLogs: activityPage),
@@ -90,6 +100,7 @@ class SuperadminDashboardController
         errorMessage: null,
       );
     } catch (error) {
+      if (!mounted || generation != _generation) return;
       state = state.copyWith(
         isRefreshing: false,
         errorMessage: _toErrorMessage(error),
@@ -114,6 +125,8 @@ class SuperadminDashboardController
   }
 
   Future<void> loadMoreActivityLogs() async {
+    if (!mounted || state.isRefreshing) return;
+    final generation = _generation;
     final current = state.dashboard;
     final nextCursorId = current?.activityLogs.nextCursorId;
 
@@ -136,6 +149,7 @@ class SuperadminDashboardController
         to: state.toDate,
       );
       final activityPage = SuperadminActivityLogPage.fromJson(response);
+      if (!mounted || generation != _generation) return;
 
       state = state.copyWith(
         dashboard: current.copyWith(
@@ -151,6 +165,7 @@ class SuperadminDashboardController
         errorMessage: null,
       );
     } catch (error) {
+      if (!mounted || generation != _generation) return;
       state = state.copyWith(
         isLoadingMore: false,
         errorMessage: _toErrorMessage(error),
@@ -178,73 +193,11 @@ class SuperadminDashboardController
         (left, right) =>
             (right.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
                 .compareTo(
-                  left.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
-                ),
+          left.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
+        ),
       );
     return values;
   }
 
-  String _toErrorMessage(Object error) {
-    if (error is DioException) {
-      final responseMessage = _extractResponseMessage(error.response?.data);
-      if (responseMessage != null) {
-        return responseMessage;
-      }
-
-      if (error.type == DioExceptionType.connectionTimeout ||
-          error.type == DioExceptionType.receiveTimeout ||
-          error.type == DioExceptionType.sendTimeout) {
-        return 'The request timed out. Please try again.';
-      }
-
-      if (error.type == DioExceptionType.connectionError) {
-        return 'Unable to reach the server right now.';
-      }
-
-      final message = error.message?.trim();
-      if (message != null && message.isNotEmpty) {
-        return message;
-      }
-    }
-
-    final raw = error.toString().trim();
-    if (raw.startsWith('Exception: ')) {
-      return raw.substring('Exception: '.length).trim();
-    }
-
-    return raw;
-  }
-
-  String? _extractResponseMessage(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      for (final key in const ['message', 'error']) {
-        final value = data[key];
-        if (value is String && value.trim().isNotEmpty) {
-          return value.trim();
-        }
-
-        if (value is List) {
-          final parts = value
-              .whereType<String>()
-              .map((item) => item.trim())
-              .where((item) => item.isNotEmpty)
-              .toList(growable: false);
-          if (parts.isNotEmpty) {
-            return parts.join(', ');
-          }
-        }
-      }
-
-      final nestedData = data['data'];
-      if (!identical(nestedData, data)) {
-        return _extractResponseMessage(nestedData);
-      }
-    }
-
-    if (data is String && data.trim().isNotEmpty) {
-      return data.trim();
-    }
-
-    return null;
-  }
+  String _toErrorMessage(Object error) => ErrorMapper.from(error).message;
 }

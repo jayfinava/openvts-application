@@ -90,7 +90,7 @@ class UserSubUsersController extends StateNotifier<UserSubUsersState> {
         total: state.total + 1,
       );
 
-      await refresh();
+      unawaited(refresh());
       return created;
     } catch (error) {
       if (!mounted) {

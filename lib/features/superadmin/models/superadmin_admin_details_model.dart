@@ -71,10 +71,9 @@ class SuperadminAdminDetails {
     final root = _asMap(json);
     final source =
         _firstMap(root, const ['data', 'admin', 'user', 'profile', 'result']) ??
-        root;
+            root;
 
-    final companiesList =
-        _firstList(source, const [
+    final companiesList = _firstList(source, const [
           'companies',
           'companyList',
           'company_list',
@@ -88,20 +87,17 @@ class SuperadminAdminDetails {
         .toList(growable: false);
 
     final addressMap = _firstMap(source, const ['address', 'fullAddress']);
-    final addressFromObject = addressMap == null
-        ? null
-        : SuperadminAdminAddress.fromJson(addressMap);
+    final addressFromObject =
+        addressMap == null ? null : SuperadminAdminAddress.fromJson(addressMap);
 
-    final mobilePrefix =
-        _firstString(source, const [
+    final mobilePrefix = _firstString(source, const [
           'mobilePrefix',
           'mobile_prefix',
           'mobileprefix',
           'phonePrefix',
         ]) ??
         '';
-    final mobileNumber =
-        _firstString(source, const [
+    final mobileNumber = _firstString(source, const [
           'mobileNumber',
           'mobile_number',
           'mobile',
@@ -112,10 +108,9 @@ class SuperadminAdminDetails {
         '';
     final mobileDisplay =
         _firstString(source, const ['mobileDisplay', 'mobile_display']) ??
-        _composePhone(mobilePrefix, mobileNumber);
+            _composePhone(mobilePrefix, mobileNumber);
 
-    final rawCountryCode =
-        _firstString(source, const [
+    final rawCountryCode = _firstString(source, const [
           'countryCode',
           'country_code',
           'countrycode',
@@ -125,28 +120,27 @@ class SuperadminAdminDetails {
     final detailsCountryCode = rawCountryCode.isNotEmpty
         ? rawCountryCode.toUpperCase()
         : (rawCountryGeneric.trim().length <= 2
-              ? rawCountryGeneric.trim().toUpperCase()
-              : '');
+            ? rawCountryGeneric.trim().toUpperCase()
+            : '');
     final detailsCountryName =
         rawCountryCode.isEmpty && rawCountryGeneric.trim().length > 2
-        ? rawCountryGeneric.trim()
-        : '';
+            ? rawCountryGeneric.trim()
+            : '';
 
     final rawStateCode =
         _firstString(source, const ['stateCode', 'state_code', 'statecode']) ??
-        '';
+            '';
     final rawStateGeneric = _firstString(source, const ['state']) ?? '';
     final detailsStateCode = rawStateCode.isNotEmpty
         ? rawStateCode
         : (rawStateGeneric.trim().length <= 4 ? rawStateGeneric.trim() : '');
     final detailsStateName =
         rawStateCode.isEmpty && rawStateGeneric.trim().length > 4
-        ? rawStateGeneric.trim()
-        : '';
+            ? rawStateGeneric.trim()
+            : '';
 
     return SuperadminAdminDetails(
-      id:
-          _firstString(source, const [
+      id: _firstString(source, const [
             'uid',
             'id',
             '_id',
@@ -157,8 +151,7 @@ class SuperadminAdminDetails {
             'user_id',
           ]) ??
           '',
-      name:
-          _firstString(source, const [
+      name: _firstString(source, const [
             'Name',
             'name',
             'fullName',
@@ -167,16 +160,14 @@ class SuperadminAdminDetails {
             'adminName',
           ]) ??
           '',
-      username:
-          _firstString(source, const [
+      username: _firstString(source, const [
             'username',
             'userName',
             'user_name',
             'login',
           ]) ??
           '',
-      email:
-          _firstString(source, const [
+      email: _firstString(source, const [
             'email',
             'Email',
             'mail',
@@ -186,16 +177,14 @@ class SuperadminAdminDetails {
       mobilePrefix: mobilePrefix,
       mobileNumber: mobileNumber,
       mobileDisplay: mobileDisplay,
-      credits:
-          _firstInt(source, const [
+      credits: _firstInt(source, const [
             'credits',
             'credit',
             'availableCredits',
             'creditBalance',
           ]) ??
           0,
-      totalVehicles:
-          _firstInt(source, const [
+      totalVehicles: _firstInt(source, const [
             'totalvehicles',
             'totalVehicles',
             'vehicleCount',
@@ -240,8 +229,7 @@ class SuperadminAdminDetails {
         'lastActivityAt',
         'last_activity_at',
       ]),
-      isActive:
-          _parseBool(
+      isActive: _parseBool(
             source['isActive'] ??
                 source['is_active'] ??
                 source['isactive'] ??
@@ -251,8 +239,7 @@ class SuperadminAdminDetails {
                 source['account_status'],
           ) ??
           false,
-      hasExplicitActiveStatus:
-          _parseBool(
+      hasExplicitActiveStatus: _parseBool(
             source['isActive'] ??
                 source['is_active'] ??
                 source['isactive'] ??
@@ -262,8 +249,7 @@ class SuperadminAdminDetails {
                 source['account_status'],
           ) !=
           null,
-      isEmailVerified:
-          _parseBool(
+      isEmailVerified: _parseBool(
             source['isEmailVerified'] ??
                 source['isemailvarified'] ??
                 source['isemailverified'] ??
@@ -276,16 +262,14 @@ class SuperadminAdminDetails {
       countryName: detailsCountryName,
       stateCode: detailsStateCode,
       stateName: detailsStateName,
-      cityName:
-          _firstString(source, const [
+      cityName: _firstString(source, const [
             'cityName',
             'city_name',
             'cityname',
             'city',
           ]) ??
           '',
-      pincode:
-          _firstString(source, const [
+      pincode: _firstString(source, const [
             'pincode',
             'postalCode',
             'postal_code',
@@ -293,8 +277,7 @@ class SuperadminAdminDetails {
             'zipCode',
           ]) ??
           '',
-      organization:
-          _firstString(source, const [
+      organization: _firstString(source, const [
             'companyName',
             'company_name',
             'companyname',
@@ -303,8 +286,7 @@ class SuperadminAdminDetails {
             'organisation',
           ]) ??
           '',
-      location:
-          _firstString(source, const [
+      location: _firstString(source, const [
             'fulladdress',
             'fullAddress',
             'location',
@@ -387,8 +369,7 @@ class SuperadminAdminCompany {
 
   factory SuperadminAdminCompany.fromJson(dynamic json) {
     final source = _asMap(json);
-    final social =
-        _firstMap(source, const ['socialLinks', 'social_links']) ??
+    final social = _firstMap(source, const ['socialLinks', 'social_links']) ??
         const <String, dynamic>{};
 
     final normalizedSocial = <String, String>{};
@@ -401,46 +382,40 @@ class SuperadminAdminCompany {
     return SuperadminAdminCompany(
       id: _firstString(source, const ['id', '_id', 'companyId']) ?? '',
       name: _firstString(source, const ['name', 'companyName']) ?? '',
-      websiteUrl:
-          _firstString(source, const [
+      websiteUrl: _firstString(source, const [
             'websiteUrl',
             'website_url',
             'website',
           ]) ??
           '',
-      customDomain:
-          _firstString(source, const [
+      customDomain: _firstString(source, const [
             'customDomain',
             'custom_domain',
             'domain',
           ]) ??
           '',
       socialLinks: normalizedSocial,
-      logoLightUrl:
-          _firstString(source, const [
+      logoLightUrl: _firstString(source, const [
             'logoLightUrl',
             'logo_light_url',
             'logoLight',
             'logo_light',
           ]) ??
           '',
-      logoDarkUrl:
-          _firstString(source, const [
+      logoDarkUrl: _firstString(source, const [
             'logoDarkUrl',
             'logo_dark_url',
             'logoDark',
             'logo_dark',
           ]) ??
           '',
-      faviconUrl:
-          _firstString(source, const [
+      faviconUrl: _firstString(source, const [
             'faviconUrl',
             'favicon_url',
             'favicon',
           ]) ??
           '',
-      primaryColor:
-          _firstString(source, const [
+      primaryColor: _firstString(source, const [
             'primaryColor',
             'primary_color',
             'color',
@@ -488,12 +463,12 @@ class SuperadminAdminAddress {
     final addrCountryCode = addrRawCountryCode.isNotEmpty
         ? addrRawCountryCode.toUpperCase()
         : (addrRawCountryGeneric.trim().length <= 2
-              ? addrRawCountryGeneric.trim().toUpperCase()
-              : '');
+            ? addrRawCountryGeneric.trim().toUpperCase()
+            : '');
     final addrCountryName =
         addrRawCountryCode.isEmpty && addrRawCountryGeneric.trim().length > 2
-        ? addrRawCountryGeneric.trim()
-        : _firstString(source, const ['countryName', 'country_name']) ?? '';
+            ? addrRawCountryGeneric.trim()
+            : _firstString(source, const ['countryName', 'country_name']) ?? '';
 
     final addrRawStateCode =
         _firstString(source, const ['stateCode', 'state_code']) ?? '';
@@ -501,17 +476,16 @@ class SuperadminAdminAddress {
     final addrStateCode = addrRawStateCode.isNotEmpty
         ? addrRawStateCode
         : (addrRawStateGeneric.trim().length <= 4
-              ? addrRawStateGeneric.trim()
-              : '');
+            ? addrRawStateGeneric.trim()
+            : '');
     final addrStateName =
         addrRawStateCode.isEmpty && addrRawStateGeneric.trim().length > 4
-        ? addrRawStateGeneric.trim()
-        : _firstString(source, const ['stateName', 'state_name']) ?? '';
+            ? addrRawStateGeneric.trim()
+            : _firstString(source, const ['stateName', 'state_name']) ?? '';
 
     return SuperadminAdminAddress(
       id: _firstString(source, const ['id', '_id', 'addressId']) ?? '',
-      addressLine:
-          _firstString(source, const [
+      addressLine: _firstString(source, const [
             'addressLine',
             'address_line',
             'address',
@@ -522,8 +496,7 @@ class SuperadminAdminAddress {
       countryName: addrCountryName,
       stateCode: addrStateCode,
       stateName: addrStateName,
-      cityId:
-          _firstString(source, const [
+      cityId: _firstString(source, const [
             'cityId',
             'city_id',
             'cityName',
@@ -531,8 +504,7 @@ class SuperadminAdminAddress {
             'city',
           ]) ??
           '',
-      cityName:
-          _firstString(source, const [
+      cityName: _firstString(source, const [
             'cityName',
             'city_name',
             'city',
@@ -540,16 +512,14 @@ class SuperadminAdminAddress {
             'city_id',
           ]) ??
           '',
-      pincode:
-          _firstString(source, const [
+      pincode: _firstString(source, const [
             'pincode',
             'postalCode',
             'postal_code',
             'zip',
           ]) ??
           '',
-      fullAddress:
-          _firstString(source, const [
+      fullAddress: _firstString(source, const [
             'fullAddress',
             'full_address',
             'fulladdress',
@@ -727,6 +697,7 @@ SuperadminCreditActivity _parseCreditActivity(dynamic value) {
 
 class SuperadminCreditLog {
   const SuperadminCreditLog({
+    this.balanceAfter,
     required this.id,
     required this.adminUserId,
     required this.credits,
@@ -735,6 +706,7 @@ class SuperadminCreditLog {
     required this.createdAt,
   });
 
+  final int? balanceAfter;
   final String id;
   final String adminUserId;
   final int credits;
@@ -745,9 +717,9 @@ class SuperadminCreditLog {
   factory SuperadminCreditLog.fromJson(dynamic json) {
     final source = _asMap(json);
     return SuperadminCreditLog(
+      balanceAfter: _firstInt(source, const ['balanceAfter']),
       id: _firstString(source, const ['id', '_id', 'logId']) ?? '',
-      adminUserId:
-          _firstString(source, const [
+      adminUserId: _firstString(source, const [
             'adminUserId',
             'admin_user_id',
             'adminId',
@@ -758,8 +730,7 @@ class SuperadminCreditLog {
       activity: _parseCreditActivity(
         source['activity'] ?? source['type'] ?? source['action'],
       ),
-      vehicleId:
-          _firstString(source, const [
+      vehicleId: _firstString(source, const [
             'vehicleId',
             'vehicle_id',
             'vehicleid',
@@ -836,11 +807,10 @@ class SuperadminAdminVehicle {
     final source = _asMap(json);
     final vehicleType =
         _firstMap(source, const ['vehicleType', 'vehicle_type', 'type']) ??
-        const <String, dynamic>{};
+            const <String, dynamic>{};
 
     return SuperadminAdminVehicle(
-      id:
-          _firstString(source, const [
+      id: _firstString(source, const [
             'id',
             '_id',
             'uid',
@@ -849,8 +819,7 @@ class SuperadminAdminVehicle {
           ]) ??
           '',
       name: _firstString(source, const ['name', 'vehicleName']) ?? '',
-      imei:
-          _firstString(source, const [
+      imei: _firstString(source, const [
             'imei',
             'IMEI',
             'deviceImei',
@@ -858,8 +827,7 @@ class SuperadminAdminVehicle {
             'deviceId',
           ]) ??
           '',
-      simNumber:
-          _firstString(source, const [
+      simNumber: _firstString(source, const [
             'simNumber',
             'sim_number',
             'simno',
@@ -867,8 +835,7 @@ class SuperadminAdminVehicle {
             'sim',
           ]) ??
           '',
-      isLicenseBlocked:
-          _parseBool(
+      isLicenseBlocked: _parseBool(
             source['isLicenseBlocked'] ??
                 source['is_license_blocked'] ??
                 source['licenseBlocked'] ??
@@ -880,23 +847,20 @@ class SuperadminAdminVehicle {
         'license_blocked_at',
         'blockedAt',
       ]),
-      licenseBlockReason:
-          _firstString(source, const [
+      licenseBlockReason: _firstString(source, const [
             'licenseBlockReason',
             'license_block_reason',
             'blockReason',
             'reason',
           ]) ??
           '',
-      vehicleTypeName:
-          _firstString(source, const [
+      vehicleTypeName: _firstString(source, const [
             'vehicleTypeName',
             'vehicle_type_name',
           ]) ??
           _firstString(vehicleType, const ['name', 'label']) ??
           '',
-      vehicleTypeSlug:
-          _firstString(source, const [
+      vehicleTypeSlug: _firstString(source, const [
             'vehicleTypeSlug',
             'vehicle_type_slug',
           ]) ??
@@ -911,8 +875,7 @@ class SuperadminAdminVehicle {
         'licenseExpiry',
         'license_expiry',
       ]),
-      gmtOffset:
-          _firstString(source, const [
+      gmtOffset: _firstString(source, const [
             'gmtOffset',
             'gmt_offset',
             'timezoneOffset',
@@ -924,18 +887,18 @@ class SuperadminAdminVehicle {
 
   static List<SuperadminAdminVehicle> listFromJson(dynamic json) {
     return _extractList(
-          json,
-          preferredKeys: const [
-            'data',
-            'items',
-            'vehicles',
-            'rows',
-            'result',
-            'records',
-            'list',
-            'results',
-          ],
-        )
+      json,
+      preferredKeys: const [
+        'data',
+        'items',
+        'vehicles',
+        'rows',
+        'result',
+        'records',
+        'list',
+        'results',
+      ],
+    )
         .map(_asMap)
         .where((m) => m.isNotEmpty)
         .map(SuperadminAdminVehicle.fromJson)
@@ -984,7 +947,7 @@ class SuperadminAdminDocument {
     final source = _asMap(json);
     final docType =
         _firstMap(source, const ['docType', 'doc_type', 'documentType']) ??
-        const <String, dynamic>{};
+            const <String, dynamic>{};
 
     final rawTags = source['tags'] ?? source['tagList'];
     final tags = <String>[];
@@ -1003,16 +966,14 @@ class SuperadminAdminDocument {
     return SuperadminAdminDocument(
       id: _firstString(source, const ['id', '_id', 'docId']) ?? '',
       title: _firstString(source, const ['title', 'name']) ?? '',
-      docTypeId:
-          _firstString(source, const [
+      docTypeId: _firstString(source, const [
             'docTypeId',
             'doc_type_id',
             'documentTypeId',
           ]) ??
           _firstString(docType, const ['id', '_id']) ??
           '',
-      docTypeName:
-          _firstString(source, const [
+      docTypeName: _firstString(source, const [
             'docTypeName',
             'doc_type_name',
             'documentTypeName',
@@ -1021,8 +982,7 @@ class SuperadminAdminDocument {
           '',
       description: _firstString(source, const ['description', 'desc']) ?? '',
       tags: tags,
-      associateType:
-          _firstString(source, const [
+      associateType: _firstString(source, const [
             'AssociateType',
             'associateType',
             'associate_type',
@@ -1036,8 +996,7 @@ class SuperadminAdminDocument {
       fileUrl: _firstString(source, const ['fileUrl', 'file_url', 'url']) ?? '',
       createdAt: _firstDate(source, const ['createdAt', 'created_at']),
       expiryAt: _firstDate(source, const ['expiryAt', 'expiry_at', 'expiry']),
-      isVisible:
-          _parseBool(
+      isVisible: _parseBool(
             source['isVisible'] ?? source['is_visible'] ?? source['visible'],
           ) ??
           true,
@@ -1046,9 +1005,9 @@ class SuperadminAdminDocument {
 
   static List<SuperadminAdminDocument> listFromJson(dynamic json) {
     return _extractList(
-          json,
-          preferredKeys: const ['documents', 'docs', 'items', 'rows', 'data'],
-        )
+      json,
+      preferredKeys: const ['documents', 'docs', 'items', 'rows', 'data'],
+    )
         .map(_asMap)
         .where((m) => m.isNotEmpty)
         .map(SuperadminAdminDocument.fromJson)
@@ -1075,20 +1034,19 @@ class SuperadminDocumentTypeOption {
 
   factory SuperadminDocumentTypeOption.fromJson(dynamic json) {
     final source = _asMap(json);
-    final normalizedDocFor =
-        (_firstString(source, const [
-                  'docFor',
-                  'doc_for',
-                  'typeFor',
-                  'type_for',
-                  'associateType',
-                  'associate_type',
-                  'targetType',
-                  'target_type',
-                  'for',
-                ]) ??
-                '')
-            .toUpperCase();
+    final normalizedDocFor = (_firstString(source, const [
+              'docFor',
+              'doc_for',
+              'typeFor',
+              'type_for',
+              'associateType',
+              'associate_type',
+              'targetType',
+              'target_type',
+              'for',
+            ]) ??
+            '')
+        .toUpperCase();
     return SuperadminDocumentTypeOption(
       id: _firstString(source, const ['id', '_id', 'typeId']) ?? '',
       name: _firstString(source, const ['name', 'label', 'title']) ?? '',
@@ -1098,16 +1056,16 @@ class SuperadminDocumentTypeOption {
 
   static List<SuperadminDocumentTypeOption> listFromJson(dynamic json) {
     return _extractList(
-          json,
-          preferredKeys: const [
-            'documentTypes',
-            'documenttypes',
-            'types',
-            'items',
-            'rows',
-            'data',
-          ],
-        )
+      json,
+      preferredKeys: const [
+        'documentTypes',
+        'documenttypes',
+        'types',
+        'items',
+        'rows',
+        'data',
+      ],
+    )
         .map(_asMap)
         .where((m) => m.isNotEmpty)
         .map(SuperadminDocumentTypeOption.fromJson)
@@ -1162,8 +1120,7 @@ class SuperadminAdminActivityLogPage {
     final root = _asMap(json);
     final source = _firstMap(root, const ['data', 'result']) ?? root;
 
-    final listSource =
-        _firstList(source, const [
+    final listSource = _firstList(source, const [
           'items',
           'logs',
           'activities',
@@ -1193,8 +1150,7 @@ class SuperadminAdminActivityLogPage {
         'cursor_id',
         'cursor',
       ]),
-      hasMore:
-          _parseBool(
+      hasMore: _parseBool(
             source['hasMore'] ?? source['has_more'] ?? source['hasNext'],
           ) ??
           false,
@@ -1246,7 +1202,7 @@ class SuperadminAdminActivityLog {
       entity: _firstString(source, const ['entity', 'target']) ?? '',
       entityId:
           _firstString(source, const ['entityId', 'entity_id', 'targetId']) ??
-          '',
+              '',
       meta: meta,
       ip: _firstString(source, const ['ip', 'ipAddress', 'ip_address']) ?? '',
       browser: _firstString(source, const ['browser', 'userAgent']) ?? '',

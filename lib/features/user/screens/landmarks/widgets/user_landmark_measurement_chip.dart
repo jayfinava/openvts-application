@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 
@@ -24,16 +24,16 @@ class UserLandmarkMeasurementChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final foreground = switch (tone) {
-      UserLandmarkMeasurementTone.neutral => OpenVtsColors.white,
-      UserLandmarkMeasurementTone.warning => OpenVtsColors.warning,
-      UserLandmarkMeasurementTone.error => OpenVtsColors.error,
+      UserLandmarkMeasurementTone.neutral => OpenVtsMapColors.white,
+      UserLandmarkMeasurementTone.warning => OpenVtsMapColors.warning,
+      UserLandmarkMeasurementTone.error => OpenVtsMapColors.error,
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: OpenVtsColors.brandInk,
+        color: OpenVtsMapColors.brandInk,
         borderRadius: BorderRadius.circular(OpenVtsRadius.pill),
-        border: Border.all(color: OpenVtsColors.white),
+        border: Border.all(color: OpenVtsMapColors.white),
         boxShadow: const <BoxShadow>[
           BoxShadow(
             color: Color(0x14000000),

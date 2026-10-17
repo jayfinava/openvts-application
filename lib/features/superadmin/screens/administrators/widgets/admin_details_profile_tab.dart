@@ -224,12 +224,10 @@ class _AdminPersonalCard extends ConsumerWidget {
     );
     final resolvedLastLogin =
         controllerState.resolvedLastLogin ?? admin.recentLogin;
-    final lastLogin = resolvedLastLogin != null
-        ? fmt.formatDate(resolvedLastLogin)
-        : 'Never';
-    final created = admin.createdAt != null
-        ? fmt.formatDate(admin.createdAt!)
-        : '—';
+    final lastLogin =
+        resolvedLastLogin != null ? fmt.formatDate(resolvedLastLogin) : 'Never';
+    final created =
+        admin.createdAt != null ? fmt.formatDate(admin.createdAt!) : '—';
 
     return _SectionCard(
       title: 'ACCOUNT',
@@ -621,9 +619,8 @@ class _Avatar extends StatelessWidget {
       child: Text(
         _initials(name),
         style: OpenVtsTypography.label.copyWith(
-          color: isDark
-              ? Colors.white
-              : Theme.of(context).colorScheme.onPrimary,
+          color:
+              isDark ? Colors.white : Theme.of(context).colorScheme.onPrimary,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -631,11 +628,8 @@ class _Avatar extends StatelessWidget {
   }
 
   static String _initials(String value) {
-    final parts = value
-        .trim()
-        .split(RegExp(r'\s+'))
-        .where((p) => p.isNotEmpty)
-        .toList();
+    final parts =
+        value.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
     if (parts.isEmpty) return 'OV';
     if (parts.length == 1) {
       return parts.first
@@ -690,8 +684,7 @@ class _InfoRow extends StatelessWidget {
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
-            child:
-                valueWidget ??
+            child: valueWidget ??
                 Text(
                   _displayValue(value ?? ''),
                   style: OpenVtsTypography.label.copyWith(
@@ -723,14 +716,13 @@ String _resolveProfileCountry(
   final name = address?.countryName.trim().isNotEmpty == true
       ? address!.countryName.trim()
       : admin.countryName.trim().isNotEmpty
-      ? admin.countryName.trim()
-      : null;
+          ? admin.countryName.trim()
+          : null;
   if (name != null) return name;
-  final code =
-      (address?.countryCode.trim().isNotEmpty == true
-              ? address!.countryCode
-              : admin.countryCode)
-          .trim();
+  final code = (address?.countryCode.trim().isNotEmpty == true
+          ? address!.countryCode
+          : admin.countryCode)
+      .trim();
   if (code.isEmpty) return '—';
   return LocationLabelResolver.resolveCountry(code);
 }
@@ -742,19 +734,17 @@ String _resolveProfileState(
   final name = address?.stateName.trim().isNotEmpty == true
       ? address!.stateName.trim()
       : admin.stateName.trim().isNotEmpty
-      ? admin.stateName.trim()
-      : null;
+          ? admin.stateName.trim()
+          : null;
   if (name != null) return name;
-  final countryCode =
-      (address?.countryCode.trim().isNotEmpty == true
-              ? address!.countryCode
-              : admin.countryCode)
-          .trim();
-  final stateCode =
-      (address?.stateCode.trim().isNotEmpty == true
-              ? address!.stateCode
-              : admin.stateCode)
-          .trim();
+  final countryCode = (address?.countryCode.trim().isNotEmpty == true
+          ? address!.countryCode
+          : admin.countryCode)
+      .trim();
+  final stateCode = (address?.stateCode.trim().isNotEmpty == true
+          ? address!.stateCode
+          : admin.stateCode)
+      .trim();
   if (stateCode.isEmpty) return '—';
   return LocationLabelResolver.resolveState(countryCode, stateCode);
 }
@@ -798,14 +788,12 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     _addressLine = TextEditingController(text: addr?.addressLine ?? a.location);
     _pincode = TextEditingController(text: addr?.pincode ?? a.pincode);
     _mobilePrefix = a.mobilePrefix.isEmpty ? null : a.mobilePrefix;
-    _countryCode =
-        (addr?.countryCode.isNotEmpty == true
-                ? addr!.countryCode
-                : a.countryCode)
-            .toUpperCase();
-    _stateCode = (addr?.stateCode.isNotEmpty == true
-        ? addr!.stateCode
-        : a.stateCode);
+    _countryCode = (addr?.countryCode.isNotEmpty == true
+            ? addr!.countryCode
+            : a.countryCode)
+        .toUpperCase();
+    _stateCode =
+        (addr?.stateCode.isNotEmpty == true ? addr!.stateCode : a.stateCode);
     _cityName =
         (addr?.cityName.isNotEmpty == true ? addr!.cityName : a.cityName)
             .trim();
@@ -1125,8 +1113,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         context: context,
       );
     } else {
-      final msg =
-          ref
+      final msg = ref
               .read(superadminAdminDetailsControllerProvider(widget.adminId))
               .sectionErrorMessage ??
           'Failed to update profile.';
@@ -1260,8 +1247,7 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
         context: context,
       );
     } else {
-      final msg =
-          ref
+      final msg = ref
               .read(superadminAdminDetailsControllerProvider(widget.adminId))
               .sectionErrorMessage ??
           'Failed to update password.';
@@ -1416,8 +1402,8 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
                             if (s.isEmpty) return null;
                             final normalized =
                                 s.startsWith(RegExp(r'https?://'))
-                                ? s
-                                : 'https://$s';
+                                    ? s
+                                    : 'https://$s';
                             final uri = Uri.tryParse(normalized);
                             if (uri == null ||
                                 !(uri.hasScheme &&
@@ -1466,8 +1452,8 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
                               if (s.isEmpty) return null;
                               final normalized =
                                   s.startsWith(RegExp(r'https?://'))
-                                  ? s
-                                  : 'https://$s';
+                                      ? s
+                                      : 'https://$s';
                               final uri = Uri.tryParse(normalized);
                               if (uri == null ||
                                   !(uri.hasScheme &&
@@ -1546,15 +1532,13 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
         context: context,
       );
     } else {
-      final backendMsg =
-          ref
+      final backendMsg = ref
               .read(superadminAdminDetailsControllerProvider(widget.adminId))
               .sectionErrorMessage
               ?.trim() ??
           '';
-      final msg = backendMsg.isNotEmpty
-          ? backendMsg
-          : 'Failed to update company.';
+      final msg =
+          backendMsg.isNotEmpty ? backendMsg : 'Failed to update company.';
       ToastHelper.showError(msg, context: context);
     }
   }
@@ -1776,17 +1760,17 @@ String _normalizeDomain(String input) {
 Color _colorFromName(String name) {
   switch (name.trim().toLowerCase()) {
     case 'black':
-      return const Color(0xFF141118);
+      return const Color(0xFF121212);
     case 'blue':
-      return const Color(0xFF2563EB);
+      return const Color(0xFF606060);
     case 'green':
-      return const Color(0xFF2F6B4F);
+      return const Color(0xFF5C5C5C);
     case 'purple':
-      return const Color(0xFF7C3AED);
+      return const Color(0xFF555555);
     case 'pink':
-      return const Color(0xFFDB2777);
+      return const Color(0xFF535353);
     case 'orange':
-      return const Color(0xFFEA580C);
+      return const Color(0xFF727272);
     default:
       return OpenVtsColors.textTertiary;
   }

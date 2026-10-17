@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../../core/theme/open_vts_chart_theme.dart';
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
@@ -99,8 +100,8 @@ class UserSensorReportResult extends StatelessWidget {
       // Mirrors web BooleanSensorResult KPIs: currentState, transitions, activeDuration, lastChange
       final currentState = rows.isNotEmpty
           ? ((rows.last.rawValue == true || rows.last.rawValue == 1)
-                ? 'ON'
-                : 'OFF')
+              ? 'ON'
+              : 'OFF')
           : '—';
       int transitions = 0;
       double activeSec = 0;
@@ -174,9 +175,8 @@ class _NumericSensorChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final lineColor = isDark
-        ? OpenVtsColors.info.withValues(alpha: 0.9)
-        : OpenVtsColors.info;
+    final lineColor =
+        isDark ? OpenVtsColors.info.withValues(alpha: 0.9) : OpenVtsColors.info;
     final spots = entries
         .where((e) => e.row.rawValue is num)
         .map((e) => FlSpot(e.x, e.row.numericValue))
@@ -211,6 +211,7 @@ class _NumericSensorChart extends StatelessWidget {
             height: 180,
             child: LineChart(
               LineChartData(
+                lineTouchData: OpenVtsChartTheme.lineTouchData(context),
                 minY: minY - padding,
                 maxY: maxY + padding,
                 lineBarsData: [
@@ -315,6 +316,7 @@ class _BoolSensorChart extends StatelessWidget {
             height: 120,
             child: LineChart(
               LineChartData(
+                lineTouchData: OpenVtsChartTheme.lineTouchData(context),
                 minY: -0.1,
                 maxY: 1.2,
                 lineBarsData: [
@@ -391,12 +393,12 @@ class _SensorRowCard extends StatelessWidget {
     final displayValue = row.isBoolean
         ? ((row.rawValue as bool?) == true ? 'ON' : 'OFF')
         : (row.rawValue is num
-              ? '${row.numericValue.toStringAsFixed(2)}${row.unit != null ? ' ${row.unit}' : ''}'
-              : '—');
+            ? '${row.numericValue.toStringAsFixed(2)}${row.unit != null ? ' ${row.unit}' : ''}'
+            : '—');
     final valueColor = row.isBoolean
         ? ((row.rawValue as bool?) == true
-              ? OpenVtsColors.success
-              : OpenVtsColors.textSecondary)
+            ? OpenVtsColors.success
+            : OpenVtsColors.textSecondary)
         : null;
     return Padding(
       padding: const EdgeInsets.only(bottom: OpenVtsSpacing.xs),

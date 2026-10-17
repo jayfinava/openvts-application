@@ -158,9 +158,10 @@ ReportDateRange buildDefaultDateRange(UserReportKey key) {
     final start = _parseDate(range.startDate ?? '');
     final end = _parseDate(range.endDate ?? '');
     if (start == null || end == null) return null;
-    // end is inclusive in UI → exclusive boundary = end + 1 day at midnight UTC
-    final fromUtc = start; // already UTC midnight
-    final toUtc = end.add(const Duration(days: 1)); // exclusive boundary
+    // Match the web: calendar selections use device-local midnights. Construct
+    // the following calendar day rather than adding 24 hours across DST.
+    final fromUtc = DateTime(start.year, start.month, start.day).toUtc();
+    final toUtc = DateTime(end.year, end.month, end.day + 1).toUtc();
     return (from: fromUtc, to: toUtc);
   } else {
     final from = DateTime.tryParse(range.fromISO ?? '');

@@ -521,23 +521,34 @@ class SuperadminActorOption {
 
   factory SuperadminActorOption.fromJson(Map<String, dynamic> json) {
     return SuperadminActorOption(
-      id: _firstInt(json, const ['id', 'adminId', 'userId']),
-      name: _firstString(json, const ['name', 'fullName', 'displayName']) ??
+      id: _firstInt(json, const ['uid', 'id', 'adminId', 'userId']),
+      name: _firstString(json,
+              const ['Name', 'name', 'fullName', 'displayName', 'username']) ??
           'Unknown',
     );
   }
 
   static List<SuperadminActorOption> listFromJson(dynamic json) {
-    final list = json is List
-        ? json
-        : _firstList(_asMap(json), const ['items', 'rows', 'data']) ??
+    var value = json;
+    for (var depth = 0;
+        depth < 4 && value is Map && value['data'] is Map;
+        depth++) {
+      value = value['data'];
+    }
+    final list = value is List
+        ? value
+        : _firstList(_asMap(value),
+                const ['admins', 'administrators', 'items', 'rows', 'data']) ??
             const <dynamic>[];
 
-    return list
+    final actors = list
         .map(_asMap)
         .where((item) => item.isNotEmpty)
         .map(SuperadminActorOption.fromJson)
         .where((item) => item.id > 0)
+        .toList(growable: false);
+    return {for (final actor in actors) actor.id: actor}
+        .values
         .toList(growable: false);
   }
 }

@@ -78,8 +78,8 @@ class _ReplayStopMarkerWidget extends StatelessWidget {
                   color: isSelected
                       ? scheme.onSurface
                       : isDark
-                      ? scheme.outlineVariant
-                      : Colors.white,
+                          ? scheme.outlineVariant
+                          : Colors.white,
                   width: 2,
                 ),
                 boxShadow: [
@@ -326,9 +326,8 @@ class _ReplayInfoHud extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayName = vehicleName?.trim().isNotEmpty == true
-        ? vehicleName!.trim()
-        : 'Replay';
+    final displayName =
+        vehicleName?.trim().isNotEmpty == true ? vehicleName!.trim() : 'Replay';
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -692,8 +691,8 @@ class _ReplayControlDrawer extends StatelessWidget {
     final clampedIndex = index < 0
         ? 0
         : index > maxIndex
-        ? maxIndex
-        : index;
+            ? maxIndex
+            : index;
     final sliderMax = math.max(1, maxIndex).toDouble();
     final canPlay = points.length > 1;
     final scheme = Theme.of(context).colorScheme;
@@ -755,9 +754,8 @@ class _ReplayControlDrawer extends StatelessWidget {
                       max: sliderMax,
                       divisions: maxIndex > 0 ? maxIndex : null,
                       value: clampedIndex.toDouble(),
-                      onChanged: canPlay
-                          ? (value) => onSeek(value.round())
-                          : null,
+                      onChanged:
+                          canPlay ? (value) => onSeek(value.round()) : null,
                     ),
                   ),
                   Padding(
@@ -888,15 +886,15 @@ class _ReplayControlIconButton extends StatelessWidget {
               color: filled
                   ? scheme.onSurface
                   : isDark
-                  ? scheme.surface
-                  : const Color(0xFFFFFFFF),
+                      ? scheme.surface
+                      : const Color(0xFFFFFFFF),
               shape: BoxShape.circle,
               border: Border.all(
                 color: filled
                     ? scheme.onSurface.withValues(alpha: 0.12)
                     : isDark
-                    ? scheme.outlineVariant
-                    : const Color(0xFFE5E7EB),
+                        ? scheme.outlineVariant
+                        : const Color(0xFFE5E7EB),
               ),
               boxShadow: isEnabled
                   ? [
@@ -914,8 +912,8 @@ class _ReplayControlIconButton extends StatelessWidget {
               color: filled
                   ? scheme.surface
                   : isEnabled
-                  ? scheme.onSurface
-                  : scheme.outlineVariant,
+                      ? scheme.onSurface
+                      : scheme.outlineVariant,
             ),
           ),
         ),
@@ -987,12 +985,16 @@ class _ReplaySpeedSelector extends StatelessWidget {
           children: [
             Icon(Icons.speed_rounded, size: 15, color: scheme.onSurfaceVariant),
             const SizedBox(width: 6),
-            Text(
-              _replaySpeedLabel(context, speed),
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-                color: scheme.onSurface,
+            Flexible(
+              child: Text(
+                _replaySpeedLabel(context, speed),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: scheme.onSurface,
+                ),
               ),
             ),
             const SizedBox(width: 4),

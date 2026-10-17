@@ -60,8 +60,7 @@ class AdminUserProfileTab extends ConsumerWidget {
       );
     }
 
-    final isBusy =
-        state.isSavingProfile ||
+    final isBusy = state.isSavingProfile ||
         state.isChangingPassword ||
         state.isSavingCompany;
 
@@ -165,9 +164,8 @@ class AdminUserProfileTab extends ConsumerWidget {
             isSubmitting: state.isChangingPassword,
             errorMessage: state.sectionErrorMessage,
             onSubmit: (password) async {
-              final ok = await ref
-                  .read(provider.notifier)
-                  .updatePassword(password);
+              final ok =
+                  await ref.read(provider.notifier).updatePassword(password);
               if (!sheetContext.mounted) return;
               if (ok) {
                 Navigator.of(sheetContext).pop();
@@ -362,9 +360,8 @@ class _AccountCard extends StatelessWidget {
     final lastLogin = profile.updatedAt != null
         ? fmt.formatDate(profile.updatedAt!)
         : 'Never';
-    final created = profile.createdAt != null
-        ? fmt.formatDate(profile.createdAt!)
-        : '—';
+    final created =
+        profile.createdAt != null ? fmt.formatDate(profile.createdAt!) : '—';
 
     return _SectionCard(
       title: 'ACCOUNT',
@@ -764,11 +761,8 @@ class _Avatar extends StatelessWidget {
   }
 
   static String _initials(String value) {
-    final parts = value
-        .trim()
-        .split(RegExp(r'\s+'))
-        .where((p) => p.isNotEmpty)
-        .toList();
+    final parts =
+        value.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
     if (parts.isEmpty) return 'OV';
     if (parts.length == 1) {
       return parts.first
@@ -818,8 +812,7 @@ class _InfoRow extends StatelessWidget {
           ),
           const SizedBox(width: OpenVtsSpacing.xs),
           Expanded(
-            child:
-                valueWidget ??
+            child: valueWidget ??
                 Text(
                   _displayValue(value ?? ''),
                   style: OpenVtsTypography.label.copyWith(
@@ -1801,9 +1794,8 @@ class _SheetActions extends StatelessWidget {
                 label: context.mobileText('Cancel'),
                 height: 40,
                 variant: OpenVtsButtonVariant.secondary,
-                onPressed: isSubmitting
-                    ? null
-                    : () => Navigator.of(context).pop(),
+                onPressed:
+                    isSubmitting ? null : () => Navigator.of(context).pop(),
               ),
             ),
             const SizedBox(width: OpenVtsSpacing.sm),
@@ -2112,17 +2104,17 @@ String _titleCase(String value) {
 Color _colorFromName(String name) {
   switch (name.trim().toLowerCase()) {
     case 'black':
-      return const Color(0xFF111827);
+      return const Color(0xFF181818);
     case 'blue':
-      return const Color(0xFF2563EB);
+      return const Color(0xFF606060);
     case 'green':
-      return const Color(0xFF16A34A);
+      return const Color(0xFF7F7F7F);
     case 'purple':
-      return const Color(0xFF7C3AED);
+      return const Color(0xFF555555);
     case 'pink':
-      return const Color(0xFFDB2777);
+      return const Color(0xFF535353);
     case 'orange':
-      return const Color(0xFFEA580C);
+      return const Color(0xFF727272);
     default:
       return OpenVtsColors.textTertiary;
   }
@@ -2141,9 +2133,8 @@ String _normalizeUrl(String value) {
 String _hostnameOnly(String value) {
   final normalized = value.trim();
   if (normalized.isEmpty) return '';
-  final candidate = normalized.contains('://')
-      ? normalized
-      : 'https://$normalized';
+  final candidate =
+      normalized.contains('://') ? normalized : 'https://$normalized';
   final uri = Uri.tryParse(candidate);
   if (uri != null && uri.host.isNotEmpty) {
     return uri.host.toLowerCase();

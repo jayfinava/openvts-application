@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 
-import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
@@ -35,7 +35,7 @@ class UserGeofencePreviewMap extends StatelessWidget {
       child: Container(
         height: height,
         decoration: BoxDecoration(
-          border: Border.all(color: OpenVtsColors.border),
+          border: Border.all(color: OpenVtsMapColors.border),
           borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
         ),
         child: geofences.isEmpty && showEmpty
@@ -60,7 +60,7 @@ class _EmptyMap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: OpenVtsColors.surface,
+      color: OpenVtsMapColors.surface,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(OpenVtsSpacing.md),
@@ -70,13 +70,13 @@ class _EmptyMap extends StatelessWidget {
               const Icon(
                 Icons.map_outlined,
                 size: 22,
-                color: OpenVtsColors.textTertiary,
+                color: OpenVtsMapColors.textTertiary,
               ),
               const SizedBox(height: 6),
               Text(
                 context.mobileText('No geofences to preview'),
                 style: OpenVtsTypography.meta.copyWith(
-                  color: OpenVtsColors.textSecondary,
+                  color: OpenVtsMapColors.textSecondary,
                 ),
               ),
             ],

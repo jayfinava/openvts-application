@@ -1,3 +1,4 @@
+import '../../../shared/paging/server_list_pager.dart';
 import 'admin_user_details_model.dart';
 
 enum AdminUserDetailsTab {
@@ -14,6 +15,8 @@ enum AdminUserDetailsTab {
 
 class AdminUserDetailsState {
   const AdminUserDetailsState({
+    this.vehiclesPagination,
+    this.availableVehiclesPagination,
     required this.userId,
     required this.user,
     required this.initialUser,
@@ -68,7 +71,9 @@ class AdminUserDetailsState {
   AdminUserDetailsState.initial({
     required this.userId,
     this.initialUser,
-  })  : user = null,
+  })  : vehiclesPagination = null,
+        availableVehiclesPagination = null,
+        user = null,
         vehicleCount = null,
         selectedTab = AdminUserDetailsTab.profile,
         linkedVehicles = const <AdminUserVehicle>[],
@@ -118,6 +123,8 @@ class AdminUserDetailsState {
 
   static const Object _unset = Object();
 
+  final ListPageMeta? vehiclesPagination;
+  final ListPageMeta? availableVehiclesPagination;
   final String userId;
   final AdminUserDetails? user;
   final AdminUserDetails? initialUser;
@@ -216,6 +223,8 @@ class AdminUserDetailsState {
   }
 
   AdminUserDetailsState copyWith({
+    ListPageMeta? vehiclesPagination,
+    ListPageMeta? availableVehiclesPagination,
     Object? user = _unset,
     Object? initialUser = _unset,
     Object? vehicleCount = _unset,
@@ -266,6 +275,9 @@ class AdminUserDetailsState {
     Object? sectionErrorMessage = _unset,
   }) {
     return AdminUserDetailsState(
+      vehiclesPagination: vehiclesPagination ?? this.vehiclesPagination,
+      availableVehiclesPagination:
+          availableVehiclesPagination ?? this.availableVehiclesPagination,
       userId: userId,
       user: identical(user, _unset) ? this.user : user as AdminUserDetails?,
       initialUser: identical(initialUser, _unset)

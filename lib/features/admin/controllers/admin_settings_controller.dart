@@ -4,13 +4,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_exception.dart';
+import '../../../core/errors/error_mapper.dart';
 import '../models/admin_settings_model.dart';
 import '../models/admin_settings_state.dart';
 import '../services/admin_settings_service.dart';
 
 class AdminSettingsController extends StateNotifier<AdminSettingsState> {
   AdminSettingsController(this._service)
-    : super(const AdminSettingsState.initial());
+      : super(const AdminSettingsState.initial());
 
   final AdminSettingsService _service;
 
@@ -118,6 +119,7 @@ class AdminSettingsController extends StateNotifier<AdminSettingsState> {
     required List<int> bytes,
     required String fileName,
   }) async {
+    if (!mounted || state.isUploadingProfilePhoto) return false;
     state = state.copyWith(
       isUploadingProfilePhoto: true,
       sectionErrorMessage: null,
@@ -126,13 +128,16 @@ class AdminSettingsController extends StateNotifier<AdminSettingsState> {
       final profile = await _service.uploadProfilePhoto(
         bytes: bytes,
         fileName: fileName,
+        currentProfile: state.profile,
       );
+      if (!mounted) return true;
       state = state.copyWith(profile: profile, isUploadingProfilePhoto: false);
       return true;
     } catch (error) {
+      if (!mounted) return false;
       state = state.copyWith(
         isUploadingProfilePhoto: false,
-        sectionErrorMessage: _toErrorMessage(error),
+        sectionErrorMessage: ErrorMapper.from(error).message,
       );
       return false;
     }

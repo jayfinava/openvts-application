@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/errors/error_mapper.dart';
 import '../../../core/storage/local_cache.dart';
 import '../models/user_dashboard_model.dart';
 import '../models/user_dashboard_state.dart';
@@ -123,7 +123,7 @@ class UserDashboardController extends StateNotifier<UserDashboardState> {
         state.dashboards.any((dashboard) => dashboard.id == normalizedId);
     if (!exists) {
       state = state.copyWith(
-        selectedDashboardError: 'Dashboard is no longer available.',
+        selectedDashboardError: 'This information is no longer available.',
       );
       return;
     }
@@ -383,60 +383,5 @@ class UserDashboardController extends StateNotifier<UserDashboardState> {
     return widgets;
   }
 
-  String _toErrorMessage(Object error) {
-    if (error is DioException) {
-      final responseMessage = _extractResponseMessage(error.response?.data);
-      if (responseMessage != null) return responseMessage;
-
-      if (error.type == DioExceptionType.connectionTimeout ||
-          error.type == DioExceptionType.receiveTimeout ||
-          error.type == DioExceptionType.sendTimeout) {
-        return 'The request timed out. Please try again.';
-      }
-
-      if (error.type == DioExceptionType.connectionError) {
-        return 'Unable to reach the server right now.';
-      }
-
-      final message = error.message?.trim();
-      if (message != null && message.isNotEmpty) return message;
-    }
-
-    final raw = error.toString().trim();
-    if (raw.startsWith('Exception: ')) {
-      return raw.substring('Exception: '.length).trim();
-    }
-
-    return raw.isEmpty ? 'Dashboard could not be loaded.' : raw;
-  }
-
-  String? _extractResponseMessage(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      for (final key in const ['message', 'error']) {
-        final value = data[key];
-        if (value is String && value.trim().isNotEmpty) {
-          return value.trim();
-        }
-        if (value is List) {
-          final parts = value
-              .whereType<String>()
-              .map((item) => item.trim())
-              .where((item) => item.isNotEmpty)
-              .toList(growable: false);
-          if (parts.isNotEmpty) return parts.join(', ');
-        }
-      }
-
-      final nestedData = data['data'];
-      if (!identical(nestedData, data)) {
-        return _extractResponseMessage(nestedData);
-      }
-    }
-
-    if (data is String && data.trim().isNotEmpty) {
-      return data.trim();
-    }
-
-    return null;
-  }
+  String _toErrorMessage(Object error) => ErrorMapper.from(error).message;
 }

@@ -1338,6 +1338,14 @@ class AdminUserPaymentPage {
   }
 }
 
+class AdminVehicleAssignmentResult {
+  const AdminVehicleAssignmentResult(
+      {required this.assignedIds, required this.failedIds});
+  final Set<String> assignedIds;
+  final Set<String> failedIds;
+  bool get isSuccess => failedIds.isEmpty;
+}
+
 class AdminRenewVehiclesPaymentRequest {
   const AdminRenewVehiclesPaymentRequest({
     required this.userId,

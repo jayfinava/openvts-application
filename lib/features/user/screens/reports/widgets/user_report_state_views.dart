@@ -126,7 +126,7 @@ class ReportErrorView extends StatelessWidget {
           ),
           const SizedBox(height: OpenVtsSpacing.xs),
           Text(
-            message,
+            context.mobileText(message),
             style: OpenVtsTypography.body,
             textAlign: TextAlign.center,
           ),

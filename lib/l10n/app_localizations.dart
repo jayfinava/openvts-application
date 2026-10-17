@@ -16535,6 +16535,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unable to open this page. Please try again.'**
   String get mobilePageLinkError;
+
+  /// No description provided for @mobileInvalidServerQr.
+  ///
+  /// In en, this message translates to:
+  /// **'This QR code does not contain a valid server URL.'**
+  String get mobileInvalidServerQr;
+
+  /// No description provided for @mobileServerUrlUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Server URL updated'**
+  String get mobileServerUrlUpdated;
+
+  /// No description provided for @mobileServerUrlSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to save this server URL. Try again.'**
+  String get mobileServerUrlSaveFailed;
+
+  /// No description provided for @mobileCameraConfigureManually.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera unavailable. Configure the server URL manually.'**
+  String get mobileCameraConfigureManually;
+
+  /// No description provided for @mobileScanServerQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Server QR Code'**
+  String get mobileScanServerQr;
+
+  /// No description provided for @mobileServerQrInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Point your camera at a QR code containing the full API URL.'**
+  String get mobileServerQrInstruction;
+
+  /// No description provided for @mobileCameraPermissionManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera unavailable. Check camera permission or configure manually.'**
+  String get mobileCameraPermissionManual;
+
+  /// No description provided for @mobileCameraUnavailableDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera scanning is unavailable on this device.'**
+  String get mobileCameraUnavailableDevice;
+
+  /// No description provided for @mobileConfigureManually.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure manually'**
+  String get mobileConfigureManually;
+
+  /// No description provided for @mobileScanServerQrAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan server QR code'**
+  String get mobileScanServerQrAction;
+
+  /// No description provided for @mobileTrackingVehicleUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This vehicle is unavailable or no longer assigned to your account.'**
+  String get mobileTrackingVehicleUnavailable;
+
+  /// No description provided for @mobileClusterSafetyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Group nearby vehicles. Dense views are grouped automatically to keep the map responsive.'**
+  String get mobileClusterSafetyDescription;
+
+  /// No description provided for @mobileWaitingForVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for vehicle…'**
+  String get mobileWaitingForVehicle;
+
+  /// No description provided for @mobileLicenseTrackingBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracking unavailable: license blocked'**
+  String get mobileLicenseTrackingBlocked;
+
+  /// No description provided for @mobileServiceTrackingBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracking unavailable: service blocked'**
+  String get mobileServiceTrackingBlocked;
+
+  /// No description provided for @mobileNoTrackingDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'No tracking device assigned'**
+  String get mobileNoTrackingDevice;
+
+  /// No description provided for @mobileVehicleTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle tracking'**
+  String get mobileVehicleTracking;
+
+  /// No description provided for @mobileLastGps.
+  ///
+  /// In en, this message translates to:
+  /// **'Last GPS'**
+  String get mobileLastGps;
+
+  /// No description provided for @mobileCurrentMonthTransactionsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions this month.'**
+  String get mobileCurrentMonthTransactionsEmpty;
+
+  /// No description provided for @mobileViewAllHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'View all history'**
+  String get mobileViewAllHistory;
+
+  /// No description provided for @mobileTrackVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track vehicle'**
+  String get mobileTrackVehicle;
+
+  /// No description provided for @mobileGpsTimeUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS timestamp unavailable'**
+  String get mobileGpsTimeUnavailable;
+
+  /// No description provided for @mobileWaitingGps.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for GPS location'**
+  String get mobileWaitingGps;
+
+  /// No description provided for @mobileLiveConnectionConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Live connection connected'**
+  String get mobileLiveConnectionConnected;
+
+  /// No description provided for @mobilePauseFollowVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause following vehicle'**
+  String get mobilePauseFollowVehicle;
+
+  /// No description provided for @mobileFollowVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow vehicle'**
+  String get mobileFollowVehicle;
+
+  /// No description provided for @mobileVehicleNoLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'This vehicle has no valid location yet.'**
+  String get mobileVehicleNoLocation;
+
+  /// No description provided for @mobileLoadingVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading vehicle…'**
+  String get mobileLoadingVehicle;
+
+  /// No description provided for @mobileVehicleLoadRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load this vehicle. Retry.'**
+  String get mobileVehicleLoadRetry;
+
+  /// No description provided for @mobileErrorSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please sign in again.'**
+  String get mobileErrorSessionExpired;
+
+  /// No description provided for @mobileErrorAccessDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have access to this information.'**
+  String get mobileErrorAccessDenied;
+
+  /// No description provided for @mobileErrorUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This information is no longer available.'**
+  String get mobileErrorUnavailable;
+
+  /// No description provided for @mobileErrorTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'The request timed out. Please try again.'**
+  String get mobileErrorTimeout;
+
+  /// No description provided for @mobileErrorRateLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests. Please wait a moment and try again.'**
+  String get mobileErrorRateLimit;
+
+  /// No description provided for @mobileErrorServiceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This information is temporarily unavailable. Please try again later.'**
+  String get mobileErrorServiceUnavailable;
+
+  /// No description provided for @mobileErrorConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to connect. Check your internet connection and try again.'**
+  String get mobileErrorConnection;
+
+  /// No description provided for @mobileErrorSecureConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'A secure connection could not be established. Please try again later.'**
+  String get mobileErrorSecureConnection;
+
+  /// No description provided for @mobileErrorCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'The request was cancelled. Please try again.'**
+  String get mobileErrorCancelled;
+
+  /// No description provided for @mobileErrorRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to complete the request. Please try again.'**
+  String get mobileErrorRequest;
+
+  /// No description provided for @mobileErrorTimeZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to detect your time zone. Restart the app and try again.'**
+  String get mobileErrorTimeZone;
+
+  /// No description provided for @adminLogBilling.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing'**
+  String get adminLogBilling;
+
+  /// No description provided for @adminAddDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Device'**
+  String get adminAddDevice;
+
+  /// No description provided for @mobileBlockedOnPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked on page'**
+  String get mobileBlockedOnPage;
+
+  /// No description provided for @mobileExpiringOnPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiring on page'**
+  String get mobileExpiringOnPage;
+
+  /// No description provided for @validationAccountNameLetter.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must contain at least one letter'**
+  String get validationAccountNameLetter;
+
+  /// No description provided for @validationAccountNameCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Name contains invalid characters'**
+  String get validationAccountNameCharacters;
+
+  /// No description provided for @validationAccountNameSpaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Name cannot contain consecutive spaces'**
+  String get validationAccountNameSpaces;
+
+  /// No description provided for @validationAccountUsernameLetter.
+  ///
+  /// In en, this message translates to:
+  /// **'Username must contain at least one letter'**
+  String get validationAccountUsernameLetter;
+
+  /// No description provided for @validationAccountUsernameCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Username contains invalid characters'**
+  String get validationAccountUsernameCharacters;
+
+  /// No description provided for @validationAccountAddressText.
+  ///
+  /// In en, this message translates to:
+  /// **'Address contains invalid text'**
+  String get validationAccountAddressText;
+
+  /// No description provided for @validationAccountPostal.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid postal code'**
+  String get validationAccountPostal;
+
+  /// No description provided for @mobileCreateDriverError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to create driver.'**
+  String get mobileCreateDriverError;
+
+  /// No description provided for @mobileCreateSubuserError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to create sub user.'**
+  String get mobileCreateSubuserError;
 }
 
 class _AppLocalizationsDelegate

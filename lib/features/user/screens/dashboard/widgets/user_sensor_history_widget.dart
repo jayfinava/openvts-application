@@ -112,20 +112,19 @@ class _UserSensorHistoryWidgetState
 
   Widget _buildBody(
     AsyncValue<
-      ({
-        List<UserDashboardVehicleOption> vehicles,
-        List<UserDashboardSensorOption> sensors,
-        String? selectedVehicleId,
-        String? selectedSensorId,
-        UserDashboardSensorHistory? history,
-        String? emptyMessage,
-      })
-    >
-    state,
+            ({
+              List<UserDashboardVehicleOption> vehicles,
+              List<UserDashboardSensorOption> sensors,
+              String? selectedVehicleId,
+              String? selectedSensorId,
+              UserDashboardSensorHistory? history,
+              String? emptyMessage,
+            })>
+        state,
   ) {
     if (state.hasError) {
       return UserDashboardWidgetError(
-        message: state.error.toString(),
+        error: state.error!,
         onRetry: _reload,
       );
     }
@@ -245,8 +244,7 @@ class _UserSensorHistoryWidgetState
       String? selectedSensorId,
       UserDashboardSensorHistory? history,
       String? emptyMessage,
-    })
-    data,
+    }) data,
   ) {
     for (final sensor in data.sensors) {
       if (sensor.id == data.selectedSensorId) return sensor;
@@ -461,9 +459,8 @@ class _SensorHistoryChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final validPoints = points
-        .where((point) => point.v != null)
-        .toList(growable: false);
+    final validPoints =
+        points.where((point) => point.v != null).toList(growable: false);
     if (validPoints.isEmpty || size.width <= 0 || size.height <= 0) return;
 
     const left = 36.0;

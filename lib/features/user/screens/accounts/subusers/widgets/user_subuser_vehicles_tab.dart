@@ -18,11 +18,8 @@ import '../../../../models/user_subuser_model.dart';
 import '../../../../models/user_subusers_state.dart';
 import 'user_subuser_assign_vehicles_sheet.dart';
 
-typedef UserSubUserDetailsProvider =
-    AutoDisposeStateNotifierProvider<
-      UserSubUserDetailsController,
-      UserSubUserDetailsState
-    >;
+typedef UserSubUserDetailsProvider = AutoDisposeStateNotifierProvider<
+    UserSubUserDetailsController, UserSubUserDetailsState>;
 
 class UserSubUserVehiclesTab extends ConsumerWidget {
   const UserSubUserVehiclesTab({required this.provider, super.key});
@@ -263,12 +260,10 @@ class _CompactActionButton extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: isLoading ? null : onPressed,
         style: OutlinedButton.styleFrom(
-          backgroundColor: isDarkMode
-              ? const Color(0xFF1A1A1A)
-              : OpenVtsColors.white,
-          foregroundColor: isDarkMode
-              ? Colors.white
-              : OpenVtsColors.textPrimary,
+          backgroundColor:
+              isDarkMode ? const Color(0xFF1A1A1A) : OpenVtsColors.white,
+          foregroundColor:
+              isDarkMode ? Colors.white : OpenVtsColors.textPrimary,
           side: BorderSide(
             color: isDarkMode ? const Color(0xFF333333) : OpenVtsColors.border,
           ),
@@ -403,8 +398,8 @@ class _AssignedVehicleCard extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   foregroundColor:
                       Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : OpenVtsColors.textPrimary,
+                          ? Colors.white
+                          : OpenVtsColors.textPrimary,
                   side: BorderSide(
                     color: Theme.of(context).brightness == Brightness.dark
                         ? const Color(0xFF333333)

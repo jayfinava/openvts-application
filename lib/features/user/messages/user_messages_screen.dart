@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -313,44 +314,64 @@ class UserMessageThreadTile extends StatelessWidget {
 }
 
 class UserMessageBubble extends StatelessWidget {
-  const UserMessageBubble(
-      {super.key, required this.message, required this.timestamp});
+  const UserMessageBubble({
+    super.key,
+    required this.message,
+    required this.timestamp,
+  });
+
   final UserChatMessage message;
   final String timestamp;
+
   @override
-  Widget build(BuildContext context) => Align(
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final textColor = message.isMine ? colors.onPrimary : colors.onSurface;
+    final mutedColor = textColor.withValues(alpha: 0.78);
+
+    return Align(
       alignment: message.isMine
           ? AlignmentDirectional.centerEnd
           : AlignmentDirectional.centerStart,
       child: FractionallySizedBox(
-          widthFactor: .88,
-          child: Card(
-              color: message.isMine
-                  ? Theme.of(context).colorScheme.secondaryContainer
-                  : null,
-              child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            message.senderName.isEmpty
-                                ? message.senderType
-                                : message.senderName,
-                            style: Theme.of(context).textTheme.labelSmall),
-                        const SizedBox(height: 4),
-                        SelectableText(message.body),
-                        if (message.assignmentReference?.isNotEmpty == true)
-                          Padding(
-                              padding: const EdgeInsets.only(top: 6),
-                              child: Text('Trip ${message.assignmentReference}',
-                                  style:
-                                      Theme.of(context).textTheme.labelMedium)),
-                        const SizedBox(height: 6),
-                        Text(
-                            '$timestamp${message.isMine ? message.isRead ? ' · Read' : ' · Sent' : ''}',
-                            style: Theme.of(context).textTheme.labelSmall),
-                      ])))));
+        widthFactor: .88,
+        child: Card(
+          color: message.isMine ? colors.primary : colors.surface,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  message.senderName.isEmpty
+                      ? message.senderType
+                      : message.senderName,
+                  style: textTheme.labelSmall?.copyWith(color: mutedColor),
+                ),
+                const SizedBox(height: 4),
+                SelectableText(message.body,
+                    style: TextStyle(color: textColor)),
+                if (message.assignmentReference?.isNotEmpty == true)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      'Trip ${message.assignmentReference}',
+                      style: textTheme.labelMedium?.copyWith(color: textColor),
+                    ),
+                  ),
+                const SizedBox(height: 6),
+                Text(
+                  '$timestamp${message.isMine ? message.isRead ? ' · Read' : ' · Sent' : ''}',
+                  style: textTheme.labelSmall?.copyWith(color: mutedColor),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _MessageError extends StatelessWidget {

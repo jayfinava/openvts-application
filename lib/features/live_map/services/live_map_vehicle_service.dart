@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 
+import '../../../core/access/workspace_scope_provider.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/api/api_options.dart';
+import '../../../core/api/api_response.dart';
 import '../../../core/config/app_config.dart';
 import '../../../shared/models/vehicle_summary.dart';
 import '../../notifications/models/app_notification.dart';
@@ -11,6 +13,7 @@ import '../../superadmin/models/superadmin_vehicle_model.dart';
 import '../../superadmin/services/superadmin_map_overlay_service.dart';
 import '../../superadmin/services/superadmin_vehicle_service.dart';
 import '../models/live_map_role_config.dart';
+import '../models/live_map_vehicle_target.dart';
 
 // ---------------------------------------------------------------------------
 // Role-neutral model aliases.
@@ -43,15 +46,17 @@ typedef LiveMapCommandStatus = SuperadminCommandStatus;
 /// the role-scoped endpoint from [_config] — there is no path to leak a
 /// superadmin endpoint into an admin/user session.
 class LiveMapVehicleService {
+  Map<String, dynamic>? _targetMetricsRow;
   LiveMapVehicleService({
     required ApiClient apiClient,
     required LiveMapRoleConfig config,
-  }) : _apiClient = apiClient,
-       _config = config,
-       _parsers = SuperadminVehicleService(apiClient),
-       _overlayParsers = SuperadminMapOverlayService(apiClient);
+  })  : _apiClient = apiClient,
+        _config = config,
+        _parsers = SuperadminVehicleService(apiClient),
+        _overlayParsers = SuperadminMapOverlayService(apiClient);
 
   final ApiClient _apiClient;
+  final CancelToken _lifetimeToken = CancelToken();
   final LiveMapRoleConfig _config;
   // Used purely as a parser host — no methods on these instances that hit
   // a hard-coded superadmin endpoint are ever invoked from this class.
@@ -62,6 +67,23 @@ class LiveMapVehicleService {
   LiveMapRole get role => _config.role;
 
   static final Options _readOptions = normalReadOptions();
+
+  void dispose() => _lifetimeToken.cancel('Map scope closed');
+
+  Future<ApiResponse<T>> _get<T>(
+    String endpoint, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    required T Function(dynamic json) parser,
+  }) =>
+      _apiClient.get<T>(
+        endpoint,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken ?? _lifetimeToken,
+        parser: parser,
+      );
 
   // -------------------------------------------------------------------------
   // Parser passthroughs (used by LiveMapController for socket payload merge).
@@ -115,17 +137,178 @@ class LiveMapVehicleService {
   // Map telemetry
   // -------------------------------------------------------------------------
 
-  Future<LiveMapTelemetry> getMapTelemetry({String? refreshKey}) async {
+  Future<LiveMapTelemetry> getMapTelemetry({
+    String? refreshKey,
+    CancelToken? cancelToken,
+    LiveMapVehicleTarget? target,
+  }) async {
     if (AppConfig.useMockData) {
       // Mock data lives inside SuperadminVehicleService; route through it
       // for parity with current Superadmin behavior.
       return _parsers.getMapTelemetry(refreshKey: refreshKey);
     }
 
+    if (target != null && _config.socketAuthenticationRequired) {
+      return _getTargetTelemetry(target, cancelToken: cancelToken);
+    }
+
     return _parsers.loadMapTelemetryEndpoint(
       _config.mapTelemetryEndpoint,
       refreshKey: refreshKey,
+      cancelToken: cancelToken ?? _lifetimeToken,
     );
+  }
+
+  /// The current backend exposes a direct authorized vehicle lookup. Opening
+  /// a tracking link must not paginate the fleet just to retain one row.
+  Future<LiveMapTelemetry> _getTargetTelemetry(
+    LiveMapVehicleTarget target, {
+    CancelToken? cancelToken,
+  }) async {
+    final scope = workspaceDataScope(_apiClient.activeUser,
+        isDemo: _apiClient.isDemoMode);
+    void checkScope() {
+      if (cancelToken?.isCancelled == true) throw cancelToken!.cancelError!;
+      if (_lifetimeToken.isCancelled) throw _lifetimeToken.cancelError!;
+      if (workspaceDataScope(_apiClient.activeUser,
+              isDemo: _apiClient.isDemoMode) !=
+          scope) {
+        throw StateError('Map access changed while loading the vehicle.');
+      }
+    }
+
+    final id = target.vehicleId.trim();
+    final imei = target.imei.trim();
+    if (id.isEmpty && imei.isEmpty) return buildTelemetryFromVehicles([]);
+    try {
+      final response = await _get<Map<String, dynamic>>(
+        id.isNotEmpty
+            ? '/map/v2/vehicles/${Uri.encodeComponent(id)}'
+            : '/map/v2/locate',
+        queryParameters: id.isEmpty ? {'imei': imei} : null,
+        options: _readOptions,
+        cancelToken: cancelToken,
+        parser: (json) {
+          final data = _unwrapMapData(json);
+          if (data['row'] is! Map) {
+            throw const FormatException('Missing vehicle row');
+          }
+          return Map<String, dynamic>.from(data['row'] as Map);
+        },
+      );
+      checkScope();
+      final row = response.data;
+      final state = row['state'] is Map
+          ? Map<String, dynamic>.from(row['state'] as Map)
+          : <String, dynamic>{};
+      final blocked = row['canViewLive'] != true ||
+          row['isLicenseBlocked'] == true ||
+          (row['service'] is Map &&
+              (row['service'] as Map)['liveAllowed'] == false);
+      var vehicle = parseTelemetryVehiclePayload({
+        ...row,
+        'state': state['status'] ?? row['status'],
+        'telemetry': blocked ? null : state,
+        'latitude': blocked ? null : state['latitude'],
+        'longitude': blocked ? null : state['longitude'],
+        'serviceBlocked': blocked,
+      });
+      if (vehicle == null || !target.matchesVehicle(vehicle)) {
+        throw const FormatException('The server returned a different vehicle');
+      }
+      // map-v2 projects the authorized last known position. Its current GPS
+      // quality fields must not hide that position (e.g. a device indoors).
+      final latitude = state['latitude'];
+      final longitude = state['longitude'];
+      if (!blocked &&
+          latitude is num &&
+          longitude is num &&
+          latitude.isFinite &&
+          longitude.isFinite &&
+          latitude.abs() <= 90 &&
+          longitude.abs() <= 180 &&
+          !(latitude == 0 && longitude == 0)) {
+        vehicle = vehicle.copyWith(hasValidLocation: true);
+      }
+      _targetMetricsRow = blocked ? null : row;
+      if (blocked || vehicle.imei.isEmpty) {
+        return buildTelemetryFromVehicles([vehicle]);
+      }
+
+      return buildTelemetryFromVehicles([vehicle]);
+    } on DioException catch (error) {
+      checkScope();
+      if (error.response?.statusCode == 404) {
+        return buildTelemetryFromVehicles([]);
+      }
+      rethrow;
+    }
+  }
+
+  /// Optional analytics are separate from the GPS baseline and socket startup.
+  Future<VehicleSummary?> getTargetMetrics(VehicleSummary vehicle,
+      {CancelToken? cancelToken}) async {
+    final row = _targetMetricsRow;
+    if (row == null ||
+        vehicle.imei.isEmpty ||
+        vehicle.serviceBlocked ||
+        vehicle.licenseBlocked ||
+        row['id'].toString() != vehicle.id ||
+        row['imei'] != vehicle.imei) {
+      return null;
+    }
+    final scope = workspaceDataScope(_apiClient.activeUser,
+        isDemo: _apiClient.isDemoMode);
+    final now = DateTime.now();
+    final dayStart = DateTime(now.year, now.month, now.day);
+    final dayKey = '${now.year.toString().padLeft(4, '0')}-'
+        '${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final response = await _get<Map<String, dynamic>>('/map/v2/metrics',
+        queryParameters: {
+          'ids': vehicle.id,
+          'dayKey': dayKey,
+          'dayStart': dayStart.toUtc().toIso8601String()
+        },
+        cancelToken: cancelToken,
+        options: lowPriorityOptions(),
+        parser: _unwrapMapData);
+    if (scope !=
+            workspaceDataScope(_apiClient.activeUser,
+                isDemo: _apiClient.isDemoMode) ||
+        !identical(row, _targetMetricsRow)) {
+      return null;
+    }
+    final rows = response.data['rows'];
+    if (rows is! List) return null;
+    for (final metric in rows.whereType<Map>()) {
+      if (metric['vehicleId'].toString() != vehicle.id ||
+          metric['imei'] != vehicle.imei ||
+          metric['bindingVersion'] != row['bindingVersion'] ||
+          metric['serviceRevision'] != row['serviceRevision'] ||
+          metric['metricsAvailable'] != true ||
+          metric['telemetry'] is! Map) {
+        continue;
+      }
+      return parseTelemetryVehiclePayload({
+        ...row,
+        'telemetry': {
+          ...(row['state'] as Map? ?? {}),
+          ...metric['telemetry'] as Map
+        }
+      });
+    }
+    return null;
+  }
+
+  static Map<String, dynamic> _unwrapMapData(dynamic input) {
+    dynamic value = input;
+    for (var depth = 0;
+        depth < 3 && value is Map && value['data'] is Map;
+        depth++) {
+      value = value['data'];
+    }
+    if (value is! Map) throw const FormatException('Invalid map response');
+    return Map<String, dynamic>.from(value);
   }
 
   // -------------------------------------------------------------------------
@@ -142,7 +325,7 @@ class LiveMapVehicleService {
       return _parsers.getVehicleDetailsByImei(normalizedImei);
     }
 
-    final response = await _apiClient.get<LiveMapVehicleDetails>(
+    final response = await _get<LiveMapVehicleDetails>(
       _config.vehicleDetailsByImei(normalizedImei),
       options: _readOptions,
       parser: _parsers.parseVehicleDetailsPayload,
@@ -163,8 +346,8 @@ class LiveMapVehicleService {
     final normalizedLimit = limit < 1
         ? 100
         : limit > 500
-        ? 500
-        : limit;
+            ? 500
+            : limit;
     final normalizedCursor = beforeId?.trim() ?? '';
 
     if (AppConfig.useMockData) {
@@ -175,7 +358,7 @@ class LiveMapVehicleService {
       );
     }
 
-    final response = await _apiClient.get<LiveMapVehicleLogPage>(
+    final response = await _get<LiveMapVehicleLogPage>(
       _config.vehicleLogsByImei(normalizedImei),
       queryParameters: <String, dynamic>{
         'limit': normalizedLimit,
@@ -200,8 +383,8 @@ class LiveMapVehicleService {
     final normalizedLimit = limit < 1
         ? 50
         : limit > 300
-        ? 300
-        : limit;
+            ? 300
+            : limit;
     final normalizedCursor = beforeId?.trim() ?? '';
 
     if (AppConfig.useMockData) {
@@ -212,7 +395,7 @@ class LiveMapVehicleService {
       );
     }
 
-    final response = await _apiClient.get<LiveMapVehicleEventPage>(
+    final response = await _get<LiveMapVehicleEventPage>(
       _config.vehicleEventsByImei(normalizedImei),
       queryParameters: <String, dynamic>{
         'limit': normalizedLimit,
@@ -241,7 +424,7 @@ class LiveMapVehicleService {
       return _parsers.getVehicleSensorsByImei(normalizedImei);
     }
 
-    final response = await _apiClient.get<LiveMapVehicleSensorPage>(
+    final response = await _get<LiveMapVehicleSensorPage>(
       _config.vehicleSensorsByImei(normalizedImei),
       queryParameters: const <String, dynamic>{'includeTelemetryMeta': 'true'},
       options: _readOptions,
@@ -255,7 +438,8 @@ class LiveMapVehicleService {
   /// same way the legacy Superadmin history controller did.
   Future<LiveMapVehicleHistory> getVehicleHistory(
     LiveMapVehicleHistoryRequest request, {
-    int maxPoints = 50000,
+    int maxPoints = 5000,
+    CancelToken? cancelToken,
   }) async {
     return getVehicleHistoryByImei(
       imei: request.imei,
@@ -263,6 +447,7 @@ class LiveMapVehicleService {
       to: request.to,
       stopMin: request.stopMinutes,
       maxPoints: maxPoints,
+      cancelToken: cancelToken,
     );
   }
 
@@ -271,8 +456,9 @@ class LiveMapVehicleService {
     required DateTime from,
     required DateTime to,
     int stopMin = 5,
-    int maxPoints = 50000,
+    int maxPoints = 5000,
     int? overspeedKph,
+    CancelToken? cancelToken,
   }) async {
     final normalizedImei = imei.trim();
     if (normalizedImei.isEmpty) {
@@ -291,7 +477,7 @@ class LiveMapVehicleService {
       stopMinutes: normalizedStopMin,
     );
 
-    final response = await _apiClient.get<LiveMapVehicleHistory>(
+    final response = await _get<LiveMapVehicleHistory>(
       _config.vehicleHistoryByImei(normalizedImei),
       queryParameters: <String, dynamic>{
         'from': normalizedFrom.toUtc().toIso8601String(),
@@ -301,6 +487,7 @@ class LiveMapVehicleService {
         if (overspeedKph != null) 'overspeedKph': overspeedKph.toString(),
       },
       options: heavyReadOptions(),
+      cancelToken: cancelToken,
       parser: (json) => _parsers.parseVehicleHistoryPayload(json, request),
     );
     return response.data;
@@ -311,6 +498,7 @@ class LiveMapVehicleService {
     required DateTime from,
     required DateTime to,
     int maxPoints = 5000,
+    CancelToken? cancelToken,
   }) async {
     final normalizedImei = imei.trim();
     if (normalizedImei.isEmpty) {
@@ -326,7 +514,7 @@ class LiveMapVehicleService {
       );
     }
 
-    final response = await _apiClient.get<LiveMapVehicleReplay>(
+    final response = await _get<LiveMapVehicleReplay>(
       _config.vehicleReplayByImei(normalizedImei),
       queryParameters: <String, dynamic>{
         'from': from.toUtc().toIso8601String(),
@@ -334,6 +522,7 @@ class LiveMapVehicleService {
         'maxPoints': maxPoints,
       },
       options: heavyReadOptions(),
+      cancelToken: cancelToken,
       parser: _parsers.parseVehicleReplayPayload,
     );
     return response.data;
@@ -351,7 +540,7 @@ class LiveMapVehicleService {
       );
     }
 
-    final response = await _apiClient.get<List<SuperadminMapGeofence>>(
+    final response = await _get<List<SuperadminMapGeofence>>(
       endpoint,
       queryParameters: <String, dynamic>{
         'rk': refreshKey ?? DateTime.now().millisecondsSinceEpoch.toString(),
@@ -368,7 +557,7 @@ class LiveMapVehicleService {
       throw StateError('POIs are not enabled for role ${_config.role.name}.');
     }
 
-    final response = await _apiClient.get<List<SuperadminMapPoi>>(
+    final response = await _get<List<SuperadminMapPoi>>(
       endpoint,
       queryParameters: <String, dynamic>{
         'rk': refreshKey ?? DateTime.now().millisecondsSinceEpoch.toString(),
@@ -385,7 +574,7 @@ class LiveMapVehicleService {
       throw StateError('Routes are not enabled for role ${_config.role.name}.');
     }
 
-    final response = await _apiClient.get<List<SuperadminMapRoute>>(
+    final response = await _get<List<SuperadminMapRoute>>(
       endpoint,
       queryParameters: <String, dynamic>{
         'includeGeodata': true,
@@ -419,7 +608,7 @@ class LiveMapVehicleService {
       );
     }
 
-    final response = await _apiClient.get<List<LiveMapCustomCommand>>(
+    final response = await _get<List<LiveMapCustomCommand>>(
       endpoint,
       queryParameters: <String, dynamic>{
         'activeOnly': activeOnly,
@@ -443,7 +632,7 @@ class LiveMapVehicleService {
       return _parsers.getSystemVariables();
     }
 
-    final response = await _apiClient.get<List<LiveMapSystemVariable>>(
+    final response = await _get<List<LiveMapSystemVariable>>(
       endpoint,
       options: _readOptions,
       parser: _parsers.parseSystemVariablesPayload,
@@ -596,8 +785,8 @@ class LiveMapVehicleService {
     final normalizedLimit = limit < 1
         ? 50
         : limit > 100
-        ? 100
-        : limit;
+            ? 100
+            : limit;
     final normalizedCursor = cursorId?.trim() ?? '';
 
     if (AppConfig.useMockData) {
@@ -608,7 +797,7 @@ class LiveMapVehicleService {
       );
     }
 
-    final response = await _apiClient.get<LiveMapCommandHistoryPage>(
+    final response = await _get<LiveMapCommandHistoryPage>(
       builder(normalizedImei),
       queryParameters: <String, dynamic>{
         'limit': normalizedLimit,
@@ -643,11 +832,11 @@ class LiveMapVehicleService {
     final normalizedLimit = limit < 1
         ? 50
         : limit > 100
-        ? 100
-        : limit;
+            ? 100
+            : limit;
     final normalizedCursor = cursorId?.trim() ?? '';
 
-    final response = await _apiClient.get<LiveMapCommandHistoryPage>(
+    final response = await _get<LiveMapCommandHistoryPage>(
       builder(normalizedId),
       queryParameters: <String, dynamic>{
         'limit': normalizedLimit,
@@ -674,7 +863,7 @@ class LiveMapVehicleService {
       return _parsers.getCommandStatus(normalizedCmdId);
     }
 
-    final response = await _apiClient.get<LiveMapCommandStatus?>(
+    final response = await _get<LiveMapCommandStatus?>(
       builder(normalizedCmdId),
       options: _readOptions,
       parser: _parsers.parseCommandStatusPayload,
@@ -697,7 +886,7 @@ class LiveMapVehicleService {
       return _parsers.getCommandLogByCmdId(normalizedCmdId);
     }
 
-    final response = await _apiClient.get<LiveMapCommandHistoryItem?>(
+    final response = await _get<LiveMapCommandHistoryItem?>(
       builder(normalizedCmdId),
       options: _readOptions,
       parser: _parsers.parseCommandPayload,

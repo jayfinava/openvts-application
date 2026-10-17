@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../../core/theme/open_vts_chart_theme.dart';
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
@@ -98,10 +99,10 @@ class _SeverityDonut extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     const colors = {
-      OverspeedSeverity.critical: Color(0xFF8A3333),
-      OverspeedSeverity.high: Color(0xFF8A6522),
-      OverspeedSeverity.medium: Color(0xFF435A6B),
-      OverspeedSeverity.low: Color(0xFF2F6B4F),
+      OverspeedSeverity.critical: Color(0xFF454545),
+      OverspeedSeverity.high: Color(0xFF686868),
+      OverspeedSeverity.medium: Color(0xFF565656),
+      OverspeedSeverity.low: Color(0xFF5C5C5C),
     };
     const labels = {
       OverspeedSeverity.critical: 'Critical',
@@ -113,12 +114,13 @@ class _SeverityDonut extends StatelessWidget {
         .map(
           (e) => PieChartSectionData(
             value: e.value.toDouble(),
-            color: colors[e.key],
+            color: colors[e.key] ?? OpenVtsColors.brandInk,
             title: labels[e.key] ?? '',
             radius: 48,
             titleStyle: OpenVtsTypography.meta.copyWith(
               fontSize: 9,
-              color: OpenVtsColors.white,
+              color: OpenVtsChartTheme.labelOn(
+                  colors[e.key] ?? OpenVtsColors.brandInk),
             ),
           ),
         )

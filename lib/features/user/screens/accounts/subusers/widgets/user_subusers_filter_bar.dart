@@ -151,16 +151,14 @@ class _UserSubUsersFilterBarState extends State<UserSubUsersFilterBar> {
               ),
               _StatusChip(
                 label: context.mobileText('Active'),
-                selected:
-                    widget.selectedStatusFilter ==
+                selected: widget.selectedStatusFilter ==
                     UserSubUsersStatusFilter.active,
                 onTap: () =>
                     widget.onStatusChanged(UserSubUsersStatusFilter.active),
               ),
               _StatusChip(
                 label: context.mobileText('Inactive'),
-                selected:
-                    widget.selectedStatusFilter ==
+                selected: widget.selectedStatusFilter ==
                     UserSubUsersStatusFilter.inactive,
                 onTap: () =>
                     widget.onStatusChanged(UserSubUsersStatusFilter.inactive),
@@ -212,8 +210,8 @@ class _StatusChip extends StatelessWidget {
               color: selected
                   ? (isDarkMode ? OpenVtsColors.brandInk : OpenVtsColors.white)
                   : (isDarkMode
-                        ? OpenVtsColors.white
-                        : OpenVtsColors.textSecondary),
+                      ? OpenVtsColors.white
+                      : OpenVtsColors.textSecondary),
               fontWeight: FontWeight.w800,
             ),
           ),

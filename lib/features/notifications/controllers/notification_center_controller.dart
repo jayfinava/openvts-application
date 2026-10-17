@@ -1,7 +1,9 @@
-import 'package:dio/dio.dart';
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/app_constants.dart';
+import '../../../core/errors/error_mapper.dart';
 import '../../../core/performance/open_vts_perf.dart';
 import '../models/app_notification.dart';
 import '../models/notification_center_state.dart';
@@ -11,259 +13,195 @@ class NotificationCenterController
     extends StateNotifier<NotificationCenterState> {
   NotificationCenterController(this._service)
       : super(const NotificationCenterState.initial());
-
   final NotificationService _service;
+  int _generation = 0;
+  final _markingIds = <int>{};
+  bool _current(int generation) => mounted && generation == _generation;
 
-  Future<void> load({bool refresh = false}) {
-    return OpenVtsPerf.traceAsync('notifications.load', () async {
-      final shouldShowFullScreenLoader = !state.hasItems && !refresh;
-
-      state = state.copyWith(
-        isInitialLoading: shouldShowFullScreenLoader,
-        isRefreshing: refresh,
-        isLoadingMore: false,
-        errorMessage: null,
-      );
-
-      try {
-        final page = await _service.getNotifications(
-          limit: AppConstants.defaultPageSize,
-          unreadOnly: state.unreadOnly,
-        );
-        final unreadCount = page.unreadCount ?? await _service.getUnreadCount();
-
-        state = state.copyWith(
-          items: page.items,
-          unreadCount: unreadCount,
-          hasMore: page.hasMore,
-          nextBeforeId: page.nextBeforeId,
-          isInitialLoading: false,
-          isRefreshing: false,
-          isLoadingMore: false,
-          errorMessage: null,
-        );
-      } catch (error) {
-        state = state.copyWith(
-          isInitialLoading: false,
-          isRefreshing: false,
-          isLoadingMore: false,
-          errorMessage: _toErrorMessage(error),
-        );
-      }
-    });
+  @override
+  void dispose() {
+    _generation++;
+    super.dispose();
   }
 
-  Future<void> refresh() {
-    return load(refresh: true);
-  }
+  Future<void> load({bool refresh = false}) =>
+      OpenVtsPerf.traceAsync('notifications.load', () async {
+        if (!mounted) return;
+        final generation = ++_generation;
+        final unreadOnly = state.unreadOnly;
+        state = state.copyWith(
+            isInitialLoading: !state.hasItems && !refresh,
+            isRefreshing: refresh,
+            isLoadingMore: false,
+            isMarkingAllRead: false,
+            errorMessage: null);
+        try {
+          final page = await _service.getNotifications(
+              limit: AppConstants.defaultPageSize, unreadOnly: unreadOnly);
+          if (!_current(generation)) return;
+          final unread = page.unreadCount ?? await _service.getUnreadCount();
+          if (!_current(generation)) return;
+          state = state.copyWith(
+              items: page.items,
+              unreadCount: unread,
+              hasMore: page.hasMore,
+              nextBeforeId: page.nextBeforeId,
+              isInitialLoading: false,
+              isRefreshing: false,
+              isLoadingMore: false,
+              errorMessage: null);
+        } catch (error) {
+          if (!_current(generation)) return;
+          state = state.copyWith(
+              isInitialLoading: false,
+              isRefreshing: false,
+              isLoadingMore: false,
+              errorMessage: _toErrorMessage(error));
+        }
+      });
+
+  Future<void> refresh() => load(refresh: true);
 
   Future<void> setUnreadOnly(bool unreadOnly) async {
-    if (state.unreadOnly == unreadOnly) {
-      return;
-    }
-
+    if (!mounted || state.unreadOnly == unreadOnly) return;
     state = state.copyWith(
-      unreadOnly: unreadOnly,
-      hasMore: false,
-      nextBeforeId: null,
-      errorMessage: null,
-    );
+        items: [],
+        unreadOnly: unreadOnly,
+        hasMore: false,
+        nextBeforeId: null,
+        errorMessage: null);
     await load();
   }
 
   Future<void> loadMore() async {
-    if (state.isInitialLoading ||
+    if (!mounted ||
+        state.isInitialLoading ||
+        state.isRefreshing ||
         state.isLoadingMore ||
-        !state.hasMore ||
-        state.items.isEmpty) {
+        state.isMarkingAllRead ||
+        _markingIds.isNotEmpty ||
+        !state.hasMore) {
       return;
     }
-
-    final beforeId = state.nextBeforeId ?? state.items.last.id;
-    if (beforeId <= 0) {
-      return;
-    }
-
-    state = state.copyWith(
-      isLoadingMore: true,
-      errorMessage: null,
-    );
-
+    final before = state.nextBeforeId ??
+        (state.items.isNotEmpty ? state.items.last.id : null);
+    if (before == null || before <= 0) return;
+    final generation = _generation;
+    state = state.copyWith(isLoadingMore: true, errorMessage: null);
     try {
       final page = await _service.getNotifications(
-        limit: AppConstants.defaultPageSize,
-        beforeId: beforeId,
-        unreadOnly: state.unreadOnly,
-      );
-
+          limit: AppConstants.defaultPageSize,
+          beforeId: before,
+          unreadOnly: state.unreadOnly);
+      if (!_current(generation)) return;
       state = state.copyWith(
-        items: _mergeById(state.items, page.items),
-        unreadCount: page.unreadCount ?? state.unreadCount,
-        hasMore: page.hasMore,
-        nextBeforeId: page.nextBeforeId,
-        isLoadingMore: false,
-        errorMessage: null,
-      );
+          items: _mergeById(state.items, page.items),
+          unreadCount: page.unreadCount ?? state.unreadCount,
+          hasMore: page.hasMore && page.nextBeforeId != before,
+          nextBeforeId: page.nextBeforeId,
+          isLoadingMore: false,
+          errorMessage: null);
     } catch (error) {
+      if (!_current(generation)) return;
       state = state.copyWith(
-        isLoadingMore: false,
-        errorMessage: _toErrorMessage(error),
-      );
-      rethrow;
+          isLoadingMore: false, errorMessage: _toErrorMessage(error));
     }
   }
 
   Future<void> markAsRead(int id) async {
+    if (!mounted || state.isMarkingAllRead || _markingIds.contains(id)) return;
     final index = state.items.indexWhere((item) => item.id == id);
-    if (index < 0) {
-      return;
-    }
-
-    final notification = state.items[index];
-    if (notification.isRead) {
-      return;
-    }
-
-    final previousState = state;
-    final updatedItems = List<AppNotification>.from(previousState.items);
-    updatedItems[index] = notification.copyWith(
-      isRead: true,
-      readAt: DateTime.now(),
-    );
-
-    state = previousState.copyWith(
-      items: updatedItems,
-      unreadCount:
-          previousState.unreadCount > 0 ? previousState.unreadCount - 1 : 0,
-      errorMessage: null,
-    );
-
+    if (index < 0 || state.items[index].isRead) return;
+    _discardPendingReads();
+    final original = state.items[index], generation = _generation;
+    final decremented = state.unreadCount > 0;
+    _markingIds.add(id);
+    state = state.copyWith(
+        items: state.items
+            .where((item) => !(state.unreadOnly && item.id == id))
+            .map((item) => item.id == id
+                ? item.copyWith(isRead: true, readAt: DateTime.now())
+                : item)
+            .toList(growable: false),
+        unreadCount: state.unreadCount > 0 ? state.unreadCount - 1 : 0,
+        errorMessage: null);
     try {
       await _service.markAsRead(id);
+      if (mounted && !_current(generation)) unawaited(refresh());
     } catch (error) {
-      state = previousState.copyWith(
-        errorMessage: _toErrorMessage(error),
-      );
+      if (_current(generation)) {
+        state = state.copyWith(
+            items: _mergeById(state.items, [original]),
+            unreadCount: state.unreadCount + (decremented ? 1 : 0),
+            errorMessage: _toErrorMessage(error));
+      }
       rethrow;
+    } finally {
+      _markingIds.remove(id);
     }
   }
 
   Future<void> markAllAsRead() async {
-    if (state.isMarkingAllRead || state.unreadCount == 0) {
+    if (!mounted ||
+        state.isMarkingAllRead ||
+        state.unreadCount == 0 ||
+        _markingIds.isNotEmpty) {
       return;
     }
-
-    final previousState = state;
-    state = previousState.copyWith(
-      items: previousState.items
-          .map(
-            (item) => item.isRead
-                ? item
-                : item.copyWith(
-                    isRead: true,
-                    readAt: DateTime.now(),
-                  ),
-          )
-          .toList(growable: false),
-      unreadCount: 0,
-      isMarkingAllRead: true,
-      errorMessage: null,
-    );
-
+    _discardPendingReads();
+    final previous = state, generation = _generation;
+    state = state.copyWith(
+        items: state.unreadOnly
+            ? []
+            : state.items
+                .map((item) => item.copyWith(
+                    isRead: true, readAt: item.readAt ?? DateTime.now()))
+                .toList(growable: false),
+        hasMore: state.unreadOnly ? false : state.hasMore,
+        nextBeforeId: state.unreadOnly ? null : state.nextBeforeId,
+        unreadCount: 0,
+        isMarkingAllRead: true,
+        errorMessage: null);
     try {
       await _service.markAllAsRead();
-      state = state.copyWith(isMarkingAllRead: false);
+      if (_current(generation)) {
+        state = state.copyWith(isMarkingAllRead: false);
+      } else if (mounted) {
+        unawaited(refresh());
+      }
     } catch (error) {
-      state = previousState.copyWith(
-        isMarkingAllRead: false,
-        errorMessage: _toErrorMessage(error),
-      );
+      if (_current(generation)) {
+        state = previous.copyWith(
+            isMarkingAllRead: false, errorMessage: _toErrorMessage(error));
+      }
       rethrow;
     }
   }
 
+  void _discardPendingReads() {
+    if (!state.isInitialLoading &&
+        !state.isRefreshing &&
+        !state.isLoadingMore) {
+      return;
+    }
+    // A page requested before this mutation may carry the old read flags and
+    // unread count. Keep the last displayed page and allow its cursor to retry.
+    _generation++;
+    state = state.copyWith(
+        isInitialLoading: false, isRefreshing: false, isLoadingMore: false);
+  }
+
   List<AppNotification> _mergeById(
-    List<AppNotification> current,
-    List<AppNotification> incoming,
-  ) {
+      List<AppNotification> current, List<AppNotification> incoming) {
     final merged = <int, AppNotification>{
-      for (final notification in current) notification.id: notification,
+      for (final item in current) item.id: item
     };
-
-    for (final notification in incoming) {
-      merged[notification.id] = notification;
+    for (final item in incoming) {
+      merged[item.id] = item;
     }
-
-    final values = merged.values.toList(growable: false)
-      ..sort((left, right) => right.id.compareTo(left.id));
-    return values;
+    return merged.values.toList(growable: false)
+      ..sort((a, b) => b.id.compareTo(a.id));
   }
 
-  String _toErrorMessage(Object error) {
-    if (error is DioException) {
-      final responseMessage = _extractResponseMessage(error.response?.data);
-      if (responseMessage != null) {
-        return responseMessage;
-      }
-
-      if (error.response?.statusCode == 400) {
-        return 'The notification request was rejected by the server.';
-      }
-
-      if (error.type == DioExceptionType.connectionTimeout ||
-          error.type == DioExceptionType.receiveTimeout ||
-          error.type == DioExceptionType.sendTimeout) {
-        return 'The request timed out. Please try again.';
-      }
-
-      if (error.type == DioExceptionType.connectionError) {
-        return 'Unable to reach the server right now.';
-      }
-
-      final message = error.message?.trim();
-      if (message != null && message.isNotEmpty) {
-        return message;
-      }
-    }
-
-    final raw = error.toString().trim();
-    if (raw.startsWith('Exception: ')) {
-      return raw.substring('Exception: '.length).trim();
-    }
-
-    return raw;
-  }
-
-  String? _extractResponseMessage(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      for (final key in const ['message', 'error']) {
-        final value = data[key];
-        if (value is String && value.trim().isNotEmpty) {
-          return value.trim();
-        }
-
-        if (value is List) {
-          final parts = value
-              .whereType<String>()
-              .map((item) => item.trim())
-              .where((item) => item.isNotEmpty)
-              .toList(growable: false);
-          if (parts.isNotEmpty) {
-            return parts.join(', ');
-          }
-        }
-      }
-
-      final nestedData = data['data'];
-      if (!identical(nestedData, data)) {
-        return _extractResponseMessage(nestedData);
-      }
-    }
-
-    if (data is String && data.trim().isNotEmpty) {
-      return data.trim();
-    }
-
-    return null;
-  }
+  String _toErrorMessage(Object error) => ErrorMapper.from(error).message;
 }

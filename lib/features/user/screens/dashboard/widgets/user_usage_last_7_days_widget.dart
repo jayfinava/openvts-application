@@ -36,8 +36,7 @@ class _UserUsageLast7DaysWidgetState
   @override
   void initState() {
     super.initState();
-    _selectedVehicleId =
-        userDashboardPropString(widget.config.props, const [
+    _selectedVehicleId = userDashboardPropString(widget.config.props, const [
           'vehicleId',
           'vehicle_id',
         ]) ??
@@ -85,16 +84,15 @@ class _UserUsageLast7DaysWidgetState
 
   Widget _buildBody(
     AsyncValue<
-      ({
-        List<UserDashboardVehicleOption> vehicles,
-        UserDashboardUsageLast7Days usage,
-      })
-    >
-    state,
+            ({
+              List<UserDashboardVehicleOption> vehicles,
+              UserDashboardUsageLast7Days usage,
+            })>
+        state,
   ) {
     if (state.hasError) {
       return UserDashboardWidgetError(
-        message: state.error.toString(),
+        error: state.error!,
         onRetry: _reload,
       );
     }
@@ -214,8 +212,7 @@ class _UsageChartPainter extends CustomPainter {
     final hourScale = math.max(maxHours, 1);
 
     final gridPaint = Paint()
-      ..color = OpenVtsColors
-          .border // Keep as constant in CustomPainter
+      ..color = OpenVtsColors.border // Keep as constant in CustomPainter
       ..strokeWidth = 1;
     for (var line = 0; line < 4; line++) {
       final y = top + chartHeight * line / 3;
@@ -230,8 +227,7 @@ class _UsageChartPainter extends CustomPainter {
       ..color = OpenVtsColors.brandInk
       ..style = PaintingStyle.fill;
     final barTrackPaint = Paint()
-      ..color = OpenVtsColors
-          .surface // Keep as constant in CustomPainter
+      ..color = OpenVtsColors.surface // Keep as constant in CustomPainter
       ..style = PaintingStyle.fill;
     final slot = chartWidth / points.length;
     final barWidth = math.min(18.0, slot * 0.42).toDouble();
@@ -259,8 +255,7 @@ class _UsageChartPainter extends CustomPainter {
       );
       canvas.drawRRect(barRect, barPaint);
 
-      final hourY =
-          origin.dy -
+      final hourY = origin.dy -
           chartHeight * (point.engineHours / hourScale).clamp(0.0, 1.0);
       linePoints.add(Offset(centerX, hourY));
     }

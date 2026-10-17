@@ -40,15 +40,24 @@ void main() {
     'extension MobileText on BuildContext {',
     '  String mobileText(String source, [Map<String, Object> values = const {}]) {',
     '    final l10n = Localizations.of<AppLocalizations>(this, AppLocalizations) ?? AppLocalizationsEn();',
-    '    return switch (source) {',
+    // Keep individual generated functions bounded. One switch containing
+    // thousands of string patterns is expensive for the AOT optimizer.
+    '    return switch (source.length % 32) {',
+    for (var bucket = 0; bucket < 32; bucket++)
+      '      $bucket => _mobileTextBucket$bucket(l10n, source, values),',
+    '      _ => source,',
+    '    };',
+    '  }',
+    '}',
   ];
+  final buckets = List.generate(32, (_) => <String>[]);
   for (final entry in unique.entries) {
     final source = entry.key;
     final key = entry.value;
     // ICU messages are accessed through typed getters, not source lookup.
     if (RegExp(r'\{\w+,').hasMatch(source)) continue;
     if (_pluralSources.containsKey(source)) {
-      lines.add(
+      buckets[source.length % 32].add(
         "      ${_quote(source)} => l10n.${_pluralSources[source]}(num.tryParse((values['value1'] ?? 0).toString()) ?? 0),",
       );
       continue;
@@ -58,29 +67,33 @@ void main() {
     ).allMatches(source).map((match) => match.group(1)!).toSet();
     final metadata = catalog['@$key'] as Map<String, dynamic>?;
     final types = metadata?['placeholders'] as Map<String, dynamic>?;
-    final arguments = placeholders
-        .map((name) {
-          final type = (types?[name] as Map<String, dynamic>?)?['type'];
-          final value = "values[${_quote(name)}] ?? ''";
-          if (type == 'String') return '($value).toString()';
-          if (type == 'int' || type == 'num' || type == 'double') {
-            return '$type.tryParse(($value).toString()) ?? 0';
-          }
-          return value;
-        })
-        .join(', ');
+    final arguments = placeholders.map((name) {
+      final type = (types?[name] as Map<String, dynamic>?)?['type'];
+      final value = "values[${_quote(name)}] ?? ''";
+      if (type == 'String') return '($value).toString()';
+      if (type == 'int' || type == 'num' || type == 'double') {
+        return '$type.tryParse(($value).toString()) ?? 0';
+      }
+      return value;
+    }).join(', ');
     final call = placeholders.isEmpty ? '' : '($arguments)';
-    lines.add('      ${_quote(source)} => l10n.$key$call,');
+    buckets[source.length % 32]
+        .add('      ${_quote(source)} => l10n.$key$call,');
   }
-  lines.addAll([
-    // A future missed registration must not crash a production screen. The
-    // source contract tests reject unregistered authored literal call sites.
-    '      _ => source,',
-    '    };',
-    '  }',
-    '}',
-    '',
-  ]);
+  for (var bucket = 0; bucket < buckets.length; bucket++) {
+    lines.addAll([
+      '',
+      'String _mobileTextBucket$bucket(AppLocalizations l10n, String source, Map<String, Object> values) {',
+      '  return switch (source) {',
+      ...buckets[bucket],
+      // A future missed registration must not crash a production screen. The
+      // source contract tests reject unregistered authored literal call sites.
+      '      _ => source,',
+      '    };',
+      '}',
+    ]);
+  }
+  lines.add('');
   File(
     '${root.path}/lib/shared/helpers/mobile_text.dart',
   ).writeAsStringSync(lines.join('\n'));

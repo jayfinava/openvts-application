@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/access/workspace_scope_provider.dart';
+import '../../../core/api/api_endpoints.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../shared/models/vehicle_summary.dart';
+import '../../../shared/paging/server_list_pager.dart';
 import '../../notifications/controllers/notification_center_controller.dart';
 import '../../notifications/models/notification_center_state.dart';
 import '../controllers/superadmin_admin_details_controller.dart';
@@ -16,6 +19,7 @@ import '../controllers/superadmin_server_controller.dart';
 import '../controllers/superadmin_settings_controller.dart';
 import '../controllers/superadmin_support_controller.dart';
 import '../controllers/superadmin_vehicle_history_controller.dart';
+import '../models/superadmin_admin_details_model.dart';
 import '../models/superadmin_admin_details_state.dart';
 import '../models/superadmin_administrators_state.dart';
 import '../models/superadmin_dashboard_state.dart';
@@ -55,9 +59,9 @@ final superadminVehicleServiceProvider = Provider<SuperadminVehicleService>((
 
 final superadminMapOverlayServiceProvider =
     Provider<SuperadminMapOverlayService>((ref) {
-      ref.watch(workspaceDataScopeProvider);
-      return SuperadminMapOverlayService(ref.watch(apiClientProvider));
-    });
+  ref.watch(workspaceDataScopeProvider);
+  return SuperadminMapOverlayService(ref.watch(apiClientProvider));
+});
 
 final superadminMapEventsServiceProvider = Provider<SuperadminMapEventsService>(
   (ref) {
@@ -68,15 +72,15 @@ final superadminMapEventsServiceProvider = Provider<SuperadminMapEventsService>(
 
 final superadminAdministratorsServiceProvider =
     Provider<SuperadminAdministratorsService>((ref) {
-      ref.watch(workspaceDataScopeProvider);
-      return SuperadminAdministratorsService(ref.watch(apiClientProvider));
-    });
+  ref.watch(workspaceDataScopeProvider);
+  return SuperadminAdministratorsService(ref.watch(apiClientProvider));
+});
 
 final superadminNotificationServiceProvider =
     Provider<SuperadminNotificationService>((ref) {
-      ref.watch(workspaceDataScopeProvider);
-      return SuperadminNotificationService(ref.watch(apiClientProvider));
-    });
+  ref.watch(workspaceDataScopeProvider);
+  return SuperadminNotificationService(ref.watch(apiClientProvider));
+});
 
 final superadminServerServiceProvider = Provider<SuperadminServerService>((
   ref,
@@ -99,52 +103,51 @@ final superadminPaymentsServiceProvider = Provider<SuperadminPaymentsService>((
   return SuperadminPaymentsService(ref.watch(apiClientProvider));
 });
 
-final superadminDashboardControllerProvider =
-    StateNotifierProvider.autoDispose<
-      SuperadminDashboardController,
-      SuperadminDashboardState
-    >((ref) {
-      return SuperadminDashboardController(
-        ref.watch(superadminDashboardServiceProvider),
-      );
-    });
+final superadminDashboardControllerProvider = StateNotifierProvider.autoDispose<
+    SuperadminDashboardController, SuperadminDashboardState>((ref) {
+  return SuperadminDashboardController(
+    ref.watch(superadminDashboardServiceProvider),
+  );
+});
 
-final superadminVehiclePageProvider =
-    FutureProvider.autoDispose<SuperadminVehiclePage>((ref) {
-      return ref.watch(superadminVehicleServiceProvider).getVehicles();
-    });
+final superadminVehiclePageProvider = FutureProvider.autoDispose
+    .family<SuperadminVehiclePage, SuperadminVehicleQuery>((ref, query) {
+  final token = CancelToken();
+  ref.onDispose(() => token.cancel('Vehicle page retired'));
+  return ref
+      .watch(superadminVehicleServiceProvider)
+      .getVehicles(query: query, cancelToken: token);
+});
 
 final superadminVehiclesProvider =
     FutureProvider.autoDispose<List<VehicleSummary>>((ref) {
-      return ref.watch(superadminVehicleServiceProvider).getMapVehicles();
-    });
+  return ref.watch(superadminVehicleServiceProvider).getMapVehicles();
+});
 
 final superadminMapTelemetryProvider =
     FutureProvider.autoDispose<SuperadminMapTelemetry>((ref) {
-      return ref.watch(superadminVehicleServiceProvider).getMapTelemetry();
-    });
+  return ref.watch(superadminVehicleServiceProvider).getMapTelemetry();
+});
 
 final superadminVehicleDetailsProvider =
     FutureProvider.family<SuperadminVehicleDetails, String>((ref, imei) {
-      return ref
-          .watch(superadminVehicleServiceProvider)
-          .getVehicleDetailsByImei(imei);
-    });
+  return ref
+      .watch(superadminVehicleServiceProvider)
+      .getVehicleDetailsByImei(imei);
+});
 
 final superadminVehicleHistoryControllerProvider =
-    StateNotifierProvider.autoDispose<
-      SuperadminVehicleHistoryController,
-      SuperadminVehicleHistoryState
-    >((ref) {
-      return SuperadminVehicleHistoryController(
-        ref.watch(superadminVehicleServiceProvider),
-      );
-    });
+    StateNotifierProvider.autoDispose<SuperadminVehicleHistoryController,
+        SuperadminVehicleHistoryState>((ref) {
+  return SuperadminVehicleHistoryController(
+    ref.watch(superadminVehicleServiceProvider),
+  );
+});
 
 final superadminMapGeofencesProvider =
     FutureProvider<List<SuperadminMapGeofence>>((ref) {
-      return ref.watch(superadminMapOverlayServiceProvider).getGeofences();
-    });
+  return ref.watch(superadminMapOverlayServiceProvider).getGeofences();
+});
 
 final superadminMapPoisProvider = FutureProvider<List<SuperadminMapPoi>>((ref) {
   return ref.watch(superadminMapOverlayServiceProvider).getPois();
@@ -156,85 +159,68 @@ final superadminMapRoutesProvider = FutureProvider<List<SuperadminMapRoute>>((
   return ref.watch(superadminMapOverlayServiceProvider).getRoutes();
 });
 
-final superadminMapLiveProvider =
-    StateNotifierProvider.autoDispose<
-      SuperadminMapLiveController,
-      SuperadminMapLiveState
-    >((ref) {
-      final controller = SuperadminMapLiveController(
-        ref.watch(superadminVehicleServiceProvider),
-        ref.watch(superadminMapEventsServiceProvider),
-        ref.watch(socketServiceProvider),
-      );
-      controller.initialize();
-      return controller;
-    });
+final superadminMapLiveProvider = StateNotifierProvider.autoDispose<
+    SuperadminMapLiveController, SuperadminMapLiveState>((ref) {
+  final controller = SuperadminMapLiveController(
+    ref.watch(superadminVehicleServiceProvider),
+    ref.watch(superadminMapEventsServiceProvider),
+    ref.watch(socketServiceProvider),
+  );
+  controller.initialize();
+  return controller;
+});
 
 final superadminAdministratorsControllerProvider =
-    StateNotifierProvider.autoDispose<
-      SuperadminAdministratorsController,
-      SuperadminAdministratorsState
-    >((ref) {
-      return SuperadminAdministratorsController(
-        ref.watch(superadminAdministratorsServiceProvider),
-      );
-    });
+    StateNotifierProvider.autoDispose<SuperadminAdministratorsController,
+        SuperadminAdministratorsState>((ref) {
+  return SuperadminAdministratorsController(
+    ref.watch(superadminAdministratorsServiceProvider),
+  );
+});
 
-final superadminNotificationCenterProvider =
-    StateNotifierProvider.autoDispose<
-      NotificationCenterController,
-      NotificationCenterState
-    >((ref) {
-      final controller = NotificationCenterController(
-        ref.watch(superadminNotificationServiceProvider),
-      );
-      controller.load();
-      return controller;
-    });
+final superadminNotificationCenterProvider = StateNotifierProvider.autoDispose<
+    NotificationCenterController, NotificationCenterState>((ref) {
+  final controller = NotificationCenterController(
+    ref.watch(superadminNotificationServiceProvider),
+  );
+  controller.load();
+  return controller;
+});
 
 final superadminNotificationUnreadBadgeProvider =
     FutureProvider.autoDispose<int>((ref) async {
-      final cacheLink = ref.keepAlive();
-      final cacheTimer = Timer(const Duration(seconds: 30), cacheLink.close);
-      ref.onDispose(cacheTimer.cancel);
+  final cacheLink = ref.keepAlive();
+  final cacheTimer = Timer(const Duration(seconds: 30), cacheLink.close);
+  ref.onDispose(cacheTimer.cancel);
 
-      try {
-        final service = ref.watch(superadminNotificationServiceProvider);
-        return await service.getUnreadBadgeCountLightweight();
-      } catch (_) {
-        return 0;
-      }
-    });
+  try {
+    final service = ref.watch(superadminNotificationServiceProvider);
+    return await service.getUnreadBadgeCountLightweight();
+  } catch (_) {
+    return 0;
+  }
+});
 
-final superadminServerControllerProvider =
-    StateNotifierProvider.autoDispose<
-      SuperadminServerController,
-      SuperadminServerState
-    >((ref) {
-      return SuperadminServerController(
-        ref.watch(superadminServerServiceProvider),
-      );
-    });
+final superadminServerControllerProvider = StateNotifierProvider.autoDispose<
+    SuperadminServerController, SuperadminServerState>((ref) {
+  return SuperadminServerController(
+    ref.watch(superadminServerServiceProvider),
+  );
+});
 
-final superadminSupportControllerProvider =
-    StateNotifierProvider.autoDispose<
-      SuperadminSupportController,
-      SuperadminSupportState
-    >((ref) {
-      return SuperadminSupportController(
-        ref.watch(superadminSupportServiceProvider),
-      );
-    });
+final superadminSupportControllerProvider = StateNotifierProvider.autoDispose<
+    SuperadminSupportController, SuperadminSupportState>((ref) {
+  return SuperadminSupportController(
+    ref.watch(superadminSupportServiceProvider),
+  );
+});
 
-final superadminPaymentsControllerProvider =
-    StateNotifierProvider.autoDispose<
-      SuperadminPaymentsController,
-      SuperadminPaymentsState
-    >((ref) {
-      return SuperadminPaymentsController(
-        ref.watch(superadminPaymentsServiceProvider),
-      );
-    });
+final superadminPaymentsControllerProvider = StateNotifierProvider.autoDispose<
+    SuperadminPaymentsController, SuperadminPaymentsState>((ref) {
+  return SuperadminPaymentsController(
+    ref.watch(superadminPaymentsServiceProvider),
+  );
+});
 
 final superadminSettingsServiceProvider = Provider<SuperadminSettingsService>((
   ref,
@@ -243,38 +229,48 @@ final superadminSettingsServiceProvider = Provider<SuperadminSettingsService>((
   return SuperadminSettingsService(ref.watch(apiClientProvider));
 });
 
-final superadminSettingsControllerProvider =
-    StateNotifierProvider.autoDispose<
-      SuperadminSettingsController,
-      SuperadminSettingsState
-    >((ref) {
-      return SuperadminSettingsController(
-        ref.watch(superadminSettingsServiceProvider),
-      );
-    });
+final superadminSettingsControllerProvider = StateNotifierProvider.autoDispose<
+    SuperadminSettingsController, SuperadminSettingsState>((ref) {
+  return SuperadminSettingsController(
+    ref.watch(superadminSettingsServiceProvider),
+  );
+});
 
 final superadminAdminDetailsServiceProvider =
     Provider<SuperadminAdminDetailsService>((ref) {
-      ref.watch(workspaceDataScopeProvider);
-      return SuperadminAdminDetailsService(ref.watch(apiClientProvider));
-    });
+  ref.watch(workspaceDataScopeProvider);
+  return SuperadminAdminDetailsService(ref.watch(apiClientProvider));
+});
 
-final superadminAdminDetailsControllerProvider = StateNotifierProvider
-    .autoDispose
-    .family<
-      SuperadminAdminDetailsController,
-      SuperadminAdminDetailsState,
-      String
-    >((ref, adminId) {
-      return SuperadminAdminDetailsController(
-        adminId: adminId,
-        detailsService: ref.watch(superadminAdminDetailsServiceProvider),
-        paymentsService: ref.watch(superadminPaymentsServiceProvider),
-        onAdminStatusChanged: (id, isActive) {
-          // Update the administrators list when status changes
-          ref
-              .read(superadminAdministratorsControllerProvider.notifier)
-              .updateAdminStatusInList(adminId: id, isActive: isActive);
+final superadminAdminDetailsControllerProvider =
+    StateNotifierProvider.autoDispose.family<SuperadminAdminDetailsController,
+        SuperadminAdminDetailsState, String>((ref, adminId) {
+  return SuperadminAdminDetailsController(
+    creditsPager: ServerListPager<SuperadminCreditLog>(
+        api: ref.watch(apiClientProvider),
+        endpoint: ApiEndpoints.superadmin.creditLogs(adminId),
+        parseRows: (json) {
+          final logs = SuperadminCreditLog.listFromJson(json);
+          if (logs.any((log) => log.balanceAfter == null)) {
+            throw const FormatException('Missing ledger balance');
+          }
+          return logs;
         },
-      )..loadInitial();
-    });
+        rowsKey: 'logs',
+        sortBy: 'createdAt',
+        sortDir: 'desc'),
+    vehiclesPager: ServerListPager<SuperadminAdminVehicle>(
+        api: ref.watch(apiClientProvider),
+        endpoint: ApiEndpoints.superadmin.adminVehicles(adminId),
+        parseRows: SuperadminAdminVehicle.listFromJson),
+    adminId: adminId,
+    detailsService: ref.watch(superadminAdminDetailsServiceProvider),
+    paymentsService: ref.watch(superadminPaymentsServiceProvider),
+    onAdminStatusChanged: (id, isActive) {
+      // Update the administrators list when status changes
+      ref
+          .read(superadminAdministratorsControllerProvider.notifier)
+          .updateAdminStatusInList(adminId: id, isActive: isActive);
+    },
+  )..loadInitial();
+});

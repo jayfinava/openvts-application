@@ -50,9 +50,7 @@ class _AdminTransactionsScreenState
       _error = null;
     });
     try {
-      final result = await ref
-          .read(adminParityControllerProvider)
-          .transactions(
+      final result = await ref.read(adminParityControllerProvider).transactions(
             page: page,
             search: _query,
             status: _status,
@@ -90,158 +88,186 @@ class _AdminTransactionsScreenState
 
   @override
   Widget build(BuildContext context) => OpenVtsPageScaffold(
-    title: context.mobileText('Transactions'),
-    headerMode: OpenVtsPageHeaderMode.closeable,
-    actions: [
-      IconButton(
-        tooltip: context.mobileText('Refresh transactions'),
-        onPressed: _loading ? null : () => _load(),
-        icon: const Icon(Icons.refresh),
-      ),
-    ],
-    body: Column(
-      children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            context.mobileText('Your transactions with the software owner.'),
+        title: context.mobileText('Transactions'),
+        headerMode: OpenVtsPageHeaderMode.closeable,
+        actions: [
+          IconButton(
+            tooltip: context.mobileText('Refresh transactions'),
+            onPressed: _loading ? null : () => _load(),
+            icon: const Icon(Icons.refresh),
           ),
-        ),
-        const SizedBox(height: 12),
-        AdminTransactionsSearchField(
-          currentQuery: _query,
-          onSearch: (query) async {
-            _query = query;
-            await _load();
-          },
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 4,
+        ],
+        body: Column(
           children: [
-            for (final status in [null, 'SUCCESS', 'PENDING', 'FAILED'])
-              ChoiceChip(
-                label: Text(
-                  status == null
-                      ? context.mobileText('All')
-                      : '${status[0]}${status.substring(1).toLowerCase()}',
-                ),
-                selected: _status == status,
-                onSelected: (_) {
-                  setState(() => _status = status);
-                  unawaited(_load());
-                },
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                context
+                    .mobileText('Your transactions with the software owner.'),
               ),
-            ActionChip(
-              avatar: const Icon(Icons.date_range, size: 18),
-              label: Text(
-                _range == null
-                    ? context.mobileText('Date range')
-                    : context.mobileText('Change dates'),
-              ),
-              onPressed: () async {
-                final picked = await showDateRangePicker(
-                  context: context,
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime.now().add(const Duration(days: 1)),
-                  initialDateRange: _range,
-                );
-                if (!mounted || picked == null) return;
-                setState(() => _range = picked);
-                unawaited(_load());
+            ),
+            const SizedBox(height: 12),
+            AdminTransactionsSearchField(
+              currentQuery: _query,
+              onSearch: (query) async {
+                _query = query;
+                await _load();
               },
             ),
-            if (_range != null)
-              ActionChip(
-                label: Text(context.mobileText('Clear dates')),
-                onPressed: () {
-                  setState(() => _range = null);
-                  unawaited(_load());
-                },
-              ),
-          ],
-        ),
-        if (_loading) const LinearProgressIndicator(),
-        if (_error != null && _items.isNotEmpty)
-          MaterialBanner(
-            content: Text(_error!),
-            actions: [
-              TextButton(
-                onPressed: () => _load(),
-                child: Text(context.mobileText('Retry')),
-              ),
-            ],
-          ),
-        Expanded(
-          child: _error != null && _items.isEmpty
-              ? OpenVtsErrorView(message: _error!, onRetry: () => _load())
-              : RefreshIndicator(
-                  onRefresh: () => _load(),
-                  child: ListView.separated(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: _items.length + 1,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
-                    itemBuilder: (context, index) {
-                      if (index == _items.length) {
-                        if (_items.isEmpty) {
-                          return Padding(
-                            padding: const EdgeInsets.all(32),
-                            child: Text(
-                              _loading
-                                  ? context.mobileText('Loading transactions…')
-                                  : context.mobileText(
-                                      'No transactions match these filters.',
-                                    ),
-                              textAlign: TextAlign.center,
-                            ),
-                          );
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            children: [
-                              Text(
-                                context.mobileText(
-                                  "{value1} of {value2} transactions",
-                                  {
-                                    'value1': (_items.length).toString(),
-                                    'value2': (_total).toString(),
-                                  },
-                                ),
-                              ),
-                              if (_page * 50 < _total)
-                                TextButton(
-                                  onPressed: _loading
-                                      ? null
-                                      : () => _load(more: true),
-                                  child: Text(context.mobileText('Load more')),
-                                ),
-                            ],
-                          ),
-                        );
-                      }
-                      final item = _items[index];
-                      return AdminPaymentTransactionCard(
-                        item: item,
-                        onTap: () => OpenVtsBottomSheet.show<void>(
-                          context: context,
-                          title: context.mobileText('Transaction details'),
-                          initialChildSize: .8,
-                          minChildSize: .45,
-                          maxChildSize: .96,
-                          child: AdminPaymentTransactionDetailsSheet(
-                            item: item,
-                          ),
-                        ),
-                      );
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                for (final status in [null, 'SUCCESS', 'PENDING', 'FAILED'])
+                  ChoiceChip(
+                    label: Text(
+                      status == null
+                          ? context.mobileText('All')
+                          : '${status[0]}${status.substring(1).toLowerCase()}',
+                    ),
+                    selected: _status == status,
+                    selectedColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    side: BorderSide(
+                        color: Theme.of(context).colorScheme.outlineVariant),
+                    labelStyle: TextStyle(
+                      color: _status == status
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    checkmarkColor: Theme.of(context).colorScheme.onPrimary,
+                    onSelected: (_) {
+                      setState(() => _status = status);
+                      unawaited(_load());
                     },
                   ),
+                ActionChip(
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  side: BorderSide(
+                      color: Theme.of(context).colorScheme.outlineVariant),
+                  labelStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                  avatar: const Icon(Icons.date_range, size: 18),
+                  label: Text(
+                    _range == null
+                        ? context.mobileText('This month')
+                        : context.mobileText('Change dates'),
+                  ),
+                  onPressed: () async {
+                    final picked = await showDateRangePicker(
+                      context: context,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime.now().add(const Duration(days: 1)),
+                      initialDateRange: _range,
+                    );
+                    if (!mounted || picked == null) return;
+                    setState(() => _range = picked);
+                    unawaited(_load());
+                  },
                 ),
+                if (_range != null)
+                  ActionChip(
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    side: BorderSide(
+                        color: Theme.of(context).colorScheme.outlineVariant),
+                    labelStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface),
+                    label: Text(context.mobileText('Clear dates')),
+                    onPressed: () {
+                      setState(() => _range = null);
+                      unawaited(_load());
+                    },
+                  ),
+              ],
+            ),
+            if (_loading) const LinearProgressIndicator(),
+            if (_error != null && _items.isNotEmpty)
+              MaterialBanner(
+                content: Text(_error!),
+                actions: [
+                  TextButton(
+                    onPressed: () => _load(),
+                    child: Text(context.mobileText('Retry')),
+                  ),
+                ],
+              ),
+            Expanded(
+              child: _error != null && _items.isEmpty
+                  ? OpenVtsErrorView(message: _error!, onRetry: () => _load())
+                  : RefreshIndicator(
+                      onRefresh: () => _load(),
+                      child: ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: _items.length + 1,
+                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        itemBuilder: (context, index) {
+                          if (index == _items.length) {
+                            if (_items.isEmpty) {
+                              return Padding(
+                                padding: const EdgeInsets.all(32),
+                                child: Text(
+                                  _loading
+                                      ? context
+                                          .mobileText('Loading transactions…')
+                                      : _range == null &&
+                                              _status == null &&
+                                              _query.trim().isEmpty
+                                          ? context.mobileText(
+                                              'No transactions this month.')
+                                          : context.mobileText(
+                                              'No transactions match these filters.'),
+                                  textAlign: TextAlign.center,
+                                ),
+                              );
+                            }
+                            return Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    context.mobileText(
+                                      "{value1} of {value2} transactions",
+                                      {
+                                        'value1': (_items.length).toString(),
+                                        'value2': (_total).toString(),
+                                      },
+                                    ),
+                                  ),
+                                  if (_page * 50 < _total)
+                                    TextButton(
+                                      onPressed: _loading
+                                          ? null
+                                          : () => _load(more: true),
+                                      child:
+                                          Text(context.mobileText('Load more')),
+                                    ),
+                                ],
+                              ),
+                            );
+                          }
+                          final item = _items[index];
+                          return AdminPaymentTransactionCard(
+                            item: item,
+                            onTap: () => OpenVtsBottomSheet.show<void>(
+                              context: context,
+                              title: context.mobileText('Transaction details'),
+                              initialChildSize: .8,
+                              minChildSize: .45,
+                              maxChildSize: .96,
+                              child: AdminPaymentTransactionDetailsSheet(
+                                item: item,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 }
 
 class AdminTransactionsSearchField extends StatefulWidget {
@@ -286,17 +312,17 @@ class _AdminTransactionsSearchFieldState
 
   @override
   Widget build(BuildContext context) => TextField(
-    controller: _controller,
-    decoration: InputDecoration(
-      hintText: context.mobileText('Search transactions...'),
-      prefixIcon: const Icon(Icons.search, size: 20),
-    ),
-    onChanged: (value) {
-      _timer?.cancel();
-      _timer = Timer(const Duration(milliseconds: 350), () {
-        final query = value.trim();
-        if (query != widget.currentQuery) unawaited(widget.onSearch(query));
-      });
-    },
-  );
+        controller: _controller,
+        decoration: InputDecoration(
+          hintText: context.mobileText('Search transactions...'),
+          prefixIcon: const Icon(Icons.search, size: 20),
+        ),
+        onChanged: (value) {
+          _timer?.cancel();
+          _timer = Timer(const Duration(milliseconds: 350), () {
+            final query = value.trim();
+            if (query != widget.currentQuery) unawaited(widget.onSearch(query));
+          });
+        },
+      );
 }

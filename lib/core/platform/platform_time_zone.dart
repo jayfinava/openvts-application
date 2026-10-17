@@ -1,16 +1,28 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+
+import '../errors/app_error.dart';
+import 'browser_time_zone_stub.dart'
+    if (dart.library.js_interop) 'browser_time_zone_web.dart';
 
 /// Resolves a backend-valid report timezone.
 ///
-/// Android and iOS return an IANA identifier (for example `Asia/Kolkata`).
-/// Other platforms use an ECMA-402 offset identifier, which is also accepted
-/// by the backend's `Intl.DateTimeFormat` validation.
+/// Native platforms and the browser must agree with their local date boundaries.
+/// The report database requires named zones; an offset loses DST/history rules.
 class PlatformTimeZone {
   const PlatformTimeZone._();
 
   static const MethodChannel _channel = MethodChannel('openvts/timezone');
 
   static Future<String> current() async {
+    if (kIsWeb) {
+      final namedZone = _normalizeNativeIdentifier(browserTimeZone());
+      if (namedZone != null) return namedZone;
+      throw const AppError(
+        message:
+            'Unable to detect your time zone. Restart the app and try again.',
+      );
+    }
     try {
       final identifier =
           (await _channel.invokeMethod<String>('getLocalTimezone'))?.trim();
@@ -18,21 +30,30 @@ class PlatformTimeZone {
       if (normalized != null) {
         return normalized;
       }
+      if (identifier != null && identifier.isNotEmpty) {
+        throw const AppError(
+          message:
+              'Unable to detect your time zone. Restart the app and try again.',
+        );
+      }
     } on MissingPluginException {
-      // Web and unsupported desktop platforms use the offset fallback.
+      // Unsupported hosts may still identify a genuine UTC or IANA zone below.
     } on PlatformException {
-      // A valid fallback is preferable to blocking every report request.
+      // Never substitute a numeric offset or silently change the user's zone.
     }
 
-    final totalMinutes = DateTime.now().timeZoneOffset.inMinutes;
-    if (totalMinutes == 0) {
-      return 'UTC';
+    final local = DateTime.now();
+    final name = local.timeZoneName;
+    if (name.contains('/') ||
+        (local.timeZoneOffset == Duration.zero &&
+            (name == 'UTC' || name == 'GMT'))) {
+      final namedZone = _normalizeNativeIdentifier(name);
+      if (namedZone != null) return namedZone;
     }
-    final absoluteMinutes = totalMinutes.abs();
-    final hours = (absoluteMinutes ~/ 60).toString().padLeft(2, '0');
-    final minutes = (absoluteMinutes % 60).toString().padLeft(2, '0');
-    final sign = totalMinutes < 0 ? '-' : '+';
-    return '$sign$hours:$minutes';
+    throw const AppError(
+      message:
+          'Unable to detect your time zone. Restart the app and try again.',
+    );
   }
 
   static String? _normalizeNativeIdentifier(String? value) {
@@ -43,20 +64,8 @@ class PlatformTimeZone {
       return 'UTC';
     }
 
-    // Android may expose custom zones as GMT+05:30, while ECMA-402 accepts
-    // the equivalent offset identifier +05:30.
-    final customOffset = RegExp(
-      r'^(?:GMT|UTC)([+-])(\d{1,2})(?::?(\d{2}))?$',
-      caseSensitive: false,
-    ).firstMatch(value);
-    if (customOffset != null) {
-      final hours = int.tryParse(customOffset.group(2) ?? '');
-      final minutes = int.tryParse(customOffset.group(3) ?? '0');
-      if (hours != null && minutes != null && hours <= 23 && minutes <= 59) {
-        return '${customOffset.group(1)}'
-            '${hours.toString().padLeft(2, '0')}:'
-            '${minutes.toString().padLeft(2, '0')}';
-      }
+    if (RegExp(r'^(GMT|UTC)[+-]', caseSensitive: false).hasMatch(value) ||
+        !RegExp(r'^[A-Za-z][A-Za-z0-9_+/-]{0,79}$').hasMatch(value)) {
       return null;
     }
 

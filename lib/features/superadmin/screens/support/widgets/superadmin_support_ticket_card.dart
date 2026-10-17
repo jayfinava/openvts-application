@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:open_vts/core/theme/open_vts_colors.dart';
 import 'package:open_vts/core/utils/date_time_formatter.dart';
 import 'package:open_vts/features/superadmin/models/superadmin_support_model.dart';
-
 import 'package:open_vts/shared/widgets/support/open_vts_support_ticket_card.dart';
 
 const DateTimeFormatter _dateFormatter = DateTimeFormatter();
@@ -27,9 +26,9 @@ class SuperadminSupportTicketCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final statusColor = switch (ticket.status) {
       SuperadminSupportTicketStatus.open =>
-        isDark ? const Color(0xFF5DB588) : OpenVtsColors.success,
+        isDark ? const Color(0xFF9F9F9F) : OpenVtsColors.success,
       SuperadminSupportTicketStatus.inProgress =>
-        isDark ? const Color(0xFFD4A852) : OpenVtsColors.warning,
+        isDark ? const Color(0xFFABABAB) : OpenVtsColors.warning,
       SuperadminSupportTicketStatus.closed => cs.onSurfaceVariant,
     };
 

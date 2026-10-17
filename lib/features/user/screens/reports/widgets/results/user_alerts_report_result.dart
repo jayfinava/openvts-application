@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../../core/theme/open_vts_chart_theme.dart';
 import '../../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
@@ -30,9 +31,8 @@ class UserAlertsReportResult extends StatelessWidget {
     final rows = state.rows.map(AlertRow.fromMap).toList();
 
     final total = rows.length;
-    final critical = rows
-        .where((r) => r.severity.toLowerCase() == 'critical')
-        .length;
+    final critical =
+        rows.where((r) => r.severity.toLowerCase() == 'critical').length;
     final acknowledged = rows.where((r) => r.acknowledged).length;
     final vehicles = rows.map((r) => r.vehicleName).toSet().length;
 
@@ -58,10 +58,10 @@ class UserAlertsReportResult extends StatelessWidget {
     for (final r in rows) {
       byType[r.alertType] = (byType[r.alertType] ?? 0) + 1;
     }
-    final topTypes =
-        (byType.entries.toList()..sort((a, b) => b.value.compareTo(a.value)))
-            .take(8)
-            .toList();
+    final topTypes = (byType.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value)))
+        .take(8)
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,15 +96,15 @@ class UserAlertsReportResult extends StatelessWidget {
 }
 
 const _kSeverityColors = {
-  'critical': Color(0xFF8A3333),
-  'high': Color(0xFF8A6522),
-  'medium': Color(0xFF435A6B),
-  'low': Color(0xFF2F6B4F),
-  'info': Color(0xFF2A5270),
+  'critical': Color(0xFF454545),
+  'high': Color(0xFF686868),
+  'medium': Color(0xFF565656),
+  'low': Color(0xFF5C5C5C),
+  'info': Color(0xFF4C4C4C),
 };
 
 Color _sevColor(String sev) =>
-    _kSeverityColors[sev.toLowerCase()] ?? const Color(0xFF435A6B);
+    _kSeverityColors[sev.toLowerCase()] ?? const Color(0xFF565656);
 
 class _SeverityDonut extends StatelessWidget {
   const _SeverityDonut({required this.bySeverity});
@@ -123,7 +123,7 @@ class _SeverityDonut extends StatelessWidget {
             radius: 44,
             titleStyle: OpenVtsTypography.meta.copyWith(
               fontSize: 9,
-              color: OpenVtsColors.white,
+              color: OpenVtsChartTheme.labelOn(_sevColor(k)),
             ),
           ),
         )
@@ -214,9 +214,8 @@ class _AlertTypeBarChart extends StatelessWidget {
     final barColor = isDark
         ? OpenVtsColors.warning.withValues(alpha: 0.8)
         : OpenVtsColors.warning.withValues(alpha: 0.75);
-    final maxVal = topTypes
-        .map((e) => e.value.toDouble())
-        .reduce((a, b) => a > b ? a : b);
+    final maxVal =
+        topTypes.map((e) => e.value.toDouble()).reduce((a, b) => a > b ? a : b);
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
       decoration: BoxDecoration(
@@ -242,6 +241,7 @@ class _AlertTypeBarChart extends StatelessWidget {
             height: 150,
             child: BarChart(
               BarChartData(
+                barTouchData: OpenVtsChartTheme.barTouchData(context),
                 maxY: maxVal * 1.2,
                 barGroups: topTypes
                     .asMap()
@@ -281,9 +281,8 @@ class _AlertTypeBarChart extends StatelessWidget {
                           return const SizedBox.shrink();
                         }
                         final name = topTypes[i].key;
-                        final short = name.length > 8
-                            ? '${name.substring(0, 7)}…'
-                            : name;
+                        final short =
+                            name.length > 8 ? '${name.substring(0, 7)}…' : name;
                         return Padding(
                           padding: const EdgeInsets.only(top: 3),
                           child: Text(

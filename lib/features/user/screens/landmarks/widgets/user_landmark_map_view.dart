@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../models/user_landmark_model.dart';
@@ -200,10 +200,9 @@ class _UserLandmarkMapViewState extends State<UserLandmarkMapView> {
 
     final layers = <Widget>[
       TileLayer(
-        urlTemplate: _kLandmarkTileUrl,
-        subdomains: _kLandmarkTileSubdomains,
-        userAgentPackageName: 'com.openvts.mobile',
-      ),
+          urlTemplate: _kLandmarkTileUrl,
+          subdomains: _kLandmarkTileSubdomains,
+          userAgentPackageName: 'com.openvts.mobile'),
       // Routes drawn first so geofences/POIs sit on top.
       if (widget.routes.isNotEmpty)
         PolylineLayer(
@@ -434,7 +433,7 @@ class _UserLandmarkMapViewState extends State<UserLandmarkMapView> {
     var hex = value.trim().replaceAll('#', '');
     if (hex.length == 6) hex = 'FF$hex';
     final parsed = int.tryParse(hex, radix: 16);
-    if (parsed == null) return OpenVtsColors.brandInk;
+    if (parsed == null) return OpenVtsMapColors.brandInk;
     return Color(parsed);
   }
 }
@@ -460,7 +459,7 @@ class _PoiPin extends StatelessWidget {
           width: selected ? 22 : 18,
           height: selected ? 22 : 18,
           decoration: BoxDecoration(
-            color: OpenVtsColors.white,
+            color: OpenVtsMapColors.white,
             shape: BoxShape.circle,
             border: Border.all(
               color: effective,
@@ -511,7 +510,7 @@ class UserLandmarkMapEdgeFade extends StatelessWidget {
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
             colors: <Color>[
-              OpenVtsColors.brandInk.withValues(alpha: 0.08),
+              OpenVtsMapColors.brandInk.withValues(alpha: 0.08),
               const Color(0x00000000),
             ],
             stops: const <double>[0.0, 0.25],
@@ -537,11 +536,11 @@ class UserLandmarkMapAttribution extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-          color: OpenVtsColors.white.withValues(alpha: 0.7),
+          color: OpenVtsMapColors.white.withValues(alpha: 0.7),
           child: Text(
             text,
             style: OpenVtsTypography.meta.copyWith(
-              color: OpenVtsColors.textSecondary,
+              color: OpenVtsMapColors.textSecondary,
               fontSize: 10,
             ),
           ),

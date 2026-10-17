@@ -49,6 +49,17 @@ void main() {
               if (options.path.endsWith('/payments')) {
                 payload = {'items': [], 'total': 0, 'page': 1, 'limit': 100};
               }
+              if (options.path.endsWith('/linkvehicles/42') ||
+                  options.path.endsWith('/unlinkvehicles/42')) {
+                payload = {
+                  'data': [],
+                  'pagination': {
+                    'page': options.queryParameters['page'],
+                    'limit': options.queryParameters['limit'],
+                    'total': 0
+                  }
+                };
+              }
               handler.resolve(
                 Response(
                   requestOptions: options,
@@ -78,6 +89,9 @@ void main() {
       await controller.loadProfile();
       await controller.loadVehicles();
       expect(container.read(provider).sectionErrorMessage, isNull);
+      expect(requests.where((r) => r.path.endsWith('/unlinkvehicles/42')),
+          isEmpty);
+      await controller.availableVehiclesPager!.load();
       await controller.loadDrivers();
       expect(container.read(provider).sectionErrorMessage, isNull);
       await controller.loadTickets();

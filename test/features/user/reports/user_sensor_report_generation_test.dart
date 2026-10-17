@@ -65,7 +65,8 @@ void main() {
       notifier.setScope(const ReportVehicleScope.single('vehicle-1'));
       controller.failSensors('vehicle-1', StateError('sensor API failed'));
       await _flush();
-      expect(notifier.state.sensorLoadError, contains('sensor API failed'));
+      expect(notifier.state.sensorLoadError,
+          'Unable to complete the request. Please try again.');
 
       final retry = notifier.retrySensorLoad();
       expect(controller.sensorCalls, ['vehicle-1', 'vehicle-1']);
@@ -119,7 +120,8 @@ void main() {
       controller.generateError = StateError('report API failed');
       await notifier.generate();
       expect(notifier.state.genStatus, ReportGenStatus.error);
-      expect(notifier.state.genError, contains('report API failed'));
+      expect(notifier.state.genError,
+          'Unable to complete the request. Please try again.');
       expect(notifier.state.scope.vehicleId, 'vehicle-1');
       expect(notifier.state.sensorFilters.sensorIds, ['sensor-1']);
     });
@@ -147,6 +149,7 @@ UserReportWorkspaceNotifier _notifier(_FakeReportController controller) =>
     UserReportWorkspaceNotifier(
       initialKey: UserReportKey.sensor,
       controller: controller,
+      resolveTimeZone: () async => 'UTC',
     );
 
 Future<void> _flush() => Future<void>.delayed(Duration.zero);

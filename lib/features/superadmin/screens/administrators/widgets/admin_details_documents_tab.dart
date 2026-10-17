@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../core/config/app_config.dart';
+import '../../../../../core/providers/core_providers.dart';
 import '../../../../../core/theme/open_vts_colors.dart';
 import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
@@ -19,25 +19,11 @@ import '../../../../../shared/widgets/open_vts_loader.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../controllers/superadmin_providers.dart';
 import '../../../models/superadmin_admin_details_model.dart';
+import '../../../services/superadmin_admin_details_service.dart';
 
-const int _kMaxFileSizeBytes = 10 * 1024 * 1024;
-const List<String> _kBlockedExtensions = <String>['exe', 'js', 'html', 'htm'];
-const List<String> _kAllowedExtensions = <String>[
-  'pdf',
-  'png',
-  'jpg',
-  'jpeg',
-  'webp',
-  'gif',
-  'doc',
-  'docx',
-  'xls',
-  'xlsx',
-  'csv',
-  'txt',
-  'ppt',
-  'pptx',
-];
+const _kMaxFileSizeBytes = SuperadminAdminDetailsService.documentFileSizeLimit;
+const _kAllowedExtensions =
+    SuperadminAdminDetailsService.allowedDocumentExtensions;
 
 class AdminDetailsDocumentsTab extends ConsumerStatefulWidget {
   const AdminDetailsDocumentsTab({required this.adminId, super.key});
@@ -70,6 +56,11 @@ class _AdminDetailsDocumentsTabState
       provider.select((s) => s.documentTypesErrorMessage),
     );
     final controller = ref.read(provider.notifier);
+    final apiBaseUrl = ref.watch(apiBaseUrlProvider);
+    final typeLabels = {
+      for (final type in ref.watch(provider.select((s) => s.documentTypes)))
+        type.id: type.name
+    };
 
     if (isLoading && !hasLoaded) {
       return const OpenVtsCard(
@@ -193,6 +184,10 @@ class _AdminDetailsDocumentsTabState
             itemBuilder: (context, index) {
               final doc = docs[index];
               return _DocumentCard(
+                apiBaseUrl: apiBaseUrl,
+                documentTypeLabel: doc.docTypeName.isNotEmpty
+                    ? doc.docTypeName
+                    : typeLabels[doc.docTypeId],
                 document: doc,
                 onView: () => _viewDocument(context, doc),
                 onEdit: () => _openEditSheet(context, doc),
@@ -208,12 +203,41 @@ class _AdminDetailsDocumentsTabState
     BuildContext context,
     SuperadminAdminDocument doc,
   ) async {
-    final url = _resolveFileUrl(doc);
+    final url = _resolveFileUrl(doc, ref.read(apiBaseUrlProvider));
     if (url == null) {
       ToastHelper.showError(
         context.mobileText('File URL is not available.'),
         context: context,
       );
+      return;
+    }
+    if (_isImageDocument(doc)) {
+      await showDialog<void>(
+          context: context,
+          builder: (dialogContext) => Dialog(
+                child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      Row(children: [
+                        Expanded(
+                            child: Text(
+                                doc.title.isEmpty ? doc.fileName : doc.title,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis)),
+                        IconButton(
+                            tooltip: context.mobileText('Close'),
+                            onPressed: () => Navigator.pop(dialogContext),
+                            icon: const Icon(Icons.close))
+                      ]),
+                      Flexible(
+                          child: InteractiveViewer(
+                              child: Image.network(url,
+                                  cacheWidth: 1600,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (_, __, ___) => Text(context
+                                      .mobileText('Could not open file.'))))),
+                    ])),
+              ));
       return;
     }
     try {
@@ -348,35 +372,38 @@ class _AdminDetailsDocumentsTabState
         context: this.context,
       );
     } else {
-      final message =
-          ref.read(provider).documentMutationErrorMessage ??
+      final message = ref.read(provider).documentMutationErrorMessage ??
           'Failed to delete document.';
       ToastHelper.showError(message, context: this.context);
     }
   }
 }
 
-String? _resolveFileUrl(SuperadminAdminDocument doc) {
+String? _resolveFileUrl(SuperadminAdminDocument doc, String apiBaseUrl) {
   final directUrl = doc.fileUrl.trim();
   if (directUrl.isNotEmpty) {
     final parsed = Uri.tryParse(directUrl);
-    if (parsed != null && parsed.hasScheme && parsed.hasAuthority) {
+    if (parsed != null &&
+        parsed.hasAuthority &&
+        (parsed.scheme == 'https' || parsed.scheme == 'http')) {
       return directUrl;
     }
   }
 
   final path = directUrl.isNotEmpty ? directUrl : doc.filePath.trim();
   if (path.isEmpty) return null;
-  if (path.startsWith('http://') || path.startsWith('https://')) return path;
-  final normalized = path.startsWith('/') ? path : '/$path';
-
-  if (normalized.startsWith('/uploads') ||
-      normalized.startsWith('/api/uploads')) {
-    final origin = AppConfig.apiOriginBaseUrl().replaceAll(RegExp(r'/+$'), '');
-    return '$origin$normalized';
+  final uri = Uri.tryParse(path);
+  if (uri == null || path.startsWith('//')) return null;
+  if (uri.hasScheme) {
+    return uri.scheme == 'http' || uri.scheme == 'https' ? path : null;
   }
-
-  final apiBase = AppConfig.apiBaseUrl.replaceAll(RegExp(r'/+$'), '');
+  final normalized = path.startsWith('/') ? path : '/$path';
+  final apiBase = apiBaseUrl.replaceAll(RegExp(r'/+$'), '');
+  final base = Uri.parse(apiBase);
+  final prefix = base.path.replaceAll(RegExp(r'/+$'), '');
+  if (prefix.isNotEmpty && normalized.startsWith('$prefix/')) {
+    return '${base.scheme}://${base.authority}$normalized';
+  }
   return '$apiBase$normalized';
 }
 
@@ -387,6 +414,10 @@ String _fileExtension(SuperadminAdminDocument doc) {
   return source.substring(dot + 1).toUpperCase();
 }
 
+bool _isImageDocument(SuperadminAdminDocument doc) =>
+    doc.fileType.toLowerCase().startsWith('image/') ||
+    const ['PNG', 'JPG', 'JPEG', 'WEBP', 'GIF'].contains(_fileExtension(doc));
+
 // ---------------------------------------------------------------------------
 // Document card
 // ---------------------------------------------------------------------------
@@ -395,6 +426,8 @@ enum _DocAction { view, edit, delete }
 
 class _DocumentCard extends StatelessWidget {
   const _DocumentCard({
+    required this.apiBaseUrl,
+    this.documentTypeLabel,
     required this.document,
     required this.onView,
     required this.onEdit,
@@ -402,6 +435,8 @@ class _DocumentCard extends StatelessWidget {
   });
 
   final SuperadminAdminDocument document;
+  final String apiBaseUrl;
+  final String? documentTypeLabel;
   final VoidCallback onView;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
@@ -428,7 +463,18 @@ class _DocumentCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _ExtensionBadge(extension: ext),
+              if (_isImageDocument(document) &&
+                  _resolveFileUrl(document, apiBaseUrl) != null)
+                SizedBox(
+                    width: 64,
+                    height: 64,
+                    child: Image.network(_resolveFileUrl(document, apiBaseUrl)!,
+                        fit: BoxFit.contain,
+                        cacheWidth: 192,
+                        errorBuilder: (_, __, ___) =>
+                            _ExtensionBadge(extension: ext)))
+              else
+                _ExtensionBadge(extension: ext),
               const SizedBox(width: OpenVtsSpacing.xs),
               Expanded(
                 child: Column(
@@ -448,8 +494,8 @@ class _DocumentCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      document.docTypeName.isNotEmpty
-                          ? document.docTypeName
+                      documentTypeLabel?.isNotEmpty == true
+                          ? documentTypeLabel!
                           : context.mobileText('Document'),
                       style: TextStyle(fontSize: 11, color: onSurfaceVariant),
                       maxLines: 1,
@@ -653,9 +699,8 @@ class _VisibilityChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _MetaChip(
-      icon: isVisible
-          ? Icons.visibility_outlined
-          : Icons.visibility_off_outlined,
+      icon:
+          isVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
       label: isVisible
           ? context.mobileText('Visible')
           : context.mobileText('Hidden'),
@@ -746,10 +791,11 @@ class _DocumentSheetState extends ConsumerState<_DocumentSheet> {
         allowedExtensions: _kAllowedExtensions,
         withData: true,
       );
+      if (!mounted) return;
       if (result == null || result.files.isEmpty) return;
       final file = result.files.first;
       final ext = (file.extension ?? '').toLowerCase();
-      if (_kBlockedExtensions.contains(ext)) {
+      if (!_kAllowedExtensions.contains(ext)) {
         if (mounted) {
           ToastHelper.showError(
             context.mobileText('This file type is not allowed.'),
@@ -761,7 +807,8 @@ class _DocumentSheetState extends ConsumerState<_DocumentSheet> {
       if (file.size > _kMaxFileSizeBytes) {
         if (mounted) {
           ToastHelper.showError(
-            context.mobileText('File exceeds 10MB limit.'),
+            context.mobileText(
+                'File exceeds 5MB: {value1}', {'value1': file.name}),
             context: context,
           );
         }
@@ -850,8 +897,7 @@ class _DocumentSheetState extends ConsumerState<_DocumentSheet> {
       );
       Navigator.of(context).maybePop();
     } else {
-      final message =
-          ref.read(provider).documentMutationErrorMessage ??
+      final message = ref.read(provider).documentMutationErrorMessage ??
           (_isEdit
               ? 'Failed to update document.'
               : 'Failed to upload document.');
@@ -923,9 +969,8 @@ class _DocumentSheetState extends ConsumerState<_DocumentSheet> {
                       const SizedBox(height: OpenVtsSpacing.sm),
                       _FilePickerField(
                         pickedFile: _pickedFile,
-                        existingFileName: _isEdit
-                            ? widget.existing!.fileName
-                            : null,
+                        existingFileName:
+                            _isEdit ? widget.existing!.fileName : null,
                         onPick: _pickFile,
                         isPicking: _picking,
                         showError: _fileError,
@@ -1212,7 +1257,7 @@ class _FilePickerField extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text(
-              context.mobileText('Max 10MB. Blocked: exe, js, html, htm.'),
+              context.mobileText('Each attachment must be 5MB or smaller.'),
               style: TextStyle(fontSize: 10, color: onSurfaceVariant),
             ),
           ),

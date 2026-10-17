@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
@@ -15,15 +15,15 @@ import '../../../../../../shared/widgets/open_vts_button.dart';
 /// blocks manual drawing in the editor.
 class _RouteGenerationService {
   _RouteGenerationService()
-    : _dio = Dio(
-        BaseOptions(
-          connectTimeout: const Duration(seconds: 6),
-          receiveTimeout: const Duration(seconds: 8),
-          headers: const <String, String>{
-            'User-Agent': 'OpenVTS-Mobile/1.0 (route-search)',
-          },
-        ),
-      );
+      : _dio = Dio(
+          BaseOptions(
+            connectTimeout: const Duration(seconds: 6),
+            receiveTimeout: const Duration(seconds: 8),
+            headers: const <String, String>{
+              'User-Agent': 'OpenVTS-Mobile/1.0 (route-search)',
+            },
+          ),
+        );
 
   final Dio _dio;
 
@@ -196,9 +196,12 @@ class _UserRouteSearchPanelState extends State<UserRouteSearchPanel> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final fgColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final fgColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
 
     return Container(
       decoration: BoxDecoration(
@@ -278,7 +281,7 @@ class _UserRouteSearchPanelState extends State<UserRouteSearchPanel> {
             Text(
               _error!,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.error,
+                color: OpenVtsMapColors.error,
               ),
             ),
           ],
@@ -318,9 +321,12 @@ class _SearchInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final fgColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final fgColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -339,8 +345,8 @@ class _SearchInput extends StatelessWidget {
               hintText: label,
               hintStyle: OpenVtsTypography.body.copyWith(
                 color: isDark
-                    ? OpenVtsColors.darkTextSecondary
-                    : OpenVtsColors.textSecondary,
+                    ? OpenVtsMapColors.darkTextSecondary
+                    : OpenVtsMapColors.textSecondary,
               ),
               prefixIcon: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -366,13 +372,13 @@ class _SearchInput extends StatelessWidget {
                       ),
                     )
                   : (picked != null
-                        ? IconButton(
-                            iconSize: 16,
-                            splashRadius: 18,
-                            onPressed: onClear,
-                            icon: Icon(Icons.close, color: fgColor),
-                          )
-                        : null),
+                      ? IconButton(
+                          iconSize: 16,
+                          splashRadius: 18,
+                          onPressed: onClear,
+                          icon: Icon(Icons.close, color: fgColor),
+                        )
+                      : null),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: OpenVtsSpacing.sm,
               ),
@@ -406,7 +412,8 @@ class _SearchInput extends StatelessWidget {
               itemCount: suggestions.length,
               separatorBuilder: (_, __) => Divider(
                 height: 1,
-                color: isDark ? const Color(0xFF444444) : OpenVtsColors.divider,
+                color:
+                    isDark ? const Color(0xFF444444) : OpenVtsMapColors.divider,
               ),
               itemBuilder: (context, i) {
                 final s = suggestions[i];

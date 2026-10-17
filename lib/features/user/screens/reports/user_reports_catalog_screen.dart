@@ -131,16 +131,24 @@ class _UserReportsCatalogScreenState
             ),
           ),
           Expanded(
-            child: filtered.isEmpty
-                ? _EmptySearch(query: _query)
-                : ListView.builder(
-                    padding: const EdgeInsets.all(OpenVtsSpacing.md),
-                    itemCount: filtered.length,
-                    itemBuilder: (context, i) => _CatalogCard(
-                      entry: filtered[i],
-                      onTap: () => _openReport(context, filtered[i].key),
-                    ),
-                  ),
+            child: allowed.isEmpty
+                ? Center(
+                    child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                            context.mobileText(
+                                'This report is not available for your account.'),
+                            textAlign: TextAlign.center)))
+                : filtered.isEmpty
+                    ? _EmptySearch(query: _query)
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(OpenVtsSpacing.md),
+                        itemCount: filtered.length,
+                        itemBuilder: (context, i) => _CatalogCard(
+                          entry: filtered[i],
+                          onTap: () => _openReport(context, filtered[i].key),
+                        ),
+                      ),
           ),
         ],
       ),

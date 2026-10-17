@@ -9,6 +9,7 @@ import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
 import '../../../../shared/helpers/mobile_text.dart';
+import '../../../../shared/paging/server_list_pagination.dart';
 import '../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../shared/widgets/open_vts_error_view.dart';
 import '../../../../shared/widgets/open_vts_list_page_header.dart';
@@ -56,22 +57,22 @@ class AdminDriversScreen extends ConsumerWidget {
       body: state.isLoading && !state.hasDrivers
           ? const OpenVtsLoader()
           : state.errorMessage != null && !state.hasDrivers
-          ? OpenVtsErrorView(
-              message: state.errorMessage ?? 'Drivers could not be loaded.',
-              onRetry: controller.refresh,
-            )
-          : _DriversBody(
-              state: state,
-              controller: controller,
-              onCreate: () => _showCreateDriverSheet(context),
-              onOpenFilters: () => _showFilterSheet(context, ref),
-              onOpenSort: () => _showSortSheet(context, ref),
-              onOpenDetails: (driver) => _openDriverDetails(
-                context,
-                driver,
-                ref.read(adminDriversControllerProvider.notifier),
-              ),
-            ),
+              ? OpenVtsErrorView(
+                  message: state.errorMessage ?? 'Drivers could not be loaded.',
+                  onRetry: controller.refresh,
+                )
+              : _DriversBody(
+                  state: state,
+                  controller: controller,
+                  onCreate: () => _showCreateDriverSheet(context),
+                  onOpenFilters: () => _showFilterSheet(context, ref),
+                  onOpenSort: () => _showSortSheet(context, ref),
+                  onOpenDetails: (driver) => _openDriverDetails(
+                    context,
+                    driver,
+                    ref.read(adminDriversControllerProvider.notifier),
+                  ),
+                ),
     );
   }
 
@@ -101,12 +102,13 @@ class AdminDriversScreen extends ConsumerWidget {
     final state = ref.read(adminDriversControllerProvider);
 
     // Ensure country options are cached (no-op if already loaded).
-    await ref
-        .read(adminUsersControllerProvider.notifier)
-        .ensureCountryOptionsLoaded();
-    final cachedCountryOptions = ref
-        .read(adminUsersControllerProvider)
-        .countryOptions;
+    if (!controller.isServerPaged) {
+      await ref
+          .read(adminUsersControllerProvider.notifier)
+          .ensureCountryOptionsLoaded();
+    }
+    final cachedCountryOptions =
+        ref.read(adminUsersControllerProvider).countryOptions;
 
     if (!context.mounted) return;
 
@@ -150,55 +152,60 @@ class AdminDriversScreen extends ConsumerWidget {
                         .toList(growable: false),
                   ),
                 ),
-                OpenVtsListPageOptionsSection(
-                  label: context.mobileText('Verification'),
-                  child: _PillSegmentedControl(
-                    children: AdminDriverVerifiedFilter.values
-                        .map(
-                          (option) => _PillSegment(
-                            label: switch (option) {
-                              AdminDriverVerifiedFilter.all => 'All',
-                              AdminDriverVerifiedFilter.verified => 'Verified',
-                              AdminDriverVerifiedFilter.unverified =>
-                                'Unverified',
-                            },
-                            selected: selectedVerified == option,
-                            onTap: () =>
-                                setSheetState(() => selectedVerified = option),
-                          ),
-                        )
-                        .toList(growable: false),
+                if (!controller.isServerPaged)
+                  OpenVtsListPageOptionsSection(
+                    label: context.mobileText('Verification'),
+                    child: _PillSegmentedControl(
+                      children: AdminDriverVerifiedFilter.values
+                          .map(
+                            (option) => _PillSegment(
+                              label: switch (option) {
+                                AdminDriverVerifiedFilter.all => 'All',
+                                AdminDriverVerifiedFilter.verified =>
+                                  'Verified',
+                                AdminDriverVerifiedFilter.unverified =>
+                                  'Unverified',
+                              },
+                              selected: selectedVerified == option,
+                              onTap: () => setSheetState(
+                                  () => selectedVerified = option),
+                            ),
+                          )
+                          .toList(growable: false),
+                    ),
                   ),
-                ),
-                OpenVtsListPageOptionsSection(
-                  label: context.mobileText('Country'),
-                  child: Wrap(
-                    spacing: OpenVtsSpacing.xs,
-                    runSpacing: OpenVtsSpacing.xs,
-                    children: [
-                      _PillSegment(
-                        label: context.mobileText('All Countries'),
-                        selected: selectedCountry == null,
-                        onTap: () =>
-                            setSheetState(() => selectedCountry = null),
-                      ),
-                      for (final option in countryOptions)
+                if (!controller.isServerPaged)
+                  OpenVtsListPageOptionsSection(
+                    label: context.mobileText('Country'),
+                    child: Wrap(
+                      spacing: OpenVtsSpacing.xs,
+                      runSpacing: OpenVtsSpacing.xs,
+                      children: [
                         _PillSegment(
-                          label: option.label,
-                          selected: selectedCountry == option.value,
-                          onTap: () => setSheetState(
-                            () => selectedCountry = option.value,
-                          ),
+                          label: context.mobileText('All Countries'),
+                          selected: selectedCountry == null,
+                          onTap: () =>
+                              setSheetState(() => selectedCountry = null),
                         ),
-                    ],
+                        for (final option in countryOptions)
+                          _PillSegment(
+                            label: option.label,
+                            selected: selectedCountry == option.value,
+                            onTap: () => setSheetState(
+                              () => selectedCountry = option.value,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                ),
               ],
               primaryActionLabel: 'Apply filters',
               onPrimaryAction: () {
                 controller.setStatusFilter(selectedStatus);
-                controller.setVerifiedFilter(selectedVerified);
-                controller.setCountryFilter(selectedCountry);
+                if (!controller.isServerPaged) {
+                  controller.setVerifiedFilter(selectedVerified);
+                  controller.setCountryFilter(selectedCountry);
+                }
                 Navigator.of(sheetContext).pop();
               },
               secondaryActionLabel: 'Reset',
@@ -359,6 +366,12 @@ class _DriversBody extends ConsumerWidget {
                         const SizedBox(height: OpenVtsSpacing.sm),
                     itemBuilder: (context, index) {
                       if (index == visible.length) {
+                        if (controller.pager != null) {
+                          return ServerListPagination(
+                              meta: state.pagination,
+                              loading: state.isLoading || state.isRefreshing,
+                              onPageChanged: controller.pager!.goToPage);
+                        }
                         return OpenVtsListPagePaginationFooter(
                           currentPage: state.safeCurrentPage,
                           pageCount: state.pageCount,
@@ -410,7 +423,7 @@ class _DriversBody extends ConsumerWidget {
       if (context.mounted) {
         final errorMsg =
             ref.read(adminDriversControllerProvider).errorMessage ??
-            'Unable to update driver status.';
+                'Unable to update driver status.';
         ToastHelper.showError(errorMsg, context: context);
       }
     }

@@ -100,7 +100,7 @@ class _UserTopPerformingAssetsWidgetState
   Widget _buildBody(AsyncValue<UserDashboardTopAssets> state) {
     if (state.hasError) {
       return UserDashboardWidgetError(
-        message: state.error.toString(),
+        error: state.error!,
         onRetry: _reload,
       );
     }

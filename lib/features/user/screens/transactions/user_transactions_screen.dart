@@ -130,15 +130,26 @@ class UserTransactionsScreen extends ConsumerWidget {
                         onRetry: controller.loadTransactions,
                       )
                     else if (filteredTransactions.isEmpty)
-                      OpenVtsEmptyState(
-                        title: context.mobileText('No transactions found'),
-                        message: state.hasActiveFilters
-                            ? context.mobileText(
-                                'Try adjusting the filters or date range.',
-                              )
-                            : context.mobileText(
-                                'No transactions available for this period.',
-                              ),
+                      Column(
+                        children: [
+                          OpenVtsEmptyState(
+                            title: context.mobileText('No transactions found'),
+                            message: state.hasActiveFilters
+                                ? context.mobileText(
+                                    'Try adjusting the filters or date range.',
+                                  )
+                                : context.mobileText(
+                                    'No transactions this month.',
+                                  ),
+                          ),
+                          if (!state.hasActiveFilters)
+                            TextButton(
+                              onPressed: () => unawaited(controller.setRangePreset(
+                                UserTransactionsRangePreset.allTime,
+                              )),
+                              child: Text(context.mobileText('View all history')),
+                            ),
+                        ],
                       )
                     else
                       ...filteredTransactions.map(
@@ -367,6 +378,8 @@ String? _rangeLabel(UserTransactionsState state, dynamic formatter) {
       return 'Last 30 Days';
     case UserTransactionsRangePreset.thisYear:
       return 'This Year';
+    case UserTransactionsRangePreset.allTime:
+      return 'All Time';
     case UserTransactionsRangePreset.custom:
       final from = state.customFrom;
       final to = state.customTo;

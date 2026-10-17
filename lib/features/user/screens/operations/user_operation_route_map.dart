@@ -77,11 +77,10 @@ class _UserOperationRouteMapState extends State<UserOperationRouteMap> {
         ),
         children: [
           TileLayer(
-            urlTemplate: 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
-            subdomains: const ['mt0', 'mt1', 'mt2', 'mt3'],
-            userAgentPackageName: 'com.openvts.mobile',
-            tileProvider: widget.tileProvider,
-          ),
+              urlTemplate: 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+              subdomains: const ['mt0', 'mt1', 'mt2', 'mt3'],
+              userAgentPackageName: 'com.openvts.mobile',
+              tileProvider: widget.tileProvider),
           if (data.route.length > 1)
             PolylineLayer(
               polylines: [
@@ -202,17 +201,19 @@ class _UserOperationRouteMapState extends State<UserOperationRouteMap> {
         Text(
           data.route.length > 1
               ? data.exactRoute
-                    ? context.operationText('Planned route • numbered stops')
-                    : context.operationText(
-                        'Approximate stop sequence • numbered stops',
-                      )
+                  ? context.operationText('Planned route • numbered stops')
+                  : context.operationText(
+                      'Approximate stop sequence • numbered stops',
+                    )
               : context.operationText(
                   'Numbered stops • route geometry unavailable',
                 ),
         ),
         if (data.position != null)
           Text(
-            '${context.operationText('Vehicle GPS: {status}', {'status': operationLabel(context, data.trackingStatus)})} • ${operationDate(data.recordedAt?.toIso8601String(), timezone: data.timezone, context: context)}',
+            '${context.operationText('Vehicle GPS: {status}', {
+                  'status': operationLabel(context, data.trackingStatus)
+                })} • ${operationDate(data.recordedAt?.toIso8601String(), timezone: data.timezone, context: context)}',
           ),
       ],
     );
@@ -228,32 +229,30 @@ class _ExpandedOperationMap extends ConsumerWidget {
   final UserOperationMapData initialData;
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-    appBar: AppBar(title: Text(context.operationText('Trip route'))),
-    body: SafeArea(
-      child: UserOperationRefreshScope(
-        onRefresh: () {
-          if (tripId != null) {
-            ref.invalidate(userOperationTripProvider(tripId!));
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: tripId == null
-              ? UserOperationRouteMap(data: initialData, expanded: true)
-              : ref
-                    .watch(userOperationTripProvider(tripId!))
-                    .when(
-                      loading: () =>
-                          const Center(child: CircularProgressIndicator()),
-                      error: (error, _) =>
-                          Center(child: Text(operationError(context, error))),
-                      data: (trip) => UserOperationRouteMap(
-                        data: UserOperationMapData.fromJson(trip),
-                        expanded: true,
+        appBar: AppBar(title: Text(context.operationText('Trip route'))),
+        body: SafeArea(
+          child: UserOperationRefreshScope(
+            onRefresh: () {
+              if (tripId != null) {
+                ref.invalidate(userOperationTripProvider(tripId!));
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: tripId == null
+                  ? UserOperationRouteMap(data: initialData, expanded: true)
+                  : ref.watch(userOperationTripProvider(tripId!)).when(
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
+                        error: (error, _) =>
+                            Center(child: Text(operationError(context, error))),
+                        data: (trip) => UserOperationRouteMap(
+                          data: UserOperationMapData.fromJson(trip),
+                          expanded: true,
+                        ),
                       ),
-                    ),
+            ),
+          ),
         ),
-      ),
-    ),
-  );
+      );
 }

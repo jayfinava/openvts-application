@@ -16,6 +16,7 @@ class NotificationPage {
   factory NotificationPage.fromDynamic(
     dynamic json, {
     required int requestedLimit,
+    bool cursorIsContinuation = false,
   }) {
     final root = _asMap(json);
     final rawItems = _extractItems(json);
@@ -28,8 +29,27 @@ class NotificationPage {
       'hasMore',
       'has_more',
     ]);
+    final cursor = _extractInt(root, const [
+      'nextBeforeId',
+      'next_before_id',
+      'nextCursor',
+      'next_cursor',
+      'cursor'
+    ]);
+    final hasExplicitCursor = root != null &&
+        const [
+          'nextBeforeId',
+          'next_before_id',
+          'nextCursor',
+          'next_cursor',
+          'cursor'
+        ].any(root.containsKey);
+    // Vehicle history can return an empty, restricted window with a valid
+    // continuation cursor; conversely an explicit null cursor ends a full page.
     final hasMore = explicitHasMore ??
-        (requestedLimit > 0 && items.length >= requestedLimit);
+        (cursorIsContinuation && hasExplicitCursor
+            ? cursor != null && cursor > 0
+            : requestedLimit > 0 && items.length >= requestedLimit);
 
     return NotificationPage(
       items: items,

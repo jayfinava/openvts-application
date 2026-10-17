@@ -1,5 +1,6 @@
 import '../../notifications/models/app_notification.dart';
 import '../services/live_map_vehicle_service.dart';
+import 'live_map_fleet.dart';
 
 /// Role-neutral state for the shared live-map engine.
 ///
@@ -15,6 +16,7 @@ class LiveMapState {
     this.isAlertsLoading = false,
     this.isTelemetryConnected = false,
     this.isNotificationsConnected = false,
+    this.fleet,
   });
 
   const LiveMapState.initial()
@@ -38,6 +40,7 @@ class LiveMapState {
   final bool isAlertsLoading;
   final bool isTelemetryConnected;
   final bool isNotificationsConnected;
+  final LiveMapFleetView? fleet;
 
   LiveMapState copyWith({
     LiveMapTelemetry? telemetry,
@@ -47,6 +50,7 @@ class LiveMapState {
     bool? isAlertsLoading,
     bool? isTelemetryConnected,
     bool? isNotificationsConnected,
+    LiveMapFleetView? fleet,
   }) {
     return LiveMapState(
       telemetry: telemetry ?? this.telemetry,
@@ -59,6 +63,7 @@ class LiveMapState {
       isTelemetryConnected: isTelemetryConnected ?? this.isTelemetryConnected,
       isNotificationsConnected:
           isNotificationsConnected ?? this.isNotificationsConnected,
+      fleet: fleet ?? this.fleet,
     );
   }
 }

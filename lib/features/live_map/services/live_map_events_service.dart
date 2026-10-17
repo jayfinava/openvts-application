@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 import '../../../core/api/api_client.dart';
 import '../../../core/config/app_config.dart';
 import '../../notifications/models/app_notification.dart';
@@ -30,6 +32,7 @@ class LiveMapEventsService {
     String? to,
     String? source,
     String? severity,
+    CancelToken? cancelToken,
   }) async {
     if (AppConfig.useMockData) {
       return _parsers.getMapEvents(
@@ -44,6 +47,7 @@ class LiveMapEventsService {
 
     final response = await _apiClient.get<NotificationPage>(
       _config.mapEventsEndpoint,
+      cancelToken: cancelToken,
       queryParameters: <String, dynamic>{
         'limit': limit.toString(),
         if (beforeId != null && beforeId.trim().isNotEmpty)

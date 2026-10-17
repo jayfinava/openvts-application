@@ -359,6 +359,7 @@ class _UserEndpoints {
   String get driverDocumentTypes => '/documenttypes/DRIVER';
   String get drivers => '/user/drivers';
   String driverById(String id) => '/user/drivers/${Uri.encodeComponent(id)}';
+  String driverLogin(String id) => '${driverById(id)}/login';
   String driverAssignVehicle(String id) =>
       '/user/drivers/${Uri.encodeComponent(id)}/assign-vehicle';
   String driverUnassignVehicle(String id) =>
@@ -374,6 +375,7 @@ class _UserEndpoints {
       '/user/drivers/${Uri.encodeComponent(driverId)}/documents/${Uri.encodeComponent(docId)}';
   String get subusers => '/user/subusers';
   String subuserById(String id) => '/user/subusers/${Uri.encodeComponent(id)}';
+  String subuserLogin(String id) => '${subuserById(id)}/login';
   String subuserPermissions(String id) =>
       '/user/subusers/${Uri.encodeComponent(id)}/permissions';
   String subuserVehicles(String id) =>
@@ -393,6 +395,11 @@ class _UserEndpoints {
   String get notifications => '/user/notifications';
   String notificationRead(String id) => '/user/notifications/$id/read';
   String get notificationsReadAll => '/user/notifications/read-all';
+  String get vehicleNotifications => '/user/notifications/vehicle';
+  String vehicleNotificationRead(String id) =>
+      '/user/notifications/vehicle/$id/read';
+  String get vehicleNotificationsReadAll =>
+      '/user/notifications/vehicle/read-all';
   String get customCommands => '/user/customcommands';
   String get systemVariables => '/user/systemvariables';
   String get sendCommandBulk => '/user/commands/send-bulk';

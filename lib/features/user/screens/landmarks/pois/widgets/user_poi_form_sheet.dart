@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
@@ -317,7 +317,7 @@ class _UserPoiFormBodyState extends ConsumerState<_UserPoiFormBody> {
             Text(
               _error!,
               style: OpenVtsTypography.meta.copyWith(
-                color: OpenVtsColors.error,
+                color: OpenVtsMapColors.error,
               ),
             ),
           ],
@@ -361,23 +361,24 @@ class _UserPoiFormBodyState extends ConsumerState<_UserPoiFormBody> {
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-        borderSide: const BorderSide(color: OpenVtsColors.border),
+        borderSide: const BorderSide(color: OpenVtsMapColors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-        borderSide: const BorderSide(color: OpenVtsColors.border),
+        borderSide: const BorderSide(color: OpenVtsMapColors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-        borderSide: const BorderSide(color: OpenVtsColors.brandInk, width: 1.4),
+        borderSide:
+            const BorderSide(color: OpenVtsMapColors.brandInk, width: 1.4),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-        borderSide: const BorderSide(color: OpenVtsColors.error),
+        borderSide: const BorderSide(color: OpenVtsMapColors.error),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-        borderSide: const BorderSide(color: OpenVtsColors.error, width: 1.4),
+        borderSide: const BorderSide(color: OpenVtsMapColors.error, width: 1.4),
       ),
     );
   }
@@ -412,7 +413,7 @@ class _Field extends StatelessWidget {
               Text(
                 '*',
                 style: OpenVtsTypography.label.copyWith(
-                  color: OpenVtsColors.error,
+                  color: OpenVtsMapColors.error,
                 ),
               ),
             ],
@@ -439,9 +440,12 @@ class _LocationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OpenVtsColors.brandInk : OpenVtsColors.surface;
-    final textColor = isDark ? OpenVtsColors.white : OpenVtsColors.textPrimary;
-    final borderColor = isDark ? OpenVtsColors.white : OpenVtsColors.border;
+    final bgColor =
+        isDark ? OpenVtsMapColors.brandInk : OpenVtsMapColors.surface;
+    final textColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.textPrimary;
+    final borderColor =
+        isDark ? OpenVtsMapColors.white : OpenVtsMapColors.border;
 
     return Container(
       padding: const EdgeInsets.all(OpenVtsSpacing.sm),
@@ -477,8 +481,8 @@ class _LocationCard extends StatelessWidget {
                   coordinates == null
                       ? context.mobileText('Not set')
                       : '${coordinates!.lat.toStringAsFixed(6)}, '
-                            '${coordinates!.lon.toStringAsFixed(6)}'
-                            '${tolerance != null && tolerance! > 0 ? ' • ±${tolerance!.toStringAsFixed(0)} m' : ''}',
+                          '${coordinates!.lon.toStringAsFixed(6)}'
+                          '${tolerance != null && tolerance! > 0 ? ' • ±${tolerance!.toStringAsFixed(0)} m' : ''}',
                   style: OpenVtsTypography.meta.copyWith(color: textColor),
                 ),
               ],

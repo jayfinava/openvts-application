@@ -14,6 +14,7 @@ import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_button.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_loader.dart';
+import '../../../../../shared/widgets/open_vts_monochrome_image.dart';
 import '../../../../../shared/widgets/open_vts_role_home.dart';
 import '../../../../../shared/widgets/open_vts_text_field.dart';
 import '../../../controllers/superadmin_providers.dart';
@@ -130,9 +131,9 @@ class _WhiteLabelSettingsSectionState
   }
 
   _ThemeColorOption get _selectedColor => _kThemeColors.firstWhere(
-    (c) => c.id == _selectedColorId,
-    orElse: () => _kThemeColors.first,
-  );
+        (c) => c.id == _selectedColorId,
+        orElse: () => _kThemeColors.first,
+      );
 
   @override
   void dispose() {
@@ -384,9 +385,8 @@ class _WhiteLabelSettingsSectionState
           icon: Icons.palette_outlined,
           trailing: IconButton(
             tooltip: context.mobileText('Refresh'),
-            onPressed: state.isLoadingWhiteLabel
-                ? null
-                : controller.loadWhiteLabel,
+            onPressed:
+                state.isLoadingWhiteLabel ? null : controller.loadWhiteLabel,
             iconSize: 18,
             visualDensity: VisualDensity.compact,
             icon: const Icon(Icons.refresh_rounded),
@@ -662,18 +662,18 @@ class _DomainAndColorCard extends StatelessWidget {
                   : () async {
                       final result =
                           await showModalBottomSheet<_ThemeColorOption>(
-                            context: context,
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainer,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(OpenVtsRadius.lg),
-                              ),
-                            ),
-                            builder: (ctx) =>
-                                _ColorPickerSheet(selectedId: selectedColor.id),
-                          );
+                        context: context,
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainer,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(OpenVtsRadius.lg),
+                          ),
+                        ),
+                        builder: (ctx) =>
+                            _ColorPickerSheet(selectedId: selectedColor.id),
+                      );
                       if (result != null) onColorChanged(result);
                     },
               child: Container(
@@ -871,9 +871,8 @@ class _AssetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final resolvedUrl = _hasExistingUrl
-        ? resolveProfileImageUrl(baseUrl, currentUrl)
-        : null;
+    final resolvedUrl =
+        _hasExistingUrl ? resolveProfileImageUrl(baseUrl, currentUrl) : null;
 
     return OpenVtsCard(
       padding: const EdgeInsets.all(OpenVtsSpacing.md),
@@ -1017,12 +1016,6 @@ class _AssetPreview extends StatelessWidget {
     return Container(
       width: 52,
       height: 52,
-      decoration: BoxDecoration(
-        color: background ?? Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      ),
-      clipBehavior: Clip.antiAlias,
       alignment: Alignment.center,
       child: _buildContent(context),
     );
@@ -1031,11 +1024,12 @@ class _AssetPreview extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     if (pickedBytes != null) {
       if (_pickedIsRaster) {
-        return Image.memory(
+        return OpenVtsMonochromeImage(
+            child: Image.memory(
           pickedBytes!,
           fit: BoxFit.contain,
           errorBuilder: (_, __, ___) => _placeholder(context),
-        );
+        ));
       }
       return _filePlaceholder(pickedFileName ?? '', context);
     }
@@ -1044,11 +1038,12 @@ class _AssetPreview extends StatelessWidget {
       if (lower.endsWith('.svg')) {
         return _filePlaceholder('SVG', context);
       }
-      return Image.network(
+      return OpenVtsMonochromeImage(
+          child: Image.network(
         existingUrl!,
         fit: BoxFit.contain,
         errorBuilder: (_, __, ___) => _placeholder(context),
-      );
+      ));
     }
     return _placeholder(context);
   }
@@ -1179,5 +1174,5 @@ Color _parseHex(String hex) {
   if (s.length == 6) s = 'FF$s';
   final v = int.tryParse(s, radix: 16);
   if (v == null) return OpenVtsColors.brandInk;
-  return Color(v);
+  return OpenVtsColors.monochrome(Color(v));
 }

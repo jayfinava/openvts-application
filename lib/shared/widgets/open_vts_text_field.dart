@@ -25,6 +25,8 @@ class OpenVtsTextField extends StatelessWidget {
     this.readOnly = false,
     this.onChanged,
     this.focusNode,
+    this.autocorrect,
+    this.enableSuggestions,
     super.key,
   });
 
@@ -46,11 +48,12 @@ class OpenVtsTextField extends StatelessWidget {
   final bool readOnly;
   final ValueChanged<String>? onChanged;
   final FocusNode? focusNode;
+  final bool? autocorrect;
+  final bool? enableSuggestions;
 
   @override
   Widget build(BuildContext context) {
-    final isPassword =
-        obscureText ||
+    final isPassword = obscureText ||
         (autofillHints?.any(
               (hint) =>
                   hint == AutofillHints.password ||
@@ -69,8 +72,8 @@ class OpenVtsTextField extends StatelessWidget {
             readOnly: readOnly,
             onChanged: onChanged,
             focusNode: focusNode,
-            autocorrect: !isPassword,
-            enableSuggestions: !isPassword,
+            autocorrect: autocorrect ?? !isPassword,
+            enableSuggestions: enableSuggestions ?? !isPassword,
             controller: controller,
             validator: context.localizedValidator(validator),
             obscureText: obscureText,

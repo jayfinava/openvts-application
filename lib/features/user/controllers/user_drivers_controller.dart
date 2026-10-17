@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -96,7 +98,7 @@ class UserDriversController extends StateNotifier<UserDriversState> {
         isCreating: false,
       );
 
-      await refresh();
+      unawaited(refresh());
       return created;
     } catch (error) {
       if (!mounted) {

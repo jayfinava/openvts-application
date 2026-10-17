@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
 import '../user_poi_constants.dart';
@@ -75,17 +75,18 @@ class _IconChip extends StatelessWidget {
           width: 32,
           height: 32,
           decoration: BoxDecoration(
-            color: OpenVtsColors.brandInk,
+            color: OpenVtsMapColors.brandInk,
             borderRadius: BorderRadius.circular(OpenVtsRadius.sm),
             border: Border.all(
-              color: selected ? OpenVtsColors.white : OpenVtsColors.brandInk,
+              color:
+                  selected ? OpenVtsMapColors.white : OpenVtsMapColors.brandInk,
             ),
           ),
           alignment: Alignment.center,
           child: Icon(
             icon,
             size: 16,
-            color: OpenVtsColors.white,
+            color: OpenVtsMapColors.white,
           ),
         ),
       ),

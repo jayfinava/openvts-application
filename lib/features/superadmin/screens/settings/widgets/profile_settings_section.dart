@@ -254,7 +254,7 @@ class _ProfileSettingsSectionState
     } else {
       final msg =
           ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
-          'Unable to upload photo.';
+              'Unable to upload photo.';
       ToastHelper.showError(msg);
     }
   }
@@ -327,7 +327,7 @@ class _ProfileSettingsSectionState
     } else {
       final msg =
           ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
-          'Unable to subscribe.';
+              'Unable to subscribe.';
       ToastHelper.showError(msg);
     }
   }
@@ -580,10 +580,11 @@ class _AvatarWithEdit extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: OpenVtsColors.brandInk,
-              borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+              color: hasUrl ? null : OpenVtsColors.brandInk,
+              shape: BoxShape.circle,
               image: hasUrl
                   ? DecorationImage(
+                      colorFilter: OpenVtsColors.monochromeFilter,
                       image: NetworkImage(url!),
                       fit: BoxFit.cover,
                       onError: (_, __) {},
@@ -608,7 +609,7 @@ class _AvatarWithEdit extends StatelessWidget {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.45),
-                  borderRadius: BorderRadius.circular(OpenVtsRadius.md),
+                  shape: BoxShape.circle,
                 ),
                 child: const Center(
                   child: SizedBox(
@@ -959,8 +960,7 @@ class _AddressCardState extends ConsumerState<_AddressCard> {
     final city = _cityLabel(address?.cityDisplayName ?? profile.cityName ?? '');
     final pincode = address?.pincode ?? '';
 
-    final hasAddress =
-        addressLine.trim().isNotEmpty ||
+    final hasAddress = addressLine.trim().isNotEmpty ||
         countryCode.trim().isNotEmpty ||
         stateCode.trim().isNotEmpty ||
         city.trim().isNotEmpty ||
@@ -1289,10 +1289,10 @@ class _EmailSubscriptionCard extends StatelessWidget {
                   isLoading
                       ? context.mobileText('Checking status…')
                       : subscribed == null
-                      ? context.mobileText('Status unknown')
-                      : isSubscribed
-                      ? context.mobileText('Subscribed')
-                      : context.mobileText('Not subscribed'),
+                          ? context.mobileText('Status unknown')
+                          : isSubscribed
+                              ? context.mobileText('Subscribed')
+                              : context.mobileText('Not subscribed'),
                   style: TextStyle(
                     fontFamily: OpenVtsTypography.primaryFontFamily,
                     fontSize: 11.5,
@@ -1312,11 +1312,11 @@ class _EmailSubscriptionCard extends StatelessWidget {
             )
           else
             SizedBox(
-              height: 32,
+              height: 48,
               child: OpenVtsButton(
                 label: context.mobileText('Subscribe'),
                 variant: OpenVtsButtonVariant.secondary,
-                height: 32,
+                height: 48,
                 isLoading: isSubscribing,
                 onPressed: () => onSubscribe(),
               ),
@@ -1567,12 +1567,10 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
     _mobile = TextEditingController(text: p.mobileNumber ?? '');
     _addressLine = TextEditingController(text: a?.addressLine ?? '');
     _pincode = TextEditingController(text: a?.pincode ?? '');
-    _mobilePrefix = p.mobilePrefix?.trim().isNotEmpty == true
-        ? p.mobilePrefix
-        : null;
-    _countryCode = a?.countryCode?.trim().isNotEmpty == true
-        ? a!.countryCode
-        : null;
+    _mobilePrefix =
+        p.mobilePrefix?.trim().isNotEmpty == true ? p.mobilePrefix : null;
+    _countryCode =
+        a?.countryCode?.trim().isNotEmpty == true ? a!.countryCode : null;
     _stateCode = a?.stateCode?.trim().isNotEmpty == true ? a!.stateCode : null;
 
     _initialCityName = a?.cityDisplayName?.trim().isNotEmpty == true
@@ -1730,52 +1728,44 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
   }
 
   List<OpenVtsDropdownOption<String>> _buildCountryOptions() {
-    return _countries
-        .map((c) {
-          return OpenVtsDropdownOption<String>(
-            value: c.code,
-            label: c.name,
-            searchText: '${c.name} ${c.code}',
-          );
-        })
-        .toList(growable: false);
+    return _countries.map((c) {
+      return OpenVtsDropdownOption<String>(
+        value: c.code,
+        label: c.name,
+        searchText: '${c.name} ${c.code}',
+      );
+    }).toList(growable: false);
   }
 
   List<OpenVtsDropdownOption<String>> _buildStateOptions() {
-    return _states
-        .map((s) {
-          return OpenVtsDropdownOption<String>(
-            value: s.code,
-            label: s.name,
-            searchText: '${s.name} ${s.code}',
-          );
-        })
-        .toList(growable: false);
+    return _states.map((s) {
+      return OpenVtsDropdownOption<String>(
+        value: s.code,
+        label: s.name,
+        searchText: '${s.name} ${s.code}',
+      );
+    }).toList(growable: false);
   }
 
   List<OpenVtsDropdownOption<String>> _buildCityOptions() {
-    return _cities
-        .map((c) {
-          return OpenVtsDropdownOption<String>(
-            value: c.name,
-            label: c.name,
-            searchText: c.name,
-          );
-        })
-        .toList(growable: false);
+    return _cities.map((c) {
+      return OpenVtsDropdownOption<String>(
+        value: c.name,
+        label: c.name,
+        searchText: c.name,
+      );
+    }).toList(growable: false);
   }
 
   List<OpenVtsDropdownOption<String>> _buildPrefixOptions() {
-    return _prefixes
-        .map((p) {
-          return OpenVtsDropdownOption<String>(
-            value: p.dialCode,
-            label: p.dialCode,
-            subtitle: p.countryCode,
-            searchText: '${p.dialCode} ${p.countryCode}',
-          );
-        })
-        .toList(growable: false);
+    return _prefixes.map((p) {
+      return OpenVtsDropdownOption<String>(
+        value: p.dialCode,
+        label: p.dialCode,
+        subtitle: p.countryCode,
+        searchText: '${p.dialCode} ${p.countryCode}',
+      );
+    }).toList(growable: false);
   }
 
   Future<void> _submit() async {
@@ -1836,7 +1826,7 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
       setState(() => _submitting = false);
       final msg =
           ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
-          'Unable to update profile.';
+              'Unable to update profile.';
       ToastHelper.showError(msg);
     }
   }
@@ -1949,10 +1939,10 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     hintText: _loadingStates
                         ? context.mobileText('Loading…')
                         : _statesLoadFailed
-                        ? context.mobileText('Failed to load — retry')
-                        : _statesNotApplicable
-                        ? context.mobileText('Not applicable')
-                        : context.mobileText('Select state'),
+                            ? context.mobileText('Failed to load — retry')
+                            : _statesNotApplicable
+                                ? context.mobileText('Not applicable')
+                                : context.mobileText('Select state'),
                     searchHintText: 'Search state name or code',
                     sheetTitle: 'Select State',
                     options: _buildStateOptions(),
@@ -1980,12 +1970,12 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
                     hintText: _loadingCities
                         ? context.mobileText('Loading…')
                         : _citiesLoadFailed
-                        ? context.mobileText('Failed to load — retry')
-                        : _citiesNotApplicable
-                        ? context.mobileText('Not applicable')
-                        : (_hasStates && _stateCode != null)
-                        ? context.mobileText('Select city')
-                        : context.mobileText('Not applicable'),
+                            ? context.mobileText('Failed to load — retry')
+                            : _citiesNotApplicable
+                                ? context.mobileText('Not applicable')
+                                : (_hasStates && _stateCode != null)
+                                    ? context.mobileText('Select city')
+                                    : context.mobileText('Not applicable'),
                     searchHintText: 'Search city',
                     sheetTitle: 'Select City',
                     options: _buildCityOptions(),
@@ -2068,7 +2058,7 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
       setState(() => _submitting = false);
       final msg =
           ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
-          'Unable to change password.';
+              'Unable to change password.';
       ToastHelper.showError(msg);
     }
   }
@@ -2266,7 +2256,7 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
       setState(() => _submitting = false);
       final msg =
           ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
-          'Unable to update company.';
+              'Unable to update company.';
       ToastHelper.showError(msg);
     }
   }
@@ -2309,8 +2299,8 @@ class _EditCompanySheetState extends ConsumerState<_EditCompanySheet> {
                       if (t.isEmpty) return null;
                       final candidate =
                           t.startsWith('http://') || t.startsWith('https://')
-                          ? t
-                          : 'https://$t';
+                              ? t
+                              : 'https://$t';
                       final uri = Uri.tryParse(candidate);
                       if (uri == null || (uri.host).isEmpty) {
                         return 'Enter a valid URL';
@@ -2470,7 +2460,7 @@ class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
     } else {
       final msg =
           ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
-          'Unable to send OTP.';
+              'Unable to send OTP.';
       ToastHelper.showError(msg);
     }
   }
@@ -2493,7 +2483,7 @@ class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
       setState(() => _submitting = false);
       final msg =
           ref.read(superadminSettingsControllerProvider).sectionErrorMessage ??
-          'Invalid or expired code.';
+              'Invalid or expired code.';
       ToastHelper.showError(msg);
     }
   }
@@ -2559,9 +2549,8 @@ class _OtpVerificationSheetState extends ConsumerState<_OtpVerificationSheet> {
               Align(
                 alignment: Alignment.center,
                 child: TextButton(
-                  onPressed: _resending
-                      ? null
-                      : () => _requestOtp(isResend: true),
+                  onPressed:
+                      _resending ? null : () => _requestOtp(isResend: true),
                   child: _resending
                       ? const SizedBox(
                           width: 14,

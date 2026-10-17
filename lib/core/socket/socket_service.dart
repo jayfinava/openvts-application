@@ -6,13 +6,15 @@ typedef SocketEventHandler = void Function(dynamic data);
 
 class SocketService {
   SocketService(this._tokenStorage, {required String apiBaseUrl})
-    : _apiBaseUrl = apiBaseUrl;
+      : _apiBaseUrl = apiBaseUrl;
 
   final TokenStorage _tokenStorage;
   final String _apiBaseUrl;
   final Set<SocketConnection> _connections = {};
+  bool _disposed = false;
 
   void dispose() {
+    _disposed = true;
     for (final connection in _connections.toList(growable: false)) {
       connection.disconnect();
     }
@@ -23,6 +25,7 @@ class SocketService {
     String namespace, {
     bool authenticated = true,
   }) async {
+    if (_disposed) throw StateError('Socket service is closed.');
     String? token;
     if (authenticated) {
       token = _tokenStorage.cachedActiveAccessToken;
@@ -32,6 +35,7 @@ class SocketService {
       }
     }
     final session = _tokenStorage.cachedActiveSession;
+    if (_disposed) throw StateError('Socket service is closed.');
     final generation = _tokenStorage.sessionGeneration;
     bool sessionIsCurrent() =>
         !authenticated ||
@@ -40,26 +44,28 @@ class SocketService {
             _tokenStorage.cachedActiveSession?.user.id == session?.user.id);
     final url = socketUrlForApiBase(_apiBaseUrl, namespace);
 
-    final options =
-        io.OptionBuilder()
-            .setPath('/socket.io')
-            // The Nest gateways intentionally expose WebSocket transport only.
-            // Advertising polling first causes avoidable failed handshakes.
-            .setTransports(['websocket'])
-            .disableAutoConnect()
-            .setAuth(
-              authenticated
-                  ? <String, dynamic>{'token': token}
-                  : const <String, dynamic>{},
-            )
-            .enableReconnection()
-            .setReconnectionDelay(500)
-            .setReconnectionDelayMax(2000)
-            .setReconnectionAttempts(double.infinity)
-            .build()
-          ..['reconnection'] = true
-          ..['forceNew'] = true
-          ..['multiplex'] = false;
+    final options = io.OptionBuilder()
+        .setPath('/socket.io')
+        // The Nest gateways intentionally expose WebSocket transport only.
+        // Advertising polling first causes avoidable failed handshakes.
+        .setTransports(['websocket'])
+        .disableAutoConnect()
+        .setAuth(
+          authenticated
+              ? <String, dynamic>{
+                  'token': token,
+                  if (namespace == '/telemetry') 'telemetryScope': 'explicit',
+                }
+              : const <String, dynamic>{},
+        )
+        .enableReconnection()
+        .setReconnectionDelay(500)
+        .setReconnectionDelayMax(2000)
+        .setReconnectionAttempts(double.infinity)
+        .build()
+      ..['reconnection'] = true
+      ..['forceNew'] = true
+      ..['multiplex'] = false;
 
     final socket = io.io(url, options);
     // socket_io_client invokes a functional auth value for every connection,
@@ -72,6 +78,7 @@ class SocketService {
                 'token': sessionIsCurrent()
                     ? _tokenStorage.cachedActiveAccessToken
                     : null,
+                if (namespace == '/telemetry') 'telemetryScope': 'explicit',
               }
             : const <String, dynamic>{},
       );
@@ -108,9 +115,8 @@ class SocketService {
   }
 
   static String socketUrlForApiBase(String apiBaseUrl, String namespace) {
-    final normalizedNamespace = namespace.startsWith('/')
-        ? namespace
-        : '/$namespace';
+    final normalizedNamespace =
+        namespace.startsWith('/') ? namespace : '/$namespace';
     final normalizedApiBase = apiBaseUrl.trim().replaceAll(RegExp(r'/+$'), '');
     if (normalizedApiBase.isEmpty) {
       return normalizedNamespace;
@@ -124,8 +130,8 @@ class SocketService {
     final socketBase = normalizedApiBase == '/api'
         ? ''
         : normalizedApiBase.endsWith('/api')
-        ? normalizedApiBase.substring(0, normalizedApiBase.length - 4)
-        : normalizedApiBase;
+            ? normalizedApiBase.substring(0, normalizedApiBase.length - 4)
+            : normalizedApiBase;
     return '$socketBase$normalizedNamespace';
   }
 }
@@ -150,7 +156,7 @@ abstract class SocketConnection {
 
 class _IoSocketConnection implements SocketConnection {
   _IoSocketConnection(this._socket, {required void Function() onDispose})
-    : _onDispose = onDispose;
+      : _onDispose = onDispose;
 
   final io.Socket _socket;
   final void Function() _onDispose;

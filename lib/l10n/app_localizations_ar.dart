@@ -9081,4 +9081,185 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get mobilePageLinkError =>
       'تعذر فتح هذه الصفحة. يُرجى المحاولة مرة أخرى.';
+
+  @override
+  String get mobileInvalidServerQr =>
+      'لا يحتوي رمز QR هذا على عنوان URL صالح للخادم.';
+
+  @override
+  String get mobileServerUrlUpdated => 'تم تحديث عنوان URL للخادم';
+
+  @override
+  String get mobileServerUrlSaveFailed =>
+      'تعذر حفظ عنوان URL هذا للخادم. حاول مرة أخرى.';
+
+  @override
+  String get mobileCameraConfigureManually =>
+      'الكاميرا غير متاحة. اضبط عنوان URL للخادم يدوياً.';
+
+  @override
+  String get mobileScanServerQr => 'مسح رمز QR للخادم';
+
+  @override
+  String get mobileServerQrInstruction =>
+      'وجّه الكاميرا نحو رمز QR الذي يحتوي على عنوان URL الكامل لواجهة API.';
+
+  @override
+  String get mobileCameraPermissionManual =>
+      'الكاميرا غير متاحة. تحقق من إذن الكاميرا أو اضبط الإعدادات يدوياً.';
+
+  @override
+  String get mobileCameraUnavailableDevice =>
+      'المسح بالكاميرا غير متاح على هذا الجهاز.';
+
+  @override
+  String get mobileConfigureManually => 'الإعداد يدوياً';
+
+  @override
+  String get mobileScanServerQrAction => 'مسح رمز QR للخادم';
+
+  @override
+  String get mobileTrackingVehicleUnavailable =>
+      'هذه المركبة غير متاحة أو لم تعد مرتبطة بحسابك.';
+
+  @override
+  String get mobileClusterSafetyDescription =>
+      'تجميع المركبات القريبة. يتم تجميع العروض الكثيفة تلقائياً للحفاظ على استجابة الخريطة.';
+
+  @override
+  String get mobileWaitingForVehicle => 'في انتظار المركبة…';
+
+  @override
+  String get mobileLicenseTrackingBlocked => 'التتبع غير متاح: الترخيص محظور';
+
+  @override
+  String get mobileServiceTrackingBlocked => 'التتبع غير متاح: الخدمة محظورة';
+
+  @override
+  String get mobileNoTrackingDevice => 'لم يتم تعيين جهاز تتبع';
+
+  @override
+  String get mobileVehicleTracking => 'تتبع المركبة';
+
+  @override
+  String get mobileLastGps => 'آخر GPS';
+
+  @override
+  String get mobileCurrentMonthTransactionsEmpty =>
+      'لا توجد معاملات هذا الشهر.';
+
+  @override
+  String get mobileViewAllHistory => 'عرض السجل بالكامل';
+
+  @override
+  String get mobileTrackVehicle => 'تتبع المركبة';
+
+  @override
+  String get mobileGpsTimeUnavailable => 'وقت GPS غير متاح';
+
+  @override
+  String get mobileWaitingGps => 'في انتظار موقع GPS';
+
+  @override
+  String get mobileLiveConnectionConnected => 'الاتصال المباشر متصل';
+
+  @override
+  String get mobilePauseFollowVehicle => 'إيقاف متابعة المركبة مؤقتاً';
+
+  @override
+  String get mobileFollowVehicle => 'متابعة المركبة';
+
+  @override
+  String get mobileVehicleNoLocation =>
+      'لا يتوفر موقع صالح لهذه المركبة حتى الآن.';
+
+  @override
+  String get mobileLoadingVehicle => 'جارٍ تحميل المركبة…';
+
+  @override
+  String get mobileVehicleLoadRetry => 'تعذر تحميل هذه المركبة. أعد المحاولة.';
+
+  @override
+  String get mobileErrorSessionExpired =>
+      'انتهت جلستك. يرجى تسجيل الدخول مجدداً.';
+
+  @override
+  String get mobileErrorAccessDenied =>
+      'ليس لديك صلاحية الوصول إلى هذه المعلومات.';
+
+  @override
+  String get mobileErrorUnavailable => 'لم تعد هذه المعلومات متاحة.';
+
+  @override
+  String get mobileErrorTimeout => 'انتهت مهلة الطلب. يرجى المحاولة مجدداً.';
+
+  @override
+  String get mobileErrorRateLimit =>
+      'طلبات كثيرة جداً. يرجى الانتظار قليلاً والمحاولة مجدداً.';
+
+  @override
+  String get mobileErrorServiceUnavailable =>
+      'هذه المعلومات غير متاحة مؤقتاً. يرجى المحاولة لاحقاً.';
+
+  @override
+  String get mobileErrorConnection =>
+      'تعذر الاتصال. تحقق من اتصال الإنترنت وحاول مجدداً.';
+
+  @override
+  String get mobileErrorSecureConnection =>
+      'تعذر إنشاء اتصال آمن. يرجى المحاولة لاحقاً.';
+
+  @override
+  String get mobileErrorCancelled => 'تم إلغاء الطلب. يرجى المحاولة مجدداً.';
+
+  @override
+  String get mobileErrorRequest => 'تعذر إكمال الطلب. يرجى المحاولة مجدداً.';
+
+  @override
+  String get mobileErrorTimeZone =>
+      'تعذر تحديد منطقتك الزمنية. أعد تشغيل التطبيق وحاول مجدداً.';
+
+  @override
+  String get adminLogBilling => 'الفوترة';
+
+  @override
+  String get adminAddDevice => 'إضافة جهاز';
+
+  @override
+  String get mobileBlockedOnPage => 'المحظورة في هذه الصفحة';
+
+  @override
+  String get mobileExpiringOnPage => 'المنتهية قريبًا في هذه الصفحة';
+
+  @override
+  String get validationAccountNameLetter =>
+      'يجب أن يحتوي الاسم على حرف واحد على الأقل';
+
+  @override
+  String get validationAccountNameCharacters =>
+      'يحتوي الاسم على أحرف غير صالحة';
+
+  @override
+  String get validationAccountNameSpaces =>
+      'لا يمكن أن يحتوي الاسم على مسافات متتالية';
+
+  @override
+  String get validationAccountUsernameLetter =>
+      'يجب أن يحتوي اسم المستخدم على حرف واحد على الأقل';
+
+  @override
+  String get validationAccountUsernameCharacters =>
+      'يحتوي اسم المستخدم على أحرف غير صالحة';
+
+  @override
+  String get validationAccountAddressText => 'يحتوي العنوان على نص غير صالح';
+
+  @override
+  String get validationAccountPostal => 'أدخل رمزًا بريديًا صالحًا';
+
+  @override
+  String get mobileCreateDriverError => 'تعذر إنشاء السائق.';
+
+  @override
+  String get mobileCreateSubuserError => 'تعذر إنشاء المستخدم الفرعي.';
 }

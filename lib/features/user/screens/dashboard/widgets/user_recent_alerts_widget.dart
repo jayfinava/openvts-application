@@ -42,8 +42,7 @@ class _UserRecentAlertsWidgetState
   @override
   void initState() {
     super.initState();
-    _selectedVehicleId =
-        userDashboardPropString(widget.config.props, const [
+    _selectedVehicleId = userDashboardPropString(widget.config.props, const [
           'vehicleId',
           'vehicle_id',
         ]) ??
@@ -187,16 +186,15 @@ class _UserRecentAlertsWidgetState
 
   Widget _buildBody(
     AsyncValue<
-      ({
-        List<UserDashboardVehicleOption> vehicles,
-        UserDashboardRecentAlertsPage page,
-      })
-    >
-    state,
+            ({
+              List<UserDashboardVehicleOption> vehicles,
+              UserDashboardRecentAlertsPage page,
+            })>
+        state,
   ) {
     if (state.hasError) {
       return UserDashboardWidgetError(
-        message: state.error.toString(),
+        error: state.error!,
         onRetry: () => _reload(forceRefresh: true),
       );
     }
@@ -319,9 +317,8 @@ class _AlertRow extends ConsumerWidget {
                           overflow: TextOverflow.ellipsis,
                           style: OpenVtsTypography.label.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
-                            fontWeight: isRead
-                                ? FontWeight.w700
-                                : FontWeight.w900,
+                            fontWeight:
+                                isRead ? FontWeight.w700 : FontWeight.w900,
                           ),
                         ),
                       ),
@@ -520,7 +517,12 @@ class _AlertDetailSheet extends StatelessWidget {
               ],
               if (state.hasError) ...[
                 const SizedBox(height: OpenVtsSpacing.md),
-                UserDashboardWidgetError(message: state.error.toString()),
+                UserDashboardWidgetError(
+                  error: state.error!,
+                  onRetry: state.isLoading
+                      ? null
+                      : () => ref.invalidate(detailProvider),
+                ),
               ],
               if (state.valueOrNull != null &&
                   state.valueOrNull!.deliveries.isNotEmpty) ...[

@@ -133,7 +133,7 @@ _VehicleStatus _vehicleStatus(AdminRecentVehicle vehicle) {
     return const _VehicleStatus(
       label: 'No Device',
       icon: Icons.wifi_off_outlined,
-      color: Color(0xFF71717A),
+      color: Color(0xFF727272),
     );
   }
 
@@ -161,7 +161,7 @@ _VehicleStatus _vehicleStatus(AdminRecentVehicle vehicle) {
       return const _VehicleStatus(
         label: 'No Data',
         icon: Icons.storage_outlined,
-        color: Color(0xFF71717A),
+        color: Color(0xFF727272),
       );
   }
 }

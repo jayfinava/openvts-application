@@ -9,10 +9,13 @@ import '../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../core/theme/open_vts_typography.dart';
 import '../../../../../core/utils/date_time_formatter.dart';
+import '../../../../../core/utils/permission_helper.dart';
 import '../../../../../shared/helpers/mobile_text.dart';
 import '../../../../../shared/helpers/toast_helper.dart';
 import '../../../../../shared/widgets/open_vts_card.dart';
 import '../../../../../shared/widgets/open_vts_status_chip.dart';
+import '../../../../../shared/widgets/open_vts_vehicle_tracking_button.dart';
+import '../../../../auth/controllers/auth_controller.dart';
 import '../../../models/user_vehicle_model.dart';
 
 class UserVehicleCard extends ConsumerWidget {
@@ -23,6 +26,10 @@ class UserVehicleCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatter = ref.watch(appDateFormatterProvider);
+    final canTrack = PermissionHelper.canAccessUserPath(
+      ref.watch(authControllerProvider.select((state) => state.user)),
+      RoutePaths.userMap,
+    );
     return OpenVtsCard(
       onTap: () => context.push(
         RoutePaths.userVehicleDetailsPath(vehicle.id),
@@ -131,6 +138,20 @@ class UserVehicleCard extends ConsumerWidget {
                 ),
             ],
           ),
+          if (canTrack && vehicle.id.trim().isNotEmpty) ...[
+            const SizedBox(height: OpenVtsSpacing.xs),
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: OpenVtsVehicleTrackingButton(
+                onPressed: () => context.push(
+                  RoutePaths.userVehicleTrackingPath(
+                    vehicle.id,
+                    imei: vehicle.imei,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

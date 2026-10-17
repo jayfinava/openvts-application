@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../../../core/theme/open_vts_spacing.dart';
 import '../../../../../../core/theme/open_vts_typography.dart';
@@ -129,7 +129,7 @@ class _SearchFieldState extends State<_SearchField> {
           isDense: true,
           hintText: context.mobileText('Search by name'),
           hintStyle: OpenVtsTypography.body.copyWith(
-            color: OpenVtsColors.textTertiary,
+            color: OpenVtsMapColors.textTertiary,
           ),
           prefixIcon: Icon(
             Icons.search,
@@ -156,16 +156,16 @@ class _SearchFieldState extends State<_SearchField> {
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-            borderSide: const BorderSide(color: OpenVtsColors.border),
+            borderSide: const BorderSide(color: OpenVtsMapColors.border),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(OpenVtsRadius.button),
-            borderSide: const BorderSide(color: OpenVtsColors.border),
+            borderSide: const BorderSide(color: OpenVtsMapColors.border),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(OpenVtsRadius.button),
             borderSide: const BorderSide(
-              color: OpenVtsColors.brandInk,
+              color: OpenVtsMapColors.brandInk,
               width: 1.4,
             ),
           ),
@@ -183,8 +183,8 @@ class _FilterGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final borderColor = isDark ? Colors.white : OpenVtsColors.border;
-    final containerColor = isDark ? Colors.black : OpenVtsColors.white;
+    final borderColor = isDark ? Colors.white : OpenVtsMapColors.border;
+    final containerColor = isDark ? Colors.black : OpenVtsMapColors.white;
     return Container(
       constraints: const BoxConstraints(minHeight: 34),
       decoration: BoxDecoration(
@@ -221,14 +221,14 @@ class _FilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor = selected
-        ? (isDark ? Colors.black : OpenVtsColors.white)
+        ? (isDark ? Colors.black : OpenVtsMapColors.white)
         : Colors.transparent;
     final textColor = selected
-        ? (isDark ? Colors.white : OpenVtsColors.brandInk)
-        : (isDark ? Colors.white : OpenVtsColors.brandInk);
+        ? (isDark ? Colors.white : OpenVtsMapColors.brandInk)
+        : (isDark ? Colors.white : OpenVtsMapColors.brandInk);
     final borderColor = selected
-        ? (isDark ? Colors.white : OpenVtsColors.border)
-        : (isDark ? Colors.white : OpenVtsColors.border);
+        ? (isDark ? Colors.white : OpenVtsMapColors.border)
+        : (isDark ? Colors.white : OpenVtsMapColors.border);
 
     return InkWell(
       onTap: onTap,

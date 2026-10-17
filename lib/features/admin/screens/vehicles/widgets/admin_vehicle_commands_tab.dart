@@ -46,11 +46,10 @@ class AdminVehicleCommandsTab extends ConsumerStatefulWidget {
     required String command,
     String? note,
     String? commandId,
-  })
-  onSend;
+  }) onSend;
   final Future<AdminCommandStatus?> Function(String cmdId) onPollStatus;
   final Future<AdminVehicleCommandItem?> Function(String cmdId)
-  onFetchCommandLog;
+      onFetchCommandLog;
 
   @override
   ConsumerState<AdminVehicleCommandsTab> createState() =>
@@ -125,6 +124,8 @@ class _AdminVehicleCommandsTabState
               ),
               const SizedBox(height: OpenVtsSpacing.sm),
               DropdownButtonFormField<String>(
+                isExpanded: true,
+                menuMaxHeight: 320,
                 key: ValueKey(_dropdownEpoch),
                 initialValue: _selectedTemplateId,
                 decoration: InputDecoration(
@@ -135,12 +136,14 @@ class _AdminVehicleCommandsTabState
                     vertical: OpenVtsSpacing.xs,
                   ),
                 ),
-                hint: Text(context.mobileText('Select command template')),
+                hint: Text(context.mobileText('Select command template'),
+                    maxLines: 1, overflow: TextOverflow.ellipsis),
                 items: widget.customCommands
                     .map(
                       (item) => DropdownMenuItem<String>(
                         value: item.id,
-                        child: Text(item.displaySelectedLabel),
+                        child: Text(item.displaySelectedLabel,
+                            maxLines: 1, overflow: TextOverflow.ellipsis),
                       ),
                     )
                     .toList(growable: false),
@@ -166,8 +169,7 @@ class _AdminVehicleCommandsTabState
               const SizedBox(height: OpenVtsSpacing.sm),
               TextField(
                 controller: _commandController,
-                readOnly:
-                    ref.watch(authControllerProvider).user?.role ==
+                readOnly: ref.watch(authControllerProvider).user?.role ==
                     UserRole.team,
                 maxLines: 3,
                 maxLength: 500,
@@ -340,9 +342,8 @@ class _AdminVehicleCommandsTabState
 
   Future<void> _openHistoryDetails(AdminVehicleCommandItem item) async {
     final cmdId = item.cmdId.trim();
-    final loaded = cmdId.isEmpty
-        ? item
-        : (await widget.onFetchCommandLog(cmdId) ?? item);
+    final loaded =
+        cmdId.isEmpty ? item : (await widget.onFetchCommandLog(cmdId) ?? item);
 
     if (!mounted) return;
     await OpenVtsBottomSheet.show<void>(
@@ -382,9 +383,9 @@ class _AdminVehicleCommandsTabState
   }
 
   Widget _line(String label, String value) => Padding(
-    padding: const EdgeInsets.only(bottom: 4),
-    child: Text('$label: $value'),
-  );
+        padding: const EdgeInsets.only(bottom: 4),
+        child: Text('$label: $value'),
+      );
 
   String _resolveVariables(String template) {
     final map = <String, String>{
@@ -442,9 +443,8 @@ class _TargetVehicleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = vehicle.name.trim().isEmpty
-        ? vehicle.plateNumber
-        : vehicle.name;
+    final name =
+        vehicle.name.trim().isEmpty ? vehicle.plateNumber : vehicle.name;
     final hasType = vehicle.vehicleType != null;
 
     return OpenVtsCard(
@@ -464,9 +464,9 @@ class _TargetVehicleCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.2,
-            ),
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.2,
+                ),
           ),
           if (vehicle.plateNumber.trim().isNotEmpty) ...[
             const SizedBox(height: 2),
@@ -603,9 +603,9 @@ class _CommandHistoryCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.2,
-                  ),
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.2,
+                      ),
                 ),
               ),
               const SizedBox(width: OpenVtsSpacing.xs),

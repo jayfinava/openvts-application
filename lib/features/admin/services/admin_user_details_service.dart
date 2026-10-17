@@ -152,6 +152,32 @@ class AdminUserDetailsService {
     );
   }
 
+  /// The current Admin API accepts one vehicle per link. Bound fan-out and
+  /// report each confirmed write so retries never replay successful links.
+  Future<AdminVehicleAssignmentResult> linkVehicles(
+      String userId, Iterable<String> vehicleIds) async {
+    final ids =
+        vehicleIds.map((id) => _requireId(id, 'vehicleId')).toSet().toList();
+    final assigned = <String>{};
+    final failed = <String>{};
+    var next = 0;
+    Future<void> worker() async {
+      while (next < ids.length) {
+        final id = ids[next++];
+        try {
+          await linkVehicle(userId, id);
+          assigned.add(id);
+        } catch (_) {
+          failed.add(id);
+        }
+      }
+    }
+
+    await Future.wait([for (var i = 0; i < 3 && i < ids.length; i++) worker()]);
+    return AdminVehicleAssignmentResult(
+        assignedIds: assigned, failedIds: failed);
+  }
+
   Future<List<AdminUserDriver>> getLinkedDrivers(String userId) async {
     final id = _requireUserId(userId);
     final response = await _apiClient.get<dynamic>(
@@ -402,11 +428,13 @@ class AdminUserDetailsService {
           : ApiEndpoints.admin.renewVehiclesPayment,
       data: {
         ...request.toJson(),
-        'idempotencyKey':
-            request.idempotencyKey ??
+        'idempotencyKey': request.idempotencyKey ??
             (_renewalKeys[request] ??= const Uuid().v4()),
       },
-      options: _mutationOptions,
+      // A renewal validates pricing and updates up to 100 vehicles atomically.
+      options: Options(
+          sendTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 60)),
       parser: (json) => json,
     );
     return AdminRenewVehiclesPaymentResult.fromJson(response.data);

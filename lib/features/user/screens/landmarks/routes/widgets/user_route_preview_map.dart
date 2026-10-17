@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../../core/theme/open_vts_colors.dart';
+import '../../../../../../core/theme/open_vts_map_colors.dart';
 import '../../../../../../core/theme/open_vts_radius.dart';
 import '../../../../models/user_landmark_model.dart';
 import '../../widgets/user_landmark_map_view.dart';
@@ -37,9 +37,9 @@ class UserRoutePreviewMap extends StatelessWidget {
 
     final framed = DecoratedBox(
       decoration: BoxDecoration(
-        color: OpenVtsColors.surfaceElevated,
+        color: OpenVtsMapColors.surfaceElevated,
         borderRadius: BorderRadius.circular(OpenVtsRadius.lg),
-        border: Border.all(color: OpenVtsColors.border),
+        border: Border.all(color: OpenVtsMapColors.border),
       ),
       child: map,
     );

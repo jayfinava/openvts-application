@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../core/theme/open_vts_colors.dart';
 import '../../../shared/helpers/mobile_text.dart';
 import '../../../shared/helpers/toast_helper.dart';
 import '../../../shared/helpers/validation_localizations.dart';
@@ -90,8 +91,7 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
           });
         }
         if (changed != null && mounted) {
-          final codes =
-              (changed['recoveryCodes'] as List?)
+          final codes = (changed['recoveryCodes'] as List?)
                   ?.map((v) => v.toString())
                   .toList() ??
               <String>[];
@@ -281,8 +281,7 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
               ),
             ),
           FilledButton.icon(
-            onPressed:
-                _busy ||
+            onPressed: _busy ||
                     devices.length >= (_status?['maxDevices'] as num? ?? 10)
                 ? null
                 : () => _act('enroll'),
@@ -329,7 +328,7 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
                       onPressed: _busy
                           ? null
                           : () =>
-                                _revoke(Map<String, dynamic>.from(raw as Map)),
+                              _revoke(Map<String, dynamic>.from(raw as Map)),
                       icon: const Icon(Icons.delete_outline),
                     )
                   : null,
@@ -377,19 +376,19 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
   }
 
   Widget _section(String title, List<Widget> children) => Card(
-    margin: const EdgeInsets.only(bottom: 16),
-    child: Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 12),
-          ...children,
-        ],
-      ),
-    ),
-  );
+        margin: const EdgeInsets.only(bottom: 16),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(title, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 12),
+              ...children,
+            ],
+          ),
+        ),
+      );
   String _date(dynamic value) {
     final date = DateTime.tryParse('$value')?.toLocal();
     return date == null ? '—' : '${date.day}/${date.month}/${date.year}';
@@ -431,112 +430,134 @@ class _ProofDialogState extends State<_ProofDialog> {
       'token': context.mobileText('Create API token'),
     };
     return AlertDialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      constraints: const BoxConstraints(maxWidth: 480),
       title: Text(titles[widget.action]!),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _form,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (widget.action == 'disable')
-                Text(
-                  context.mobileText(
-                    'Future sign-ins will need only your password.',
-                  ),
-                ),
-              if (widget.action == 'recovery')
-                Text(
-                  context.mobileText(
-                    'Your previous recovery codes will stop working.',
-                  ),
-                ),
-              if (widget.action == 'enroll' || widget.action == 'token')
-                TextFormField(
-                  controller: _name,
-                  maxLength: widget.action == 'token' ? 80 : 60,
-                  decoration: InputDecoration(
-                    labelText: widget.action == 'token'
-                        ? context.mobileText('Token name')
-                        : context.mobileText('Authenticator name'),
-                  ),
-                  validator: context.localizedValidator((v) => v?.trim().isNotEmpty == true ? null : context.mobileText('Enter a name.')),
-                ),
-              if (widget.action == 'token') ...[
-                DropdownButtonFormField<String>(
-                  initialValue: _access,
-                  decoration: InputDecoration(
-                    labelText: context.mobileText('Access'),
-                  ),
-                  items: [
-                    DropdownMenuItem(
-                      value: 'READ_ONLY',
-                      child: Text(context.mobileText('Read only')),
+      content: SizedBox(
+          width: 432,
+          child: SingleChildScrollView(
+            child: Form(
+              key: _form,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (widget.action == 'disable')
+                    Text(
+                      context.mobileText(
+                        'Future sign-ins will need only your password.',
+                      ),
                     ),
-                    DropdownMenuItem(
-                      value: 'READ_WRITE',
-                      child: Text(context.mobileText('Read and write')),
+                  if (widget.action == 'recovery')
+                    Text(
+                      context.mobileText(
+                        'Your previous recovery codes will stop working.',
+                      ),
+                    ),
+                  if (widget.action == 'enroll' || widget.action == 'token')
+                    TextFormField(
+                      controller: _name,
+                      maxLength: widget.action == 'token' ? 80 : 60,
+                      decoration: InputDecoration(
+                        labelText: widget.action == 'token'
+                            ? context.mobileText('Token name')
+                            : context.mobileText('Authenticator name'),
+                      ),
+                      validator: context.localizedValidator((v) =>
+                          v?.trim().isNotEmpty == true
+                              ? null
+                              : context.mobileText('Enter a name.')),
+                    ),
+                  if (widget.action == 'token') ...[
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      initialValue: _access,
+                      decoration: InputDecoration(
+                        labelText: context.mobileText('Access'),
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: 'READ_ONLY',
+                          child: Text(context.mobileText('Read only')),
+                        ),
+                        DropdownMenuItem(
+                          value: 'READ_WRITE',
+                          child: Text(context.mobileText('Read and write')),
+                        ),
+                      ],
+                      onChanged: (v) => setState(() => _access = v!),
+                    ),
+                    const SizedBox(height: 20),
+                    DropdownButtonFormField<int>(
+                      isExpanded: true,
+                      initialValue: _days,
+                      decoration: InputDecoration(
+                        labelText: context.mobileText('Expires after'),
+                      ),
+                      items: [7, 30, 90, 365]
+                          .map(
+                            (v) => DropdownMenuItem(
+                              value: v,
+                              child: Text(
+                                context
+                                    .mobileText('{count} days', {'count': v}),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) => setState(() => _days = v!),
                     ),
                   ],
-                  onChanged: (v) => setState(() => _access = v!),
-                ),
-                DropdownButtonFormField<int>(
-                  initialValue: _days,
-                  decoration: InputDecoration(
-                    labelText: context.mobileText('Expires after'),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _password,
+                    obscureText: true,
+                    autocorrect: false,
+                    enableSuggestions: false,
+                    maxLength: 128,
+                    decoration: InputDecoration(
+                      labelText: context.mobileText('Current password'),
+                    ),
+                    validator: context.localizedValidator((v) =>
+                        v?.isNotEmpty == true
+                            ? null
+                            : context.mobileText('Enter your password.')),
                   ),
-                  items: [7, 30, 90, 365]
-                      .map(
-                        (v) => DropdownMenuItem(
-                          value: v,
-                          child: Text(
-                            context.mobileText('{count} days', {'count': v}),
-                          ),
+                  if (widget.mfaEnabled) ...[
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _code,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      maxLength: 80,
+                      decoration: InputDecoration(
+                        labelText: context.mobileText(
+                          'Authenticator or recovery code',
                         ),
-                      )
-                      .toList(),
-                  onChanged: (v) => setState(() => _days = v!),
-                ),
-              ],
-              TextFormField(
-                controller: _password,
-                obscureText: true,
-                autocorrect: false,
-                enableSuggestions: false,
-                maxLength: 128,
-                decoration: InputDecoration(
-                  labelText: context.mobileText('Current password'),
-                ),
-                validator: context.localizedValidator((v) => v?.isNotEmpty == true ? null : context.mobileText('Enter your password.')),
+                      ),
+                      validator: context.localizedValidator((v) =>
+                          (v?.trim().length ?? 0) >= 6
+                              ? null
+                              : context
+                                  .mobileText('Enter your verification code.')),
+                    ),
+                  ],
+                  if (widget.action == 'delete')
+                    CheckboxListTile(
+                      contentPadding: EdgeInsets.zero,
+                      value: _confirmed,
+                      onChanged: (v) => setState(() => _confirmed = v == true),
+                      title: Text(
+                        context.mobileText(
+                          'I understand that my account and workspace access will be deleted.',
+                        ),
+                      ),
+                    ),
+                ],
               ),
-              if (widget.mfaEnabled)
-                TextFormField(
-                  controller: _code,
-                  autocorrect: false,
-                  enableSuggestions: false,
-                  maxLength: 80,
-                  decoration: InputDecoration(
-                    labelText: context.mobileText(
-                      'Authenticator or recovery code',
-                    ),
-                  ),
-                  validator: context.localizedValidator((v) => (v?.trim().length ?? 0) >= 6 ? null : context.mobileText('Enter your verification code.')),
-                ),
-              if (widget.action == 'delete')
-                CheckboxListTile(
-                  contentPadding: EdgeInsets.zero,
-                  value: _confirmed,
-                  onChanged: (v) => setState(() => _confirmed = v == true),
-                  title: Text(
-                    context.mobileText(
-                      'I understand that my account and workspace access will be deleted.',
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
+            ),
+          )),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
@@ -620,6 +641,7 @@ class _EnrollmentDialogState extends State<_EnrollmentDialog> {
       try {
         qrWidget = SvgPicture.string(
           utf8.decode(base64Decode(qr.split(',').last)),
+          colorFilter: OpenVtsColors.monochromeFilter,
           width: 200,
           height: 200,
         );
@@ -652,8 +674,8 @@ class _EnrollmentDialogState extends State<_EnrollmentDialog> {
                 onPressed: _busy
                     ? null
                     : () => Clipboard.setData(
-                        ClipboardData(text: '${widget.setup['secret']}'),
-                      ),
+                          ClipboardData(text: '${widget.setup['secret']}'),
+                        ),
                 icon: const Icon(Icons.copy),
                 label: Text(context.mobileText('Copy setup key')),
               ),

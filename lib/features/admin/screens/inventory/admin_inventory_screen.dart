@@ -6,6 +6,7 @@ import '../../../../core/theme/open_vts_radius.dart';
 import '../../../../core/theme/open_vts_spacing.dart';
 import '../../../../core/theme/open_vts_typography.dart';
 import '../../../../shared/helpers/mobile_text.dart';
+import '../../../../shared/paging/server_list_pagination.dart';
 import '../../../../shared/widgets/open_vts_bottom_sheet.dart';
 import '../../../../shared/widgets/open_vts_empty_state.dart';
 import '../../../../shared/widgets/open_vts_error_view.dart';
@@ -35,15 +36,12 @@ class AdminInventoryScreen extends ConsumerWidget {
     final isInitialLoading = isDevices
         ? state.isLoadingDevices && state.devices.isEmpty
         : state.isLoadingSimCards && state.simCards.isEmpty;
-    final hasData = isDevices
-        ? state.devices.isNotEmpty
-        : state.simCards.isNotEmpty;
-    final errorMessage = isDevices
-        ? state.devicesErrorMessage
-        : state.simCardsErrorMessage;
-    final isRefreshing = isDevices
-        ? state.isRefreshingDevices
-        : state.isRefreshingSimCards;
+    final hasData =
+        isDevices ? state.devices.isNotEmpty : state.simCards.isNotEmpty;
+    final errorMessage =
+        isDevices ? state.devicesErrorMessage : state.simCardsErrorMessage;
+    final isRefreshing =
+        isDevices ? state.isRefreshingDevices : state.isRefreshingSimCards;
 
     return OpenVtsPageScaffold(
       title: context.mobileText('Inventory'),
@@ -69,21 +67,22 @@ class AdminInventoryScreen extends ConsumerWidget {
       body: isInitialLoading
           ? const OpenVtsLoader()
           : errorMessage != null && !hasData
-          ? OpenVtsErrorView(
-              message: errorMessage,
-              onRetry: isDevices
-                  ? controller.loadDevices
-                  : controller.loadSimCards,
-            )
-          : _InventoryBody(
-              state: state,
-              controller: controller,
-              onAdd: () => _showAddSheet(context),
-              onOpenFilters: () => _showFilterSheet(context, ref),
-              onOpenSort: () => _showSortSheet(context, ref),
-              onEditDevice: (device) => _showEditDeviceSheet(context, device),
-              onEditSim: (sim) => _showEditSimSheet(context, sim),
-            ),
+              ? OpenVtsErrorView(
+                  message: errorMessage,
+                  onRetry: isDevices
+                      ? controller.loadDevices
+                      : controller.loadSimCards,
+                )
+              : _InventoryBody(
+                  state: state,
+                  controller: controller,
+                  onAdd: () => _showAddSheet(context),
+                  onOpenFilters: () => _showFilterSheet(context, ref),
+                  onOpenSort: () => _showSortSheet(context, ref),
+                  onEditDevice: (device) =>
+                      _showEditDeviceSheet(context, device),
+                  onEditSim: (sim) => _showEditSimSheet(context, sim),
+                ),
     );
   }
 
@@ -213,7 +212,8 @@ class AdminInventoryScreen extends ConsumerWidget {
       for (final item in state.simCards)
         if (item.provider.trim().isNotEmpty && item.provider.trim() != '-')
           item.provider.trim(),
-    }.toList()..sort();
+    }.toList()
+      ..sort();
 
     await showModalBottomSheet<void>(
       context: context,
@@ -432,22 +432,18 @@ class _InventoryBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDevices = state.selectedTab == AdminInventoryTab.devices;
-    final filteredCount = isDevices
-        ? state.deviceFilteredCount
-        : state.simFilteredCount;
+    final filteredCount =
+        isDevices ? state.deviceFilteredCount : state.simFilteredCount;
     final visible = isDevices ? state.visibleDevices : state.visibleSimCards;
-    final searchQuery = isDevices
-        ? state.deviceSearchQuery
-        : state.simSearchQuery;
-    final recordsPerPage = isDevices
-        ? state.deviceRecordsPerPage
-        : state.simRecordsPerPage;
+    final searchQuery =
+        isDevices ? state.deviceSearchQuery : state.simSearchQuery;
+    final recordsPerPage =
+        isDevices ? state.deviceRecordsPerPage : state.simRecordsPerPage;
     final hasActiveFilters = isDevices
         ? _deviceHasActiveFilters(state)
         : _simHasActiveFilters(state);
-    final errorMessage = isDevices
-        ? state.devicesErrorMessage
-        : state.simCardsErrorMessage;
+    final errorMessage =
+        isDevices ? state.devicesErrorMessage : state.simCardsErrorMessage;
 
     return Column(
       children: [
@@ -529,6 +525,20 @@ class _InventoryBody extends ConsumerWidget {
                         const SizedBox(height: OpenVtsSpacing.sm),
                     itemBuilder: (context, index) {
                       if (index == visible.length) {
+                        if (controller.isServerPaged) {
+                          return ServerListPagination(
+                              meta: isDevices
+                                  ? state.devicesPagination
+                                  : state.simsPagination,
+                              loading: isDevices
+                                  ? state.isLoadingDevices ||
+                                      state.isRefreshingDevices
+                                  : state.isLoadingSimCards ||
+                                      state.isRefreshingSimCards,
+                              onPageChanged: isDevices
+                                  ? controller.devicesPager!.goToPage
+                                  : controller.simsPager!.goToPage);
+                        }
                         return OpenVtsListPagePaginationFooter(
                           currentPage: isDevices
                               ? state.safeDeviceCurrentPage
